@@ -1,0 +1,43 @@
+export class CasoDTO {
+    constructor(
+        public id?: number,
+        public nome?: string,
+        public dataCadastro?: string,
+        public dataCaso?: string,
+        public dataArquivamento?: string,
+        public inicioProva?: string,
+        public finalProva?: string,
+        public disciplinaAplicada?: string,
+        public relato?: string,
+        public tituloMin?: string,
+        public local?: string, // Cidade/UF onde tratou o caso
+        public pauta?: string,
+        public horaInicio?: string,
+        public horaTermino?: string,
+        public situacao?: string,
+        public anoLetivo?: string,
+        public resultado?: string,
+        public nomeEscrivao?: string,
+        public cargoEscrivao?: string,
+        public motivoEncerramento?: string,
+        public tipoFaltaCaso?: string,
+        public tipoMembro?: string,
+        public observacao?: string,
+        public nomePresidente?: string,
+        public cargoPresidente?: string,
+        public siglaTituloMinPresidente?: string,
+        public siglaTituloMinEscrivao?: string,
+        public numeroAta?: number,
+        public igrejaId?: number,
+        public pessoaId?: number,
+        public presidenteId?: number,
+        public escrivaoId?: number,
+        public obreiroId2?: number,
+        public infracaoId?: number,
+        public disciplinaId?: number,
+        public tipoFaltaId?: number,
+        public participanteId?: number,
+        public sequenciaAta?: number // Campo para passa o numero da sequencia para a classe config
+    ){}
+    
+}

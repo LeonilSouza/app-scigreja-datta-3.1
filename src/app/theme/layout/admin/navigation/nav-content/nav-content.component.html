@@ -1,0 +1,57 @@
+<!--  vertical layouts -->
+@if (this.config['layout'] === 'vertical') {
+  @if (this.config['pre_layout'] !== 'layout-6') {
+    <app-scrollbar [customStyle]="'calc(100vh - 70px)'" exclude="'#mobile-collapse1'" appearance="native">
+      <div class="navbar-content">
+        <ul class="nav pcoded-inner-navbar" (clickOutside)="fireOutClick()">
+          @for (item of navigation; track item) {
+            @if (item.type === 'group') {
+              <app-nav-group [item]="item" />
+            }
+          }
+        </ul>
+        <div class="version">
+          <label for="version" disabled class="pe-auto">v{{ currentApplicationVersion }}</label>
+        </div>
+      </div>
+    </app-scrollbar>
+  } @else {
+    <app-scrollbar [customStyle]="'100%'" exclude="'#mobile-collapse1'" appearance="native">
+      <div class="navbar-content">
+        <ul class="nav pcoded-inner-navbar" (clickOutside)="fireOutClick()">
+          @for (item of navigation; track item) {
+            @if (item.type === 'group') {
+              <app-nav-group [item]="item" />
+            }
+          }
+        </ul>
+        <div class="version">
+          <label for="version" disabled class="pe-auto">v{{ currentApplicationVersion }}</label>
+        </div>
+      </div>
+    </app-scrollbar>
+  }
+}
+
+<!-- horizontal layouts -->
+@if (this.config['layout'] === 'horizontal') {
+  <div class="navbar-content sidenav-horizontal" id="layout-sidenav">
+    <a href="javascript:" aria-label="scroll-right" class="sidenav-horizontal-prev" [ngClass]="prevDisabled" (click)="scrollMinus()"></a>
+    <div #navbarWrapper class="sidenav-horizontal-wrapper">
+      <ul
+        #navbarContent
+        id="side-nav-horizontal"
+        class="nav pcoded-inner-navbar sidenav-inner"
+        (clickOutside)="fireLeave()"
+        (mouseleave)="fireLeave()"
+      >
+        @for (item of navigation; track item) {
+          @if (item.type === 'group') {
+            <app-nav-group [item]="item" />
+          }
+        }
+      </ul>
+    </div>
+    <a href="javascript:" aria-label="scroll-left" class="sidenav-horizontal-next" [ngClass]="nextDisabled" (click)="scrollPlus()"></a>
+  </div>
+}

@@ -1,0 +1,1817 @@
+@import '../variables';
+
+/**  =====================
+      Custom css start
+==========================  **/
+body.datta-dark {
+  color: $dark-layout-font;
+  background: $dark-layout;
+
+  --bs-body-color: #bfbfbf;
+  --bs-body-color-rgb: to-rgb(#bfbfbf);
+  --bs-border-color: #{lighten($dark-layout, 15%)};
+  --pc-heading-color: #fafafa;
+  --pc-table-header-background: rgba(0, 0, 0, 0.2);
+  --pc-table-background: transparent;
+
+  .layout-6 .pcoded-content {
+    background: $dark-layout;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: lighten($dark-layout-font, 10%);
+  }
+
+  .text-muted {
+    color: darken($dark-layout-font, 10%) !important;
+  }
+
+  hr {
+    border-top-color: lighten($dark-layout, 3%);
+  }
+
+  .btn-theme,
+  a.btn-theme,
+  i.text-white,
+  .text-white i,
+  #timer.text-white,
+  .mdc-button .mdc-button__label {
+    color: $menu-light-background !important;
+  }
+
+  .alert-heading {
+    color: inherit;
+  }
+
+  .mat-mdc-outlined-button:not(:disabled) {
+    border-color: $menu-light-background !important;
+  }
+
+  .label.text-white,
+  .send-chat .text-white {
+    color: $menu-light-background !important;
+  }
+
+  .scroll-div > .scroll-element .scroll-bar {
+    background-color: darken($dark-layout, 10%);
+  }
+
+  .version {
+    label {
+      background-color: $menu-light-background;
+      color: #ffb31a;
+    }
+  }
+
+  .page-header-title + .breadcrumb {
+    > .breadcrumb-item {
+      a {
+        color: $dark-layout-font;
+      }
+
+      &:last-child a {
+        color: lighten($dark-layout-font, 10%);
+      }
+    }
+  }
+
+  text {
+    fill: $dark-layout-font !important;
+  }
+
+  .page-item {
+    .page-link {
+      color: $dark-layout-font;
+    }
+
+    &.active {
+      .page-link {
+        color: $white;
+      }
+    }
+  }
+
+  .dropdown-item,
+  .text-secondary {
+    color: $dark-layout-font !important;
+  }
+
+  a {
+    color: $dark-layout-font;
+  }
+
+  a.text-secondary {
+    color: $dark-layout-font !important;
+
+    &:focus,
+    &:hover {
+      color: $dark-layout-font;
+    }
+
+    &.btn,
+    &.btn:active,
+    &.btn:focus,
+    &.btn:hover {
+      color: $menu-light-background !important;
+    }
+  }
+
+  .btn:not(.btn-light) {
+    color: $white;
+  }
+
+  .bg-light-secondary,
+  .btn-light-secondary,
+  .btn-link-dark,
+  .btn-link-secondary,
+  .btn-outline-secondary {
+    color: var(--bs-body-color);
+  }
+
+  .badge.bg-light-secondary {
+    background: rgba(91, 107, 121, 0.2);
+    color: var(--bs-body-color);
+    border-color: rgba(91, 107, 121, 0.2);
+  }
+
+  .offcanvas,
+  .offcanvas-xxl,
+  .offcanvas-xl,
+  .offcanvas-lg,
+  .offcanvas-md,
+  .offcanvas-sm {
+    --bs-offcanvas-bg: #{lighten($dark-layout, 3%)};
+  }
+
+  .badge.bg-light-success {
+    background: rgba(29, 233, 182, 0.2);
+    color: #1de9b6;
+    border-color: rgba(29, 233, 182, 0.2);
+  }
+
+  .dropdown-divider,
+  .table-bordered {
+    border: 1px solid var(--bs-border-color);
+  }
+
+  // ====== bootstrap Component =====//
+  .accordion-item {
+    --bs-accordion-bg: transparent;
+    --bs-accordion-color: var(--bs-body-color);
+    --bs-accordion-btn-bg: transparent;
+    --bs-accordion-btn-color: var(--bs-body-color);
+    --bs-accordion-active-color: var(--bs-body-color);
+    --bs-accordion-active-bg: rgba(var(--bs-primary-rgb), 0.2);
+    --bs-accordion-btn-active-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+    --bs-accordion-btn-icon: #{escape-svg(
+        url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='#{$gray-300}'><path fill-rule=' evenodd' d=' M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/></svg>")
+      )};
+  }
+
+  .list-group {
+    --bs-list-group-bg: transparent;
+    --bs-list-group-border-color: #2b2c2f;
+    --bs-list-group-color: #adb7be;
+    --bs-list-group-disabled-bg: rgba(255, 255, 255, 0.03);
+  }
+
+  .modal-title {
+    color: var(--bs-body-color);
+  }
+
+  .btn-close {
+    --bs-btn-close-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e");
+  }
+
+  .bg-body {
+    background: $dark-layout !important;
+  }
+
+  .modal {
+    --bs-modal-bg: #{lighten($dark-layout, 4%)};
+    --bs-modal-header-border-color: #{lighten($dark-layout, 7%)};
+    --bs-modal-footer-border-color: #{lighten($dark-layout, 7%)};
+  }
+
+  @each $color, $value in $theme-colors {
+    .btn-light-#{$color}:not(:hover) {
+      background: transparentize($value, 0.8) !important;
+      border-color: transparentize($value, 0.8);
+
+      @if ($color == 'dark') {
+        color: var(--bs-body-color);
+      }
+    }
+  }
+
+  // ==========  card css start  ===========
+
+  .card {
+    --bs-body-color: #{$dark-layout-font};
+    background: lighten($dark-layout, 7%);
+    box-shadow: 0 1px 20px 0 rgba(0, 0, 0, 0.08);
+
+    .card-header {
+      background-color: transparent;
+      border-bottom: 1px solid var(--bs-border-color);
+
+      h5 {
+        color: darken($dark-layout-font, 5%) !important;
+      }
+
+      .card-header-right {
+        .btn.dropdown-toggle {
+          color: lighten($dark-layout-font, 10%);
+        }
+      }
+    }
+
+    .card-body {
+      color: #{$dark-layout-font};
+    }
+
+    .card-footer {
+      border-top: 1px solid lighten($dark-layout, 5%);
+      background: transparent;
+    }
+
+    &.card-load {
+      .card-loader {
+        background-color: transparentize($dark-layout, 0.2%);
+
+        i {
+          color: $primary;
+        }
+      }
+    }
+
+    &.action-footer {
+      .card-footer {
+        background: transparentize($dark-layout-font, 0.9) !important;
+      }
+    }
+  }
+
+  // ==========  card css End  ===========
+
+  // ========== custom modal ================//
+  .md-modal {
+    .modal-body,
+    .modal-footer,
+    .modal-header {
+      background: lighten($dark-layout, 7%) !important;
+    }
+  }
+
+  // ========== custom modal ================//
+
+  // angular material
+
+  .mat-mdc-icon-button,
+  .mat-mdc-checkbox .mdc-form-field,
+  .mat-tree-node,
+  .mat-nested-tree-node,
+  .mat-mdc-button:not(:disabled) {
+    color: $dark-layout-font;
+  }
+
+  .mat-tree,
+  .sticky-action {
+    background: lighten($dark-layout, 7%);
+  }
+
+  .mdc-checkbox
+    .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate):not([data-indeterminate='true'])
+    ~ .mdc-checkbox__background {
+    border-color: $dark-layout-font;
+  }
+
+  // ================================    Dropdown Start  =====================
+
+  .dropdown-menu {
+    background-color: lighten($dark-layout, 7%);
+    box-shadow: 0 1px 20px 0 rgba(0, 0, 0, 0.08);
+
+    &.show {
+      &:before {
+        color: lighten($dark-layout, 7%);
+        text-shadow: 0 -2px 2px rgba(0, 0, 0, 0.08);
+      }
+    }
+
+    > li {
+      > a {
+        color: $dark-layout-font;
+      }
+
+      &.active,
+      &:active,
+      &:focus,
+      &:hover {
+        background: transparentize($dark-layout-font, 0.9);
+
+        > a {
+          background: transparent;
+        }
+      }
+    }
+  }
+
+  .dropdown-item {
+    &:focus,
+    &:hover {
+      color: $dark-layout-font;
+      background-color: transparentize($dark-layout-font, 0.9);
+    }
+  }
+
+  // ====================  Navbar Start  =====================
+
+  .pcoded-navbar {
+    box-shadow: 2px 0 20px 0 rgba(0, 0, 0, 0.08);
+  }
+
+  // ===================  Navbar end  =====================
+
+  .pcoded-header {
+    color: $dark-layout-font;
+
+    .dropdown-menu {
+      color: $dark-layout-font;
+
+      a {
+        color: $dark-layout-font;
+      }
+
+      > li {
+        > a {
+          color: $dark-layout-font;
+        }
+
+        &.active,
+        &:active,
+        &:focus,
+        &:hover {
+          > a {
+            background: transparent;
+          }
+        }
+      }
+    }
+
+    .input-group .input-group-text,
+    a,
+    dropdown-toggle {
+      color: rgba(255, 255, 255, 0.8);
+
+      &:hover {
+        color: $menu-light-background;
+      }
+    }
+
+    .main-search {
+      .search-close > .input-group-text {
+        color: $dark-layout-font;
+      }
+
+      &.open {
+        .input-group {
+          .search-btn {
+            .input-group-text {
+              color: $menu-light-background;
+            }
+          }
+        }
+      }
+    }
+
+    .dropdown {
+      &.show {
+        &:before {
+          color: lighten($dark-layout, 7%);
+          text-shadow: 0 -1px 2px rgba(0, 0, 0, 0.12);
+        }
+      }
+
+      .notification {
+        .noti-head {
+          border-bottom: 1px solid lighten($dark-layout, 5%);
+        }
+
+        .noti-body {
+          li {
+            &.notification:hover {
+              background: transparentize($primary, 0.9);
+            }
+
+            p {
+              strong {
+                color: lighten($dark-layout-font, 10%);
+              }
+            }
+          }
+        }
+
+        .noti-footer {
+          border-top: 1px solid lighten($dark-layout, 5%);
+        }
+      }
+
+      .profile-notification {
+        .pro-head {
+          color: $dark-layout-font;
+          background: lighten($dark-layout, 15%);
+
+          .dud-logout {
+            color: $dark-layout-font;
+          }
+        }
+      }
+
+      &.drp-user.show {
+        &:before {
+          color: lighten($dark-layout, 15%);
+        }
+      }
+
+      .pro-body li a:hover {
+        background: transparentize($dark-layout-font, 0.9);
+        background: transparent;
+      }
+    }
+  }
+
+  /**  =====================
+        Chatting css start
+  ==========================  **/
+  .header-chat,
+  .header-user-list {
+    background-color: lighten($dark-layout, 3%);
+
+    .h-list-header {
+      border-bottom: 1px solid darken($dark-layout, 3%);
+
+      .input-group {
+        background: transparent;
+      }
+
+      a {
+        color: $dark-layout-font;
+      }
+
+      .form-control {
+        background: lighten($dark-layout, 7%);
+        color: $dark-layout-font;
+      }
+    }
+
+    &.open {
+      box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .header-user-list {
+    .h-list-body {
+      .userlist-box {
+        &:after {
+          background: darken($dark-layout, 3%);
+        }
+
+        .live-status {
+          background: #1dc4e9;
+          color: $theme-heading-color;
+        }
+
+        .text-c-green {
+          color: #1dc4e9;
+        }
+      }
+    }
+
+    &.open {
+      .h-close-text {
+        i {
+          color: $dark-layout-font;
+        }
+
+        &:after {
+          color: lighten($dark-layout, 3%);
+          text-shadow: -4px 0 7px rgba(0, 0, 0, 0.12);
+        }
+      }
+
+      &.msg-open {
+        &:after {
+          color: transparentize($primary, 0.9);
+        }
+      }
+    }
+  }
+
+  .header-chat {
+    .h-list-body {
+      background: lighten($dark-layout, 0%);
+
+      .chat-messages {
+        .chat-menu-reply {
+          > div {
+            p {
+              background: lighten($dark-layout, 5%);
+              box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.1);
+            }
+
+            &:before {
+              color: lighten($dark-layout, 5%);
+              text-shadow: 7px 10px 20px rgba(0, 0, 0, 0.1);
+            }
+          }
+        }
+
+        .chat-menu-content {
+          > div {
+            p {
+              background: darken($dark-layout, 8%);
+              color: $menu-light-background;
+              box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.1);
+            }
+
+            &:before {
+              color: darken($dark-layout, 8%);
+              text-shadow: -4px 4px 10px rgba(0, 0, 0, 0.15);
+            }
+          }
+        }
+      }
+    }
+
+    .h-list-footer {
+      background: lighten($dark-layout, 0%);
+
+      .input-group {
+        background: lighten($dark-layout, 10%);
+        box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.1);
+
+        .form-control,
+        .input-group-text {
+          color: $dark-layout-font;
+          background: transparent;
+        }
+
+        .btn-send {
+          .input-group-text {
+            color: $menu-light-background;
+          }
+        }
+
+        &:after {
+          color: lighten($dark-layout, 10%);
+          text-shadow: 4px 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+          background: darken($dark-layout, 7%);
+          border-color: darken($dark-layout, 7%);
+        }
+
+        .btn-success {
+          background: lighten($dark-layout, 0%);
+          border-color: lighten($dark-layout, 0%);
+        }
+      }
+    }
+  }
+
+  /**====== Chat css end ======**/
+
+  @each $color, $value in $theme-colors {
+    .alert-#{$color} {
+      color: $value;
+      background: transparentize($value, 0.8);
+      border-color: transparentize($value, 0.8);
+
+      .alert-link {
+        color: $value;
+      }
+
+      @if ($color == 'dark') {
+        color: var(--bs-body-color);
+        background-color: #{lighten($dark-layout, 10%)};
+        border-color: #{lighten($dark-layout, 15%)};
+
+        .alert-link {
+          color: var(--bs-body-color);
+        }
+      }
+    }
+
+    .badge.bg-light-#{$color} {
+      background: transparentize($value, 0.8);
+      color: $value;
+      border-color: transparentize($value, 0.8);
+    }
+
+    .icon-svg-#{$color} {
+      fill: transparentize($value, 0.8);
+      stroke: $value;
+    }
+
+    .bg-light-#{$color} {
+      background: transparentize($value, 0.8);
+    }
+
+    .btn-light-#{$color}:not(:hover) {
+      background: transparentize($value, 0.8) !important;
+      border-color: transparentize($value, 0.8);
+
+      @if ($color == 'dark') {
+        color: var(--bs-body-color);
+      }
+    }
+
+    .btn-link-#{$color} {
+      &:not(:disabled):not(.disabled).active,
+      &:not(:disabled):not(.disabled):active,
+      &:active,
+      &:focus,
+      &:hover {
+        background: transparentize($value, 0.8);
+        border-color: transparentize($value, 0.8);
+      }
+    }
+
+    .form-check {
+      .form-check-input {
+        &.input-light-#{$color} {
+          &:checked {
+            border-color: transparentize($value, 0.8);
+            background-color: transparentize($value, 0.8);
+
+            @if ($color == 'dark') {
+              border-color: transparentize($white, 0.8);
+
+              &[type='checkbox'] {
+                background-image: escape-svg(
+                  url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path fill='none' stroke='#{$white}' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/></svg>")
+                );
+              }
+
+              &[type='radio'] {
+                background-image: escape-svg(
+                  url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'><circle r='2' fill='#{$white}'/></svg>")
+                );
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .border-bottom {
+    border-bottom: 1px solid var(--bs-border-color) !important;
+  }
+
+  .border-top {
+    border-top: 1px solid var(--bs-border-color) !important;
+  }
+
+  .task-list {
+    &:after {
+      background: var(--bs-border-color);
+    }
+  }
+
+  .table {
+    --bs-table-bg: #{lighten($dark-layout, 7%)};
+    --bs-emphasis-color: #{$dark-layout-font};
+    --bs-table-color: var(--bs-body-color);
+    --bs-table-striped-color: var(--bs-body-color);
+    --bs-table-active-color: var(--bs-body-color);
+    --bs-table-hover-color: var(--bs-body-color);
+    --bs-table-border-color: #{lighten($dark-layout, 15%)};
+
+    thead th {
+      color: var(--bs-body-color);
+      background: #{lighten($dark-layout, 15%)};
+      border-color: #{lighten($dark-layout, 15%)};
+    }
+
+    td {
+      border-top: 1px solid lighten($dark-layout, 5%);
+    }
+
+    thead {
+      th {
+        border-bottom: 1px solid lighten($dark-layout, 5%);
+      }
+    }
+
+    > :not(caption) > * > * {
+      box-shadow: none;
+    }
+  }
+
+  // ======================   basic component   ==================
+
+  .tooltip-inner {
+    box-shadow: 0 0 15px rgba(17, 17, 17, 0.41);
+  }
+
+  .tooltip .arrow::before {
+    text-shadow: 0 2px 3px rgba(17, 17, 17, 0.41);
+  }
+
+  .card .card-block code {
+    background: $dark-layout;
+  }
+
+  .breadcrumb {
+    background: $dark-layout;
+
+    .breadcrumb-item {
+      &.active {
+        color: $dark-layout-font;
+      }
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+      --bs-breadcrumb-divider-color: #{$dark-layout-font};
+    }
+  }
+
+  .taskboard .taskboard-list {
+    background-color: #3b3d43;
+  }
+
+  .page-link {
+    color: #007bff;
+    background-color: $dark-layout;
+    border: 1px solid var(--bs-border-color);
+
+    &:hover {
+      background-color: darken($dark-layout, 10%);
+      border: 1px solid var(--bs-border-color);
+    }
+  }
+
+  .page-item.disabled .page-link {
+    background-color: $dark-layout;
+    border: 1px solid var(--bs-border-color);
+  }
+
+  .blockquote {
+    border-left-color: $dark-layout;
+
+    &.text-end {
+      border-right-color: $dark-layout;
+    }
+  }
+
+  .blockquote-footer {
+    color: darken($dark-layout-font, 10%);
+  }
+
+  .table th,
+  .table thead th,
+  .table-bordered td,
+  .table-bordered th {
+    border-color: var(--bs-border-color);
+  }
+
+  .table-striped {
+    tbody tr:nth-of-type(2n + 1) {
+      background-color: $dark-layout;
+    }
+  }
+
+  .footable .label-default,
+  .footable .pagination > .disabled > a,
+  .footable .pagination > li > a,
+  .footable.table-striped > tbody > tr:nth-child(odd) {
+    background-color: transparentize(darken($dark-layout, 10%), 0.75);
+    border: 1px solid lighten($dark-layout, 5%);
+    color: darken($dark-layout-font, 10%);
+  }
+
+  .footable.table > tbody > tr > td,
+  .footable.table > tfoot > tr > td {
+    border-top: 1px solid lighten($dark-layout, 5%);
+  }
+
+  .footable.table > thead > tr > th {
+    border-bottom: 2px solid lighten($dark-layout, 3%);
+  }
+
+  .footable-details.table-hover > tbody > tr:hover,
+  .footable.table-hover > tbody > tr:hover {
+    background: $dark-layout;
+  }
+
+  .table-hover > tbody > tr:hover > * {
+    color: $menu-light-background !important;
+  }
+
+  .form-material .form-control {
+    border-color: $dark-layout;
+  }
+
+  div:where(.swal2-container) .swal2-html-container,
+  div:where(.swal2-footer),
+  .swal2-input-label,
+  div:where(.swal2-container) .swal2-range output {
+    color: $menu-light-background;
+  }
+
+  .swal2-file,
+  .swal2-input,
+  .swal2-textarea {
+    border-color: var(--bs-border-color);
+  }
+
+  .swal2-popup,
+  div:where(.swal2-container) .swal2-radio,
+  div:where(.swal2-container) .swal2-checkbox,
+  div:where(.swal2-container) .swal2-range,
+  dp-calendar-nav.dp-material .dp-nav-header-btn,
+  dp-day-calendar .dp-day-calendar-container,
+  dp-day-calendar.dp-material .dp-calendar-month,
+  dp-calendar-nav.dp-material .dp-calendar-nav-left,
+  dp-calendar-nav.dp-material .dp-calendar-nav-right,
+  dp-calendar-nav.dp-material .dp-calendar-secondary-nav-left,
+  dp-calendar-nav.dp-material .dp-calendar-secondary-nav-right,
+  .ng-select .ng-select-container,
+  file-upload {
+    background-color: lighten($dark-layout, 7%);
+  }
+
+  dp-day-calendar.dp-material {
+    .dp-calendar-day {
+      background: lighten($dark-layout, 7%);
+    }
+
+    .dp-selected {
+      background: $primary;
+    }
+  }
+
+  .was-validated .form-select:invalid:not([multiple]):not([size]),
+  .was-validated .form-select:invalid:not([multiple])[size='1'],
+  .form-select.is-invalid:not([multiple]):not([size]),
+  .form-select.is-invalid:not([multiple])[size='1'] {
+    background-repeat: no-repeat;
+  }
+
+  table.dataTable.table-striped.DTFC_Cloned tbody {
+    background-color: darken($dark-layout, 3%);
+  }
+
+  table.DTFC_Cloned tr {
+    background-color: lighten($dark-layout, 7%);
+  }
+
+  .upload-text {
+    color: #{$dark-layout-font};
+  }
+
+  .nav-tabs {
+    .nav-link {
+      color: $dark-layout-font;
+    }
+
+    .nav-item.show .nav-link,
+    .nav-link.active {
+      color: $menu-light-background;
+      background: lighten($dark-layout, 0%);
+      box-shadow: 0 -4px 10px 0 rgba(0, 0, 0, 0.12);
+    }
+  }
+
+  .nav-pills {
+    background: lighten($dark-layout, 0%);
+
+    &.course-wizard {
+      background: lighten($dark-layout, 7%);
+    }
+
+    .nav-link {
+      color: $dark-layout-font;
+    }
+
+    .nav-link.active,
+    .show > .nav-link {
+      color: $menu-light-background !important;
+      background: $primary;
+      box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .nav-tabs .nav-link,
+  .tab-content {
+    background: lighten($dark-layout, 7%);
+    box-shadow: 0 1px 20px 0 rgba(0, 0, 0, 0.08);
+  }
+
+  .card-body {
+    .nav-tabs .nav-link,
+    .tab-content {
+      box-shadow: none;
+    }
+  }
+
+  .form-control-plaintext {
+    color: $dark-layout-font;
+  }
+
+  .input-group-text {
+    border-color: #adb5bd;
+    color: $menu-light-background;
+  }
+
+  .custom-file-label,
+  .custom-select,
+  .form-control {
+    background: lighten($dark-layout, 3%);
+    color: $dark-layout-font;
+    border-color: var(--bs-border-color);
+
+    &:focus {
+      background: lighten($dark-layout, 2%);
+      color: $dark-layout-font;
+    }
+  }
+
+  select.form-control,
+  select.custom-select,
+  select.datatable-selector,
+  select.datatable-input,
+  .form-select:not([multiple]) {
+    // background-color: #{lighten($dark-layout, 10%)};
+    background-image: escape-svg(
+      url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='#6f747f' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/></svg>")
+    );
+    background-repeat: no-repeat;
+    background-size: $form-select-bg-size;
+    background-position: right 1rem center;
+  }
+
+  .form-control {
+    &::file-selector-button {
+      background-color: #{lighten($dark-layout, 10%)};
+      color: var(--bs-body-color);
+      border-color: #{lighten($dark-layout, 15%)};
+    }
+
+    &:hover:not(:disabled):not([readonly])::file-selector-button {
+      background-color: #{lighten($dark-layout, 7%)};
+    }
+
+    &.color-select {
+      color: $black;
+    }
+  }
+
+  .switch input[type='checkbox'] + .cr {
+    border: 1px solid $dark-layout-font;
+  }
+
+  .custom-file-label::after {
+    background-color: darken($dark-layout, 3%);
+    color: $dark-layout-font;
+    border-left: 1px solid lighten($dark-layout, 3%);
+  }
+
+  .form-control:disabled,
+  .form-control[readonly] {
+    background: lighten($dark-layout, 1%);
+    color: darken($dark-layout-font, 3%);
+  }
+
+  .form-select {
+    background: lighten($dark-layout, 3%);
+    color: $menu-light-background;
+    border-color: var(--bs-border-color);
+  }
+
+  .bootstrap-tagsinput {
+    background: lighten($dark-layout, 3%);
+    border: 1px solid lighten($dark-layout, 3%);
+  }
+
+  .input-group {
+    background-color: lighten($dark-layout, 3%);
+  }
+
+  .dtp-content text {
+    fill: #000 !important;
+  }
+
+  .select2-container--default {
+    .select2-selection--multiple,
+    .select2-selection--single {
+      background: lighten($dark-layout, 3%);
+      border: 1px solid $dark-layout;
+
+      .select2-selection__rendered {
+        color: $dark-layout-font;
+      }
+    }
+  }
+
+  .select2-container--default.select2-container--disabled .select2-selection--single {
+    background: lighten($dark-layout, 3%);
+  }
+
+  .ms-container {
+    .ms-list {
+      border: 1px solid $dark-layout;
+    }
+
+    .ms-optgroup-label {
+      color: $dark-layout-font;
+    }
+
+    .ms-selectable,
+    .ms-selection {
+      background: lighten($dark-layout, 3%);
+      color: $dark-layout-font;
+
+      li.ms-elem-selectable,
+      li.ms-elem-selection {
+        border-bottom: 1px solid $dark-layout;
+        color: $dark-layout-font;
+        background: lighten($dark-layout, 3%);
+      }
+    }
+  }
+
+  .sw-theme-default {
+    .step-anchor {
+      background: lighten($dark-layout, 3%);
+    }
+
+    .step-content,
+    .sw-container {
+      background: lighten($dark-layout, 3%);
+    }
+
+    ul.step-anchor > li a {
+      color: $dark-layout-font;
+      background: lighten($dark-layout, 3%);
+
+      > h6,
+      p {
+        color: $dark-layout-font !important;
+      }
+    }
+  }
+
+  .sw-theme-arrows,
+  .sw-theme-circles,
+  .sw-theme-dots {
+    .sw-container {
+      background: lighten($dark-layout, 3%);
+    }
+  }
+
+  .sw-theme-arrows {
+    border: 1px solid lighten($dark-layout, 1%);
+
+    .step-content,
+    .sw-container {
+      background: lighten($dark-layout, 3%);
+    }
+
+    ul.step-anchor > li a {
+      color: $dark-layout-font;
+      background: lighten($dark-layout, 3%);
+
+      > h6,
+      p {
+        color: $dark-layout-font;
+      }
+
+      &:after {
+        border-left: 30px solid lighten($dark-layout, 3%);
+      }
+
+      &:before {
+        border-left: 30px solid darken($dark-layout, 7%);
+      }
+    }
+  }
+
+  .sw-theme-arrows > ul.step-anchor {
+    background: lighten($dark-layout, 3%);
+    border: 1px solid lighten($dark-layout, 1%);
+  }
+
+  .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background: lighten($dark-layout, 1%);
+    border: 1px solid lighten($dark-layout, 7%);
+  }
+
+  .sw-theme-default > ul.step-anchor > li.done > a.nav-link:after {
+    background: lighten($dark-layout, 10%);
+  }
+
+  .sw-theme-default > ul.step-anchor > li > a.nav-link:after {
+    background: darken($dark-layout, 7%);
+  }
+
+  .sw-theme-dots .step-content,
+  .sw-theme-dots .sw-toolbar,
+  .sw-theme-dots > ul.step-anchor {
+    background: lighten($dark-layout, 3%);
+  }
+
+  .sw-theme-arrows > ul.step-anchor > li.done > a {
+    background: lighten($dark-layout, 3%) !important;
+
+    &:after {
+      border-left: 30px solid lighten($dark-layout, 3%) !important;
+    }
+  }
+
+  .sw-theme-arrows > ul.step-anchor > li.active > a {
+    background: darken($dark-layout, 7%) !important;
+
+    &:after {
+      border-left: 30px solid darken($dark-layout, 7%) !important;
+    }
+  }
+
+  .sw-theme-dots > ul.step-anchor > li.done > a {
+    color: lighten($dark-layout-font, 10%);
+  }
+
+  /// plugin
+  .apexcharts-legend-text {
+    color: $dark-layout-font !important;
+  }
+
+  .apexcharts-theme-light .apexcharts-menu-icon:hover svg {
+    fill: $dark-layout-font;
+  }
+
+  .apexcharts-menu {
+    background: darken($dark-layout, 7%) !important;
+    border-color: var(--bs-border-color);
+  }
+
+  .ck.ck-editor__main > .ck-editor__editable,
+  .apexcharts-theme-light .apexcharts-menu-item:hover {
+    background: lighten($dark-layout, 3%);
+  }
+
+  .ck.ck-editor__main > .ck-editor__editable:not(.ck-focused) {
+    border-color: lighten($dark-layout, 1%);
+  }
+
+  .ck.ck-toolbar__separator {
+    background: darken($dark-layout, 7%);
+  }
+
+  .document-editor__editable-container {
+    background: lighten($dark-layout, 0%);
+
+    .ck-editor__editable.ck-editor__editable_inline {
+      background: lighten($dark-layout, 0%);
+      border: 1px solid darken($dark-layout, 7%);
+    }
+  }
+
+  .document-editor {
+    border: 1px solid darken($dark-layout, 7%);
+  }
+
+  .ck-content .table table,
+  .ck-content .table table td,
+  .ck-content .table table th {
+    border-color: darken($dark-layout, 7%);
+    background: lighten($dark-layout, 0%);
+  }
+
+  .ck.ck-toolbar {
+    background: lighten($dark-layout, 0%);
+    border: 1px solid lighten($dark-layout, 0%);
+  }
+
+  .document-editor__toolbar {
+    border-bottom: 1px solid darken($dark-layout, 7%);
+  }
+
+  .ck.ck-button .ck-button__label,
+  .ck.ck-icon {
+    color: $dark-layout-font;
+  }
+
+  .fc-state-default {
+    background-color: $dark-layout !important;
+    background-image: none;
+    color: $dark-layout-font !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+  }
+
+  .fc-unthemed td.fc-today {
+    background: $dark-layout;
+  }
+
+  .ngb-dp-day {
+    .btn-light {
+      color: #f2f2f2;
+    }
+  }
+
+  .fullcalendar-card .fc-button {
+    border-color: var(--bs-border-color);
+  }
+
+  .cal-week-view .cal-day-headers .cal-header:hover,
+  .cal-week-view .cal-day-headers .cal-drag-over {
+    background-color: lighten($dark-layout, 7%);
+  }
+
+  .cal-month-view .cal-cell-row .cal-cell:hover,
+  .cal-month-view .cal-cell.cal-has-events.cal-open,
+  .cal-week-view {
+    background: $dark-layout;
+  }
+
+  .cal-week-view .cal-hour-odd,
+  .cal-week-view .cal-time-events .cal-day-columns:not(.cal-resize-active) .cal-hour-segment:hover {
+    background-color: $dark-layout;
+  }
+
+  .cal-week-view .cal-hour:not(:last-child) .cal-hour-segment,
+  .cal-week-view .cal-hour:last-child :not(:last-child) .cal-hour-segment {
+    border-color: var(--bs-border-color);
+  }
+
+  .cal-month-view .cal-day-cell.cal-weekend .cal-day-number {
+    color: #f2f2f2;
+  }
+
+  .cal-month-view,
+  .cal-month-view .cal-cell-row:hover {
+    background-color: lighten($dark-layout, 7%);
+  }
+
+  .h-list-body .chat-messages .chat-menu-reply > div {
+    &:before {
+      color: darken($dark-layout, 7%);
+    }
+
+    p {
+      color: darken($dark-layout, 7%);
+    }
+  }
+
+  table.dataTable.fixedHeader-floating,
+  table.dataTable.fixedHeader-locked {
+    background: $dark-layout;
+  }
+
+  .fc-unthemed {
+    .fc-content,
+    .fc-divider,
+    .fc-list-view,
+    .fc-popover,
+    .fc-row,
+    fc-list-heading td,
+    tbody,
+    td,
+    th,
+    thead {
+      border-color: lighten($dark-layout, 3%);
+    }
+
+    .fc-divider,
+    .fc-list-heading td,
+    .fc-popover .fc-header {
+      background-color: lighten($dark-layout, 3%);
+    }
+  }
+
+  .i-main {
+    .i-block {
+      border: 1px solid $dark-layout;
+    }
+  }
+
+  .invoice-total.table {
+    background: #{lighten($dark-layout, 7%)};
+  }
+
+  .filter-bar {
+    .navbar {
+      background: lighten($dark-layout, 3%);
+    }
+  }
+
+  .task-board-left {
+    .task-right-header-revision,
+    .task-right-header-status,
+    .task-right-header-users {
+      border-color: lighten($dark-layout, 3%);
+    }
+  }
+
+  .h-list-body {
+    .userlist-box {
+      &:after {
+        background: lighten($dark-layout, 3%);
+      }
+    }
+
+    .userlist-box.active {
+      background: lighten($dark-layout, 3%);
+    }
+  }
+
+  .msg-card {
+    .msg-block > .row > div {
+      &:before {
+        background: lighten($dark-layout, 3%);
+      }
+    }
+
+    .msg-user-chat {
+      background: lighten($dark-layout, 3%);
+    }
+  }
+
+  .note-card {
+    .note-box-aside {
+      border-right: 1px solid lighten($dark-layout, 3%);
+    }
+
+    .note-write {
+      background: lighten($dark-layout, 3%);
+
+      &:after,
+      &:before {
+        border-left: 1px solid lighten($dark-layout, 1%);
+      }
+    }
+
+    .list-group-item,
+    .list-group-item.active {
+      background: lighten($dark-layout, 3%);
+      border-color: lighten($dark-layout, 1%);
+      color: $dark-layout-font;
+    }
+  }
+
+  .list-group {
+    color: #adb7be;
+  }
+
+  .list-group-item {
+    border-color: var(--bs-border-color);
+  }
+
+  .filter-bar {
+    .card-task {
+      .task-list-table {
+        i {
+          color: $dark-layout-font;
+        }
+      }
+    }
+  }
+
+  .task-data {
+    .dropdown-toggle:after,
+    i {
+      color: $dark-layout-font;
+    }
+  }
+
+  .table-columned > tbody {
+    > tr {
+      > td {
+        border-left: 1px solid lighten($dark-layout, 4%);
+      }
+    }
+  }
+
+  #task-container {
+    li {
+      background: $dark-layout;
+      border-top: 5px solid lighten($dark-layout, 5%);
+      color: $dark-layout-font;
+    }
+  }
+
+  .Active-visitor .card-active > div + div,
+  .card-social .card-active > div + div {
+    border-left: 1px solid var(--bs-border-color);
+  }
+
+  .earning-date .bd-example .nav-pills .nav-link {
+    color: $dark-layout-font;
+  }
+
+  .bd-example-modal,
+  .bd-example-row {
+    background: lighten($dark-layout, 3%);
+  }
+
+  pre[class*='language-'] > code {
+    box-shadow:
+      -1px 0 0 0 lighten($dark-layout, 1%),
+      0 0 0 1px lighten($dark-layout, 3%);
+  }
+
+  .modal-content {
+    background: lighten($dark-layout, 0%);
+    border: 1px solid lighten($dark-layout, 5%);
+  }
+
+  .modal-header {
+    border-bottom: 1px solid lighten($dark-layout, 5%);
+  }
+
+  .modal-footer {
+    border-top: 1px solid lighten($dark-layout, 5%);
+  }
+
+  .close {
+    text-shadow: none;
+    color: $dark-layout-font;
+  }
+
+  figure {
+    &.effect-moses,
+    &.effect-lexi,
+    &.effect-duke,
+    &.effect-ming,
+    &.effect-jazz,
+    &.effect-kira,
+    &.effect-apollo,
+    &.effect-julia,
+    &.effect-goliath,
+    &.effect-hera,
+    &.effect-winston,
+    &.effect-selena,
+    &.effect-terry,
+    &.effect-phoebe {
+      h2 {
+        color: $white;
+      }
+    }
+  }
+
+  // Editor
+  .ql-snow {
+    .ql-stroke {
+      stroke: $menu-light-background;
+    }
+
+    .ql-fill {
+      fill: $menu-light-background;
+    }
+
+    .ql-picker {
+      color: $menu-light-background;
+    }
+
+    .ql-picker-options {
+      background-color: #3f3a3a;
+    }
+  }
+
+  .ql-editor.ql-blank::before {
+    color: $menu-light-background;
+  }
+
+  .NgxEditor {
+    background: lighten($dark-layout, 7%);
+    color: $menu-light-background;
+    border: 1px solid $menu-light-background;
+  }
+
+  .NgxEditor__MenuBar {
+    background-color: lighten($dark-layout, 7%);
+    border: 1px solid $menu-light-background;
+  }
+
+  // invoice
+
+  .light-logo {
+    display: none;
+  }
+
+  .logo-dark {
+    display: block;
+  }
+
+  .invoice-table {
+    &.table {
+      td {
+        border-top: 0px;
+      }
+    }
+  }
+
+  // ======================   Advanced componant   ==================
+
+  .grid-stack {
+    background: lighten($dark-layout, 3%);
+  }
+
+  .slider-track {
+    background: $dark-layout;
+  }
+
+  :not(pre) > code[class*='language-'],
+  pre[class*='language-'] {
+    background: lighten($dark-layout, 0%);
+  }
+
+  .card .card-block pre[class*='language-'] > code {
+    box-shadow:
+      -1px 0 0 0 $primary,
+      0 0 0 1px lighten($dark-layout, 5%);
+    background: $dark-layout;
+    background-size: 3em 3em;
+    background-origin: content-box;
+    background-attachment: local;
+  }
+
+  code[class*='language-'],
+  pre[class*='language-'] {
+    color: $dark-layout-font;
+  }
+
+  .token.entity,
+  .token.operator,
+  .token.url,
+  .token.variable,
+  .tag-chips {
+    background: transparent;
+  }
+
+  .nestable-lists {
+    border-top: 2px solid lighten($dark-layout, 3%);
+    border-bottom: 2px solid lighten($dark-layout, 3%);
+  }
+
+  #nestable2 .dd-item > button:before,
+  .dd-item > button {
+    color: $dark-layout-font;
+  }
+
+  #nestable2 .dd-handle,
+  .dd-handle {
+    color: $dark-layout-font;
+    border: 1px solid $dark-layout;
+
+    &:hover {
+      color: lighten($dark-layout-font, 3%);
+      background: $dark-layout;
+    }
+  }
+
+  .dd-placeholder {
+    background: lighten($dark-layout, 3%);
+    border-color: $dark-layout-font;
+  }
+
+  .dd3-content,
+  .dd3-handle {
+    color: $dark-layout-font;
+    border: 1px solid lighten($dark-layout, 7%);
+    background: $dark-layout;
+  }
+
+  .dd3-content:hover {
+    color: lighten($dark-layout-font, 3%);
+    background: $dark-layout;
+  }
+
+  .dropzone .dz-message {
+    color: lighten($dark-layout-font, 3%);
+  }
+
+  .chat-sanders .form-control,
+  .jstree-default .jstree-clicked {
+    background: $dark-layout;
+  }
+
+  .earning-date .bd-example .nav-pills .nav-link.active {
+    background: $dark-layout;
+    color: $menu-light-background;
+
+    &:after {
+      border-bottom: 5px solid $dark-layout;
+    }
+  }
+
+  .datepicker {
+    color: $dark-layout-font;
+    background: 1px solid $dark-layout !important;
+  }
+
+  .ngb-dp-header,
+  .ngb-dp-weekdays,
+  .ngb-dp-month-name,
+  [ngbDatepickerDayView]:hover:not(.bg-primary),
+  [ngbDatepickerDayView].active:not(.bg-primary) {
+    --bs-tertiary-bg: #{$dark-layout};
+  }
+
+  .datepicker-dropdown.datepicker-orient-bottom {
+    &:before {
+      border-bottom-color: $dark-layout !important;
+    }
+
+    &:after {
+      border-bottom: 6px solid $dark-layout !important;
+    }
+  }
+
+  .datepicker-dropdown.datepicker-orient-top {
+    &:before {
+      display: none;
+    }
+
+    &:after {
+      border-top: 6px solid $dark-layout !important;
+    }
+  }
+
+  .dtp table.dtp-picker-days tr > td > a.selected {
+    color: $menu-light-background !important;
+  }
+
+  .style-block .nav-pills {
+    background: transparent;
+  }
+
+  .style-block {
+    color: $dark-layout-font;
+    background: lighten($dark-layout, 7%);
+  }
+
+  .offline-box iframe {
+    border: 1px solid $dark-layout;
+  }
+
+  .chat-sanders {
+    .received-chat {
+      .msg {
+        background: $dark-layout;
+
+        &:after {
+          border-bottom-color: $dark-layout;
+        }
+      }
+    }
+  }
+
+  .ng-dropdown-panel .ng-dropdown-panel-items .ng-option,
+  .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected,
+  .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected.ng-option-marked {
+    background: #{$dark-layout};
+    color: var(--bs-body-color);
+  }
+
+  // form select
+  .ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-input > input,
+  .ng-select .ng-select-container {
+    color: var(--bs-body-color);
+  }
+
+  .ng2-tag-input__text-input {
+    background: transparent;
+  }
+
+  .trash {
+    background: $dark-layout;
+    border-color: lighten($dark-layout, 7%);
+  }
+
+  .syntax-output {
+    border-color: $dark-layout;
+
+    pre {
+      color: $dark-layout-font;
+    }
+  }
+
+  .ck-content .image > figcaption {
+    color: $dark-layout-font;
+    background: lighten($dark-layout, 7%);
+  }
+
+  .pcoded-header .main-search .input-group {
+    background-color: transparent !important;
+  }
+
+  .pcoded-header .main-search.open .input-group {
+    background-color: $menu-light-background !important;
+  }
+
+  .menu-styler .theme-color > a[data-value='reset'] {
+    color: $menu-light-background !important;
+  }
+
+  .pcoded-navbar.theme-horizontal {
+    ~ .pcoded-header {
+      color: $menu-light-background;
+      color: rgba(256, 256, 256, 0.8);
+
+      .profile-notification {
+        li {
+          > a {
+            color: $theme-font-color;
+          }
+        }
+      }
+
+      .b-title {
+        color: $menu-light-background;
+      }
+
+      .dropdown-menu {
+        color: $theme-font-color;
+
+        a {
+          color: $theme-font-color;
+        }
+
+        > li {
+          > a {
+            color: $theme-font-color;
+          }
+
+          &.active,
+          &:active,
+          &:focus,
+          &:hover {
+            color: $theme-font-color;
+          }
+        }
+      }
+
+      a,
+      dropdown-toggle {
+        color: rgba(256, 256, 256, 0.8);
+
+        &:hover {
+          color: $menu-light-background;
+        }
+      }
+
+      .main-search {
+        &.open {
+          .input-group {
+            .search-btn {
+              .input-group-text {
+                color: $menu-light-background;
+              }
+            }
+          }
+        }
+      }
+
+      .dropdown {
+        .profile-notification {
+          .pro-head {
+            color: $menu-light-background;
+
+            .dud-logout {
+              color: $menu-light-background;
+            }
+          }
+        }
+      }
+    }
+
+    ~ .pcoded-header:not([class*='header-']) {
+      background: $brand-color1;
+
+      .b-bg {
+        background: $menu-light-background;
+
+        i {
+          color: $success;
+          background-image: $brand-color1;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: unset;
+        }
+      }
+    }
+  }
+}
+
+html.dark {
+  color-scheme: dark;
+}

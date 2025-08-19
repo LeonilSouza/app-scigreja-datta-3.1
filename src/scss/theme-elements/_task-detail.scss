@@ -1,0 +1,23 @@
+.form-material {
+  .form-control {
+    height: 43px;
+  }
+}
+
+.custom-select,
+.form-control {
+  background: $white;
+}
+.custom-check-input {
+  width: 1em;
+  height: 1em;
+  margin-top: 0.25em;
+  vertical-align: top;
+  background-color: $white;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  border: 1px solid rgba(0, 0, 0, 0.984);
+  -webkit-appearance: none;
+  appearance: none;
+}

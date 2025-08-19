@@ -1,0 +1,16 @@
+#courses {
+  apx-chart {
+    div {
+      min-height: 0px !important;
+    }
+  }
+}
+
+.apexcharts-legend-series {
+  display: flex !important;
+  align-items: center;
+  .apexcharts-legend-marker {
+    margin-right: 10px;
+    top: 0 !important;
+  }
+}

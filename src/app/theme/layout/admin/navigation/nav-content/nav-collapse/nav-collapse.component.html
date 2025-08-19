@@ -1,0 +1,65 @@
+@if (!item().hidden) {
+  <!-- Horizontal layouts -->
+  @if (themeLayout === 'horizontal') {
+    <li
+      (mouseenter)="!isEnabled || navCollapse($event)"
+      data-username="dashboard Default Ecommerce CRM Analytics Crypto Project"
+      class="nav-item pcoded-hasmenu"
+      [routerLinkActive]="['active']"
+      
+      
+    >
+      <a [routerLinkActive]="['active']" href="javascript:" class="nav-link" >
+        <ng-container *ngTemplateOutlet="itemContent"></ng-container>
+      </a>
+      <ng-container *ngTemplateOutlet="subMenuContent"></ng-container>
+    </li>
+  }
+
+  <!-- vertical layouts -->
+  @if (themeLayout === 'vertical') {
+    <li
+      data-username="dashboard Default Ecommerce CRM Analytics Crypto Project"
+      class="nav-item pcoded-hasmenu"
+      [routerLinkActive]="['active']"
+      
+    >
+      <a [routerLinkActive]="['active']" href="javascript:" class="nav-link" (click)="navCollapse($event)">
+        <ng-container *ngTemplateOutlet="itemContent"></ng-container>
+      </a>
+      <ng-container *ngTemplateOutlet="subMenuContent"></ng-container>
+    </li>
+  }
+  <ng-template #itemContent>
+    @if (item().icon) {
+      <span class="pcoded-micon">
+        <i class="{{ item().icon }}"></i>
+      </span>
+    }
+    <span class="pcoded-mtext">
+      {{ item().title | translate }}
+      @if (item().badge && themeLayout === 'horizontal') {
+        <span class="badge label" [ngClass]="item().badge.type">
+          {{ item().badge.title | translate }}
+        </span>
+      }
+    </span>
+    @if (item().badge && themeLayout === 'vertical') {
+      <span class="pcoded-badge label" [ngClass]="item().badge.type">
+        {{ item().badge.title | translate }}
+      </span>
+    }
+  </ng-template>
+  <ng-template #subMenuContent>
+    <ul class="pcoded-submenu" [routerLinkActive]="['active']">
+      @for (items of item().children; track items) {
+        @if (items.type === 'item') {
+          <app-nav-item [item]="items" />
+        }
+        @if (items.type === 'collapse') {
+          <app-nav-collapse [item]="items" />
+        }
+      }
+    </ul>
+  </ng-template>
+}

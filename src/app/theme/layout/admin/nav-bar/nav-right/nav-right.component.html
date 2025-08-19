@@ -1,0 +1,105 @@
+<!-- Igreja -->
+<ul class="navbar-nav ml-1 f-12">
+
+  <!-- Usuario - Diario de Caixa-->
+  @if(perfil == 'ADMIN'){
+  <a routerLink='lancamentos'><i class="fas fa-dollar-sign f-14 text-c-green"></i></a>
+  }
+  <!-- Usuario Admin -->
+  @if(perfil == 'ADMIN'){
+  <ul class="navbar-nav ml-1">
+    <li>
+      <div class="dropdown drp-user" ngbDropdown placement="auto">
+
+        <a href="javascript:" ngbDropdownToggle data-toggle="dropdown">
+
+          <p class="dropdown-item icon feather icon-menu f-14">   Finançeiro</p>
+        </a>
+
+        <div class="dropdown-menu dropdown-menu-end profile-notification mt-1" ngbDropdownMenu>
+          <div class="pro-head mt-0">
+            <p class="mb-0 f-14 text-left"> Cadastros</p>
+          </div>
+          <ul class="pro-body">
+            <li><a routerLink='lancamentos' class="dropdown-item "><i class="icon feather icon-mail f-10"></i>
+                Lançamentos</a></li>
+            <li><a href="javascript:" class="dropdown-item"><i class="icon feather icon-lock f-10"></i> Contas a
+                Pagar</a></li>
+            <li><a href="javascript:" class="dropdown-item"><i class="icon feather icon-lock f-10"></i> Contas a
+                Receber</a></li>
+            <li><a href="javascript:" class="dropdown-item"><i class="icon feather icon-lock f-10"></i> Fornecedores</a>
+            </li>
+            <li><a routerLink='cadastros' class="dropdown-item"><i class="feather icon-book f-10"></i> Cadastros</a>
+            </li>
+            <li><a href="javascript:" class="dropdown-item"><i class="feather icon-lock f-10"></i> Configurações</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+  </ul>
+  }
+
+  <!-- Selecionar Igreja Ativa  menu-->
+  @if(perfil == 'ADMIN'){
+    |
+  }
+  <a routerLink='igrejas/ativa' class="ml-2"><i class="fas fa-home f-14 text-c-green"></i><span
+      class="f-10">   {{nomeIgreja }} </span></a>
+
+</ul>
+
+<!-- Usuario -->
+<ul class="navbar-nav ml-1">
+  <li>
+    <div class="dropdown drp-user" ngbDropdown placement="auto">
+
+      <a href="javascript:" ngbDropdownToggle data-toggle="dropdown" class="" >
+
+        @if(fotoUsuario){
+        <img class="img-radius wid-35 hei-35 " src="data:image/jpg;base64,{{ fotoUsuario }}"
+          alt="User-Profile-Image" />
+        }
+        @if(!fotoUsuario){
+        <img class="img-radius wid-35 hei-35 " src="/assets/images/foto/Sem_Foto1.png" />
+        }
+      </a>
+
+      <div class="dropdown-menu dropdown-menu-end profile-notification mt-0 " ngbDropdownMenu>
+        <div class="pro-head m-t-5 pt-2 pb-2 " >
+
+          @if(fotoUsuario){
+          <img class="img-radius wid-35 hei-35" src="data:image/jpg;base64,{{ fotoUsuario }}" alt="User-Profile-Image" />
+          }
+
+          @if(!fotoUsuario){
+          <img class="img-radius wid-35 hei-35" src="/assets/images/foto/Sem_Foto1.png" />
+          }
+
+          <span class=" f-13">{{ nomeUsuario }}</span>
+  
+        </div>
+        <ul class="pro-body">
+          <li><a href="javascript:" class="dropdown-item"><i class="feather icon-user"></i> Perfil</a></li>
+          <li><a href="javascript:" class="dropdown-item"><i class="feather icon-settings"></i> Settings</a></li>
+          <!-- <li><a routerLink='usuarios' class="dropdown-item"><i class="feather icon-users"></i>Usuários</a></li> -->
+          @if(perfil == 'ADMIN'){
+          <li><a routerLink='usuarios' class="dropdown-item"><i class="feather icon-lock  f-10"></i>Cadastro de
+              Usuários</a></li>
+          }
+
+          @if(perfil == 'ADMIN'){
+          <li><a routerLink='setores' class="dropdown-item"><i class="feather icon-lock f-10"></i>Cadastro de
+              setores</a></li>
+          }
+
+          @if(perfil == 'ADMIN'){
+          <li><a routerLink='variaveis' class="dropdown-item"><i class="feather icon-lock f-10"></i>Cadastro de
+              Variáveis</a></li>
+          }
+
+          <li><a href="javascript:" (click)="logout()" class="dropdown-item"> <i class="feather icon-log-out f-11"></i>
+              Sair</a></li>
+        </ul>
+      </div>
+    </div>
+</ul>

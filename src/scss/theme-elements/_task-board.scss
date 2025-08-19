@@ -1,0 +1,124 @@
+$black: #000 !default;
+$spacer: 1rem !default;
+$gray-300: #dee2e6 !default;
+$border-color: $gray-300 !default;
+
+$header-height: 3.5rem !default;
+$header-footer-height: ($header-height * 2) !default;
+$enable-rounded: true !default;
+$border-radius: 0.125rem !default;
+$border-radius-lg: 0.25rem !default;
+$border-radius-sm: 0.0625rem !default;
+$font-family-headers: 'Montserrat', Helvetica, sans-serif !default;
+
+$card-border-radius: 0.125rem !default;
+$card-spacer-y: 1rem !default;
+$card-border-width: 0 !default;
+$card-border-color: rgba($black, 0.06) !default;
+$card-cap-bg: white !default;
+
+@mixin border-radius($radius: $border-radius) {
+  @if $enable-rounded {
+    border-radius: $radius;
+  }
+}
+
+.taskboard {
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  padding: $spacer;
+  .taskboard-wrapper {
+    width: 280px;
+    padding-right: ($spacer * 0.5);
+    padding-left: ($spacer * 0.5);
+    box-sizing: border-box;
+    display: inline-block;
+    vertical-align: top;
+    height: 100%;
+    &:first-child {
+      padding-left: 0;
+    }
+    &:last-child {
+      padding-right: 0;
+    }
+  }
+  .taskboard-list {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    white-space: normal;
+    background-color: $white;
+  }
+  .taskboard-header {
+    position: relative;
+    text-align: center;
+    flex-direction: row;
+    align-items: center;
+    font-family: $font-family-headers;
+    text-transform: uppercase;
+    letter-spacing: 0.02rem;
+    font-size: 18px;
+    font-weight: 700;
+    padding: ($spacer * 0.5) ($spacer * 0.5) 0;
+    margin-top: 10px;
+  }
+  .taskboard-task {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    border: $card-border-width solid $card-border-color;
+    @include border-radius($card-border-radius);
+    padding: ($spacer * 0.5);
+    margin-bottom: ($spacer * 0.5);
+
+    color: $white;
+    font-weight: 900;
+    background: linear-gradient(-135deg, #899fd4 0%, #a389d4 100%);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+    &:hover {
+      cursor: grab;
+    }
+  }
+  .taskboard-task:after {
+    content: '';
+    position: absolute;
+    border: 4px solid transparent;
+    top: 0;
+    border-top-width: 12px;
+    border-bottom-color: transparent;
+    right: 6px;
+  }
+  .taskboard-task.task-status-success:after {
+    border-top-color: $success;
+    border-right-color: $success;
+    border-left-color: $success;
+  }
+  .taskboard-task.task-status-info:after {
+    border-top-color: $info;
+    border-right-color: $info;
+    border-left-color: $info;
+  }
+  .taskboard-task.task-status-warning:after {
+    border-top-color: $warning;
+    border-right-color: $warning;
+    border-left-color: $warning;
+  }
+  .taskboard-task.task-status-danger:after {
+    border-top-color: $danger;
+    border-right-color: $danger;
+    border-left-color: $danger;
+  }
+  .taskboard-cards {
+    padding: ($spacer * 0.5);
+    box-sizing: border-box;
+  }
+  .taskboard-task-title {
+    margin-bottom: ($spacer * 0.5);
+  }
+}

@@ -1,0 +1,56 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import 'scss/variables';
+
+@import 'node_modules/bootstrap/scss/functions';
+@import 'node_modules/bootstrap/scss/variables';
+@import 'node_modules/bootstrap/scss/variables-dark';
+
+@import 'scss/settings/color-variables';
+@import 'scss/settings/theme-variables';
+@import 'scss/settings/bootstrap-variables';
+
+@import 'node_modules/bootstrap/scss/bootstrap';
+
+/* fonts-icon */
+@import 'scss/fonts/fontawesome/scss/fontawesome';
+@import 'scss/fonts/feather/iconfont';
+
+@import url('scss/fonts/datta/datta-icons.css'); /** custom font icons - datta **/
+@import 'scss/mixins/function';
+@import 'scss/general';
+@import 'scss/generic';
+
+/* important element */
+@import 'scss/layout/pc-footer.scss';
+@import 'scss/menu/menu-lite';
+@import 'scss/widget/widget';
+
+/* basic elements */
+@import 'scss/theme-elements/theme-elements';
+
+/* advance-other elements */
+@import 'scss/other/other';
+
+/* third party modules style*/
+@import 'scss/plugins/plugins';
+
+@import 'scss/layout/layout';
+@import 'scss/custom';
+
+// toast module
+@import '../node_modules/ngx-toastr/toastr';
+
+// text-editor
+@import '../node_modules/quill/dist/quill.bubble.css';
+@import '../node_modules/quill/dist/quill.snow.css';
+
+// ng-select
+@import '~@ng-select/ng-select/themes/default.theme.css';
+
+// angular Material
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+
+// calender css
+@import '../node_modules/angular-calendar/css/angular-calendar.css';
+@import '../node_modules/flatpickr/dist/flatpickr.css';

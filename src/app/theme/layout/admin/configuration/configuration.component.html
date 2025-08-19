@@ -1,0 +1,591 @@
+@if (configurationShow) {
+  <div id="styleSelector" class="menu-styler" [ngClass]="{ open: styleSelectorToggle }">
+    <div class="style-toggler">
+      <a href="javascript:" aria-label="side-toggle-close" (click)="styleSelectorToggle = !styleSelectorToggle"></a>
+    </div>
+    <div class="style-block p-0">
+      <app-scrollbar [customStyle]="'calc(100vh - 90px)'">
+        <div class="p-3">
+          <h6 class="mb-2"> Menu Customizer</h6>
+          <hr class="my-0" />
+          @if (pre_layout !== 'layout-8') {
+            <h6>Layouts</h6>
+          }
+          @if (pre_layout !== 'layout-8') {
+            <div class="theme-color layout-type">
+              <a
+                href="javascript:"
+                [ngClass]="{ active: isDarkMode === 'menu-dark' }"
+                (click)="setLayout('menu-dark')"
+                data-value="menu-dark"
+                placement="top"
+                ngbTooltip="Default"
+              >
+                <span></span>
+                <span></span>
+              </a>
+              <a
+                href="javascript:"
+                [ngClass]="{ active: isDarkMode === 'menu-light' }"
+                (click)="setLayout('menu-light')"
+                data-value="menu-light"
+                ngbTooltip="Light"
+              >
+                <span></span>
+                <span></span>
+              </a>
+              <a
+                href="javascript:"
+                [ngClass]="{ active: isDarkMode === 'dark' }"
+                (click)="setLayout('dark')"
+                data-value="dark"
+                ngbTooltip="Dark"
+              >
+                <span></span>
+                <span></span>
+              </a>
+              <a
+                href="javascript:"
+                [ngClass]="{ active: layoutType === 'reset' }"
+                (click)="setLayout('reset')"
+                data-value="reset"
+                ngbTooltip="Reset"
+              >
+                Reset to Default
+              </a>
+            </div>
+          }
+          <h6>Prebuilt Layout</h6>
+          <p class="f-12">
+            <span class="text-c-red">*</span>
+            in Prebuilt Layout you redirect to new page
+          </p>
+          <div class="theme-color prelayout-color">
+            <a routerLink="/layout/layout-2/" class="" data-value="l2" target="_blank">
+              <span></span>
+              <span></span>
+            </a>
+            <a routerLink="/layout/layout-2-2/" data-value="l2-2" target="_blank">
+              <span></span>
+              <span></span>
+            </a>
+            <a routerLink="/layout/layout-3/" data-value="l3" target="_blank">
+              <span></span>
+              <span></span>
+            </a>
+            <a routerLink="/layout/layout-4/" data-value="l4" target="_blank">
+              <span></span>
+              <span></span>
+            </a>
+            <a routerLink="/layout/layout-4-2/" data-value="l4-2" target="_blank">
+              <span></span>
+              <span></span>
+            </a>
+            <a routerLink="/layout/layout-5h/" data-value="l5-h" target="_blank">
+              <span></span>
+              <span></span>
+            </a>
+            <a routerLink="/layout/nav-color/" data-value="l-lite" target="_blank">
+              <span></span>
+              <span></span>
+            </a>
+            <a routerLink="/layout/layout-6/" data-value="l6" target="_blank">
+              <span></span>
+              <span></span>
+            </a>
+            <a routerLink="/layout/layout-8/" data-value="l8" target="_blank">
+              <span></span>
+              <span></span>
+            </a>
+          </div>
+          <div class="form-group mb-3">
+            <div class="switch switch-primary d-inline m-r-10">
+              <input type="checkbox" id="icon-colored" [(ngModel)]="isColoredIcon" (change)="setColoredIcon($event)" />
+              <label for="icon-colored" class="cr"></label>
+            </div>
+            <label for="icon-color" class="label">Icon Color</label>
+          </div>
+
+          <ul ngbNav #nav="ngbNav" class="nav-pills">
+            <li [ngbNavItem]="1">
+              <a ngbNavLink class="mb-3 nav-3">Color</a>
+              <ng-template ngbNavContent>
+                @if (pre_layout !== 'layout-6') {
+                  <h6>Header background</h6>
+                  <div class="theme-color header-color">
+                    <a
+                      href="javascript:"
+                      [ngClass]="{ active: headerBackgroundColor === 'header-default' }"
+                      (click)="setHeaderBackground('header-default')"
+                      data-value="header-default"
+                    >
+                      <span></span>
+                      <span></span>
+                    </a>
+                    <a
+                      href="javascript:"
+                      [ngClass]="{ active: headerBackgroundColor === 'header-blue' }"
+                      (click)="setHeaderBackground('header-blue')"
+                      data-value="header-blue"
+                    >
+                      <span></span>
+                      <span></span>
+                    </a>
+                    <a
+                      href="javascript:"
+                      [ngClass]="{ active: headerBackgroundColor === 'header-red' }"
+                      (click)="setHeaderBackground('header-red')"
+                      data-value="header-red"
+                    >
+                      <span></span>
+                      <span></span>
+                    </a>
+                    <a
+                      href="javascript:"
+                      [ngClass]="{ active: headerBackgroundColor === 'header-purple' }"
+                      (click)="setHeaderBackground('header-purple')"
+                      data-value="header-purple"
+                    >
+                      <span></span>
+                      <span></span>
+                    </a>
+                    <a
+                      href="javascript:"
+                      [ngClass]="{ active: headerBackgroundColor === 'header-lightblue' }"
+                      (click)="setHeaderBackground('header-lightblue')"
+                      data-value="header-lightblue"
+                    >
+                      <span></span>
+                      <span></span>
+                    </a>
+                    <a
+                      href="javascript:"
+                      [ngClass]="{ active: headerBackgroundColor === 'header-dark' }"
+                      (click)="setHeaderBackground('header-dark')"
+                      data-value="header-dark"
+                    >
+                      <span></span>
+                      <span></span>
+                    </a>
+                  </div>
+                  <h6>Menu background</h6>
+                  <div class="theme-color navbar-color">
+                    <a
+                      href="javascript:"
+                      [ngClass]="{ active: navbarBackgroundColor === 'navbar-default' }"
+                      (click)="setNavbarBackground('navbar-default')"
+                      data-value="navbar-default"
+                    >
+                      <span></span>
+                      <span></span>
+                    </a>
+                    <a
+                      href="javascript:"
+                      [ngClass]="{ active: navbarBackgroundColor === 'navbar-blue' }"
+                      (click)="setNavbarBackground('navbar-blue')"
+                      data-value="navbar-blue"
+                    >
+                      <span></span>
+                      <span></span>
+                    </a>
+                    <a
+                      href="javascript:"
+                      [ngClass]="{ active: navbarBackgroundColor === 'navbar-red' }"
+                      (click)="setNavbarBackground('navbar-red')"
+                      data-value="navbar-red"
+                    >
+                      <span></span>
+                      <span></span>
+                    </a>
+                    <a
+                      href="javascript:"
+                      [ngClass]="{ active: navbarBackgroundColor === 'navbar-purple' }"
+                      (click)="setNavbarBackground('navbar-purple')"
+                      data-value="navbar-purple"
+                    >
+                      <span></span>
+                      <span></span>
+                    </a>
+                    <a
+                      href="javascript:"
+                      [ngClass]="{ active: navbarBackgroundColor === 'navbar-lightblue' }"
+                      (click)="setNavbarBackground('navbar-lightblue')"
+                      data-value="navbar-lightblue"
+                    >
+                      <span></span>
+                      <span></span>
+                    </a>
+                    <a
+                      href="javascript:"
+                      [ngClass]="{ active: navbarBackgroundColor === 'navbar-dark' }"
+                      (click)="setNavbarBackground('navbar-dark')"
+                      data-value="navbar-dark"
+                    >
+                      <span></span>
+                      <span></span>
+                    </a>
+                  </div>
+                  @if (isThemeLayout !== 'horizontal') {
+                    <h6>Menu Brand Color</h6>
+                  }
+                  @if (isThemeLayout !== 'horizontal') {
+                    <div class="theme-color brand-color">
+                      <a
+                        href="javascript:"
+                        [ngClass]="{ active: brandBackgroundColor === 'brand-default' }"
+                        (click)="setBrandBackground('brand-default')"
+                        data-value="brand-default"
+                      >
+                        <span></span>
+                        <span></span>
+                      </a>
+                      <a
+                        href="javascript:"
+                        [ngClass]="{ active: brandBackgroundColor === 'brand-blue' }"
+                        (click)="setBrandBackground('brand-blue')"
+                        data-value="brand-blue"
+                      >
+                        <span></span>
+                        <span></span>
+                      </a>
+                      <a
+                        href="javascript:"
+                        [ngClass]="{ active: brandBackgroundColor === 'brand-red' }"
+                        (click)="setBrandBackground('brand-red')"
+                        data-value="brand-red"
+                      >
+                        <span></span>
+                        <span></span>
+                      </a>
+                      <a
+                        href="javascript:"
+                        [ngClass]="{ active: brandBackgroundColor === 'brand-purple' }"
+                        (click)="setBrandBackground('brand-purple')"
+                        data-value="brand-purple"
+                      >
+                        <span></span>
+                        <span></span>
+                      </a>
+                      <a
+                        href="javascript:"
+                        [ngClass]="{ active: brandBackgroundColor === 'brand-lightblue' }"
+                        (click)="setBrandBackground('brand-lightblue')"
+                        data-value="brand-lightblue"
+                      >
+                        <span></span>
+                        <span></span>
+                      </a>
+                      <a
+                        href="javascript:"
+                        [ngClass]="{ active: brandBackgroundColor === 'brand-dark' }"
+                        (click)="setBrandBackground('brand-dark')"
+                        data-value="brand-dark"
+                      >
+                        <span></span>
+                        <span></span>
+                      </a>
+                    </div>
+                  }
+                  @if (isThemeLayout !== 'horizontal') {
+                    <h6>Navbar Image</h6>
+                  }
+                  @if (isThemeLayout !== 'horizontal') {
+                    <div class="theme-color navbar-images">
+                      <a
+                        href="javascript:"
+                        [ngClass]="{ active: navBackgorundImage === 'navbar-image-1' }"
+                        (click)="setBackgroundImage('navbar-image-1')"
+                        data-value="navbar-image-1"
+                      >
+                        <span></span>
+                        <span></span>
+                      </a>
+                      <a
+                        href="javascript:"
+                        [ngClass]="{ active: navBackgorundImage === 'navbar-image-2' }"
+                        (click)="setBackgroundImage('navbar-image-2')"
+                        data-value="navbar-image-2"
+                      >
+                        <span></span>
+                        <span></span>
+                      </a>
+                      <a
+                        href="javascript:"
+                        [ngClass]="{ active: navBackgorundImage === 'navbar-image-3' }"
+                        (click)="setBackgroundImage('navbar-image-3')"
+                        data-value="navbar-image-3"
+                      >
+                        <span></span>
+                        <span></span>
+                      </a>
+                      <a
+                        href="javascript:"
+                        [ngClass]="{ active: navBackgorundImage === 'navbar-image-4' }"
+                        (click)="setBackgroundImage('navbar-image-4')"
+                        data-value="navbar-image-4"
+                      >
+                        <span></span>
+                        <span></span>
+                      </a>
+                      <a
+                        href="javascript:"
+                        [ngClass]="{ active: navBackgorundImage === 'navbar-image-5' }"
+                        (click)="setBackgroundImage('navbar-image-5')"
+                        data-value="navbar-image-5"
+                      >
+                        <span></span>
+                        <span></span>
+                      </a>
+                    </div>
+                  }
+                } @else {
+                  <h6>Background Color</h6>
+                  <div class="theme-color active-color small">
+                    @for (item of layout6BackgroundColorList; track item.label) {
+                      <a
+                        href="javascript:"
+                        [ngClass]="{ active: headerBackColor === item.value }"
+                        (click)="setHeaderBackColor(item.value)"
+                        [style.background]="item.value"
+                      >
+                        <span></span>
+                        <span></span>
+                      </a>
+                    }
+                  </div>
+                }
+              </ng-template>
+            </li>
+            @if (isThemeLayout !== 'horizontal') {
+              <li [ngbNavItem]="2">
+                <a ngbNavLink class="mb-3 nav-3">Layout</a>
+                <ng-template ngbNavContent>
+                  @if (pre_layout !== 'layout-8' && pre_layout !== 'layout-6') {
+                    <div class="form-group mb-0">
+                      <div class="switch switch-primary d-inline m-r-10">
+                        <input type="checkbox" id="theme-rtl" [(ngModel)]="rtlLayout" (change)="setRtlLayout($event)" />
+                        <label for="theme-rtl" class="cr"></label>
+                      </div>
+                      <label for="Rtl" class="label">RTL</label>
+                    </div>
+                  }
+                  @if (pre_layout !== 'layout-8' && pre_layout !== 'layout-6') {
+                    <div class="form-group mb-0">
+                      <div class="switch switch-primary d-inline m-r-10">
+                        <input type="checkbox" id="header-fixed" [(ngModel)]="headerFixedLayout" (change)="setHeaderFixedLayout($event)" />
+                        <label for="header-fixed" class="cr"></label>
+                      </div>
+                      <label for="header-fixed" class="label">Header Fixed</label>
+                    </div>
+                  }
+                  <div class="form-group mb-0">
+                    <div class="switch switch-primary d-inline m-r-10">
+                      <input type="checkbox" id="box-layouts" [(ngModel)]="boxLayout" (change)="setBoxLayout($event)" />
+                      <label for="box-layouts" class="cr"></label>
+                    </div>
+                    <label for="box-layouts" class="label">Box Layouts</label>
+                  </div>
+                </ng-template>
+              </li>
+            }
+            <li [ngbNavItem]="3">
+              <a ngbNavLink class="mb-3 nav-3">Extra</a>
+              <ng-template ngbNavContent>
+                <h6>Menu Dropdown Icon</h6>
+                <div class="theme-color">
+                  <div class="form-group d-inline">
+                    <div class="radio radio-primary d-inline">
+                      <input type="radio" name="radio-in-1" id="drpicon-1" checked (click)="setMenuDropdownIcon('style1')" />
+                      <label for="drpicon-1" class="cr"><i class="feather icon-chevron-right"></i></label>
+                    </div>
+                  </div>
+                  <div class="form-group d-inline">
+                    <div class="radio radio-primary d-inline radio-infill">
+                      <label>
+                        <input type="radio" name="radio-in-1" id="drpicon-2" (click)="setMenuDropdownIcon('style2')" />
+                        <label for="drpicon-2" class="cr"><i class="feather icon-chevrons-right"></i></label>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="form-group d-inline">
+                    <div class="radio radio-primary d-inline radio-infill">
+                      <input type="radio" name="radio-in-1" id="drpicon-3" (click)="setMenuDropdownIcon('style3')" />
+                      <label for="drpicon-3" class="cr"><i class="feather icon-plus"></i></label>
+                    </div>
+                  </div>
+                </div>
+                <h6>Menu List Icon</h6>
+                <div class="theme-color">
+                  <div class="form-group d-inline radio-infill">
+                    <div class="radio radio-primary d-inline">
+                      <input type="radio" name="radio-in" id="subitem-1" checked (click)="setMenuListIcon('style1')" />
+                      <label for="subitem-1" class="cr"><div class="badge badge-primary"></div></label>
+                    </div>
+                  </div>
+                  <div class="form-group d-inline">
+                    <div class="radio radio-primary d-inline radio-infill">
+                      <input type="radio" name="radio-in" id="subitem-2" (click)="setMenuListIcon('style2')" />
+                      <label for="subitem-2" class="cr"><i class="feather icon-minus"></i></label>
+                    </div>
+                  </div>
+                  <div class="form-group d-inline">
+                    <div class="radio radio-primary d-inline radio-infill">
+                      <input type="radio" name="radio-in" id="subitem-3" (click)="setMenuListIcon('style3')" />
+                      <label for="subitem-3" class="cr"><i class="feather icon-check"></i></label>
+                    </div>
+                  </div>
+                  <div class="form-group d-inline">
+                    <div class="radio radio-primary d-inline radio-infill">
+                      <input type="radio" name="radio-in" id="subitem-4" (click)="setMenuListIcon('style4')" />
+                      <label for="subitem-4" class="cr"><i class="icon feather icon-corner-down-right"></i></label>
+                    </div>
+                  </div>
+                  <div class="form-group d-inline">
+                    <div class="radio radio-primary d-inline radio-infill">
+                      <input type="radio" name="radio-in" id="subitem-5" (click)="setMenuListIcon('style5')" />
+                      <label for="subitem-5" class="cr"><i class="icon feather icon-chevrons-right"></i></label>
+                    </div>
+                  </div>
+                  <div class="form-group d-inline">
+                    <div class="radio radio-primary d-inline radio-infill">
+                      <input type="radio" name="radio-in" id="subitem-6" (click)="setMenuListIcon('style6')" />
+                      <label for="subitem-6" class="cr"><i class="icon feather icon-chevron-right"></i></label>
+                    </div>
+                  </div>
+                </div>
+                <h6>Active Color</h6>
+                <div class="theme-color active-color small">
+                  <a
+                    href="javascript:"
+                    [ngClass]="{ active: navActiveColor === 'active-default' }"
+                    (click)="setNavActiveColor('active-default')"
+                    data-value="active-default"
+                  >
+                    <span></span>
+                    <span></span>
+                  </a>
+                  <a
+                    href="javascript:"
+                    [ngClass]="{ active: navActiveColor === 'active-blue' }"
+                    (click)="setNavActiveColor('active-blue')"
+                    data-value="active-blue"
+                  >
+                    <span></span>
+                    <span></span>
+                  </a>
+                  <a
+                    href="javascript:"
+                    [ngClass]="{ active: navActiveColor === 'active-red' }"
+                    (click)="setNavActiveColor('active-red')"
+                    data-value="active-red"
+                  >
+                    <span></span>
+                    <span></span>
+                  </a>
+                  <a
+                    href="javascript:"
+                    [ngClass]="{ active: navActiveColor === 'active-purple' }"
+                    (click)="setNavActiveColor('active-purple')"
+                    data-value="active-purple"
+                  >
+                    <span></span>
+                    <span></span>
+                  </a>
+                  <a
+                    href="javascript:"
+                    [ngClass]="{ active: navActiveColor === 'active-lightblue' }"
+                    (click)="setNavActiveColor('active-lightblue')"
+                    data-value="active-lightblue"
+                  >
+                    <span></span>
+                    <span></span>
+                  </a>
+                  <a
+                    href="javascript:"
+                    [ngClass]="{ active: navActiveColor === 'active-dark' }"
+                    (click)="setNavActiveColor('active-dark')"
+                    data-value="active-dark"
+                  >
+                    <span></span>
+                    <span></span>
+                  </a>
+                </div>
+                @if (isThemeLayout !== 'horizontal') {
+                  <h6>Menu Title Color</h6>
+                }
+                @if (isThemeLayout !== 'horizontal') {
+                  <div class="theme-color title-color small">
+                    <a
+                      href="javascript:"
+                      [ngClass]="{ active: navTitleColor === 'title-default' }"
+                      (click)="setNavTitleColor('title-default')"
+                      data-value="title-default"
+                    >
+                      <span></span>
+                      <span></span>
+                    </a>
+                    <a
+                      href="javascript:"
+                      [ngClass]="{ active: navTitleColor === 'title-blue' }"
+                      (click)="setNavTitleColor('title-blue')"
+                      data-value="title-blue"
+                    >
+                      <span></span>
+                      <span></span>
+                    </a>
+                    <a
+                      href="javascript:"
+                      [ngClass]="{ active: navTitleColor === 'title-red' }"
+                      (click)="setNavTitleColor('title-red')"
+                      data-value="title-red"
+                    >
+                      <span></span>
+                      <span></span>
+                    </a>
+                    <a
+                      href="javascript:"
+                      [ngClass]="{ active: navTitleColor === 'title-purple' }"
+                      (click)="setNavTitleColor('title-purple')"
+                      data-value="title-purple"
+                    >
+                      <span></span>
+                      <span></span>
+                    </a>
+                    <a
+                      href="javascript:"
+                      [ngClass]="{ active: navTitleColor === 'title-lightblue' }"
+                      (click)="setNavTitleColor('title-lightblue')"
+                      data-value="title-lightblue"
+                    >
+                      <span></span>
+                      <span></span>
+                    </a>
+                    <a
+                      href="javascript:"
+                      [ngClass]="{ active: navTitleColor === 'title-dark' }"
+                      (click)="setNavTitleColor('title-dark')"
+                      data-value="title-dark"
+                    >
+                      <span></span>
+                      <span></span>
+                    </a>
+                  </div>
+                }
+                @if (isThemeLayout !== 'horizontal') {
+                  <div class="form-group mb-0">
+                    <div class="switch switch-primary d-inline m-r-10">
+                      <input type="checkbox" id="caption-hide" [(ngModel)]="menuTitleHide" (change)="hideMenuTitle($event)" />
+                      <label for="caption-hide" class="cr"></label>
+                    </div>
+                    <label for="menu-title-hide">Menu Title Hide</label>
+                  </div>
+                }
+              </ng-template>
+            </li>
+          </ul>
+          <div [ngbNavOutlet]="nav" class="mt-2"></div>
+        </div>
+      </app-scrollbar>
+    </div>
+  </div>
+}

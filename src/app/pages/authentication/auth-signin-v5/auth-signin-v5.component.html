@@ -1,0 +1,76 @@
+<div class="auth-wrapper aut-bg-img">
+  <div class="auth-content">
+    <div class="card mb-5">
+      <div class="card-body text-center">
+        <div class="mb-4">
+         <img src="assets/images/logo/login-1.jpg" alt="logo" class="img-fluid" />
+        </div>
+      
+        <h3 class="mb-5">Login</h3>
+
+         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <div class="input-group mb-3">
+            <input
+              type="email"
+              class="form-control"
+              formControlName="email"
+              id="floatingInputValue"
+             placeholder="Email endereço"
+              [ngClass]="{ 'is-invalid': submitted && formValues?.['email'].errors }"
+            />
+            @if (submitted && formValues?.['email'].errors) {
+              <div class="invalid-feedback">
+                @if (formValues?.['email'].errors.required) {
+                  <div>Username is Required</div>
+                }
+              </div>
+            }
+          </div>
+          <div class="input-group mb-4">
+            <input
+              type="{{ showPassword ? 'text' : 'password' }}"
+              class="form-control"
+              id="password"
+              placeholder=""
+              formControlName="password"
+              placeholder="Senha"
+              [ngClass]="{ 'is-invalid': submitted && formValues?.['password'].errors }"
+            />
+            @if (loginForm.controls['password'].value) {
+              <i
+                [ngClass]="showPassword ? 'feather icon-eye' : 'feather icon-eye-off'"
+                id="togglePassword"
+                (click)="togglePasswordVisibility()"
+              ></i>
+            }
+            @if (submitted && formValues?.['password'].errors) {
+              <div class="invalid-feedback">
+                @if (formValues?.['password'].errors.required) {
+                  <div>Senha é necessária</div>
+                }
+              </div>
+            }
+          </div>
+    
+          <div class="form-group text-left">
+            <div class="checkbox  checkbox-primary checkbox-fill d-inline text-left">
+              <input type="checkbox" name="checkbox-fill-1" id="checkbox-fill-a1" checked="" />
+              <label for="checkbox-fill-a1" class="cr">Salvar credenciais</label>
+            </div>
+          </div>
+                 @if (error) {
+            <div class="alert alert-danger mt-3 mb-0">{{ error }}</div>
+          }
+          <div class="d-grid mt-4">
+            <button class="btn btn-primary">Login</button>
+          </div>
+         
+        </form>
+        <p class="mb-2 text-muted">
+          Esqueceu a senha?
+          <a [routerLink]="['/auth/reset-password-v5']">resset</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

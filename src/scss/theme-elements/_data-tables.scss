@@ -1,0 +1,165 @@
+/**  =====================
+      Data Tables css start
+==========================  **/
+
+.table {
+  td,
+  th {
+    border-top: 1px solid var(--bs-border-color);
+    white-space: nowrap;
+    padding: 1.05rem 0.75rem;
+  }
+
+  thead th,
+  tbody td {
+    border-bottom: 1px solid var(--bs-border-color);
+  }
+
+  tbody + tbody {
+    border-top: 2px solid var(--bs-border-color);
+  }
+  > :not(:first-child) {
+    border-top: none;
+  }
+  > :not(caption) > * > * {
+    border-bottom: none;
+  }
+}
+
+.table thead th {
+  background: $gray-100;
+}
+
+table.dataTable thead th,
+table.dataTable thead td {
+  border-bottom: none;
+}
+// Border versions
+
+.table-bordered {
+  border: 1px solid var(--bs-border-color);
+
+  td,
+  th {
+    border: 1px solid var(--bs-border-color);
+  }
+}
+// Zebra-striping
+
+.table-striped {
+  tbody tr:nth-of-type(2n + 1) {
+    background-color: transparentize($primary, 0.95);
+  }
+  > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-accent-bg: transparent;
+  }
+}
+// Hover effect
+
+.table-hover {
+  tbody tr {
+    &:hover {
+      background-color: transparentize($primary, 0.95);
+      * {
+        --bs-table-accent-bg: transparent;
+      }
+    }
+  }
+}
+// Table backgrounds
+
+.table {
+  .thead-dark {
+    th {
+      color: $white;
+      background-color: $dark-color;
+      border-color: darken($dark-color, 10%);
+    }
+  }
+}
+
+.table-dark {
+  color: $white;
+  background-color: $dark-color;
+
+  td,
+  th,
+  thead th {
+    border-color: darken($dark-color, 10%);
+  }
+
+  &.table-striped {
+    tbody tr:nth-of-type(odd) {
+      background-color: darken($dark-color, 2%);
+    }
+  }
+
+  &.table-hover {
+    tbody tr {
+      &:hover {
+        background-color: darken($dark-color, 5%);
+      }
+    }
+  }
+}
+// fixed header position
+
+table.dataTable.fixedHeader-floating {
+  top: 0 !important;
+}
+/**  =====================
+      Foo-table css start
+==========================  **/
+.footable .pagination > {
+  .active > {
+    span,
+    a {
+      background-color: $primary;
+      border-color: $primary;
+
+      &:focus,
+      &:hover {
+        background-color: $primary;
+        border-color: $primary;
+      }
+    }
+  }
+
+  li > {
+    a,
+    span {
+      color: #222;
+    }
+  }
+}
+
+.footable-details.table,
+.footable.table {
+  margin-bottom: 0;
+}
+
+table {
+  &.footable > tfoot > tr.footable-paging > td > span.label {
+    margin-bottom: 0;
+  }
+
+  &.footable-paging-center > tfoot > tr.footable-paging > td {
+    padding-bottom: 0;
+  }
+}
+.table-columned > {
+  tbody > {
+    tr > {
+      td {
+        border: 0;
+        border-left: 1px solid var(--bs-border-color);
+      }
+      th {
+        border: 0;
+      }
+    }
+  }
+}
+
+/**====== Foo-table css end ======**/
+/**====== Data Tables css end ======**/

@@ -1,0 +1,179 @@
+<div class="row">
+  <div class="col-lg-6">
+    <app-card [hidHeader]="true" cardClass="card-border-c-blue border-2  " cardTitle="Simple Form Layout">
+      <form>
+        <div class="form-group">
+          <label for="name" class="form-label">Name:</label>
+          <input id="name" type="text" class="form-control" placeholder="Enter full name" />
+          <small class="form-text text-muted">Please enter your full name</small>
+        </div>
+        <hr class="my-2" />
+        <div class="form-group">
+          <label for="email" class="form-label">Email:</label>
+          <input id="email" type="email" class="form-control" placeholder="Enter email" />
+          <small class="form-text text-muted">Please enter your Email</small>
+        </div>
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input id="password" type="password" class="form-control" placeholder="enter Password" />
+        </div>
+        <div class="form-group mb-0">
+          <label for="customCheckinl1" class="form-label">language:</label>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckinl1" checked />
+            <label class="form-check-label" for="customCheckinl1">English</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckinl2" />
+            <label class="form-check-label" for="customCheckinl2">French</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckinl3" />
+            <label class="form-check-label" for="customCheckinl3">Dutch</label>
+          </div>
+        </div>
+      </form>
+    </app-card>
+    <app-card cardTitle="Control Divider">
+      <form>
+        <div class="form-group">
+          <label for="name" class="form-label">Name:</label>
+          <input id="name" type="email" class="form-control" placeholder="Enter full name" />
+          <small class="form-text text-muted">Please enter your full name</small>
+        </div>
+        <hr class="my-4" />
+        <div class="form-group">
+          <label for="email" class="form-label">Email:</label>
+          <input id="email" type="email" class="form-control" placeholder="Enter email" />
+          <small class="form-text text-muted">Please enter your Email</small>
+        </div>
+        <hr class="my-4" />
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input id="password" type="password" class="form-control" placeholder="enter Password" />
+        </div>
+        <hr class="my-4" />
+        <div class="form-group mb-0">
+          <label for="language" class="form-label">language:</label>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckinl21" checked />
+            <label class="form-check-label" for="customCheckinl21">English</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckinl22" />
+            <label class="form-check-label" for="customCheckinl22">French</label>
+          </div>
+          <div class="form-check mb-0">
+            <input type="checkbox" class="form-check-input input-primary" id="customCheckinl23" />
+            <label class="form-check-label" for="customCheckinl23">Dutch</label>
+          </div>
+        </div>
+      </form>
+    </app-card>
+  </div>
+  <div class="col-lg-6">
+    <app-card cardTitle="Horizontal Form Layout">
+      <form>
+        <h5 class="mb-2">A. Personal Info:</h5>
+        <div class="form-group row">
+          <label for="name" class="col-lg-4 col-form-label">Name:</label>
+          <div class="col-lg-6">
+            <input id="name" type="text" class="form-control" placeholder="Enter full name" />
+            <small class="form-text text-muted">Please enter your full name</small>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label for="email" class="col-lg-4 col-form-label">Email:</label>
+          <div class="col-lg-6">
+            <input id="email" type="email" class="form-control" placeholder="Enter email" />
+            <small class="form-text text-muted">Please enter your Email</small>
+          </div>
+        </div>
+        <h5 class="mb-2">B. Educational Info:</h5>
+        <div class="form-group row">
+          <label for="Degree" class="col-lg-4 col-form-label">Degree Name:</label>
+          <div class="col-lg-6">
+            <input id="Degree" type="email" class="form-control" placeholder="Enter full name" />
+            <small class="form-text text-muted">Please enter your Final Degree</small>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="PassingYear" class="col-lg-4 col-form-label">Passing Year</label>
+          <div class="col-lg-6">
+            <input id="PassingYear" type="text" class="form-control" placeholder="Enter Passing Year" />
+          </div>
+        </div>
+
+        <div class="form-group mb-0 row align-items-center">
+          <label for="language" class="col-lg-4 col-form-label">language:</label>
+          <div class="col-lg-6">
+            <div class="form-check form-check-inline">
+              <input type="checkbox" class="form-check-input input-primary" id="customCheckinl31" checked />
+              <label class="form-check-label" for="customCheckinl31">English</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input type="checkbox" class="form-check-input input-primary" id="customCheckinl321" />
+              <label class="form-check-label" for="customCheckinl321">French</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input type="checkbox" class="form-check-input input-primary" id="customCheckinl331" />
+              <label class="form-check-label" for="customCheckinl331">Dutch</label>
+            </div>
+          </div>
+        </div>
+      </form>
+    </app-card>
+    <app-card cardTitle="Input Label Alignment">
+      <form>
+        <h5 class="mb-3">A. Personal Info:</h5>
+        <div class="form-group row">
+          <label for="name" class="col-lg-4 col-form-label text-lg-end">Name:</label>
+          <div class="col-lg-6">
+            <input id="name" type="email" class="form-control" placeholder="Enter full name" />
+            <small class="form-text text-muted">Please enter your full name</small>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="email" class="col-lg-4 col-form-label text-lg-end">Email:</label>
+          <div class="col-lg-6">
+            <input id="email" type="email" class="form-control" placeholder="Enter email" />
+            <small class="form-text text-muted">Please enter your Email</small>
+          </div>
+        </div>
+        <hr class="my-4" />
+        <h5 class="mb-3">B. Educational Info:</h5>
+        <div class="form-group row">
+          <label for="Degree" class="col-lg-4 col-form-label text-lg-end">Degree Name:</label>
+          <div class="col-lg-6">
+            <input id="Degree" type="email" class="form-control" placeholder="Enter full name" />
+            <small class="form-text text-muted">Please enter your Final Degree</small>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="PassingYear" class="col-lg-4 col-form-label text-lg-end">Passing Year</label>
+          <div class="col-lg-6">
+            <input id="PassingYear" type="text" class="form-control" placeholder="Enter Passing Year" />
+          </div>
+        </div>
+        <div class="form-group mb-0 row align-items-center">
+          <label for="language" class="col-lg-4 col-form-label text-lg-end">language:</label>
+          <div class="col-lg-6">
+            <div class="form-check form-check-inline">
+              <input type="checkbox" class="form-check-input input-primary" id="customCheckinl311" checked />
+              <label class="form-check-label" for="customCheckinl311">English</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input type="checkbox" class="form-check-input input-primary" id="customCheckinl32" />
+              <label class="form-check-label" for="customCheckinl32">French</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input type="checkbox" class="form-check-input input-primary" id="customCheckinl33" />
+              <label class="form-check-label" for="customCheckinl33">Dutch</label>
+            </div>
+          </div>
+        </div>
+      </form>
+    </app-card>
+  </div>
+</div>

@@ -1,0 +1,92 @@
+@import '~@angular/cdk/overlay-prebuilt.css';
+
+// advance-notification
+@import '../../../node_modules/angular-notifier/styles';
+
+// ui-switch
+@import 'node_modules/ngx-ui-switch/ui-switch.component.css';
+
+// toasts component
+@import 'node_modules/ngx-toastr/toastr.css';
+
+@import 'css-animator';
+@import 'angular-morris-js';
+@import 'ks-modal-gallery';
+@import 'angular-datatables';
+@import 'ngx-chips';
+@import 'ng-select';
+@import 'sweatalert';
+@import 'apexchart';
+
+// table css
+
+.br-movie .br-unit-inner {
+  width: 55px;
+}
+
+// mat-tree
+.mat-mdc-icon-button {
+  --mat-icon-button-state-layer-color: none;
+}
+
+// dark mode data table
+body.datta-dark {
+  .table {
+    --bs-table-striped-color: $dark-layout-font;
+    color: $dark-layout-font;
+  }
+
+  mark,
+  .mark {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: $dark-layout-font;
+  }
+}
+
+dp-day-calendar .dp-weekdays {
+  font-size: 13px !important;
+}
+
+// calender app
+.colorpick-eyedropper-input-trigger {
+  display: none !important;
+}
+
+.tag-chips .tag__text {
+  line-height: 1.75 !important;
+}
+
+.switch {
+  border: none !important;
+}
+
+app-form-switch .switch {
+  label {
+    margin-bottom: 0.5rem;
+    margin-right: 5px;
+  }
+}
+
+// switch
+
+.switch {
+  &.switch-small,
+  &.switch-medium,
+  &.switch-large {
+    margin-bottom: 10px;
+  }
+}
+
+// rtl mode wizard forms css
+body.datta-rtl {
+  .was-validated .form-select:invalid:not([multiple]):not([size]),
+  .was-validated .form-control:invalid {
+    background-position:
+      left 0.75rem center,
+      center left 2.25rem;
+  }
+
+  .form-select {
+    background-position: left 0.75rem center;
+  }
+}

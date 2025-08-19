@@ -1,0 +1,13 @@
+table.dataTable tbody th,
+table.dataTable tbody td {
+  padding: 1.05rem 0.75rem;
+}
+
+table.dataTable tbody > tr.selected,
+table.dataTable tbody > tr > .selected {
+  background-color: #dceff7;
+}
+
+button.dt-button:hover:not(.disabled) {
+  background: $secondary;
+}
