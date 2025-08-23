@@ -1,0 +1,2094 @@
+<section class="main-content">
+  <!-- Inicio Breadcamb Inicio Bre☻adcambInicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio Breadcamb-->
+  <ul class="breadcrumb breadcrumb-style mt-0 mb-0" style="padding-top: 1px;">
+    <li class="breadcrumb-item">
+      <h5 class="page-title m-b-0">Membros</h5>
+    </li>
+    <li class="breadcrumb-item bcrumb-1">
+      <a routerLink="/dashboard/main">
+        <i class="fas fa-home font-17"></i></a>
+    </li>
+    <li class="breadcrumb-item">Cadastro de Membros</li>
+  </ul>
+  <hr style="margin-top: 0px;">
+  <!-- fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb -->
+  <div class="row">
+    <ng-container style="height: 100;">
+      <div class="row ">
+        <div class="col-md-12">
+          <div class="row">
+
+            <!-- Botões Inicio-->
+
+            <span>
+              <!--  Botões de Edição -->
+              @if(currentAction !== 'new'){
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 float-right">
+
+                <!-- Excluir -->
+                @if(activeTab == "home" ){
+                <button class="btn btn-outline-danger float-end mb-2" type="button"
+                 style="margin-left: 10px;" (click)="exclusaoPessoa(pessoa)">Excluir</button>
+                }
+
+                <!-- Salvar -->
+                <button size="small" class="btn btn-success msl-3  float-end mb-2" (click)="submitForm()"
+                 style="margin-left: 10px;" [disabled]="submittingForm || pessoaForm.invalid">Salvar</button>
+
+                <!-- Voltar -->
+                <button routerLink="/pessoas" class="btn btn-primary float-end mb-2">Voltar</button>
+
+                <span class="float-left">
+                  <label class="text-dark font-15">
+                    Situação Cadastral - 
+                  </label>
+                  <span class="font-15"
+                    [style.color]="pessoaForm.controls['situacaoCadastral'].value == 'Ativo' ? 'green' : 'red'">[
+                    {{
+                    pessoaForm.controls['situacaoCadastral'].value }} ]
+                  </span>
+                </span>
+              </div>
+              }
+
+              <!--  Botões de Inserção -->
+              @if(currentAction == 'new'){
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 ">
+
+                <!-- Salvar -->
+                <button class="btn btn-success float-end" (click)="submitForm()"
+                  [disabled]="submittingForm || pessoaForm.invalid">Salvar</button>
+
+                <!-- Voltar -->
+                <button routerLink="/pessoas" class="btn btn-primary float-end  msr-3 ">Voltar</button>
+
+                <span class="float-left">
+                  <label class="text-dark font-14">
+                    Situação Cadastral - 
+                  </label>
+                  <span class="font-16"
+                    [style.color]="pessoaForm.controls['situacaoCadastral'].value == 'Ativo' ? 'green' : 'red'">
+                    [{{ pessoaForm.controls['situacaoCadastral'].value }} ]
+                  </span>
+                </span>
+              </div>
+              }
+            </span>
+
+            <!-- Botões Fim-->
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Inicio Botões-->
+  <div class="section-body">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+      <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+          <!-- Fim botões -->
+
+          <!-- CABEÇALHO DAS ABAS  -->
+
+          <ul class="nav nav-tabs " style="font-size: 12px; height: 40px;" id="myTab" role="tablist">
+
+
+            <!-- ABA PARA INSERÇÃO DE PESSOAS-->
+
+            @if(currentAction == 'new'){
+            <li class="nav-item mt-0">
+              <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab === 'novo' }"
+                (click)="this.activeTab='novo'; this.ativaTab('$event');" id="novo-tab" data-toggle="tab"
+                href="javascript:" role="tab" aria-controls="novo" aria-selected="true"> <i
+                  class="fas fa-user mr-2 text-success font-17"></i> Dados Iniciais </a>
+            </li>
+            }
+
+            <!-- ABAS PARA ALTERAÇÃO DE PESSOAS  -->
+
+
+            @if( currentAction !== 'new'){
+            <li class="nav-item mt-0 mb-0">
+              <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab === 'home' }"
+                (click)="this.activeTab= 'home'" id="home-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="home" aria-selected="true"> <i style="margin-right: 10px"
+                  class="fas fa-user text-primary font-17"></i>  Dados Pessoais </a>
+            </li>
+            }
+
+            @if( currentAction !== 'new'){
+            <li class="nav-item mt-0 mb-0">
+              <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab ===
+                  'titulo' }" (click)="this.activeTab= 'titulo'" id="titulo-tab" data-toggle="tab" href="javascript:"
+                role="tab" aria-controls="titulo" aria-selected="false"><i style="margin-right: 10px" Ministeriais
+                  class="fas fa-ribbon  text-secondary font-17"></i> Dados Ministeriais </a>
+            </li>
+            }
+
+            @if( currentAction !== 'new'){
+            <li class="nav-item mt-0 mb-0">
+              <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab === 'familiar' }"
+                (click)="this.activeTab= 'familiar'" id="profile-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="familiar" aria-selected="false"><i style="margin-right: 10px;"
+                  class="fas fa-users mr-2 text-success font-17"></i>Família
+              </a>
+            </li>
+            }
+
+            @if( currentAction !== 'new'){
+            <li class="nav-item mt-0 mb-0">
+              <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab === 'documento' }"
+                (click)="this.activeTab= 'documento'" id="profile-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="documento" aria-selected="false"><i style="margin-right: 10px"
+                  class="fas fa-calendar mr-2 text-warning font-17"></i>Documentos
+              </a>
+            </li>
+            }
+
+            @if(currentAction !== 'new'){
+            <li class="nav-item mt-0 mb-0">
+              <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab === 'historico' }"
+                (click)="this.activeTab= 'historico'" id="historico-tab" data-toggle="tab" href="javascript:" role="tab"
+                aria-controls="historico" aria-selected="false"><i style="margin-right: 10px"
+                  class="fas fa-book  text-dark font-17"></i>Histórico
+              </a>
+            </li>
+            }
+
+          </ul>
+          <!-- FIM CABEÇALHO DAS ABAS  -->
+
+
+          <div class="card mb-0">
+            <div class="padding-20 " style="padding-top: 1px;">
+              <form [formGroup]="pessoaForm" autocomplete="off" (submit)="submitForm()">
+
+                <!-- OBSERVAÇÃO PARTE  DE INCLUSÃO DE PESSOAS -->
+
+                <!-- CONTROLE GERAL DAS ABAS -->
+                <div class="tab-content  mb-2" id="myTabContent">
+
+                  <!-- INICIO ABA DADOS INICIAIS -->
+                  <div class="tab-pane fade" [ngClass]="{ 'show active': this.activeTab === 'novo' }" id="novo"
+                    role="tabpanel" aria-labelledby="novo-tab">
+                    <div class="row">
+                      <div class="col-12">
+
+                        <!-- Nome Inclusão -->
+                        <div class="form-group row ml-auto mt-3 mb-3">
+                          <label class="col-sm-1 col-form-label"></label>
+                          <label class="col-sm-1 col-form-label" style="min-width: 150px; font-size: 13px;">Nome
+                            *</label>
+                          <div class="col-sm-5">
+                            <input autofocus autocomplete="off" type="text"
+                              class="form-control  uppercase" formControlName="nome" placeholder="Nome">
+                            <!--text-transform: uppercase apenas muda no visual HTML. Não muda o payLoad tirei por enquanto-->
+                            @if(pessoaForm.controls['nome'].dirty && pessoaForm.controls['nome'].errors){
+                            <p class="danger" style="font-size: 11px;" margin-left>
+                              Nome inválido</p>
+                            }
+                          </div>
+                        </div>
+
+                        <!-- Tipo de Membro Inclusão -->
+                        <div class=" row form-group row ml-auto m-b-0">
+                          <label class="col-sm-1 col-form-label"></label>
+                          <label class="col-sm-1 col-form-label" style="min-width: 150px; font-size: 13px;">Tipo de
+                            Membro
+                            *</label>
+
+                          <div class="col-sm-5 mb-0">
+                            <p-select formControlName="tipoMembro" (onChange)="onChangeTipoMembro($event)"
+                              [options]="tipoMembro" [editable]="false" [filter]="false" filterBy="nome"
+                              [showClear]="false" optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-user"
+                              [autofocus]="false" optionValue="nome" placeholder="Selecione tipo de Membro" />
+                          </div>
+                          <div class="form-group row ml-auto mb-0">
+                            <label class="col-sm-1 col-form-label"></label>
+                            <label class="col-sm-1 col-form-label" style="min-width: 150px;"></label>
+                            <div class="col-sm-6 mt-0">
+                              <P><i class="far fa-lightbulb text-warning font-12 mt-0"></i>
+                                 <b>Dica:  </b>Use Congregado para crianças e adolescentes antes de batizar.
+                              </P>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- INFORMAÇÃO DE TIPO DE BATISMO PARA CRIANÇAS ATÉ A DATA DO BATISMO -->
+
+
+                        @if (pessoaForm.controls['tipoMembro'].value === 'Obreiro') {
+                        <div class=" row form-group row ml-auto mt-0 mb-3">
+                          <label class="col-sm-1 col-form-label"></label>
+                          <label class="col-sm-1 col-form-label" style="min-width: 150px; font-size: 13px;">Título
+                            Ministerial*</label>
+                          <div class="col-sm-4">
+
+                            <p-select formControlName="tituloMinisterialId"
+                              (onChange)="onChangeGetTituloMinisterial($event)" [options]="tituloMinisteriais"
+                              [editable]="false" [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
+                              resetFilterOnHide="true" dropdownIcon="pi pi-user" [autofocus]="false" optionValue="id"
+                              placeholder="Selecione tipo" />
+                          </div>
+                        </div>
+                        }
+
+                        <!-- Genero Inclusão -->
+                        <div class="form-group row ml-auto mb-3 ">
+                          <label class="col-sm-1 col-form-label"></label>
+                          <label class="col-sm-1 col-form-label" style="min-width: 150px; font-size: 13px;">Sexo
+                            *</label>
+                          <div class="col-sm-4">
+                            <p-select formControlName="sexo" [options]="sexo" [editable]="false" [filter]="false"
+                              filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="true"
+                              dropdownIcon="pi pi-user" [autofocus]="false" optionValue="nome"
+                              placeholder="Selecione gênero" class="w-full md:w-56" />
+                          </div>
+                        </div>
+
+                        <!-- Admissão Inclusão -->
+                        <div class="form-group row ml-auto mb-3">
+                          <label class="col-sm-1 col-form-label"></label>
+                          <label class="col-sm-1 col-form-label" style="min-width: 150px; font-size: 13px;">Admissão
+                            *</label>
+                          <div class="col-sm-4">
+                            <p-select formControlName="membroRecebidoPor" [options]="tipoAdemissao" [editable]="false"
+                              [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
+                              resetFilterOnHide="true" dropdownIcon="pi pi-user" [autofocus]="false" optionValue="nome"
+                              placeholder="Selecione tipo de Admissão" />
+                          </div>
+                        </div>
+
+                        <!-- Membro desde -->
+                        <div class="form-group row ml-auto mb-3">
+                          <label class="col-sm-1 col-form-label"></label>
+                          <label class="col-sm-1 col-form-label" style="min-width: 150px; font-size: 13px;">Membro
+                            desde
+                            *</label>
+                          <div class="col-sm-3">
+                            <p-inputMask
+                              [style]="{'width':'100%','height':'30px', 'border-radius':'6px', 'font-size':'13px' }"
+                              ariaRequired="false" mask="99/9999" formControlName="membroDesde" placeholder="MM/AAAA" />
+
+                            @if(pessoaForm.controls['membroDesde'].errors){
+                            <p class="danger" margin-left>Informe o mês e ano...!</p>
+                            }
+                          </div>
+                        </div>
+
+                        <hr class="ml-3">
+                        <fieldset class="form-group mb-0">
+                          <div class="form-group mb-1">
+                            <div class="radio radio-success d-inline ml-3">
+                              <input (click)="ativaTab('home')" class="form-check-input font-18 ml-1 mr-4" type="radio"
+                                name="gridRadios" id="gridRadios1" value="home" checked />
+                              <label class="cr" style="font-size: 14px;" for="gridRadios1"> Salvar
+                                e finalizar</label>
+                            </div>
+                          </div>
+                          <div class="form-group mb-0">
+                            <div class="radio radio-success d-inline  ml-3">
+                              <input (click)="ativaTab('novo')" routerLinkActive="router-link-active"
+                                class="form-check-input ml-1 font-18" type="radio" name="gridRadios" id="gridRadios2"
+                                value="novo" />
+                              <label class="cr" style="font-size: 14px;" for="gridRadios2"> Salvar e incluir
+                                novo</label>
+                            </div>
+                          </div>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- FIM ABA- DADOS INICIAIS -->
+
+                  <!-- INICIO ABA - DADOS BÀSICOS  -->
+                  <div class="tab-pane fade" [ngClass]="{ 'show active': this.activeTab
+                   === 'home' }" id="home" role="tabpanel" aria-labelledby="home-tab">
+
+                    <div class="col-12 card card-secondary pt-1 pb-1   f-17 text-white"
+                      (click)="isCollapsed = !isCollapsed"
+                      style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 7px;"
+                      [attr.aria-expanded]="!isCollapsed" aria-controls="collapseExample">
+                      Perfil
+                    </div>
+
+                    <div class="collapse" id="collapseExample" [ngbCollapse]="isCollapsed">
+                      <div class="row">
+                        <div class="col-md-12">
+
+                          <!-- Foto Quando tem foto-->
+                          <div class="row">
+                            <ng-container>
+                              @if(pessoa!.foto){
+                              <div class="mb-1 form-group col-md-2 flex items-center gap-2" style="min-width: 90px;">
+                                <div class="text-left">
+                                  <div class="mb-0">
+                                    <img [class]="'flag flag-'" [placement]="'right'" ngbTooltip="Remover"
+                                      src="data:image/jpg;base64,{{ pessoa!.foto }}" style="cursor: pointer; width:90px"
+                                      (click)="removerFoto(pessoa)" />
+                                  </div>
+                                </div>
+                              </div>
+                              }
+                            </ng-container>
+
+                            <!-- Foto - Quando não tem foto-->
+                            <ng-container>
+                              @if(!pessoa!.foto){
+                              <div class=" form-group col-md-2 flex items-center gap-2" style="min-width: 90px;">
+                                <div class="text-left">
+                                  <div class="mb-0">
+                                    <img [class]="'flag flag-'" [placement]="'right'" ngbTooltip="Inserir"
+                                      src="assets/images/foto/Sem_Foto1.png" style="cursor: pointer; width:90px"
+                                      (click)="modalCropper.show()" />
+                                  </div>
+                                </div>
+                              </div>
+                              }
+                            </ng-container>
+
+
+                            <!--Codigo  -->
+                            <div hidden class="form-group col-md-1">
+                              <label for="id">Código</label>
+                              <input readonly type="text" class="form-control " id="id"
+                                formControlName="id">
+                            </div>
+
+                            <!-- name -->
+                            <div class="form-group col-md-4 col-12 mt-4">
+                              <label for="nome">Nome</label>
+                              <input autocomplete="off" type="text" class="form-control "
+                                formControlName="nome">
+                              @if(pessoaForm.controls['nome'].dirty && pessoaForm.controls['nome'].errors){
+                              <p class="danger" style="font-size: 11px;" margin-left>
+                                Nome inválido</p>
+                              }
+                            </div>
+
+                            <!-- cpf !== null -->
+                            <div class="form-group col-md-2  mt-4 was-validated">
+                              <label for="cpfOuCnpj">Cpf</label>
+                              <input [style.border-color]="pessoaForm.controls['cpfOuCnpj'].value ? 'green' : 'gray '"
+                                (blur)="validaCPF($event);" matInput mask="000.000.000-00" type="text"
+                                class=" form-control " formControlName="cpfOuCnpj">
+                            </div>
+
+                            <!-- Tipo de Membro -->
+                            <div class="form-group col-md-4  mt-4">
+
+                              @if(pessoaForm.controls['tipoMembro'].value == null){
+                              <label class="text-muted">Tipo de Membro
+                              </label>
+                              }
+
+                              @if(pessoaForm.controls['tipoMembro'].value == 'Congregado'){
+                              <label class="text-warning">Tipo de Membro
+                              </label>
+                              }
+
+                              @if(pessoaForm.controls['tipoMembro'].value == 'Membro'){
+                              <label class="text-success">Tipo de Membro
+                              </label>
+                              }
+
+                              @if(pessoaForm.controls['tipoMembro'].value == 'Obreiro'){
+                              <label class="text-primary">Tipo de Membro</label>
+                              }
+                              <div class="p-inputgroup">
+                                <input
+                                  [style]="{'width':'100%','height':'30px', 'border-top-left-radius':'5px', 'border-bottom-left-radius':'5px'}"
+                                  readonly formControlName="tipoMembro" type="text" pInputText placeholder="" />
+                                <button icon="pi pi-pencil"
+                                  [style]="{'height':'30px','border-top-right-radius':'5px', 'border-bottom-right-radius':'5px'  }"
+                                  (click)="modalSituacao.show(); setPageTitleSituacao(4); loadPessoa()" type="button"
+                                  pButton [placement]="'top'" ngbTooltip="Alterar Tipo"></button>
+                              </div>
+                            </div>
+
+                            <!-- rg -->
+                            <div class="form-group col-md-2 ">
+                              <label for="rg">Rg/Emissor</label>
+                              <input type="text" class=" form-control " formControlName="rg">
+
+                              @if(pessoaForm.controls['rg'].dirty && pessoaForm.controls['rg'].errors){
+                              <p class="danger" style="font-size: 11px;" margin-left>RG inválido</p>
+                              }
+                            </div>
+
+                            <!-- idade -->
+                            <div class="form-group col-md-1 ">
+                              <label for="rg">Idade</label>
+                              <input readonly type="text" class=" form-control "
+                                style="background: rgb(238, 236, 236);" formControlName="idade">
+                            </div>
+
+                            <!-- Genero Sexo -->
+                            <div class="form-group col-md-2 ">
+                              <label>Sexo</label>
+                              <p-select formControlName="sexo" [options]="sexo" [editable]="false" [filter]="true"
+                                filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="true"
+                                dropdownIcon="pi pi-user" [autofocus]="false" optionValue="nome"
+                                placeholder="Selecione gênero" />
+                            </div>
+
+                            <!-- dataNascimento -->
+                            <div class="form-group col-md-3 ">
+                              <label for="dataNascimento">Nascimento</label>
+                              <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                                [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
+                                inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy"
+                                formControlName="dataNascimento" placeholder="dd/mm/aaaa" />
+                            </div>
+
+
+                            <!-- estadoCivil -->
+                            <div class="form-group col-md-2 ">
+                              <label>Estado Civil</label>
+                              <p-select formControlName="estadoCivil" [options]="estadoCivil" [editable]="false"
+                                [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
+                                resetFilterOnHide="true" dropdownIcon="pi pi-user" [autofocus]="false"
+                                optionValue="nome" class="w-full md:w-56" placeholder="Selecione" />
+                            </div>
+
+                            <!-- membroDesde -->
+                            <div class="form-group col-md-2">
+                              <label>Membro Desde</label>
+                              <p-inputMask
+                                [style]="{'width':'100%','height':'30px', 'border-radius':'6px', 'font-size':'14px'}"
+                                required="true" mask="99/9999" formControlName="membroDesde"
+                                placeholder="MM/AAAA"></p-inputMask>
+                            </div>
+
+                            <!-- cartaoMembro -->
+                            <div class="form-group col-md-3">
+                              <label for="cartaoMembro">Nº Cartao Membro</label>
+                              <input type="text" class=" form-control " formControlName="cartaoMembro">
+                            </div>
+
+                            <!-- situacao Cadastral-->
+                            <div class="form-group col-md-3 ">
+                              @if(pessoaForm.controls['situacaoCadastral'].value == 'Inativo'){
+                              <label class="text-danger">Situacão
+                                Cadastral</label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoCadastral'].value == 'Ativo'){
+                              <label class="text-success">Situacão
+                                Cadastral</label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoCadastral'].value == 'Falecido'){
+                              <label class="text-muted">Situacão
+                                Cadastral</label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoCadastral'].value == 'Transferido'){
+                              <label class="text-danger">Situacão Cadastral</label>
+                              }
+
+                              <div class="p-inputgroup">
+                                <input
+                                  [style]="{'width':'100%','height':'30px', 'border-top-left-radius':'6px', 'border-bottom-left-radius':'6px'}"
+                                  readonly formControlName="situacaoCadastral" type="text" pInputText placeholder="" />
+                                <button icon="pi pi-pencil" [placement]="'top'" ngbTooltip="Alterar sit. cadastral"
+                                  [style]="{'height':'30px','border-top-right-radius':'6px', 'border-bottom-right-radius':'6px'  }"
+                                  (click)="modalSituacao.show(); setPageTitleSituacao(1); loadPessoa()" type="button"
+                                  pButton></button>
+                              </div>
+
+                            </div>
+
+                            <!-- Situacao Espiritual-->
+                            <div class="form-group col-md-3 ">
+
+                              @if(pessoaForm.controls['situacaoEspiritual'].value == null){
+                              <label class="text-muted">Situacão
+                                Espiritual</label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoEspiritual'].value == 'Prova'){
+                              <label class="text-danger">Situacão
+                                Espiritual</label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoEspiritual'].value == 'Comunhão'){
+                              <label class="text-success">Situacão Espiritual</label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoEspiritual'].value == 'Arquivado'){
+                              <label class="text-primary">Situacão Espiritual</label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoEspiritual'].value == 'Desligado'){
+                              <label class="text-warning">Situacão Espiritual</label>
+                              }
+
+                              <div class="p-inputgroup">
+                                <input
+                                  [style]="{'width':'100%','height':'30px', 'border-top-left-radius':'6px', 'border-bottom-left-radius':'6px'}"
+                                  readonly formControlName="situacaoEspiritual" type="text" pInputText placeholder="" />
+                                <button icon="pi pi-pencil" [placement]="'top'" ngbTooltip="Alterar sit. Espiritual"
+                                  [style]="{'height':'30px','border-top-right-radius':'6px', 'border-bottom-right-radius':'6px'  }"
+                                  (click)="modalSituacao.show(); setPageTitleSituacao(2); loadPessoa()" type="button"
+                                  pButton></button>
+                              </div>
+                            </div>
+
+                            <!-- Situacao Ministerial-->
+                            @if(pessoaForm.controls['tipoMembro'].value == 'Obreiro'){
+                            <div class="form-group col-md-3 ">
+
+                              @if(pessoaForm.controls['situacaoMinisterial'].value == null){
+                              <label class="text-muted"> Título |
+                                Situacão
+                                Ministerial</label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoMinisterial'].value == 'Inativo'){
+                              <label class="text-danger">Título | Situacão Ministerial</label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoMinisterial'].value == 'Ativo'){
+
+                              }
+                              <label class="text-success">Título | Situacão Ministerial</label>
+
+                              @if(pessoaForm.controls['situacaoMinisterial'].value == 'Suspenso'){
+                              <label class="text-warning">Título | Situacão Ministerial</label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoMinisterial'].value == 'Aguardando'){
+                              <label class="text-primary">Título | Situacão Ministerial</label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoMinisterial'].value == 'Não se Aplica'){
+                              <label class="text-muted">Título | Situacão Ministerial</label>
+                              }
+
+                              <div class="p-inputgroup">
+                                <input
+                                  [style]="{'width':'100%','height':'30px', 'border-top-left-radius':'6px', 'border-bottom-left-radius':'6px'}"
+                                  readonly formControlName="situacaoMinisterial" type="text" pInputText
+                                  placeholder="" />
+                                <button icon="pi pi-pencil" [placement]="'top'" ngbTooltip="Alterar sit. ministerial"
+                                  [style]="{'height':'30px','border-top-right-radius':'5px', 'border-bottom-right-radius':'5px'  }"
+                                  (click)="modalSituacao.show(); setPageTitleSituacao(3); loadPessoa()" type="button"
+                                  pButton></button>
+                              </div>
+                            </div>
+                            }
+
+                            <!-- tava modal cropper -->
+
+                            <!-- dataCadastro -->
+                            <div class="form-group col-md-0 mr-0" hidden>
+                              <label>Cadastro</label>
+                              <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                                [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
+                                inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy"
+                                formControlName="dataCadastro" placeholder="dd/mm/aaaa" />
+                            </div>
+
+
+                            <!-- Nacionalidade com Nome e Sigla do Pais -->
+                            <!-- select primeng -->
+                            <div class="form-group col-md-3 ">
+                              <label class="">Nacionalidade</label>
+                              <p-select (onChange)="onSelectNacionalidade()" formControlName="nacionalidade"
+                                [options]="paises" [editable]="false" [filter]="true" filterBy="nome"
+                                [showClear]="false" optionLabel="nome" resetFilterOnHide="true"
+                                dropdownIcon="pi pi-flag" optionValue="nome" [autofocus]="false"
+                                placeholder="Selecione..." />
+                            </div>
+
+                            <!-- Naturalidade Qdo Brasil-->
+                            <!-- ng-select   ng-select   ng-select   ng-select   ng-select   ng-select   ng-select  -->
+                            @if(pessoaForm.controls['nacionalidade'].value == 'Brasil'){
+                            <div class="form-group col-md-3 ">
+                              <label class="">Naturalidade</label>
+
+                              <ng-select [items]="cidadesFiltradas" bindLabel="nome" [searchable]="true"
+                                (click)="onFocus()" (open)="filtrarCidades()" (search)="onSearch($event)"
+                                (change)="onChangeCidades($event)" aria-disabled="true" [editableSearchTerm]="false"
+                                [clearable]="false" [multiple]="false" formControlName="naturalidade"
+                                [fixedPlaceholder]="true" notFoundText="Item não encontrado"
+                                placeholder="Selecione uma Cidade">
+                                <ng-template ng-header-tmp class="card flex flex-wrap justify-center gap-4">
+                                  <p-iconfield>
+                                    <p-inputicon styleClass="float-end pi pi-search" />
+                                    <input type="text" pInputText id="focus-input" type="text"
+                                      class="form-control  custom-search-input"
+                                      (input)="onSearch($event)">
+                                  </p-iconfield>
+                                </ng-template>
+                                <ng-template ng-option-tmp let-item="item">
+                                  {{ item.nome }}/{{ item.uf }} <br />
+                                </ng-template>
+
+                              </ng-select>
+                            </div>
+                            }
+
+                            @if(pessoaForm.controls['nacionalidade'].value !== 'Brasil'){
+                            <div class="form-group col-md-3">
+                              <label>Naturalidade/UF</label>
+                              <input type="text" class="form-control " formControlName="naturalidade"
+                                placeholder="Nome da Cidade">
+                            </div>
+                            }
+
+                            <!-- UF -->
+                            <div class="form-group col-md-1">
+                              <label>UF</label>
+                              <input style="border: 1; text-transform: uppercase; border-color: rgb(216, 214, 214);"
+                                type="text" class="form-control " formControlName="ufNatal"
+                                placeholder="UF">
+                            </div>
+
+                            <!-- escolaridade -->
+                            <div class="form-group col-md-2 ">
+                              <label>Escolaridade</label>
+                              <p-select formControlName="escolaridade" [options]="escolaridade" [editable]="false"
+                                [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
+                                resetFilterOnHide="true" dropdownIcon="pi pi-bookmark" [autofocus]="false"
+                                optionValue="nome" placeholder="Selecione grau de escolaridade" />
+                            </div>
+
+                            <!-- Cargo Principal para assinaturas -->
+                            <div class="form-group col-md-3">
+                              <label>Cargo Principal </label>
+                              <p-select formControlName="cargoPrincipal" [options]="cargos" [editable]="false"
+                                [filter]="true" filterBy="nome" [showClear]="true" optionLabel="nome"
+                                resetFilterOnHide="true" dropdownIcon="pi pi-user" [autofocus]="false"
+                                optionValue="nome" placeholder="Selecione um cargo" />
+
+                              <!-- Igreja -->
+                              <div class="form-group col-md-2" hidden>
+                                <label>Igreja</label>
+                                <input readonly type="text" class="form-control "
+                                  formControlName="nomeIgreja">
+                              </div>
+
+                              <!-- Tipo de Pessoa -->
+                              <div class="form-group col-md-0 mb-0">
+                                <label for="tipoPessoa" hidden>Tipo de Pessoa</label>
+                                <select id="tipoPessoa" formControlName="tipoPessoa"
+                                  class="form-control " hidden>
+                                  <option selected>Pessoa Fisica</option>
+                                  <option>Pessoa Juridica</option>
+                                </select>
+                              </div>
+                            </div>
+                            <!-- </div> -->
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!------------------------------------ Divisão Lista preta Endereço ------------------------------------------>
+
+                    <div class="col-12 card card-secondary  pt-1 pb-1 font-17 text-white"
+                      style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 7px;"
+                      (click)="isCollapsed1 = !isCollapsed1" [attr.aria-expanded]="!isCollapsed1">
+                      Endereço | Contato
+                    </div>
+
+                    <div class="collapse" id="collapseExample" [ngbCollapse]="isCollapsed1">
+                      <!-- <div class="card-body"> -->
+                      <div class="row">
+                        <div class="col-xl-6">
+
+                          <!-- Endereço -->
+                          <div class="row ">
+
+                            <!-- Cep -->
+                            <div class="form-group col-md-3 ">
+                              <label>Cep</label>
+                              <input placeholder="____-___" type="text" class="form-control  uppercase"
+                                maxlength="9" (blur)="consultaCep($event.target?.addEventListener)"
+                                placeholder="Digite um Cep" formControlName="cep">
+                            </div>
+
+                            <!-- logradouro -->
+                            <div class="form-group col-md-9">
+                              <label for="logradouro">Endereço</label>
+                              <input type="text" class="form-control " style="text-transform: uppercase"
+                                id="logradouro" formControlName="logradouro">
+                            </div>
+
+                            <!-- numero -->
+                            <div class="form-group col-md-4">
+                              <label for="numero">Número</label>
+                              <input type="text" class="form-control " id="numero"
+                                formControlName="numero">
+                            </div>
+
+                            <!-- Complemento -->
+                            <div class="form-group col-md-8">
+                              <label>Complemento</label>
+                              <input type="text" class="form-control " formControlName="complemento"
+                                style="text-transform: uppercase">
+                            </div>
+
+                            <!-- </div> -->
+
+                            <!-- <div class="row "> -->
+                            <div class="form-group col-md-5 mb-0">
+                              <label for="ufEndereco ">Cidade</label>
+                              <input type="text" class="form-control " formControlName="cidadeEndereco"
+                                style="text-transform: uppercase">
+                            </div>
+
+                            <!-- Bairro -->
+                            <div class="form-group col-md-5 mb-0">
+                              <label>Bairro</label>
+                              <input type="text" class="form-control " formControlName="bairro"
+                                style="text-transform: uppercase">
+                            </div>
+
+                            <!-- uf endereço-->
+                            <div class="form-group col-md-2 mb-0">
+                              <label for="ufEndereco ">UF</label>
+                              <input type="text" class="form-control " formControlName="ufEndereco"
+                                style="text-transform: uppercase">
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Fim Endereço -->
+
+                        <!-- Inicio Contato -->
+                        <div class="col-md-12 col-xl-6">
+                          <div class="row">
+                            <!-- email -->
+                            <div class="form-group col-md-8">
+                              <label for="email">E-Mail</label>
+                              <input type="text" class=" form-control " formControlName="email">
+                            </div>
+
+                            <!-- telefone1 -->
+                            <div class="form-group col-md-4">
+                              <label>Fone fixo-1</label>
+                              <p-inputMask [style]="{'width':'100%','height':'30px'}" formControlName="telefone1"
+                                mask="(99) 9999-9999" placeholder="(  )     -    "></p-inputMask>
+                            </div>
+
+
+                            <!-- Celular1 -->
+                            <div class="form-group col-md-4">
+                              <label>Celular 1</label>
+                              <p-inputMask [style]="{'width':'100%','height':'30px'}" formControlName="celular1"
+                                mask="(99) 9 9999-9999" placeholder="(  )       -    "></p-inputMask>
+                            </div>
+
+                            <!-- Celular2 -->
+                            <div class="form-group col-md-4">
+                              <label>Celular 2</label>
+                              <p-inputMask [style]="{'width':'100%','height':'30px'}" formControlName="celular2"
+                                mask="(99) 9 9999-9999" placeholder="(  )       -    "></p-inputMask>
+                            </div>
+
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+
+
+
+                    <!-- Fim Contato -->
+
+                    <!--Modal  Cropper image -->
+                    <ng-container>
+                      <app-ui-modal #modalCropper [dialogClass]="'modal-lg btn-page'">
+                        <div class="app-modal-header">
+                          <h4 class="modal-title">Edição de imagem</h4>
+                          <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+                            (click)="modalCropper.hide()">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+
+                        <div class="app-modal-body">
+
+                          <label class="label-file mt-0" for="foto">Selecionar
+                            Imagem</label>
+                          <input label="foto" name="foto" id="foto" style="border-radius: 5px;" type="file"
+                            (change)="fileChangeEvent($event, pessoa)" />
+                          <div class="row" style="margin-top: 1px;">
+                            <div class="text-left col-md-3" style="height: 15rem;"><br>
+                              <h5>Recortar Imagem</h5>
+                              <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true"
+                                [aspectRatio]="4 / 4" [resizeToWidth]="256" [onlyScaleDown]="false"
+                                [roundCropper]="false" [canvasRotation]="canvasRotation" [transform]="transform"
+                                [alignImage]="'left'" [style.display]="showCropper ? null : 'none'" format="jpeg"
+                                (imageCropped)="imageCropped($event)" (imageLoaded)="imageLoaded()">
+                              </image-cropper>
+                            </div>
+
+                            <div class="text-center col-md-5"><br>
+                              @if(croppedImage.length > 0){
+                              <h5>Visualizar</h5>
+                              }@else{}
+                              <img [src]="croppedImage" /> <br><br>
+                              <span class="p-buttonset"><br>
+
+                                @if(croppedImage.length > 0){
+                                <button pButton pRipple type="button" (click)="updatePessoa()"
+                                  (click)="uploadFoto(pessoa)" (click)="modalCropper.hide()" class="p-button-sm ml-3"
+                                  label="Salvar"
+                                  style="width: 6em;  background:#388669; height: 30px;                                                    border-radius: 10px;"
+                                  icon='pi pi-check'>
+                                </button>
+                                }@else{}
+
+                              </span>
+                            </div>
+
+                            @if(imageChangedEvent){
+                            <div class="col-md-4">
+                              <br><br> <br>
+                              <button pButton pRipple type="button" class="p-button-sm p-button-secondary"
+                                style="width: 14em; height: 30px; border-radius: 10px;" (click)="rotateLeft()">Rodar
+                                a Esquerda             </button>
+                              <br />
+                              <br />
+                              <button pButton pRipple type="button" class="p-button-sm p-button-secondary"
+                                style="width: 14em; height: 30px; border-radius: 10px;" (click)="rotateRight()">Rodar
+                                a
+                                Direita            </button>
+                              <br />
+                              <br />
+                              <button pButton pRipple type="button" class="p-button-sm p-button-secondary"
+                                style="width: 14em; height: 30px; border-radius: 10px;" (click)="resetImage()">
+                                Recarregar Imagem          </button>
+                              <br />
+                              <br />
+                              <button pButton pRipple type="button" class="p-button-sm p-button-secondary"
+                                style="width: 14em; height: 30px; border-radius: 10px;" (click)="zoomOut()">Zoom
+                                -</button>
+                              <br />
+                              <br />
+                              <button pButton pRipple type="button" class="p-button-sm p-button-secondary"
+                                style="width: 14em; height: 30px; border-radius: 10px;" (click)="zoomIn()">Zoom
+                                +</button>
+                            </div>
+                            }
+                          </div>
+                        </div>
+                      </app-ui-modal>
+                    </ng-container>
+                    <!-- fim modal crooper -->
+
+
+                    <!-- MODAL INICIO SITUAÇÃO CADASTRAL -->
+
+                    <div class="col-md-12 col-xl-12" data-backdrop="static">
+                      <app-ui-modal #modalSituacao id="modalSituacao" [dialogClass]="'modal-lg'">
+                        <div class="app-modal-body">
+                          <div class=" mb-3" style="width: 46rem; height: 1rem; padding-bottom: 10px; padding-top: 5px">
+                            <h5 class="mb-1"><strong>{{ pageTitleSituacao }}</strong></h5>
+                          </div>
+                          <hr class="mt-0 mb-2">
+
+                          <!-- Modal Body Inicio -->
+
+                          <div class="row col-12">
+
+                            <!-- Data da Alteração -->
+                            <!--  data -->
+                            <div class="form-group col-md-4 ">
+                              <label>Data</label>
+                              <input readonly type="text" class="form-control "
+                                formControlName="dataHistorico">
+                            </div>
+
+                            <!--  Membro -->
+                            <div class="form-group col-md-8 ">
+                              <label>Membro</label>
+                              <input readonly type="text" class="form-control " formControlName="nome">
+                            </div>
+
+                            <!--  Situação Cadastral  -->
+                            @if(ctr_situacao == 1){
+                            <div class="form-group col-md-6 ">
+                              <label>Situação Atual</label>
+                              <input readonly type="text" class="form-control "
+                                formControlName="situacaoCadastralAnterior">
+                            </div>
+                            }
+
+                            @if(ctr_situacao == 1){
+                            <div class="form-group col-md-6 ">
+
+                              @if(pessoaForm.controls['situacaoCadastral'].value == 'Inativo'){
+                              <label class="text-danger">Nova Situacão
+                              </label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoCadastral'].value == 'Ativo'){
+                              <label class="text-success">Nova Situacão
+                              </label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoCadastral'].value == 'Falecido'){
+                              <label class="text-muted">Nova Situacão</label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoCadastral'].value == 'Transferido'){
+                              <label class="text-danger">Nova Situacão</label>
+                              }
+
+                              <p-select (onChange)="onChangeNovaSituacaoCadastral($event)"
+                                formControlName="situacaoCadastral" [options]="situacaoCadastral" [editable]="false"
+                                [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
+                                resetFilterOnHide="false" dropdownIcon="pi pi-user" [autofocus]="false"
+                                optionValue="nome" placeholder="Selecione..." />
+                            </div>
+                            }
+                            <!--  FIM - Situação Cadastral  -->
+
+                            <!--  Situação Ministerial -->
+                            @if(ctr_situacao == 3){
+                            <div class="form-group col-md-6 ">
+                              <label>Situação Atual</label>
+                              <input readonly type="text" class="form-control"
+                                formControlName="situacaoMinisterialAnterior">
+                            </div>
+                            }
+
+                            @if(ctr_situacao == 3){
+                            <div class="form-group col-md-6">
+
+                              @if(pessoaForm.controls['situacaoMinisterial'].value == 'Inativo'){
+                              <label class="text-danger">Nova Situacão</label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoMinisterial'].value == 'Ativo'){
+                              <label class="text-success">Nova Situacão</label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoMinisterial'].value == 'Não se Aplica'){
+                              <label class="text-muted">Nova Situacão</label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoMinisterial'].value == 'Aguardando'){
+                              <label class="text-primary">Nova Situacão</label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoMinisterial'].value == 'Suspenso'){
+                              <label class="text-danger">Nova Situacão</label>
+                              }
+
+                              <p-select (onChange)="onChangeNovaSituacaoMinisterial($event)"
+                                formControlName="situacaoMinisterial" [options]="situacaoMinisterial" [editable]="false"
+                                [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
+                                resetFilterOnHide="false" dropdownIcon="pi pi-user" [autofocus]="false"
+                                optionValue="nome" placeholder="Selecione..." />
+                            </div>
+
+                            }
+                            <!-- FIM -  Situação Ministerial -->
+
+                            <!--  Situação Espiritual-->
+                            @if(ctr_situacao == 2){
+                            <div class="form-group col-md-6 ">
+                              <label>Situação Atual</label>
+                              <input readonly type="text" class="form-control"
+                                formControlName="situacaoEspiritualAnterior">
+                            </div>
+                            }
+
+                            @if(ctr_situacao == 2){
+                            <div class="form-group col-md-6 ">
+
+                              @if(pessoaForm.controls['situacaoEspiritual'].value == 'Prova'){
+                              <label class="text-danger">Nova Situacão</label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoEspiritual'].value == 'Comunhão'){
+                              <label class="text-success">Nova Situacão</label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoEspiritual'].value == 'Desligado'){
+                              <label class="text-muted">Nova Situacão</label>
+                              }
+
+                              @if(pessoaForm.controls['situacaoEspiritual'].value == 'Observação'){
+                              <label class="text-primary">Nova Situacão</label>
+                              }
+
+                              <p-select (onChange)="onChangeNovaSituacaoEspiritual($event)"
+                                formControlName="situacaoEspiritual" [options]="situacaoEspiritual" [editable]="false"
+                                [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
+                                resetFilterOnHide="false" dropdownIcon="pi pi-user" [autofocus]="false"
+                                optionValue="nome" placeholder="Selecione..." />
+                            </div>
+                            }
+                            <!-- FIM - Situação Espiritual-->
+
+                            @if(ctr_situacao == 4){        
+                            <div class="col-12 card  card-secondary pt-1 pb-1 f-17 text-white"
+                            style="padding-left: 10px; margin-left: 10px; padding-right: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 7px;">
+                              Tipo de Membro
+                            </div>
+                            }
+
+                            <!--  Tipo de Membro -->
+                            @if(ctr_situacao == 4){
+                            <div class="form-group col-md-6 mr-3">
+                              <label>Tipo Anterior</label>
+                              <input readonly type="text" class="form-control " formControlName="tipoMembroAnterior">
+                            </div>
+                            }
+
+                            <!-- Novo Tipo de Membro -->
+                            @if(ctr_situacao == 4){
+                            <div class="form-group col-md-6 ">
+
+                              @if(pessoaForm.controls['tipoMembro'].value == 'Congregado'){
+                              <label class="text-warning">Novo Tipo</label>
+                              }
+
+                              @if(pessoaForm.controls['tipoMembro'].value == 'Membro'){
+                              <label class="text-success">Novo Tipo</label>
+                              }
+
+                              @if(pessoaForm.controls['tipoMembro'].value == 'Obreiro'){
+                              <label class="text-blue">Novo Tipo</label>
+                              }
+
+                              <p-select (onChange)="onChangeNovoTipoMembro($event)" formControlName="tipoMembro"
+                                [options]="tipoMembro" [editable]="false" [filter]="false" filterBy="nome"
+                                [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
+                                dropdownIcon="pi pi-user" [autofocus]="false" optionValue="nome"
+                                placeholder="Selecione..." />
+                            </div>
+                            }
+                            <!-- FIM - Tipo de Membro -->
+
+                            @if(ctr_situacao == 4 && pessoaForm.controls['tipoMembro'].value == 'Obreiro'){
+                            <nav aria-label="breadcrumb">
+                              <div class="form-group row col-sm-12 ml-0 mb-0">
+                                <div class="card mb-2  mt-0"
+                                  style="background-color: rgb(77, 83, 90); border-radius: 5px;">
+                                  <span class="mr-8 m-b-4 m-t-4 text-white font-16">Título | Credencial</span>
+                                </div>
+                              </div>
+                            </nav>
+                            }
+
+                            <!-- INICIO - Titulo/Situação Ministerial -->
+                            @if((ctr_situacao == 4 || ctr_situacao == 3) && pessoaForm.controls['tipoMembro'].value
+                            ==
+                            'Obreiro'){
+                            <div class="form-group col-md-6 ">
+                              <label>Titulo Atual</label>
+                              <input readonly type="text" class="form-control"
+                                formControlName="tituloMinisterialAnterior">
+                            </div>
+                            }
+
+                            @if((ctr_situacao == 4 || ctr_situacao == 3) && pessoaForm.controls['tipoMembro'].value
+                            ==
+                            'Obreiro'){
+                            <div class="form-group col-md-6">
+                              <label class="text-success">Novo Titulo </label>
+                              <p-select (onChange)="onChangeNovoTituloMinisterial($event)"
+                                formControlName="tituloMinisterialId" [options]="tituloMinisteriaisAux"
+                                [editable]="false" [filter]="true" filterBy="nome" [showClear]="false"
+                                optionLabel="nome" resetFilterOnHide="false" dropdownIcon="pi pi-user"
+                                [autofocus]="false" optionValue="id" placeholder="Selecione Título | Credencial" />
+
+                              @if(pessoaForm.controls['tituloMinisterialId'].errors){
+                              <p class="danger" [style]="{'font-size':'12px' }" margin-left>Título | Credencial é
+                                Obrigatório</p>
+                              }
+                            </div>
+                            }
+                            <!--  FIM - Titulo/Situação Ministerial -->
+
+
+
+                            <!------------------------------------------------------------------------------------------------------------------ PRE | JSON  MODAL------------------------------------>
+                            <!-- <div class="row col-md">
+                  <div class="form-group "></div>
+                  <pre> {{ historicoForm.value | json }} </pre><br>
+                  <pre> {{ pessoaForm.value | json }} </pre>
+                </div> -->
+
+                          </div>
+                          <hr class="mb-0">
+                          <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
+                          <div class="modal-footer" style="height: 38px;">
+
+                            <!-- Cancelar -->
+                            <button (click)="modalSituacao.hide(); resetModal(); loadPessoa()" styleClass="p-button-sm"
+                              icon='pi pi-wallet'
+                              style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton pRipple
+                              type="button" label="Cancelar" class="p-button-danger ml-2 p-button-outlined mt-1 ">
+                            </button>
+
+                            <!-- Salvar -->
+                            <strong><button (click)="modalSituacao.hide(); submitForm()" [disabled]="pessoaForm.invalid"
+                                type="button" class="msl-3 float-end mt-0" pButton pRipple label="Salvar"
+                                style="width: 7em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
+                                icon='pi pi-check'>
+                              </button></strong>
+                          </div>
+                          <!-- <hr class="mt-4"> -->
+                        </div>
+
+                      </app-ui-modal>
+
+                      <!------------------------------------------------------------------------------------------------------------------ PRE | JSON ------------------------------------>
+                      <!-- <div class="row col-md">
+                  <div class="form-group "></div>
+                  <pre> {{ historicoForm.value | json }} </pre><br>
+                  <pre> {{ pessoaForm.value | json }} </pre>
+                  </div> -->
+
+                    </div>
+
+                    <!-- FIM MODAL SITUAÇÃO CADASTRAL -->
+
+                  </div>
+
+                  <!-- FIM ABA -DADOS PESSOAIS  -->
+
+                  <!-- INICIO ABA FAMILIA -->
+                  <div class="tab-pane fade" [ngClass]="{ 'show active':
+                    this.activeTab === 'familiar' } " id="familiar" role="tabpanel" aria-labelledby="familiar-tab">
+
+                    <div class="col-12 card card-secondary  pt-1 pb-1 font-17 text-white"
+                      style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 7px;"
+                      (click)="isCollapsed3 = !isCollapsed3" [attr.aria-expanded]="!isCollapsed3">
+                      Conjuge
+                    </div>
+
+                    <div class="collapse" id="collapseExample" [ngbCollapse]="isCollapsed3">
+                      <div class="col-sm-12">
+
+                        <!-- CONJUGE -->
+                        <div class="row ">
+                          <div class="form-group col-md-4">
+                            <label>Conjuge cadastrado </label>
+                            <p-select (onChange)="onChangeConjuge($event)" formControlName="conjugeId"
+                              [options]="pessoas" [editable]="false" [filter]="true" filterBy="nome" [showClear]="true"
+                              optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-user" optionValue="id"
+                              [autofocus]="true" placeholder="Selecione um conjuge cadastrado" />
+                          </div>
+
+                          @if(!(idConjugeDropDown == true || this.pessoaForm.controls['conjugeId'].value)){
+                          <div class="form-group col-md-4">
+                            <label>Conjuge não cadastrado </label>
+                            <input autocomplete="off" type="text" class="uppercase
+                              form-control " formControlName="conjuge"
+                              style="text-transform: uppercase">
+                          </div>
+                          }
+
+                          <!-- dataCasamento -->
+                          <div class="form-group col-md-3">
+                            <label>Data casamento</label>
+                            <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                              [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
+                              inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy"
+                              formControlName="dataCasamento" placeholder="dd/mm/aaaa" />
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                    <!--FIM CONJUGE  -->
+
+                    <div class="col-12 card card-secondary  pt-1 pb-1 font-17 text-white"
+                      style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 7px;"
+                      (click)="isCollapsed4 = !isCollapsed4" [attr.aria-expanded]="!isCollapsed4">
+                      Filiação
+                    </div>
+
+                    <div class="collapse" id="collapseExample" [ngbCollapse]="isCollapsed4">
+
+                      <div class="mb-3 ">
+                        <div class="row mb-4">
+                          <!-- <div class="col-md-12 col-xl-6"> -->
+                          <div class="row ">
+                            <!-- namePai -->
+                            <div class="form-group col-md-5">
+                              <label>Nome do pai</label>
+                              <input autocomplete="off" type="text" class="form-control "
+                                formControlName="nomePai" style="text-transform: uppercase">
+                            </div>
+
+                            <!-- nameMãe -->
+                            <div class="form-group col-md-5">
+                              <label>Nome da mãe</label>
+                              <input autocomplete="off" type="text" class="form-control "
+                                formControlName="nomeMae" style="text-transform: uppercase">
+                            </div>
+                            <!-- </div> -->
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <form [formGroup]="filhoForm" autocomplete="off" (submit)="submitFormFilho()">
+
+                      <ng-container>
+
+                        <div class="col-12 card card-secondary  pt-1 pb-1 font-17 text-white"
+                          style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 7px;"
+                          (click)="isCollapsed5 = !isCollapsed5" [attr.aria-expanded]="!isCollapsed5">
+                          Filhos
+                        </div>
+
+                        <div class="collapse" id="collapseExample" [ngbCollapse]="isCollapsed5">
+
+                          <!-- pesquisar nome cadastrado -->
+                          <div class="row">
+                            <div class="form-group col-sm-12">
+
+                              <!-- Pesquisa nome em pessoa -->
+                              @if((valorSN === 's')){
+                              <div class="form-group col-md-4 ">
+                                <p-select formControlName="nome" [options]="pessoas" p-select optionValue="nome"
+                                  optionLabel="nome" (onChange)="doSelectFilhos($event)"
+                                  placeholder="Selecione um filho " />
+                              </div>
+                              }
+                            </div>
+                          </div>
+
+                          @if(valorSN === 'n'){
+                          <div class="form-group row">
+                            <div class="row col-md-12">
+
+                              <!-- Nome filho -->
+                              @if(valorSN === 'n'){
+                              <div class="form-group col-md-4">
+                                <label>Nome</label>
+                                <input autocomplete="off" type="text" class=" form-control" formControlName="nome"
+                                  style="text-transform: uppercase" placeholder="Digite o nome completo">
+
+                                @if(filhoForm.controls['nome'].dirty && filhoForm.controls['nome'].errors){
+                                <p class="danger" margin-left>Nome inválido</p>
+                                }
+                              </div>
+                              }
+                              <!-- Email filho -->
+                              <div class="form-group col-md-3">
+                                <label>Email</label>
+                                <input autocomplete="off" type="text" class=" form-control" formControlName="email"
+                                  style="margin-left: 0;" placeholder="E-Mail">
+                              </div>
+
+                              <!-- Genero Sexo -->
+                              <div class="form-group col-md-2 ">
+                                <label>Sexo</label>
+                                <p-select formControlName="sexo" [options]="sexo" [editable]="false" [filter]="false"
+                                  filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="true"
+                                  dropdownIcon="pi pi-user" [autofocus]="false" optionValue="nome"
+                                  placeholder="Selecione" />
+                              </div>
+
+                              <!-- dataNascimento filho-->
+                              <div class="form-group col-md-2 ">
+                                <label for="dataNascimento">Nascimento</label>
+                                <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                                  [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
+                                  inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy"
+                                  formControlName="dataNascimento" placeholder="dd/mm/aaaa" />
+                              </div>
+
+
+                              <!-- Botao Inserir Não cadastrado -->
+                              <div class="form-group col-md-1 mt-3 ml-auto 
+                                      ">
+                                <label> </label>
+                                <button type="button" (click)="createFilho()" class=" " pButton pRipple label="Inserir"
+                                  style=" width:
+                                        6em;  background:#388669; height: 30px; border-radius: 10px;"
+                                  icon='pi pi-plus'>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                          }
+                        </div>
+
+                      </ng-container>
+
+                      <div class="card  card-success">
+                        <span class="m-b-20"></span>
+                        <div class="padding-20 " style="padding-top: 1px;">
+                          <p-table #dtfilho [value]="filhos" [globalFilterFields]="['nome']"
+                            [showCurrentPageReport]="true" showGridlines stripedRows
+                            emptyMessage="Nenhum registro encontrado">
+                            <!-- <ng-template pTemplate="caption"> -->
+                            <!-- DATA QUE TIVER AQUI FICAR DENTRO DESTE NG-TEMPLATE FICA DESFORMATADA Só pra Lembrar -->
+                            <!-- </ng-template> -->
+
+
+                            <ng-template #header>
+                              <tr class="pt-1 pb-1">
+                                <th
+                                  class="pt-1 pb-1" style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 1px; padding-bottom: 1px; border-top-left-radius: 5px; ">
+                                  Nome</th>
+                                <th
+                                 class="pt-1 pb-1" style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 1px; padding-bottom: 1px;">
+                                  E-mail</th>
+                                <th
+                                  style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 1px; padding-bottom: 1px;"
+                                  class="col-data-200 pt-1 pb-1">
+                                  Sexo</th>
+                                <th
+                                  style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 1px; padding-bottom: 1px;"
+                                  class="col-data-content pt-1 pb-1">
+                                  Nascimento</th>
+                                <th
+                                  style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 1px; padding-bottom: 1px; border-top-right-radius: 5px;"
+                                  class="col-acoes-header pt-1 pb-1">
+                                  Ações
+                                </th>
+
+                              </tr>
+                            </ng-template>
+
+                            <ng-template #body let-filho>
+                              <tr>
+                                <td class="m-r-15" style="font-size: 12px;">{{
+                                  filho.nome }}</td>
+                                <td style="font-size: 12px;">{{
+                                  filho.email }}</td>
+                                <td class="col-data-content" style="font-size:
+                                    12px;">{{ filho.sexo }}
+                                </td>
+                                <td class="col-data-content" style="font-size:
+                                    12px;">{{ filho.dataNascimento }}
+                                </td>
+
+                                <td class="col-acoes">
+                                  <button (click)="deleteFilho(filho)" [placement]="'right'" pButton pRipple
+                                    type="button" icon='pi pi-times' [style]="{'height': '2rem', 'width':
+                                      '2rem'} " [placement]="'top'" ngbTooltip="Excluir" class="p-button-rounded p-button-sm
+                                      p-button-danger p-button-outlined">
+                                  </button>
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <!-- FINAL ABA FAMILIA -->
+
+                  <!-- INICIO DOCUMENTO  -->
+                  <div class="tab-pane fade" [ngClass]="{ 'show active':
+                  this.activeTab === 'documento' } " id="documento" role="tabpanel" aria-labelledby="documento-tab">
+                    <div class="row">
+                      <div class="col-md-12 order-md-2">
+                        <div class="row">
+                          <div class="col-sm-12">
+                            <div class="row">
+                              <div class="col-md-12 col-xl-12">
+                                <div class="row">
+                                  <div class="col-sm-12">
+                                    <div class="">
+                                      <div class="mb-3 ">
+                                        <div class="">
+
+                                          <form [formGroup]="documentoForm" autocomplete="off">
+                                            <!-- Upload de Arquivos -->
+
+                                            <div class="row col-sm-8 mt-2 mb-2">
+                                              <div class="input-group  mb-3">
+                                                <!-- Para permitir selecionar mais de um arquivo ao mesmo tempo, usar a liha de baixo no input com "multiple" -->
+                                                <!-- <input type="file" class="form-control" id="inputGroupFile" multiple -->
+                                                <img src="">
+                                                <input type="file" class="form-control " id="inputFile"
+                                                  size="1000000000" (change)="onChangeDocumento($event, documento)" />
+                                                <label for="inputFile" id="fileLabel"
+                                                  class="input-group-text text-white ml-0 mb-2 f-12"
+                                                  style="background-color : #1a82ce; height: 30px; cursor:pointer; border-top-left-radius: 5px;  border-bottom-left-radius: 5px;">Escolher
+                                                  Ficheiros</label>
+                                                <label for="inputGroupFile" id="fileLabel1"
+                                                  class="form-control mr-3 mb-2"
+                                                  style="border-top-right-radius: 5px;   border-bottom-right-radius: 5px;"></label>
+
+
+                                                @if(size <= 2000000){ <strong><button [disabled]="!files" type="buton"
+                                                    (click)="onUpload()" class="mr-5 ml-0 mr-8 msl-3  " pButton pRipple
+                                                    label="Enviar"
+                                                    style="width: 7em;  background:#388669; font-size: small ; height: 30px; border-radius: 5px; "
+                                                    icon='pi pi-upload'>
+                                                  </button></strong>
+                                                  }
+
+                                              </div>
+                                            </div>
+
+                                            <!-- Inicio Table Documento -->
+                                            <div class="card  card-primary mt-0">
+                                              <span class="m-b-20"></span>
+                                              <div class="padding-20 " style="padding-top: 1px;">
+                                                <p-table #dtdocumento [value]="documentos"
+                                                  [globalFilterFields]="['name']" showGridlines stripedRows
+                                                  emptyMessage="Nenhum registro encontrado">
+                                                  <ng-template #header>
+                                                    <tr>
+                                                      <th
+                                                        style="border-top-left-radius: 5px; border-bottom-left-radius: 5px; background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 1px; padding-bottom: 1px;"
+                                                        class="col-data-content pt-1 pb-1">Data</th>
+
+                                                      <th
+                                                        class="pt-1 pb-1" style="font-size: 12px; background-color:rgb(77, 83, 90); color: aliceblue; padding-top: 1px; padding-bottom: 1px;">
+                                                        <b>Documento </b>
+                                                      </th>
+                                                      <th class="col-acoes-header pt-1 pb-1"
+                                                        style="font-size: 12px; background-color: rgb(77, 83, 90); color: aliceblue; padding-top: 1px; padding-bottom: 1px;">
+                                                        Ações</th>
+
+                                                    </tr>
+                                                  </ng-template>
+
+                                                  <ng-template #body let-documento>
+                                                    <tr>
+                                                      <td class="col-data-content" style="font-size: 12px;">{{
+                                                        documento.data }}
+                                                      </td>
+                                                      <td style="font-size: 12px;">{{
+                                                        documento.nomeArquivo }}</td>
+
+                                                      <td class="col-acoes">
+
+                                                        <!-- Download -->
+                                                        <button type="button" (click)="onDownload(documento)"
+                                                          class="btn btn-icon btn-outline-success p-1"
+                                                          [style]="{'margin-right': '1rem', 'height': '30px', 'width': '30px'} "
+                                                          [placement]="'top'" ngbTooltip="Baixar">
+                                                          <i class="pi pi-download"></i>
+                                                        </button>
+
+                                                        <Script>
+                                                          // Pegar somente a ultima parte, afinal podem ter pastas com . no caminho
+                                                          var ext = path.split('/').pop();
+                                                          // se não houver extensão, retorna vazio, se houver retorna a extensão
+                                                          // sendo que .htaccess é um arquivo escondido e não uma extensão
+                                                          ext = ext.indexOf('.') < 1 ? '' : ext.split('.').pop();
+                                                        </Script>
+
+                                                        <!-- Excluir -->
+                                                        <button (click)="exclusaoDocumento(documento)" type="button"
+                                                          class="btn btn-icon btn-outline-danger ml-2 p-1"
+                                                          [style]="{'height': '2rem', 'width': '2rem'} "
+                                                          [placement]="'top'" ngbTooltip="Excluir"> <i
+                                                            class='pi pi-trash'></i>
+                                                        </button>
+
+                                                      </td>
+                                                    </tr>
+                                                  </ng-template>
+                                                </p-table>
+                                              </div>
+                                            </div>
+                                          </form>
+                                          <!-- Fim Table Documento -->
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <!-- <div class="form-group ">
+                            <pre> {{documentoForm.value | json}} </pre><br>
+                            </div> -->
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- FIM ABA DOCUMENTO -->
+
+                  <!-- INICIO ABA - DADOS MINISTERIAIS -->
+                  <div class="tab-pane fade" [ngClass]="{ 'show active':
+                 this.activeTab === 'titulo' } " id="titulo" role="tabpanel" aria-labelledby="titulo-tab">
+
+                    <div class="col-12 card card-secondary  pt-1 pb-1 font-17 text-white"
+                      style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 7px;"
+                      (click)="isCollapsed2 = !isCollapsed2" [attr.aria-expanded]="!isCollapsed2">
+                      Dados Ministeriais
+                    </div>
+
+                    <div class="collapse" id="collapseExample" [ngbCollapse]="isCollapsed2">
+                      <div class="row">
+                        <div class="col-md-12 order-md-2">
+                          <div class="row">
+                            <div class="col-sm-12">
+                              <div class="mb-3 ">
+
+                                <div class="row">
+                                  <!-- Titulo Ministerial -->
+                                  <div class="form-group col-md-3 ">
+                                    <label for="tempoFe">Título Ministerial</label>
+                                    <p-select formControlName="tituloMinisterialId" [options]="tituloMinisteriais"
+                                      [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
+                                      optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-credit-card"
+                                      [autofocus]="false" optionValue="id" readonly="true"
+                                      placeholder="Selecione uma Credencial" />
+                                  </div>
+
+                                  <!-- dataConversao -->
+                                  <div class="form-group col-md-2">
+                                    <label for="dataConversao">Data Conversão</label>
+                                    <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                                      [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true"
+                                      [showIcon]="true" inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy"
+                                      formControlName="dataConversao" placeholder="dd/mm/aaaa" />
+                                  </div>
+
+                                  <!-- dataBatismoES -->
+                                  <div class="form-group col-md-2">
+                                    <label for="dataBatismoES">Data Batismo ES</label>
+                                    <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                                      [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true"
+                                      [showIcon]="true" inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy"
+                                      formControlName="dataBatismoES" placeholder="dd/mm/aaaa" />
+                                  </div>
+
+                                  <!-- membroRecebidoPor -->
+                                  <div class="form-group col-md-3">
+                                    <label>Admissão</label>
+                                    <p-select formControlName="membroRecebidoPor" [options]="tipoAdemissao"
+                                      [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
+                                      optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-user"
+                                      [autofocus]="false" optionValue="nome" placeholder="Selecione tipo de Admissão" />
+
+                                  </div>
+
+                                  <!-- dataBatismoAguas -->
+                                  <div class="form-group col-md-2">
+                                    <label for="dataBatismoAguas">Data Batismo
+                                      águas</label>
+                                    <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                                      [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true"
+                                      [showIcon]="true" inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy"
+                                      formControlName="dataBatismoAguas" placeholder="dd/mm/aaaa" />
+                                  </div>
+
+                                  <!-- cidadeBatismoAguas -->
+                                  <div class="form-group col-md-3">
+                                    <label for="cidadeBatismoAguas">Cidade Batismo
+                                      Aguas</label>
+                                    <input type="text" class="form-control " id="cidadeBatismoAguas"
+                                      formControlName="cidadeBatismoAguas" style="text-transform: uppercase">
+                                  </div>
+
+                                  <!-- denominacaoBatismo -->
+                                  <div class="form-group col-md-3">
+                                    <label>Igreja que batizou</label>
+                                    <p-select formControlName="denominacaoBatismo" autocomplete="off" [options]
+                                      [options]="igrejaBatismo" p-select optionValue="nome" optionLabel="nome"
+                                      placeholder="Selecione uma igreja " />
+                                  </div>
+
+                                  <!-- tempoFe -->
+                                  <div class="form-group col-md-2">
+                                    <label for="tempoFe">Tempo Fé</label>
+                                    <input type="text" class="form-control " formControlName="tempoFe">
+                                  </div>
+                                </div>
+                                <!-- Cabeçalho fim -->
+
+
+                                <div class="row">
+
+                                  <!-- Sessão apenas para Obreiros -->
+                                  @if(pessoa!.tipoMembro === 'Obreiro'){
+                                  <div class="col-md-12 col-xl-12">
+
+                                    <!-- Botão Inserir Cargos Ministeriais -->
+                                    <ol class="breadcrumb bg-white m-b-0 mt-0 ">
+                                      <span class="text-dark font-16">Titulos Ministeriais</span>
+                                      @if(id > 0){
+                                      <button (click)="modalSeparacao.show();
+                                             setModalInclusao(); imodo = 0" type="button" class="mr-2 ml-4 " pButton
+                                        pRipple label="Inserir" style="width: 7em; font-size: small; background:#388669; height: 30px;
+                                             border-radius: 5px; margin-left: 40px; " icon='pi pi-plus'>
+                                      </button>
+                                      }
+                                    </ol>
+
+                                    <!-- Incio Modal Separação   Incio Modal Separação  Incio Modal Separação  Incio Modal Separação  Incio Modal Separação  Incio Modal Separação -->
+                                    <form [formGroup]="separacaoForm" autocomplete="off"
+                                      (submit)="submitFormSeparacao()">
+                                      <div class="col-sm-12">
+                                        <app-ui-modal #modalSeparacao [dialogClass]="'modal-lg'">
+                                          <div class="app-modal-header ">
+                                            <div class="card ml-2 mr-2
+                                           " style="width: 46rem;
+                                           height: 1rem;">
+                                              <ol class="breadcrumb " style="background: #1a82ce; height:
+                                             2rem; padding-bottom: 35px; padding-top: 5px;">
+                                                <h5 class="modal-title text-white ml-3">{{
+                                                  PageTitleModal }}</h5>
+                                              </ol>
+                                            </div>
+                                          </div>
+
+                                          <div class="app-modal-body">
+
+                                            <!-- Modal Body Inicio -->
+
+                                            <div class="row ml-2 mr-2">
+                                              <!-- date -->
+                                              <div class="form-group col-md-3">
+                                                <label for="dataSeparacao">Data da
+                                                  separação</label>
+                                                <p-datepicker [style]="{'width':'100%','height':'30px'}"
+                                                  [monthNavigator]="true" [yearNavigator]="true" yearRange="1900:2100"
+                                                  [showButtonBar]="true" [showIcon]="true" inputId="icondisplay"
+                                                  dataType="string" dateFormat="dd/mm/yy"
+                                                  formControlName="dataSeparacao" placeholder="dd/mm/aaaa" />
+                                              </div>
+
+                                              <!-- apresentadoPor -->
+                                              <div class="form-group col-md-9">
+                                                <label>Apresentado por</label>
+                                                <input type="text" class="form-control "
+                                                  formControlName="apresentadoPor" style="text-transform: uppercase">
+
+                                                @if(separacaoForm.controls['apresentadoPor'].dirty &&
+                                                separacaoForm.controls['apresentadoPor'].errors){
+                                                <p class="danger" margin-left>Nome inválido</p>
+                                                }
+                                              </div>
+
+                                              <!-- id -->
+                                              <div class="form-group " hidden>
+                                                <label>Id Pessoa</label>
+                                                <input type="text" class="form-control" formControlName="pessoaId">
+                                              </div>
+
+                                              <div class="form-group col-md-5">
+                                                <label>Título da Sagração</label>
+                                                <p-select formControlName="credencial" autocomplete="off" [options]
+                                                  [options]="tituloMinisteriais" p-select optionValue="nome"
+                                                  optionLabel="nome" placeholder="Selecione... " />
+
+                                                @if(separacaoForm.controls['credencial'].dirty &&
+                                                separacaoForm.controls['credencial'].errors){
+                                                <p class="danger" margin-left>Campo obrigatório</p>
+                                                }
+                                              </div>
+
+                                              <div class="form-group col-md-7">
+                                                <label>Local da Separação</label>
+                                                <input class="form-control "
+                                                  formControlName="localSeparacao" style="text-transform: uppercase">
+
+                                                @if(separacaoForm.controls['localSeparacao'].dirty &&
+                                                separacaoForm.controls['localSeparacao'].errors){
+                                                <p class="danger" margin-left>Local inválido</p>
+                                                }
+                                              </div>
+
+                                              <!-- Observação -->
+                                              <div class="form-group col-md-12">
+                                                <label>Observação</label>
+                                                <textarea class="form-control "
+                                                  formControlName="observacao" style="text-transform: uppercase"
+                                                  rows="3"></textarea>
+                                              </div>
+                                            </div>
+
+                                            <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
+                                            <div class="modal-footer">
+
+                                              <button data-dismiss="modal" type="button" class=" ml-4" pButton pRipple
+                                                (click)="modalSeparacao.hide();
+                                             resetModal()" label="Fechar" style="width: 7em; height: 30px; font-size: small;
+                                             border-radius: 5px; border: 0;background: #1a82ce;" icon='pi pi-wallet'>
+                                              </button>
+
+                                              <strong><button (click)="modalSeparacao.hide()"
+                                                  [disabled]="separacaoForm.invalid" type="submit" class=" mr-5 ml-4"
+                                                  pButton pRipple label="Salvar"
+                                                  style="width: 7em;  background:#388669; height: 30px; border-radius: 5px; font-size: small; "
+                                                  icon='pi pi-check'>
+                                                </button></strong>
+
+                                            </div>
+                                            <!-- <div class="form-group "></div>
+                                         <pre> {{separacaoForm.value | json}} </pre> -->
+                                          </div>
+                                        </app-ui-modal>
+                                      </div>
+                                    </form>
+
+                                    <!-- Inicio Table Separação  -->
+                                    <div class="card  card-success">
+                                      <span class="m-b-20"></span>
+                                      <div class="padding-20 " style="padding-top: 1px;">
+                                        <p-table #dtseparacao [value]="separacoes" [globalFilterFields]="['credencial']"
+                                          showGridlines stripedRows responsiveLayout="stack"
+                                          emptyMessage="Nenhum registro encontrado">
+
+
+                                          <ng-template #header>
+                                            <tr>
+                                              <th class="col-foto pt-1 pb-1"
+                                                style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue;  padding-top: 1px; padding-bottom: 1px;  border-top-left-radius: 5px;">
+                                                Código</th>
+                                              <th
+                                               class="pt-1 pb-1" style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 1px; padding-bottom: 1px;">
+                                                Credencial</th>
+                                              <th class="col-data-content-3 pt-1 pb-1"
+                                                style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue;  padding-top: 1px; padding-bottom: 1px;">
+                                                Local separação
+                                              </th>
+                                              <th
+                                                style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue;  padding-top: 1px; padding-bottom: 1px;"
+                                                class="col-data-content pt-1 pb-1">Data</th>
+                                              <th
+                                                style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue;  padding-top: 1px; padding-bottom: 1px;  border-top-right-radius: 5px;"
+                                                class="col-acoes-header-1 pt-1 pb-1">Ações</th>
+                                            </tr>
+                                          </ng-template>
+
+                                          <ng-template #body let-separacao>
+                                            <tr>
+                                              <td class="m-r-15" style=" font-size:  12px;">{{ separacao.id }}
+                                              </td>
+                                              <td style="font-size: 12px;">{{
+                                                separacao.credencial }}</td>
+                                              <td class="col-data-content-3" style="font-size: 12px;">{{
+                                                separacao.localSeparacao }}
+                                              </td>
+                                              <td class="col-data-content" style="font-size: 12px;">{{
+                                                separacao.dataSeparacao }}
+                                              </td>
+
+                                              <td class="col-acoes" style="min-width:7rem;">
+
+                                                <!-- Editar -->
+                                                <button (click)="modalSeparacao.show();
+                                           loadSeparacao(separacao); setModalEdicao(); imodo= 1" type="button" class="btn btn-icon
+                                           btn-outline-success p-1" [style]="{'margin-right': '1rem','height': '2rem', 'width':
+                                           '2rem'} " [placement]="'top'" ngbTooltip="Editar">
+                                                  <i class='pi pi-pencil'></i>
+                                                </button>
+
+                                                <!-- Excluir -->
+                                                <button (click)="exclusaoSeparacao(separacao)" type="button" class="btn btn-icon btn-outline-danger
+                                           ml-2 p-1" [style]="{'height': '2rem', 'width':
+                                           '2rem'} " [placement]="'top'" ngbTooltip="Excluir">
+                                                  <i class='pi pi-trash'></i>
+                                                </button>
+
+                                              </td>
+                                            </tr>
+                                          </ng-template>
+                                        </p-table>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  }
+
+                                  <!--Fim Sessão apenas para Obreiros -->
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- FINAL ABA - DADOS MINISTERIO -->
+
+
+                  <!-- INICIO ABA - HISTORICO -->
+                  <div class="tab-pane fade" [ngClass]="{ 'show active':
+                 this.activeTab === 'historico' } " id="historico" role="tabpanel" aria-labelledby="historico-tab">
+                    <div class="col-sm-12">
+                      <div class="mb-3 ">
+
+                        <!-- Inicio Table   -->
+                        <div class="card  card-success mt-0">
+                          <span class="m-b-20"></span>
+                          <div class="padding-20 " style="padding-top: 1px;">
+                            <p-table [value]="historicos" [globalFilterFields]="['data']" showGridlines stripedRows
+                              emptyMessage="Nenhum registro encontrado">
+                              <ng-template #header>
+                                <tr>
+
+                                  <th
+                                    style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue;   border-top-left-radius: 5px;"
+                                    class="col-data-180 pt-1 pb-1">Data</th>
+
+                                  <th class="col-data-300"
+                                    style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue;  ">
+                                    Usuário</th>
+
+                                  <th class="col-data-180 pt-1 pb-1"
+                                    style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; ">
+                                    Módulo
+                                  </th>
+
+                                  <th class="col-data-180 pt-1 pb-1"
+                                    style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue;   ">
+                                    Ação
+                                  </th>
+
+                                  <th
+                                    class="pt-1 pb-1" style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue;  border-top-right-radius: 5px;">
+                                    Dados | Informações
+                                  </th>
+
+                                </tr>
+                              </ng-template>
+
+                              <ng-template #body let-historico>
+                                <!-- Alteração = Azul Claro -->
+                                @if(historico.acao == 'Alteração' && historico.modulo !== 'Carta'){
+                                <tr style="background-color: #D1ECFF">
+                                  <td class="col-data-180" style="font-size: 12px;">{{
+                                    historico.data }}</td>
+
+                                  <td class="col-data-300" style="font-size: 12px;">{{
+                                    historico.usuario }}
+                                  </td>
+
+                                  <td class="col-data-300" style="font-size: 12px;">{{ historico.modulo +' | '+
+                                    historico.ocorrencia }}
+                                  </td>
+
+                                  <td class="col-data-180" style="font-size: 12px;">{{
+                                    historico.acao }}
+                                  </td>
+
+                                  <td style="font-size: 12px">Informação Anterior:   <b
+                                      [style.color]="(historico.dadoAntigo == 'Ativo' || historico.dadoAntigo =='Comunhão') ? 'green': (historico.dadoAntigo == 'Transferido' || historico.dadoAntigo == 'Inativo' || historico.dadoAntigo == 'Prova') ? 'red': historico.dadoAntigo == 'Suspenso' ? 'yellow': 'black'">{{
+                                      historico.dadoAntigo }}</b> <br>
+                                    <span style="font-size: 12px">Mudado para:   <b
+                                        [style.color]="(historico.dadoNovo == 'Ativo' || historico.dadoNovo == 'Comunhão') ? 'green' : (historico.dadoNovo == 'Transferido' || historico.dadoNovo == 'Inativo' || historico.dadoNovo == 'Prova') ? 'red' : historico.dadoNovo == 'Suspenso' ? 'yellow' : 'black'">{{
+                                        historico.dadoNovo }}</b></span>
+                                  </td>
+                                </tr>
+                                }
+
+                                <!-- Inclusão = Verde Claro -->
+                                @if(historico.acao == 'Inclusão' && historico.modulo !== 'Carta'){
+                                <tr style="background-color: #E0FEC2">
+                                  <td class="col-data-180" style="font-size: 12px;">{{
+                                    historico.data }}</td>
+
+                                  <td class="col-data-300" style="font-size: 12px;">{{
+                                    historico.usuario }}
+                                  </td>
+
+                                  <td class="col-data-300" style="font-size: 12px;">{{
+                                    historico.modulo +' | '+ historico.ocorrencia }}
+                                  </td>
+
+                                  <td class="col-data-180" style="font-size: 12px;">{{
+                                    historico.acao }}
+                                  </td>
+
+                                  <td style="font-size: 12px">Informação Anterior:   <b
+                                      [style.color]="(historico.dadoAntigo == 'Ativo' || historico.dadoAntigo =='Comunhão') ? 'green': (historico.dadoAntigo == 'Transferido' || historico.dadoAntigo == 'Inativo' || historico.dadoAntigo == 'Prova') ? 'red': historico.dadoAntigo == 'Suspenso' ? 'yellow': 'black'">{{
+                                      historico.dadoAntigo }}</b> <br>
+                                    <span style="font-size: 12px">Mudado para:   <b
+                                        [style.color]="(historico.dadoNovo == 'Ativo' || historico.dadoNovo == 'Comunhão') ? 'green' : (historico.dadoNovo == 'Transferido' || historico.dadoNovo == 'Inativo' || historico.dadoNovo == 'Prova') ? 'red' : historico.dadoNovo == 'Suspenso' ? 'yellow' : 'black'">{{
+                                        historico.dadoNovo }}</b></span>
+                                  </td>
+
+                                </tr>
+                                }
+
+                                <!-- Inclusão = Carta de Mudança -->
+                                @if(historico.modulo == 'Carta'){
+                                <tr style="background-color: rgb(250, 186, 186)">
+                                  <td class="col-data-180" style="font-size: 12px;">{{
+                                    historico.data }}</td>
+
+                                  <td class="col-data-300" style="font-size: 12px;">{{
+                                    historico.usuario }}
+                                  </td>
+
+                                  <td class="col-data-300" style="font-size: 12px;">{{
+                                    historico.modulo }}
+                                  </td>
+
+                                  <td class="col-data-180" style="font-size: 12px;">{{
+                                    historico.acao }}
+                                  </td>
+
+                                  <td style="font-size: 12px">Nome(s):  <b>{{ historico.nomeMembro }}</b> <br>
+                                    <span style="font-size: 12px">Filho(s):    <b>{{ historico.filho
+                                        }}</b></span><br>
+                                    <span style="font-size: 12px">Destino:   <b>{{ historico.dado2
+                                        }}</b></span><br>
+                                    <span style="font-size: 12px">Tipo:         <b>Saída</b></span><br>
+                                    <span style="font-size: 12px">Congregação:   <b>{{ historico.dado1
+                                        }}</b></span>
+                                </tr>
+                                }
+
+                              </ng-template>
+                            </p-table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- FINAL ABA - HISTORICO -->
+
+
+                  <!-- INICIO ABA - CARGOS -->
+                  <div class="tab-pane fade" [ngClass]="{ 'show active':
+                    this.activeTab === 'cargo' } " id="cargo" role="tabpanel" aria-labelledby="cargo-tab">
+                    <div class="row">
+                      <div class="col-md-12 order-md-2">
+
+                        <div class="row">
+                          <div class="col-sm-12">
+                            <div class="row">
+                              <div class="col-md-12 col-xl-6">
+                                <div class="card mb-2">
+
+                                  <div class="row ml-3 mr-3 ">
+
+                                    Cargos -1
+
+                                  </div>
+
+                                </div>
+                              </div>
+                              <div class="col-md-12 col-xl-6">
+                                <div class="card mb-2">
+
+                                  <div class="row ml-3 mr-3 ">
+
+                                    Cargos 2
+
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <!--Fim Cargos -->
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- FIM ABA - CARGOS -->
+                  <!-- INICIO ABA -MODELO -->
+                  <div class="tab-pane fade" [ngClass]="{ 'show active':
+                  this.activeTab === 'modelo' } " id="modelo" role="tabpanel" aria-labelledby="modelo-tab">
+                    <div class="row">
+                      <div class="col-md-12 order-md-2">
+                        <div class="row">
+                          <div class="col-sm-12">
+                            <!-- Modelo -->
+                            <div class="row">
+                              <div class="col-md-12 col-xl-6">
+                                <div class="card mb-2">
+
+                                  <div class="row ml-3 mr-3 ">
+                                    1
+
+                                  </div>
+
+                                </div>
+                              </div>
+                              <div class="col-md-12 col-xl-6">
+                                <div class="card mb-2">
+                                  2
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-12 col-xl-12">
+                              <div class="card mb-2">
+
+                                <!-- TIPOS DE CARDS E COM ELEVAÇÕES DIFERENTES -->
+                                <div class="shadow-none p-3 mb-3 bg-light rounded">No
+                                  shadow</div>
+                                <div class="shadow-sm p-3 mb-3 bg-white rounded">Small
+                                  shadow</div>
+                                <div class="shadow p-3 mb-3 bg-white rounded">Regular
+                                  shadow</div>
+                                <div class="shadow-lg p-3 mb-3 bg-white rounded">Larger
+                                  shadow</div>
+                              </div>
+
+
+                              <div class="col-md-12">
+                                <div class="card mb-2">
+                                  <div class="row form-group">
+                                    <div class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+                                      <label>Thousand Separator</label>
+                                    </div>
+                                    <div class="col-lg-6 col-md-12 col-sm-12">
+                                      <input type="text" mask="separator" class="form-control"
+                                        placeholder="separator" />
+                                    </div>
+                                  </div>
+                                  <div class="row form-group">
+                                    <div class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+                                      <label>Thousand Separator</label>
+                                    </div>
+                                    <div class="col-lg-6 col-md-12 col-sm-12">
+                                      <input type="text" mask="separator" thousandSeparator="." class="form-control"
+                                        placeholder="Dot Separator" />
+                                    </div>
+                                  </div>
+                                  <div class="row form-group">
+                                    <div class="col-form-label col-lg-3 col-sm-12 text-lg-end">
+                                      <label>Comma Separator</label>
+                                    </div>
+                                    <div class="col-lg-6 col-md-12 col-sm-12">
+                                      <input type="text" mask="separator.0" thousandSeparator="," class="form-control"
+                                        placeholder="Comma Separator" />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                            </div>
+                          </div>
+                          <!--Fim modelo -->
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!--  Fim  Modelo-->
+                </div>
+
+                <div class="row ">
+                  <!-- <div class="form-group ">
+                    <pre> {{pessoaForm.value | json}} </pre><br>
+                  </div> -->
+                  <!-- <div class="form-group ">
+                      <pre> {{separacaoForm.value | json}} </pre>
+                  </div>
+                  <div class="form-group ">
+                    <pre> {{filhoForm.value | json}} </pre>
+                    </div>  -->
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

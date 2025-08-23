@@ -1,0 +1,189 @@
+/* Você pode adicionar estilos globais a este arquivo e também importar outros arquivos de estilo. */
+
+// Para gride primeNg
+@media (min-width: 1200px) {
+
+  .col-data-header {
+    width: 120px;
+  }
+
+  .col-data-content {
+    text-align: center !important;
+    width: 200px;
+  }
+
+  .col-date {
+    // Para datas
+    text-align: center !important;
+    width: 130px;
+  }
+
+  .col-data-150 {
+    text-align: left !important;
+    width: 150px;
+  }
+
+  .col-data-content-2 {
+    text-align: left !important;
+    width: 250px;
+  }
+
+  .col-data-content-4 {
+    text-align: left !important;
+    width: 390px;
+  }
+
+}
+
+.col-data-content-3 {
+  text-align: left !important;
+  width: 300px;
+}
+
+.col-foto {
+  width: 50px;
+  text-align: center !important;
+}
+
+@media (min-width: 40em) {
+  .col-valor-header {
+    width: 100px;
+  }
+
+  .col-valor {
+    text-align: right !important;
+  }
+
+  .col-data-header {
+    width: 120px;
+  }
+
+  .col-data-id {
+    text-align: center !important;
+    width: 100px;
+  }
+
+  .col-check-box {
+    text-align: center !important;
+    width: 50px;
+  }
+
+  .col-data-100 {
+    //Alinha centro
+    text-align: center !important;
+    width: 100px;
+  }
+
+  .col-data-180 {
+    //Alinha esquerda
+    text-align: left !important;
+    width: 180px;
+  }
+
+  .col-data-rigth-100 {
+    //Alinha centro
+    text-align: right !important;
+    width: 100px;
+  }
+
+  .col-data-50 {
+    //Alinha centro
+    text-align: center !important;
+    width: 50px;
+  }
+
+  .col-data-100 {
+    // Alinha a esquerda
+    width: 100px;
+  }
+
+  .col-data-120 {
+    // Alinha a esquerda
+    width: 120px;
+  }
+
+  .col-data-200 {
+    width: 200px;
+    text-align: center !important;
+  }
+
+  .col-data-300 {
+    width: 300px;
+    text-align: left !important;
+  }
+
+  .col-acoes-header {
+    text-align: center !important;
+    width: 100px;
+  }
+
+  .col-acoes-header-1 {
+    text-align: center !important;
+    width: 130px;
+  }
+
+  .col-acoes {
+    width: 130px;
+    text-align: center !important;
+  }
+
+  .col-foto-header {
+    width: 100px;
+  }
+
+  .col-foto {
+    width: 80px;
+    text-align: center !important;
+  }
+
+}
+
+.bg-light {
+  color: rgba(193, 183, 183, 0.931);
+}
+
+.datatable-header {
+  color: black;
+}
+
+
+// Controle do Datepicker primeNg. Este não precisa colocar no componente. Vale pra todos
+.p-datepicker table td {
+  padding: 7px;
+}
+
+.p-datepicker table td>span {
+  height: auto !important;
+  width: 100% !important;
+  font-size: 12px !important;
+}
+
+.p-datepicker-font-size {
+  font-size: 10px !important;
+}
+// Fim Controle do Calendar primeNg.
+
+
+// Ng Select
+// Css para input de pesquisa adicionado
+.custom-search-input {
+  width: 98%;
+  padding: 8px;
+  height: 30px;
+  box-sizing: border-box;
+  text-transform: uppercase;
+  border: 1px solid rgb(62, 155, 235);
+  border-radius: 5px;
+}
+
+// Css para input de pesquisa Ng Select Original
+.ng-select .ng-select-container {
+  min-height:30px !important;
+}
+
+.ng-select.ng-select-single .ng-select-container {
+  height: 30px;
+
+}
+// Fim Ng select
+

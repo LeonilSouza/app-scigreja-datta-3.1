@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 // project import
-import { Role } from 'src/app/theme/shared/_helpers/role';
 
 const routes: Routes = [
   {

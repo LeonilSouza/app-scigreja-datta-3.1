@@ -1,395 +1,515 @@
 // angular import
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 // project import
 import { SharedModule } from 'src/app/theme/shared/shared.module';
-import { PlaceholderCard1Component } from 'src/app/theme/shared/components/placeholder-card/placeholder-1.component';
+import { StorageService } from 'src/app/theme/shared/services/storage.service';
+import { UsuarioService } from 'src/app/theme/shared/services/usuario.service';
+import { GLOBALS } from 'src/app/app-config';
+import { UsuarioDTO } from 'src/app/theme/shared/models/usuario.dto';
+import { Calendar } from 'src/app/theme/shared/models/calendar.model';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { PessoaService } from 'src/app/theme/shared/services/pessoa.service';
+import { CalendarService } from 'src/app/theme/shared/services/calendar.service';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Subject, takeUntil } from 'rxjs';
+import { FullCalendarModule } from '@fullcalendar/angular';
 
-declare const AmCharts;
 
-import '../../../assets/charts/amchart/amcharts.js';
-import '../../../assets/charts/amchart/gauge.js';
-import '../../../assets/charts/amchart/serial.js';
-import '../../../assets/charts/amchart/light.js';
-import '../../../assets/charts/amchart/pie.min.js';
-import '../../../assets/charts/amchart/ammap.min.js';
-import '../../../assets/charts/amchart/usaLow.js';
-import '../../../assets/charts/amchart/radar.js';
-import '../../../assets/charts/amchart/worldLow.js';
-
-import mapColor from '../../fack-db/map-color-data.json';
-import dataJson from '../../fack-db/map_data';
+import {
+  CalendarOptions,
+  DateSelectArg,
+  EventApi,
+  EventClickArg,
+  EventInput,
+} from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import listPlugin from '@fullcalendar/list';
+import { formatDate } from '@angular/common';
+import moment from 'moment';
+import { SharedService } from 'src/app/theme/shared/services/shared.service';
 
 @Component({
   selector: 'app-default',
-  imports: [CommonModule, SharedModule, PlaceholderCard1Component],
+  imports: [CommonModule, SharedModule, CommonModule,
+    SharedModule,
+    FormsModule,
+    ReactiveFormsModule,
+    FullCalendarModule,
+  ],
+  providers: [CalendarService, SharedService],
   templateUrl: './default.component.html',
   styleUrls: ['./default.component.scss']
 })
 export class DefaultComponent implements OnInit {
-  // life cycle event
-  ngOnInit() {
-    setTimeout(() => {
-      const latlong = dataJson;
+ private destroy$: Subject<void> = new Subject<void>(); 
+ private storage = inject(StorageService);
+  private usuarioService = inject(UsuarioService);
 
-      const mapData = mapColor;
+  totalMembros: number = 0;
+  totalObreiros: number = 0;
+  totalCongregados: number = 0;
+  totalGeralMembros!: number;
 
-      const minBulletSize = 3;
-      const maxBulletSize = 70;
-      let min = Infinity;
-      let max = -Infinity;
-      let i;
-      let value;
-      for (i = 0; i < mapData.length; i++) {
-        value = mapData[i].value;
-        if (value < min) {
-          min = value;
-        }
-        if (value > max) {
-          max = value;
-        }
-      }
+  // calendario
 
-      const maxSquare = maxBulletSize * maxBulletSize * 2 * Math.PI;
-      const minSquare = minBulletSize * minBulletSize * 2 * Math.PI;
+  @ViewChild('calendar', { static: false })
+  igrejaId = GLOBALS.igrejaId;
 
-      const images = [];
-      for (i = 0; i < mapData.length; i++) {
-        const dataItem = mapData[i];
-        value = dataItem.value;
+  usuario: UsuarioDTO = new UsuarioDTO();
+  setorId!: number;
 
-        let square = ((value - min) / (max - min)) * (maxSquare - minSquare) + minSquare;
-        if (square < minSquare) {
-          square = minSquare;
-        }
-        const size = Math.sqrt(square / (Math.PI * 8));
-        const id = dataItem.code;
+  perfis0!: string;
+  perfis1!: string;
+  id!: string;
+  error = '';
+  calendar: Calendar | null;
+  calendarForm: UntypedFormGroup;
+  dialogTitle: string;
+  filterOptions = 'All';
+  calendarData: any;
+  isEditClick?: boolean;
+  filterItems: string[] = [
+    'work',
+    'personal',
+    'important',
+    'travel',
+    'friends',
+  ];
 
-        images.push({
-          type: 'circle',
-          theme: 'light',
-          width: size,
-          height: size,
-          color: dataItem.color,
-          longitude: latlong[id].longitude,
-          latitude: latlong[id].latitude,
-          title: dataItem.name + '</br> [ ' + value + ' ]',
-          value: value
-        });
-      }
+  calendarEvents!: EventInput[];
+  tempEvents?: EventInput[];
 
-      // world-low chart
-      AmCharts.makeChart('world-low', {
-        type: 'map',
-        projection: 'eckert6',
+  public filters = [
+    { name: 'work', value: 'Verde', checked: true },
+    { name: 'personal', value: 'Laranja', checked: true },
+    { name: 'important', value: 'Azul', checked: true },
+    { name: 'travel', value: 'Vermelho', checked: true },
+    { name: 'friends', value: 'Azul Claro', checked: true },
+  ];
 
-        dataProvider: {
-          map: 'worldLow',
-          images: images
-        },
-        export: {
-          enabled: true
-        }
-      });
+  @ViewChild('callAPIDialog', { static: false })
+  callAPIDialog?: TemplateRef<any>;
 
-      const chartDatac = [
-        {
-          day: 'Mon',
-          value: 60
-        },
-        {
-          day: 'Tue',
-          value: 45
-        },
-        {
-          day: 'Wed',
-          value: 70
-        },
-        {
-          day: 'Thu',
-          value: 55
-        },
-        {
-          day: 'Fri',
-          value: 70
-        },
-        {
-          day: 'Sat',
-          value: 55
-        },
-        {
-          day: 'Sun',
-          value: 70
-        }
-      ];
+  @ViewChild('eventWindow')
+  eventWindow?: TemplateRef<any>;
+  calCheck: any;
 
-      // widget-line-chart
-      AmCharts.makeChart('widget-line-chart', {
-        type: 'serial',
-        addClassNames: true,
-        defs: {
-          filter: [
-            {
-              x: '-50%',
-              y: '-50%',
-              width: '200%',
-              height: '200%',
-              id: 'blur',
-              feGaussianBlur: {
-                in: 'SourceGraphic',
-                stdDeviation: '30'
-              }
-            },
-            {
-              id: 'shadow',
-              x: '-10%',
-              y: '-10%',
-              width: '120%',
-              height: '120%',
-              feOffset: {
-                result: 'offOut',
-                in: 'SourceAlpha',
-                dx: '0',
-                dy: '20'
-              },
-              feGaussianBlur: {
-                result: 'blurOut',
-                in: 'offOut',
-                stdDeviation: '10'
-              },
-              feColorMatrix: {
-                result: 'blurOut',
-                type: 'matrix',
-                values: '0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .2 0'
-              },
-              feBlend: {
-                in: 'SourceGraphic',
-                in2: 'blurOut',
-                mode: 'normal'
-              }
-            }
-          ]
-        },
-        fontSize: 15,
-        dataProvider: chartDatac,
-        autoMarginOffset: 0,
-        marginRight: 0,
-        categoryField: 'day',
-        categoryAxis: {
-          color: '#fff',
-          gridAlpha: 0,
-          axisAlpha: 0,
-          lineAlpha: 0,
-          offset: -20,
-          inside: true
-        },
-        valueAxes: [
-          {
-            fontSize: 0,
-            inside: true,
-            gridAlpha: 0,
-            axisAlpha: 0,
-            lineAlpha: 0,
-            minimum: 0,
-            maximum: 100
-          }
-        ],
-        chartCursor: {
-          valueLineEnabled: false,
-          valueLineBalloonEnabled: false,
-          cursorAlpha: 0,
-          zoomable: false,
-          valueZoomable: false,
-          cursorColor: '#fff',
-          categoryBalloonColor: '#51b4e6',
-          valueLineAlpha: 0
-        },
-        graphs: [
-          {
-            id: 'g1',
-            type: 'line',
-            valueField: 'value',
-            lineColor: '#ffffff',
-            lineAlpha: 1,
-            lineThickness: 3,
-            fillAlphas: 0,
-            showBalloon: true,
-            balloon: {
-              drop: true,
-              adjustBorderColor: false,
-              color: '#222',
-              fillAlphas: 0.2,
-              bullet: 'round',
-              bulletBorderAlpha: 1,
-              bulletSize: 5,
-              hideBulletsCount: 50,
-              lineThickness: 2,
-              useLineColorForBulletBorder: true,
-              valueField: 'value',
-              balloonText: '<span style="font-size:18px;">[[value]]</span>'
-            }
-          }
-        ]
-      });
-    }, 500);
+  // final calendario
+
+  constructor(
+    private pessoaService: PessoaService,
+    private fb: UntypedFormBuilder,
+    public calendarService: CalendarService,
+    private router: Router,
+    private toastr: ToastrService,
+    private modalService: NgbModal
+  ) {
+    this.dialogTitle = 'Adicionar novo evento';
+    const blankObject = {} as Calendar;
+    this.calendar = new Calendar(blankObject);
+    this.calendarForm = this.createCalendarForm(this.calendar);
   }
 
-  // public method
-  sales = [
-    {
-      title: 'Daily Sales',
-      icon: 'icon-arrow-up text-c-green',
-      amount: '$249.95',
-      percentage: '67%',
-      progress: 50,
-      design: 'col-md-6',
-      progress_bg: 'progress-c-theme'
-    },
-    {
-      title: 'Monthly Sales',
-      icon: 'icon-arrow-down text-c-red',
-      amount: '$2,942.32',
-      percentage: '36%',
-      progress: 35,
-      design: 'col-md-6',
-      progress_bg: 'progress-c-theme2'
-    },
-    {
-      title: 'Yearly Sales',
-      icon: 'icon-arrow-up text-c-green',
-      amount: '$8,638.32',
-      percentage: '80%',
-      progress: 70,
-      design: 'col-md-12',
-      progress_bg: 'progress-c-theme'
+  ngOnInit() {
+    if (this.igrejaId == 0) {
+      //Arquivos de inicialização foi passado para carregarInit para pegar o igrejaId no login
+      this.checkLocalUser();
+    } else {
+      this.carregarInit();
     }
-  ];
+  }
 
-  card = [
-    {
-      design: 'border-bottom',
-      number: '235',
-      text: 'TOTAL IDEAS',
-      icon: 'icon-zap text-c-green'
-    },
-    {
-      number: '26',
-      text: 'TOTAL LOCATIONS',
-      icon: 'icon-map-pin text-c-blue'
-    }
-  ];
+  checkLocalUser() {
+    const localToken = this.storage.getLocalToken();
+    const localUser = this.storage.getLocalUser();
+    if (localToken && localUser.email) {
+      const email = localUser.email;
+      this.usuarioService.getUsuarioFromEmail(email).subscribe({
+        next: (response) => {
+          this.usuario = response;
+          this.setorId = response['igrejas'][0].setor.id;
+          this.perfis0 = response['perfis'][0];
+          this.perfis1 = response['perfis'][1];
 
-  social_card = [
-    {
-      design: 'col-md-12',
-      icon: 'fab fa-facebook-f text-primary',
-      amount: '12,281',
-      percentage: '+7.2%',
-      color: 'text-c-green',
-      target: '35,098',
-      progress: 60,
-      duration: '3,539',
-      progress2: 45,
-      progress_bg: 'progress-c-theme',
-      progress_bg_2: 'progress-c-theme2'
-    },
-    {
-      design: 'col-md-6',
-      icon: 'fab fa-twitter text-c-blue',
-      amount: '11,200',
-      percentage: '+6.2%',
-      color: 'text-c-purple',
-      target: '34,185',
-      progress: 40,
-      duration: '4,567',
-      progress2: 70,
-      progress_bg: 'progress-c-theme',
-      progress_bg_2: 'progress-c-theme2'
-    },
-    {
-      design: 'col-md-6',
-      icon: 'fab fa-google-plus-g text-c-red',
-      amount: '10,500',
-      percentage: '+5.9%',
-      color: 'text-c-blue',
-      target: '25,998',
-      progress: 80,
-      duration: '7,753',
-      progress2: 50,
-      progress_bg: 'progress-c-theme',
-      progress_bg_2: 'progress-c-theme2'
-    }
-  ];
+          GLOBALS.nomeUsuario = this.usuario.name;
+          GLOBALS.setorId = this.setorId;
+          this.perfil();
 
-  progressing = [
-    {
-      number: '5',
-      amount: '384',
-      progress: 70,
-      progress_bg: 'progress-c-theme'
-    },
-    {
-      number: '4',
-      amount: '145',
-      progress: 35,
-      progress_bg: 'progress-c-theme'
-    },
-    {
-      number: '3',
-      amount: '24',
-      progress: 25,
-      progress_bg: 'progress-c-theme'
-    },
-    {
-      number: '2',
-      amount: '1',
-      progress: 10,
-      progress_bg: 'progress-c-theme'
-    },
-    {
-      number: '1',
-      amount: '0',
-      progress: 0,
-      progress_bg: 'progress-c-theme'
-    }
-  ];
+          if (
+            this.usuario.igrejaAtivaId === null &&
+            this.usuario.igrejaAtivaNome === null
+          ) {
+            GLOBALS.igrejaId = response['igrejas'][0].id;
+            (GLOBALS.setorId = response['igrejas'][0].setor.id),
+              (GLOBALS.nomeIgreja = response['igrejas'][0].nome);
+            this.igrejaId = response['igrejas'][0].id;
+          } else {
+            GLOBALS.igrejaId = this.usuario.igrejaAtivaId;
+            (GLOBALS.setorId = response['igrejas'][0].setor.id),
+              (GLOBALS.nomeIgreja = this.usuario.igrejaAtivaNome);
+            this.igrejaId = this.usuario.igrejaAtivaId;
+          }
+          this.carregarInit();
 
-  tables = [
-    {
-      src: 'assets/images/user/avatar-1.jpg',
-      title: 'Isabella Christensen',
-      text: 'Requested account activation',
-      time: '11 MAY 12:56',
-      color: 'text-c-green'
-    },
-    {
-      src: 'assets/images/user/avatar-2.jpg',
-      title: 'Ida Jorgensen',
-      text: 'Pending document verification',
-      time: '11 MAY 10:35',
-      color: 'text-c-red'
-    },
-    {
-      src: 'assets/images/user/avatar-3.jpg',
-      title: 'Mathilda Andersen',
-      text: 'Completed profile setup',
-      time: '9 MAY 17:38',
-      color: 'text-c-green'
-    },
-    {
-      src: 'assets/images/user/avatar-1.jpg',
-      title: 'Karla Soreness',
-      text: 'Requires additional information',
-      time: '19 MAY 12:56',
-      color: 'text-c-red'
-    },
-    {
-      src: 'assets/images/user/avatar-2.jpg',
-      title: 'Albert Andersen',
-      text: 'Approved and verified account',
-      time: '21 July 12:56',
-      color: 'text-c-green'
+          // Grava no locaStorage
+          const igr: any = {
+            igrejaId: response['igrejas'][0].id,
+            setorId: response['igrejas'][0].setor.id,
+            nomeIgreja: response['igrejas'][0].nome,
+            nomeUser: this.usuario.name,
+            perfil: GLOBALS.perfil,
+          };
+          this.storage.setLocalIgreja(igr);
+        },
+        error: () => {},
+      });
+    } else {
+      this.router.navigate(['authentication/signin']);
     }
-  ];
+  }
+
+  private perfil() {
+    // perfil de ADMIN
+    if (this.perfis0 === 'ADMIN' || this.perfis1 === 'ADMIN') {
+      // Se for ADMIN
+      GLOBALS.perfil = 'ADMIN';
+    } else {
+      // Se for USUARIO
+      GLOBALS.perfil = 'USUARIO';
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  carregarInit() {
+    // ngOnInit agora aqui
+    this.countMembrosAtivos();
+    this.countObreirosAtivos();
+    this.countCongregadosAtivos();
+    this.getTotalGeralMembros(); // Membros + Obreiros
+    this.loadEventos(this.igrejaId);
+    this.tempEvents = this.calendarEvents;
+    this.calendarOptions.initialEvents = this.calendarEvents;
+  }
+
+  ngAfterContentChecked() {
+    this.getTotalGeralMembros(); // Membros + Obreiros
+  }
+
+  getTotalGeralMembros() {
+    this.totalGeralMembros = this.totalMembros + this.totalObreiros;
+  }
+
+  countMembrosAtivos() {
+    const tipoMembro = 'Membro';
+    const situacaoCadastral = 'Ativo';
+    this.pessoaService
+      .countMembrosAtivosFromIgreja(
+        GLOBALS.igrejaId,
+        situacaoCadastral,
+        tipoMembro
+      )
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          response ? (this.totalMembros = response) : 0;
+        },
+        error: (): void => {},
+      });
+  }
+
+  countObreirosAtivos() {
+    const tipoMembro = 'Obreiro';
+    const situacaoCadastral = 'Ativo';
+    this.pessoaService
+      .countMembrosAtivosFromIgreja(
+        GLOBALS.igrejaId,
+        situacaoCadastral,
+        tipoMembro
+      )
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          response ? (this.totalObreiros = response) : 0;
+        },
+        error: (): void => {},
+      });
+  }
+
+  countCongregadosAtivos() {
+    const tipoMembro = 'Congregado';
+    const situacaoCadastral = 'Ativo';
+    this.pessoaService
+      .countMembrosAtivosFromIgreja(
+        GLOBALS.igrejaId,
+        situacaoCadastral,
+        tipoMembro
+      )
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          response ? (this.totalCongregados = response) : 0;
+        },
+        error: (): void => {},
+      });
+  }
+
+  // Calendario inicio
+
+  calendarOptions: CalendarOptions = {
+    plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+    },
+    buttonText: {
+      today: 'Hoje',
+      month: 'Mês',
+      week: 'Semana',
+      day: 'dia',
+      list: 'Lista',
+      // prev: 'Anterior',
+      // next: 'Próximo'
+    },
+    initialView: 'dayGridMonth',
+    handleWindowResize: true,
+    locale: 'pt-br',
+    weekends: true,
+    editable: true,
+    droppable: true, // Isso permite que as coisas sejam descartadas/apagadas no calendário
+    selectable: true,
+    selectMirror: true,
+    dayMaxEvents: true,
+    select: this.handleDateSelect.bind(this),
+    eventClick: this.handleEventClick.bind(this),
+    eventsSet: this.handleEvents.bind(this),
+  };
+
+  loadEventos(igrejaId: number) {
+    this.calendarService
+      .getAllCalendars(igrejaId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.calendarEvents = response.map((e) => {
+            return {
+              id: e.id,
+              title: e.title,
+              className: e.className,
+              groupId: e.groupId,
+              details: e['details'],
+              start: e['dataInicial'],
+              end: e['dataFinal'],
+              igrejaId: e[igrejaId],
+            };
+          });
+          this.calendarOptions.events = [...this.calendarEvents];
+        },
+        error: (): void => {},
+      });
+  }
+
+  handleDateSelect(selectInfo: DateSelectArg) {
+    this.eventWindowCall(selectInfo, 'addEvent');
+  }
+
+  //Editar envento
+  eventWindowCall(row: any, type: string) {
+    if (type === 'editEvent') {
+      this.dialogTitle = row.event.title;
+      this.isEditClick = true;
+      this.calendarForm.setValue({
+        id: row.event.id,
+        title: row.event.title,
+        category: row.event.groupId,
+        startDate: moment(row.event.start).format('YYYY-MM-DDTHH:MM'),
+        endDate:
+          row.event.end == null
+            ? moment(row.event.start).format('YYYY-MM-DDTHH:MM')
+            : moment(row.event.end).format('YYYY-MM-DDTHH:MM'),
+        details: row.event.extendedProps.details,
+      });
+    } else {
+      this.calendarForm.reset();
+      this.calendarForm.controls['startDate'].setValue(
+        formatDate(new Date(), "yyyy-MM-dd'T'HH:mm", 'en') || ''
+      );
+      this.calendarForm.controls['endDate'].setValue(
+        formatDate(new Date(), "yyyy-MM-dd'T'HH:mm", 'en') || ''
+      );
+      this.calendarForm.controls['category'].setValue('work');
+      this.isEditClick = false;
+    }
+
+    this.modalService.open(this.eventWindow, {
+      ariaLabelledBy: 'modal-basic-title',
+      size: 'lg',
+    });
+  }
+
+  //Salva ao inserindo
+  saveEvent(form: UntypedFormGroup) {
+    this.calendarData = form.value;
+    const singleEvent = Object.assign({});
+    singleEvent.id = this.calendarData.id;
+    singleEvent.title = this.calendarData.title;
+    singleEvent['dataInicial'] = this.calendarData.startDate;
+    singleEvent['dataFinal'] = this.calendarData.endDate;
+    singleEvent.details = this.calendarData.details;
+    singleEvent.className = this.getClassNameValue(this.calendarData.category);
+    singleEvent.groupId = this.calendarData.category;
+    singleEvent.igrejaId = GLOBALS.igrejaId;
+    this.calendarService
+      .addCalendar(singleEvent)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.calendarEvents = this.calendarEvents.concat({
+            id1: response.body,
+            title: this.calendarData.title,
+            start: this.calendarData.startDate,
+            end: this.calendarData.endDate,
+            className: this.getClassNameValue(this.calendarData.category),
+            groupId: this.calendarData.category,
+            details: this.calendarData.details,
+          });
+          this.calendarOptions.events = this.calendarEvents;
+          this.calendarForm.reset();
+          this.modalService.dismissAll();
+        },
+      });
+  }
+
+  eventClick(form: UntypedFormGroup) {
+    this.calendarData = form.value;
+    this.calendarEvents.forEach((element, index) => {
+      if (this.calendarData.id == element.id) {
+        this.saveEditEvent(index, this.calendarData);
+      }
+    }, this);
+  }
+
+  saveEditEvent(eventIndex: number, calendarData: any) {
+    const calendarEvents = this.calendarEvents.slice();
+    const singleEvent = Object.assign({}, calendarEvents[eventIndex]);
+    singleEvent.id = calendarData.id;
+    singleEvent.title = calendarData.title;
+    singleEvent.start = calendarData.startDate;
+    singleEvent['dataInicial'] = calendarData.startDate;
+    singleEvent.end = calendarData.endDate;
+    singleEvent['dataFinal'] = calendarData.endDate;
+    singleEvent.className = this.getClassNameValue(calendarData.category);
+    singleEvent.groupId = calendarData.category;
+    singleEvent['igrejaId'] = GLOBALS.igrejaId;
+    singleEvent['details'] = calendarData.details;
+    calendarEvents[eventIndex] = singleEvent;
+    this.calendarService
+      .updateCalendar(singleEvent)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.actionsForSuccess();
+        },
+      }),
+      (this.calendarEvents = calendarEvents); // reassign the array
+    this.calendarOptions.events = calendarEvents;
+    this.calendarForm.reset();
+    this.modalService.dismissAll();
+  }
+
+  handleEventClick(clickInfo: EventClickArg) {
+    this.eventWindowCall(clickInfo, 'editEvent');
+  }
+
+  handleEvents(events: EventApi[]) {
+    // this.currentEvents = events;
+  }
+
+  createCalendarForm(calendar: Calendar): UntypedFormGroup {
+    return this.fb.group({
+      id: [calendar.id],
+      title: [calendar.title, [Validators.required]],
+      category: [calendar.category],
+      startDate: [calendar.startDate, [Validators.required]],
+      endDate: [calendar.endDate, [Validators.required]],
+      details: [calendar.details],
+    });
+  }
+
+  excluirEvent(deleteEvent: any): void {
+    let modifiedEvents = [...this.calendarEvents];
+    const eventIndex = modifiedEvents.findIndex(
+      (event) => event.id == deleteEvent.id
+    );
+    modifiedEvents.splice(eventIndex, 1);
+    this.calendarService
+      .delete(+deleteEvent['id'])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.toastr.success('Exclusão', 'Registro excluido com sucesso!');
+          this.calendarOptions.events = this.calendarEvents;
+        },
+        error: (error) => {
+          this.error = error;
+          this.showError(error);
+        },
+      });
+
+    this.calendarEvents = modifiedEvents;
+    this.calendarOptions.events = [...this.calendarEvents];
+  }
+
+  changeCategory(event: any, filter: any) {
+    if (event.target.checked) {
+      this.filterItems.push(filter.name);
+    } else {
+      this.filterItems.splice(this.filterItems.indexOf(filter.name), 1);
+    }
+    this.filterEvent(this.filterItems);
+  }
+
+  filterEvent(element: any) {
+    const list = this.calendarEvents.filter((x) =>
+      element.map((y: any) => y).includes(x.groupId)
+    );
+    this.calendarOptions.events = list;
+  }
+
+  getClassNameValue(category: string) {
+    let className = '';
+
+    if (category === 'work') {
+      className = 'fc-event-success';
+    } else if (category === 'personal') {
+      className = 'fc-event-warning';
+    } else if (category === 'important') {
+      className = 'fc-event-primary';
+    } else if (category === 'travel') {
+      className = 'fc-event-danger';
+    } else if (category === 'friends') {
+      className = 'fc-event-info';
+    }
+
+    return className;
+  }
+
+  private actionsForSuccess() {
+    this.toastr.success('Evento Atualizado com sucesso');
+  }
+
+  private showError(error: { message: any }) {
+    // this.messageService.add({ severity: 'error', summary: 'Erro', detail: error.message });
+  }
+  // Calendario Final
 }

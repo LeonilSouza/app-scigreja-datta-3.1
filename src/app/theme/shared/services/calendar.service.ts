@@ -5,8 +5,8 @@ import { Observable } from 'rxjs';
 import { HttpClient, } from '@angular/common/http';
 import { throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { API_CONFIG } from 'src/app/config/api-config';
 import { EventInput } from '@fullcalendar/core';
+import { API_CONFIG } from 'src/app/app-config';
 
 @Injectable()
 

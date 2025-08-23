@@ -1,0 +1,528 @@
+<!-- Inicio Breadcamb Inicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio Breadcamb-->
+<div class=" page-header ">
+  <ng-container style="height: 100;">
+    <div class="row ">
+      <div class="col-md-12">
+        <i class="fas fa-home f-26 text-dark"></i>   <span class="text-muted" style="font-size: 20px;">{{
+          nomeIgreja }}</span>
+        <hr class="mt-0 mb-1">
+        <div class="row ">
+          <div class="col-md-12">
+            <div class="flex">
+              <div class="row">
+                <nav aria-label="breadcrumb mb-0">
+                  <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item active"><a>Home</a></li>
+                    <li class="breadcrumb-item active"><a>Cadastro</a></li>
+                    <li class="breadcrumb-item active"><a>Igrejas</a></li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><br>
+  </ng-container>
+  <!-- fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb -->
+  <!-- Inicio Botões-->
+  <div class="card-header">
+    <ng-container style="height: 100;">
+      <div class="row ">
+        <div class="col-md-12">
+          <div class="row">
+            <!-- Botões Inicio-->
+            <div class="">
+              <span class="float-end  ml-0 mr-5   mb-2">
+                <button *ngIf="currentAction !== 'new'" type="button" (click)="confirmarExclusaoIgreja(igreja)"
+                  styleClass="p-button-sm" icon='pi pi-times' style="width: 6em;
+                    height: 30px; border-radius: 10px;" pButton pRipple label="Excluir" class="p-button-danger ml-2
+                    p-button-outlined ">
+                </button>
+              </span>
+
+              <span class="float-end  ml-2 mb-2">
+                <strong><button (click)="submitForm()" [disabled]="submittingForm || igrejaForm.invalid" type="button"
+                    class=" mr-3 ml-2" pButton pRipple label="Salvar"
+                    style="width: 6em;  background:#388669; height: 30px; border-radius: 10px; " icon='pi pi-check'>
+                  </button></strong>
+              </span>
+
+              <span class="float-end  ml-2 mb-2">
+                <strong><button *ngIf="(perfil !== 'ADMIN')" (click)="novaIgrejaUsuario(setorId)" type="button"
+                    class="p-button-primary mr-3 ml-2" pButton pRipple label="Novo"
+                    style="width: 6em; height: 30px; border-radius: 10px; " icon='pi pi-check'>
+                  </button></strong>
+              </span>
+
+              <span class="float-end  ml-2   mb-2">
+                <strong><button routerLink="/igrejas" styleClass="p-button-sm" icon='pi pi-chevron-left' type="button"
+                    label="voltar" class="p-button-secondary mt-0" pButton pRipple label="Voltar" style="width: 6em; height: 30px; border-radius: 10px;
+                          background: rgb(77, 83, 90); color: aliceblue;">
+                  </button></strong>
+              </span>
+            </div>
+            <!-- Botões Fim-->
+
+            <nav aria-label="breadcrumb mb-0">
+              <div class="form-group row col-sm-12 ml-0 mb-0">
+                <div class="card mb-0" style="background-color: rgb(77, 83, 90); border-radius: 5px;">
+                  <span class="mr-8 mb-1 mt-1 text-white" style="font-size: 18px;">{{ pageTitle }}</span>
+                </div>
+              </div>
+            </nav>
+
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <!-- Fim botões -->
+
+  <!-- CABEÇALHO DAS ABAS  -->
+
+  <ul class="nav nav-tabs profile-tabs nav-fills" id="myTab" role="tablist">
+
+    <li *ngIf="currentAction == 'edit' && igreja.id > 0" class="nav-item mt-2">
+      <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab === 'dados' }"
+        (click)="this.activeTab= 'dados'" id="dados-tab" data-toggle="tab" href="javascript:" role="tab"
+        aria-controls="dados" aria-selected="true"> <i class="fas fa-home mr-2 text-c-blue"></i>Dados da Igreja </a>
+    </li>
+
+    <li *ngIf="currentAction == 'edit' && igreja.id > 0" class="nav-item mt-2">
+      <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab === 'personalizacao' }"
+        (click)="this.activeTab= 'personalizacao' " id="personalizacao-tab" data-toggle="tab" href="javascript:"
+        role="tab" aria-controls="personalizacao" aria-selected="false"><i
+          class="fas fa-cog mr-2 text-c-green"></i>Personalização
+      </a>
+    </li>
+
+    <li *ngIf="currentAction == 'edit' && igreja.id > 0" class="nav-item mt-2">
+      <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab === 'documentos' }"
+        (click)="this.activeTab= 'documentos' " id="documentos-tab" data-toggle="tab" href="javascript:" role="tab"
+        aria-controls="documentos" aria-selected="false"><i class="fas fa-book mr-2 text-c-yellow"></i>Documentos
+      </a>
+    </li>
+
+    <li *ngIf="currentAction == 'edit' && igreja.id > 0" class="nav-item mt-2">
+      <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab === 'outros' }"
+        (click)="this.activeTab= 'outros' " id="outros-tab" data-toggle="tab" href="javascript:" role="tab"
+        aria-controls="outros" aria-selected="false"><i class="fas fa-plus mr-2 text-c-red"></i>Outros
+      </a>
+    </li>
+
+  </ul>
+  <!-- FIM CABEÇALHO DAS ABAS  -->
+
+  <!-- ABAS - INICIO  -->
+  <form [formGroup]="igrejaForm" autocomplete="off" (submit)="submitForm()">
+
+    <!-- <div class="shadow-5"> -->
+
+    <div class="tab-content shadow mb-2" id="myTabContent">
+
+      <!-- ABA DADOS DA IGREJA  -->
+      <div class="tab-pane fade" [ngClass]="{ 'show active': this.activeTab === 'dados' }" id="dados" role="tabpanel"
+        aria-labelledby="dados-tab">
+
+
+        <div class="row">
+
+          <!--Codigo  -->
+          <div class="form-group col-md-1">
+            <label>Código</label>
+            <input readonly type="text" class="form-control " formControlName="id">
+          </div>
+
+          <!-- name -->
+          <div class="form-group col-md-3">
+            <label for="nome">Nome</label>
+            <input autocomplete="off" type="text" class=" form-control" formControlName="nome">
+            <p class="danger" *ngIf="igrejaForm.controls['nome'].dirty && igrejaForm.controls['nome'].errors"
+              style="font-size: 11px;" margin-left>
+              Nome inválido</p>
+          </div>
+
+          <!-- Tipo de Igreja -->
+          <div class="form-group col-md-3">
+            <label>Tipo</label>
+            <p-dropdown (onChange)="onChangeTipo($event)" formControlName="tipo" [options]="tipo" optionLabel="nome"
+              [style]="{'width':'100%','height':'30px', 'align-items':'center'}"
+              [autofocus]="false" resetFilterOnHide="true" dropdownIcon="pi pi-flag" optionValue="nome" [filter]="false"
+              filterBy="nome" placeholder="Selecione um tipo" [showClear]="false" [editable]="false">
+            </p-dropdown>
+          </div>
+
+          <!-- setorId-->
+          <div class="form-group col-md-3">
+            <label for="setor">Setor</label>
+            <ngx-select formControlName="setorId" autocomplete="off" [allowClear]="false" [multiple]="false"
+              [items]="setores" [autoClearSearch]="true" [noAutoComplete]="false" optionValueField="id"
+              optionTextField="nome" noResultsFound="Nenhum registro encontrado" placeholder="Selecione um setor "
+              (selectionChanges)="doSelectOptionsSetor($event)">
+            </ngx-select>
+          </div>
+
+          <!-- dataFundacao -->
+          <div class="form-group col-md-2">
+            <label>Data Fundação</label>
+            <p-calendar [style]="{'width':'100%', 'height':'2rem'}" [inputStyle]="{'width':'100%', 'height':'100%'}"
+              formControlName="dataFundacao" placeholder="dd/mm/aaaa" [monthNavigator]="true" [yearNavigator]="true"
+              yearRange="1900:2100" dateFormat="dd/mm/yyyy" inputStyleClass="form-control" dataType="string"
+              dateFormat="dd/mm/yy" [showButtonBar]="true" [showButtonBar]="true" [showIcon]="true" inputId="icon">
+            </p-calendar>
+            <div class="danger"
+              *ngIf="igrejaForm.get('dataFundacao').invalid && igrejaForm.get('dataFundacao').touched">
+            </div>
+          </div>
+
+        </div>
+
+        <div class="row">
+
+          <!-- cnpj -->
+          <div class="form-group col-md-2">
+            <label for="cpfOuCnpj">Cnpj</label>
+            <input type="text" class="form-control" id="cpfOuCnpj" formControlName="cpfOuCnpj">
+            <p class="danger" *ngIf="igrejaForm.controls['cpfOuCnpj'].dirty && igrejaForm.controls['cpfOuCnpj'].errors"
+              margin-left>Cnpj inválido</p>
+          </div>
+
+          <!-- IE -->
+          <div class="form-group col-md-2">
+            <label for="ie">Inscrição Estadual</label>
+            <input type="text" class="form-control" formControlName="ie">
+          </div>
+
+          <!-- situacao -->
+          <div class="form-group col-md-2">
+            <label for="situacao">Status</label>
+            <ngx-select formControlName="status" autocomplete="off" [allowClear]="false" [multiple]="false"
+              [items]="status" [autoClearSearch]="true" [noAutoComplete]="false" optionValueField="nome"
+              optionTextField="nome" placeholder="Selecione... ">
+              <ng-template ngx-select-option-not-found>
+                Opção Inválida
+              </ng-template>
+            </ngx-select>
+          </div>
+
+          <!-- telefone1 -->
+          <div class="form-group col-md-2">
+            <label>Telefone 1</label>
+            <input class="form-control " formControlName="telefone1" mask="(99) 9999-9999" placeholder="(  )     -    "
+              class="form-control" placeholder="(00) 0 000-0000" />
+          </div>
+
+          <!-- Celular1 -->
+          <div class="form-group col-md-2">
+            <label>Celular 1</label>
+            <input class="form-control " formControlName="celular1" mask="(99) 9 9999-9999"
+              placeholder="(  )       -    " class="form-control" placeholder="(00) 0 0000-0000" />
+          </div>
+
+          <!-- Email -->
+          <div class="form-group col-md-2">
+            <label>Email</label>
+            <input class="form-control " formControlName="email" class="form-control" placeholder="email" />
+          </div>
+        </div>
+
+        <!-- Enderecos -->
+
+        <div class="row ">
+
+          <!-- Pais-->
+          <!-- Nacionalidade com Nome e Sigla do Pais -->
+          <div class="form-group col-md-4 ">
+            <label>País</label>
+            <ngx-select formControlName="pais" autocomplete="off" [allowClear]="false" [multiple]="false"
+              [items]="paises" [autoClearSearch]="true" [noAutoComplete]="false" optionTextField="nome"
+              placeholder="Selecione... " (selectionChanges)="doSelectOptionsPaises($event)">
+            </ngx-select>
+          </div>
+
+          <!-- sigla -->
+          <div readonly class="form-group col-md-2">
+            <label>Sigla</label>
+            <input type="text" class="form-control " formControlName="sigla">
+          </div>
+
+          <div class="form-group col-md-4 ">
+            <label>Estado</label>
+            <ngx-select formControlName="estado" autocomplete="off" [allowClear]="false" [multiple]="false"
+              [items]="estados" [autoClearSearch]="true" [noAutoComplete]="false" optionTextField="nome"
+              placeholder="Selecione... " (selectionChanges)="doSelectOptionsEstados($event)">
+            </ngx-select>
+          </div>
+
+          <!-- UF -->
+          <div readonly class="form-group col-md-2">
+            <label>UF</label>
+            <input type="text" class="form-control " formControlName="uf">
+          </div>
+
+        </div>
+
+        <div class="row ">
+
+          <!-- Cep -->
+          <div class="form-group col-md-2">
+            <label>Cep</label>
+            <input placeholder="____-___" type="text" maxlength="9" class="form-control "
+              (blur)="consultaCep($event.target.value)" placeholder="Digite um Cep" formControlName="cep">
+            <p class="danger" style="font-size: 11px;" *ngIf="igrejaForm.controls['cep'].errors" margin-left>CEP
+              inválido</p>
+          </div>
+
+          <!-- logradouro -->
+          <div class="form-group col-md-4">
+            <label for="logradouro">Endereço</label>
+            <input type="text" class="form-control" id="logradouro" formControlName="logradouro">
+          </div>
+
+          <!-- numero -->
+          <div class="form-group col-md-2">
+            <label for="numero">Número</label>
+            <input type="text" class="form-control" id="numero" formControlName="numero">
+          </div>
+
+          <!-- complemento -->
+          <div class="form-group col-md-4">
+            <label for="complemento">Complemento</label>
+            <input type="text" class="form-control" id="complemento" formControlName="complemento">
+          </div>
+
+        </div>
+
+        <div class="row ">
+
+          <!-- cidade-->
+          <div class="form-group col-md-4">
+            <label>Cidade</label>
+            <input type="text" class="form-control " formControlName="cidade">
+          </div>
+
+          <!-- bairro -->
+          <div class="form-group col-md-3">
+            <label for="complemento">Bairro</label>
+            <input type="text" class="form-control" formControlName="bairro">
+          </div>
+
+          <!-- uf-->
+          <div class="form-group col-md-1">
+            <label for="uf ">UF</label>
+            <input type="text" class="form-control" formControlName="uf">
+          </div>
+
+          <!-- nomeSetor -->
+          <div class="form-group col-md-2 ">
+            <label for="nomeSetor">Nome do Setor</label>
+            <input readonly type="text" class="form-control" id="nomeSetor" formControlName="nomeSetor">
+          </div>
+
+          <!-- TipoPessoa -->
+          <div readonly="" class="form-group col-md-2 ">
+            <label>Tipo de Pessoa</label>
+            <input readonly type="text" class="form-control" formControlName="tipoPessoa">
+          </div>
+
+          <!-- PercentualMaior -->
+          <div class="form-group col-md-3 p-fluid ">
+            <label>Percentual de contribuição Maior(%)</label>
+            <p-inputNumber formControlName="percentualMaior" inputId="percentualMaior" mode="decimal" locale="pt-BR"
+              class="ml-auto" [minFractionDigits]="2"
+              [style]="{'width':'100%','height':'30px', 'border-radius':'10px'}">
+            </p-inputNumber>
+            <p class="danger" [style]="{'font-size':'12px' }" *ngIf="igrejaForm.controls['percentualMaior'].errors"
+              margin-left>
+              Informe um percentual.</p>
+          </div>
+
+          <!-- PercentualMenor -->
+          <div class="form-group col-md-3 p-fluid ">
+            <label>Percentual de contribuição Menor(%)</label>
+            <p-inputNumber formControlName="percentualMenor" inputId="percentualMenor" mode="decimal" locale="pt-BR"
+              class="ml-auto" [minFractionDigits]="2"
+              [style]="{'width':'100%','height':'30px', 'border-radius':'10px'}">
+            </p-inputNumber>
+            <p class="danger" [style]="{'font-size':'12px' }" *ngIf="igrejaForm.controls['percentualMenor'].errors"
+              margin-left>
+              Informe um percentual.</p>
+          </div>
+
+           <!-- Valor de contribuicao  -->
+           <div class="form-group col-md-3 p-fluid ">
+            <label>Valor de contribuição1 - Sbe(GT)</label>
+            <p-inputNumber formControlName="contribuicao1" inputId="contribuicao1" mode="decimal" locale="pt-BR"
+              class="ml-auto" [minFractionDigits]="2"
+              [style]="{'width':'100%','height':'30px', 'border-radius':'10px'}">
+            </p-inputNumber>
+            <p class="danger" [style]="{'font-size':'12px' }" *ngIf="igrejaForm.controls['contribuicao1'].errors"
+              margin-left>
+              Informe um valor R$.</p>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ABA PERSONALIZAÇÃO  -->
+      <div class="tab-pane fade" [ngClass]="{ 'show active': this.activeTab === 'personalizacao' }" id="personalizacao"
+        role="tabpanel" aria-labelledby="personalizacao-tab">
+
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="user-profile-list">
+              <div class="mb-3 ">
+                <h4 *ngIf="igreja.logo" class="ml-7">Logo Personalizada</h4>
+                <h4 *ngIf="!igreja.logo" class="ml-7">Logo Padrão</h4>
+
+                <div class="row mt-4">
+
+                  <!-- Logo Quando tem logo-->
+                  <ng-container>
+                    <div class="card shadow-none b-wid-1 user-profile ml-3 mr-3 user-card mb-0 col-sm-2 ml- mt-0 mr-0"
+                      style="min-width: 270px; min-height: 300px;" *ngIf="igreja.logo">
+                      <div class="card-body py-0" style="height: 100%;">
+                        <div class="user-about-block m-0">
+                          <div class="row">
+                            <div class="change-profile text-center">
+                              <div class="">
+                                <div class="position-relative d-inline-block mb-6">
+                                  <img class="img" src="data:image/jpg;base64,{{ igreja?.logo }}" />
+                                </div>
+                              </div>
+                              <button (click)="removerLogo(igreja)" type="button"
+                                class="btn btn-icon btn-outline-danger p-1" styleClass="p-button-sm" icon='pi pi-times'
+                                style="width: 8em;height: 30px; border-radius: 10px;" [placement]="'top'" pButton
+                                pRipple label="Remover" class="p-button-danger ml-2
+                                p-button-outlined ">
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Fim logo -->
+
+                    <!-- Cropper -->
+                    <div class="card shadow-none b-wid-1 user-profile ml-3 mr-3 mt-0 user-card mb-0 col-sm-9 "
+                      style="min-width: 270px; min-height: 300px;" *ngIf="igreja.logo">
+                      <ng-container>
+                        <div class="row" style="margin-top: 1px;">
+                          <div class="text-center col-md-6" style="height: 15rem;"><br>
+                            <h5 *ngIf="imageChangedEvent">Recortar Imagem</h5>
+                            <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true"
+                              [aspectRatio]="4 / 4" [resizeToWidth]="128" format="jpg"
+                              (imageCropped)="imageCropped($event)" (imageLoaded)="imageLoaded()"
+                              (cropperReady)="cropperReady()" (loadImageFailed)="loadImageFailed()">
+                            </image-cropper>
+                          </div>
+
+                          <div class="row mt-1" style="margin-top: 1px;"></div>
+                          <div class="text-center col-md-6"><br>
+                            <h5 *ngIf="imageChangedEvent">Visualizar</h5>
+                            <img [src]="croppedImage" /> <br><br>
+
+                            <span class="p-buttonset"><br><br>
+
+                            </span>
+                          </div>
+                        </div>
+                        <br />
+                      </ng-container>
+                    </div>
+                    <!-- Fim Cropper -->
+                  </ng-container>
+
+                  <!-- Logo - Quando não tem logo-->
+
+                  <ng-container>
+                    <div class="card shadow-none b-wid-1 user-profile ml-3 mr-3 user-card mb-0 col-sm-2 ml- mt-0 mr-0"
+                      style="min-width: 270px; min-height: 300px;" *ngIf="(!igreja.logo && igreja.id > 0 )">
+                      <div class="card-body py-0" style="height: 100%;">
+                        <div class="row">
+                          <div class="user-about-block m-0">
+                            <div class="change-profile text-center">
+                              <div class="position-relative d-inline-block mb-6">
+                                <img class="img" style="height: 130px; width: 130px;"
+                                  src="assets/images/logo/sem_logo.jpg" />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div><br>
+
+                    <!-- Fim logo -->
+
+                    <!-- Cropper -->
+                    <div class="card shadow-none b-wid-1 user-profile ml-3 mr-3 mt-0 user-card mb-0 col-sm-9 "
+                      style="min-width: 270px; min-height: 300px;" *ngIf="!igreja.logo">
+                      <ng-container>
+                        <div class="row" style="margin-top: 1px;">
+                          <div class="text-center col-md-6" style="height: 15rem;"><br>
+                            <h5 *ngIf="imageChangedEvent">Recortar Imagem</h5>
+                            <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true"
+                              [aspectRatio]="4 / 4" [resizeToWidth]="128" format="jpg"
+                              (imageCropped)="imageCropped($event)" (imageLoaded)="imageLoaded()"
+                              (cropperReady)="cropperReady()" (loadImageFailed)="loadImageFailed()">
+                            </image-cropper>
+                          </div>
+
+                          <div class="row mt-1" style="margin-top: 1px;"></div>
+                          <div class="text-center col-md-6"><br>
+                            <h5 *ngIf="imageChangedEvent">Visualizar</h5>
+                            <img [src]="croppedImage" /> <br><br>
+
+                            <span class="p-buttonset"><br><br>
+                              <button *ngIf="croppedImage" pButton pRipple type="button" (click)="uploadLogo(igreja)"
+                                class="p-button-sm ml-3 p-button-outlined " label="Ok"
+                                style="width: 6em;  background:#388669; height: 35px;  border-radius: 10px;"
+                                icon="pi pi-check">
+                              </button>
+                            </span>
+                          </div>
+                        </div>
+                        <div class="input-group mb-2 mt-5">
+                          <input style="cursor: pointer;" (change)="fileChangeEvent($event, igreja)" type="file"
+                            class="form-control" />
+                        </div>
+
+                      </ng-container>
+                    </div>
+                    <!-- Fim Cropper -->
+
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ABA DOCUMENTOS  -->
+      <div class="tab-pane fade" [ngClass]="{ 'show active': this.activeTab === 'documentos' }" id="documentos"
+        role="tabpanel" aria-labelledby="documentos-tab">
+
+        Documentos falta criar Tabela no banco e componenetes no Angular
+
+      </div>
+
+      <!-- ABA OUTROS  -->
+      <div class="tab-pane fade" [ngClass]="{ 'show active': this.activeTab === 'outros' }" id="outros" role="tabpanel"
+        aria-labelledby="outros-tab">
+
+        Outros
+
+      </div>
+
+      <!-- <div class="row ">
+        <div class="form-group ">
+          <pre> {{igrejaForm.value | json}} </pre><br>
+        </div>
+      </div> -->
+
+    </div>
+  </form>

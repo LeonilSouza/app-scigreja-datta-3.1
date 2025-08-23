@@ -1,0 +1,121 @@
+<!-- Cards Estaticticas -->
+<div class="row mb-0">
+  <div class="col-xl-6 col-md-6">
+    <app-card [hidHeader]="true" cardClass="shadow">
+      <div class="row align-items-center m-l-0">
+        <div class="col-auto">
+          <i class="fas fa-home f-36 text-c-purple"></i>
+        </div>
+        <div class="col-auto">
+          <h6 class="text-muted m-b-10">Contagem -1</h6>
+          <h3 class="m-b-0">10</h3>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  <div class="col-xl-6 col-md-6">
+    <app-card [hidHeader]="true" cardClass="shadow">
+      <div class="row align-items-center m-l-0">
+        <div class="col-auto">
+          <i class="icon feather icon-award f-30 text-c-red"></i>
+        </div>
+        <div class="col-auto">
+          <h6 class="text-muted m-b-10">Contagem -2</h6>
+          <h3 class="m-b-0">11</h3>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>
+<!-- Fim Cards Estaticticas -->
+<div class="row mt-2 mb-2">
+
+  <!-- Pesquisa igrejas -->
+  <span class=" col-sm-6 mt-0 mb-1">
+    <div class="p-inputgroup">
+      <button type="button"
+        style="height: 30px; cursor:default ; border-radius: 10px; border-bottom-right-radius: 0; border-top-right-radius: 0; border: 0; background:#1a82ce;"
+        pButton pRipple class=""> <i class="pi pi-search"></i></button>
+      <input class="form-control" [(ngModel)]="nome" type="text" placeholder="Pesquisar "
+        (input)="dtigreja.filterGlobal($event.target.value, 'contains')"
+        style="height: 30px; min-width: 180px; border-radius: 10px; border-bottom-left-radius: 0; border-top-left-radius: 0; font-size: 14px; text-transform: lowercase">
+    </div>
+  </span>
+
+  <span class="col-sm-6">
+    <strong><button *ngIf="(perfil === 'ADMIN')"  routerLink="new" type="button" class="" pButton pRipple label="Novo"
+        style="width: 6em;  background:#388669; height: 30px; border-radius: 10px; " icon="pi pi-check">
+      </button></strong>
+  </span>
+</div>
+
+
+<app-card [hidHeader]="true" cardTitle="" cardClass="shadow">
+  <div class="row">
+      <div class="col-sm-12">
+          <div class="">
+              <div class="mb-3 ">
+                  <div class="">
+                      <p-table #dtigreja [value]="igrejas" [globalFilterFields]="['nome']" [lazy]="true"
+                           responsiveLayout="stack" (onLazyLoad)="loadIgrejasLazy($event)" [showCurrentPageReport]="true"
+                          [totalRecords]="totalRegistros"
+                          styleClass="p-datatable-sm p-datatable-striped p-datatable-gridlines"
+                          currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros"
+                          [paginator]="true" [rows]="linesPerPage"
+                          emptyMessage="Nenhum registro encontrado">
+
+
+                          <ng-template pTemplate="header">
+                              <tr>
+                                  <th class="col-data-100" style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue;"><b>Código</b></th>
+                                  <th style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue;"><b>Nome</b></th>
+                                  <th class="col-data-content-3" style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue;"><b>Setor</b></th>
+                                  <th class="col-data-content-4" style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue;"><b>Tipo</b></th>
+                                  <th class="col-acoes-header"
+                                      style="font-size: 13px; background-color: rgb(77, 83, 90); color: aliceblue;">
+                                      Ações</th>
+
+                              </tr>
+                          </ng-template>
+
+                          <ng-template pTemplate="body" let-igreja>
+                              <tr *ngIf="(perfil !== 'ADMIN' && (igreja.setorId == setorId))">
+                                  <td class="col-data-100" style=" font-size: 13px">{{ igreja.id }}
+                                  <td [routerLink]="[igreja.id, 'edit']"  style=" cursor: pointer; font-size: 13px">{{ igreja.nome }}
+                                  <td [routerLink]="[igreja.id, 'edit']"  class="col-data-content-3" style=" cursor: pointer; font-size: 13px">{{ igreja.nomeSetor }}
+                                  <td [routerLink]="[igreja.id, 'edit']"  class="col-data-content-3" style=" cursor: pointer; font-size: 13px">{{ igreja.tipo }}
+                                  </td>
+                                  <td class="col-acoes-header">
+                                      <button *ngIf="(perfil !== 'ADMIN' && (igreja.setorId == setorId))"
+                                          [routerLink]="[igreja.id, 'edit']" type="button"
+                                          class="btn btn-icon btn-outline-success"
+                                          [style]="{'height': '30px', 'width': '30px'} "[placement]="'top'" 
+                                          ngbTooltip="Editar">
+                                          <i class="pi pi-chevron-up"></i>
+                                      </button>
+                                  </td>
+                              </tr>
+
+                              <tr *ngIf="(perfil == 'ADMIN')">
+                                  <td class="col-data-100" style=" font-size: 13px">{{ igreja.id }}
+                                  <td [routerLink]="[igreja.id, 'edit']"  style=" cursor: pointer; font-size: 13px">{{ igreja.nome }}
+                                  <td [routerLink]="[igreja.id, 'edit']"  class="col-data-content-3" style=" cursor: pointer; font-size: 13px">{{ igreja.nomeSetor }}
+                                  <td [routerLink]="[igreja.id, 'edit']"  class="col-data-content-3" style=" cursor: pointer; font-size: 13px">{{ igreja.tipo }}
+                                  </td>
+                                  <td class="col-acoes-header">
+                                      <button [routerLink]="[igreja.id, 'edit']" type="button"
+                                          class="btn btn-icon btn-outline-success p-1"
+                                          [style]="{'height': '30px', 'width': '30px'} " [placement]="'top'"
+                                          ngbTooltip="Editar">
+                                          <i class="pi pi-chevron-up"></i>
+                                      </button>
+                                  </td>
+                              </tr>
+                          </ng-template>
+                      </p-table>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</app-card>

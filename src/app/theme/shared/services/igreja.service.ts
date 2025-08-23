@@ -1,10 +1,11 @@
 import { EventEmitter, Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { API_CONFIG } from "../config/api-config";
+
 import { Observable, throwError } from "rxjs";
 import { catchError, map } from "rxjs/operators";
 import { IgrejaDTO } from "../models/igreja.dto";
-import { GLOBALS } from "../_helpers/globals";
+import { API_CONFIG, GLOBALS } from "src/app/app-config";
+
 
 
 @Injectable({

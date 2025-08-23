@@ -1,0 +1,53 @@
+<!-- Pesquisa igrejaAtiva -->
+<div class="row mb-3">
+    <div class="row align-items-center">
+        <div class="col-auto">
+            <i class="fas fa-home f-28 text-c-green"></i>
+        </div>
+        <div class="col-auto">
+            <h3 class="text-muted m-b-0">IGREJA ATIVA:  {{ nomeIgreja }}</h3>
+        </div>
+        <div class="col-auto ml-auto">
+            <h4 class="text-muted m-b-0 ">Total - {{ totalRegistros }}</h4>
+        </div>
+    </div>
+
+    <!--Fim pesquisa igrejaAtiva  -->
+</div>
+
+
+
+<app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-blue shadow">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="mb-3 ">
+                <p-table #dtIgrejaAtiva [value]="igrejas" [globalFilterFields]="['nome']" [lazy]="true"
+                     responsiveLayout="stack" (onLazyLoad)="loadIgrejaAtivaLazy($event)" [showCurrentPageReport]="true"
+                    [totalRecords]="totalRegistros"
+                    styleClass="p-datatable-sm p-datatable-striped p-datatable-gridlines"
+                    currentPageReportTemplate="Total {totalRecords} registros" [paginator]="true"
+                    [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
+
+
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="col-data-content-4"
+                                style="background: rgb(77, 83, 90); font-size: 11px ;color: aliceblue;">
+                                <b>Nome</b>
+                            </th>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-igrejaAtiva>
+                        <tr>
+                            <td (click)="trocaIgreja(igrejaAtiva)" class="col-data-content-4" color="green"
+                                style=" cursor: pointer; font-size: 13px; min-width: 200px;">{{
+                                igrejaAtiva.nome }}
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </div>
+</app-card>

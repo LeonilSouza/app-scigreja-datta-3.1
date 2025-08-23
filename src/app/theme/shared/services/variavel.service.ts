@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { API_CONFIG } from "../config/api-config";
 import { Observable, throwError } from "rxjs";
 import { catchError, map } from 'rxjs/operators';
 import { VariavelDTO } from "../models/variavel.dto";
+import { API_CONFIG } from "src/app/app-config";
 
 @Injectable()
 export class VariavelService {

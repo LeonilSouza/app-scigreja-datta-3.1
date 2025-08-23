@@ -15,8 +15,8 @@ import { NavGroupComponent } from './nav-group/nav-group.component';
 
 //role
 import { Role } from 'src/app/theme/shared/_helpers/role';
-import { ThemeService } from 'src/app/theme/shared/service1/theme.service';
 import { AuthenticationService } from 'src/app/theme/shared/services';
+import { ThemeService } from 'src/app/theme/shared/services/theme.service';
 
 @Component({
   selector: 'app-nav-content',

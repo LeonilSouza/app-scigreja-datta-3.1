@@ -1,0 +1,202 @@
+<section class="main-content">
+  <ul class="breadcrumb breadcrumb-style mt-0 mb-0">
+    <li class="breadcrumb-item">
+      <h5 class="page-title m-b-0">Membros</h5>
+    </li>
+    <li class="breadcrumb-item bcrumb-1">
+      <a routerLink="/dashboard/main">
+        <i class="fas fa-home font-17"></i></a>
+    </li>
+    <li class="breadcrumb-item">Lista de Membros</li>
+  </ul>
+  <hr class="mt-0">
+
+  <form [formGroup]="pessoaList">
+    <div class="section-body">
+      <div class="row ">
+        <div class="col-12 col-md-12 col-lg-12">
+          <div class="card-body ">
+            <div class="row ">
+
+              <div class="form-group col-md-4 mt-0 mb-3">
+                <label class="text-dark mt-0 "> Nome</label>
+                <p-inputgroup>
+                  <button type="button" class=""
+                    style="height: 30px; cursor:default ; border-radius: 5px; border-bottom-right-radius: 0; border-top-right-radius: 0; border: 0; background: #1a82ce   ;"
+                    pButton pRipple> <i class="pi pi-search"></i></button>
+                  <input class="form-control" [(ngModel)]="nomeSemAcento" type="text"
+                    [ngModelOptions]="{standalone: true}" placeholder="Pesquisar Nome ou Sobrenome"
+                    (input)="dtpessoa.filterGlobal($event.target?.addEventListener, 'contains')"
+                    style="height: 30px; font-size: 12px; text-transform: uppercase ; border-bottom-left-radius: 0; border-top-left-radius: 0;">
+                </p-inputgroup>
+              </div>
+
+              <div class="form-group col-md-2 mt-0 mb-3">
+                <label class="mt-0">Situação Cadastral</label>
+                <p-select formControlName="nome" (onChange)="onChangeStatus($event)" [options]="situacaoCadastral"
+                  [editable]="false" [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
+                  resetFilterOnHide="true" dropdownIcon="pi pi-user" [autofocus]="false" optionValue="nome"
+                  placeholder="Selecione uma situação" [style]="{'width':'100%','height':'30px'}">
+                </p-select>
+
+              </div>
+
+              <span class="form-group col-md-6 mt-4 mb-3">
+
+                <p-splitButton class="float-end mb-2" label="            Relatórios      " icon="pi pi-print"
+                  [model]="printItems" severity="contrast" outlined size="small"
+                  [style]="{'height':'30px',  'border-radius':'6px'}" />
+
+                <p-button  routerLink="new" label="Novo Membro"  icon="pi pi-user" size="small" severity="success" 
+                [style]="{ 'height':'30px',  'border-radius':'6px', 'margin-right':'10px'}" class="float-end " />               
+
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- Fim ToolBar -->
+
+  <div class="card  card-success mt-0" >
+    <span class="m-b-20"></span>
+    <div class="padding-20 " style="padding-top: 1px;">
+      <p-table #dtpessoa [value]="pessoas" responsiveLayout="stack"
+        [globalFilterFields]="['nomeSemAcento','cpfOuCnpj','tipoMembro','situacaoCadastral']" [lazy]="true"
+        (onLazyLoad)="loadPessoasLazy($event)" [showCurrentPageReport]="true" [totalRecords]="totalRegistros"
+        showGridlines stripedRows [rowsPerPageOptions]="[8, 10, 25, 50]" 
+        currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
+        [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
+
+        <ng-template #header>
+          <tr>
+            <th class="col-foto" style=" background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px;
+          border-top-left-radius: 5px; ">
+              <b>Foto</b>
+            </th>
+
+            <th class="" style="min-width:16rem; background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px;
+          ">
+              <b>Nome</b>
+            </th>
+
+            <th class="col-data-content-3"
+              style="background:  rgb(77, 83, 90);  font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+              Igreja/Setor</th>
+
+            <th class="col-data-content-4"
+              style="background:rgb(77, 83, 90);  font-size: 12px ;color: aliceblue;  padding-top: 6px; padding-bottom: 6px;">
+              Bairro/Contatos</th>
+
+            <th class="col-acoes" style="min-width:7rem; background: rgb(77, 83, 90);  font-size: 12px ;color: aliceblue;  padding-top: 6px; padding-bottom: 6px;
+           border-top-right-radius: 5px">
+              Ações</th>
+
+
+          </tr>
+        </ng-template>
+
+        <ng-template #body let-pessoa>
+          <tr>
+            <td>
+              <!-- Quando tem foto -->
+              @if (pessoa?.foto) {
+              <div class="flex items-center gap-2 ">
+                <img src="data:image/jpg;base64,{{ pessoa?.foto }}" [class]="'flag flag-' "
+                  class=" img-radius align-center " style="width:45px" [routerLink]="[pessoa.id, 'edit']"
+                  [style]="{'cursor':'pointer'}" alt="user image" />
+              </div>
+              }
+
+              <!-- Quando não tem foto -->
+
+              @if (!pessoa?.foto) {
+              <div class="flex items-center gap-2 ">
+                <img src="assets/images/foto/Sem_Foto1.png" [class]="'flag flag-' " class=" img-radius align-center "
+                  style="width:45px" [routerLink]="[pessoa.id, 'edit']" [style]="{'cursor':'pointer'}"
+                  alt="user image" />
+              </div>
+              }
+            </td>
+
+            <td class="" [routerLink]="[pessoa.id, 'edit']" class=" m-l-0 float-left "
+              style="min-width:16rem; cursor: pointer; font-size: 12px; color: rgb(6, 6, 6);">{{ pessoa.nome
+              }}<br>
+              <small class="text-secondary"><i class="fas fa-envelope font-12 text-dark"></i> {{ pessoa.tipoMembro }}
+                desde
+                {{
+                pessoa.membroDesde }}</small> 
+
+              @if((pessoa.tipoMembro == 'Congregado' || pessoa.tipoMembro == 'Membro' || pessoa.tipoMembro == 'Obreiro')
+              && (pessoa.idade <= 11 && pessoa.idade> 0)){
+                <small class="text-muted float-left">| Criança ({{ pessoa.idade }})</small>
+                }
+
+                @if((pessoa.tipoMembro == 'Congregado' || pessoa.tipoMembro == 'Membro' || pessoa.tipoMembro ==
+                'Obreiro')
+                && (pessoa.idade >= 12 && (pessoa.idade <= 17 && pessoa.idade> 0))){
+                  <small class="text-muted float-left">| Adolescente ({{ pessoa.idade }})</small>
+                  }
+
+                  @if((pessoa.tipoMembro == 'Congregado' || pessoa.tipoMembro == 'Membro' || pessoa.tipoMembro ==
+                  'Obreiro')
+                  && (pessoa.idade >= 18 && (pessoa.idade <= 35 && pessoa.idade> 0))){
+                    <small class="text-muted float-left">| Jovem ({{ pessoa.idade }}) </small>
+                    }
+
+                    @if((pessoa.tipoMembro == 'Congregado' || pessoa.tipoMembro == 'Membro' || pessoa.tipoMembro ==
+                    'Obreiro')
+                    && (pessoa.idade > 35 && (pessoa.idade <= 65 && pessoa.idade> 0))){
+                      <small class="text-muted float-left">| Adulto ({{ pessoa.idade }})
+                      </small>
+                      }
+
+                      @if((pessoa.tipoMembro == 'Congregado' || pessoa.tipoMembro == 'Membro' || pessoa.tipoMembro ==
+                      'Obreiro') && (pessoa.idade > 65 && (pessoa.idade <= 150 && pessoa.idade> 0))){
+                        <small class="text-muted float-left">| Idoso ({{ pessoa.idade }}) </small>
+                        }
+
+            </td>
+
+            <!-- Igreja/Setor -->
+            <td [routerLink]="[pessoa.id, 'edit']" class="col-data-content-3 float-left"
+              style="font-size: 12px; cursor: pointer">
+              <i class="fas fa-home font-12 text-dark"></i>  {{ pessoa.nomeIgreja }}<br>
+              <small class="text-secondary"> <i class="fab fa-microsoft font-12 text-primary"></i>   {{
+                pessoa.setor }}</small> 
+            </td>
+
+            <!-- Bairro/Contatos -->
+            <td [routerLink]="[pessoa.id, 'edit']" class="col-data-content-3" style="font-size: 12px; cursor: pointer">
+
+              @if(pessoa?.bairro){
+              <i class="fas fa-map-marker font-12 text-success float-left"></i>  {{ pessoa?.bairro }}<br>
+              }
+
+              @if(pessoa?.celular1){
+              <small><i class="fas fa-phone font-12 text-danger float-left"></i> {{ pessoa?.celular1
+                }}</small>
+              }
+
+            </td>
+
+            <td class="col-acoes" style="min-width:7rem;">
+
+              <button [routerLink]="[pessoa.id, 'edit']" type="button" class="btn btn-icon btn-outline-info p-1"
+                [style]="{'height': '30px', 'width': '30px'} " [placement]="'top'" ngbTooltip="Alterar Cadastro">
+                <i class="pi pi-pencil"></i>
+              </button>
+              <button type="button" class="btn btn-icon btn-outline-secondary p-1 ml-2"
+                [style]="{'height': '30px', 'width': '30px', 'margin-left': '10px'} " [placement]="'top'"
+                ngbTooltip="Ficha de Membro">
+                <i class="pi pi-book"></i>
+              </button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</section>

@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 
 // third party
 import { NgScrollbarModule } from 'ngx-scrollbar';
-import { ThemeService } from '../../service1/theme.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-scrollbar',

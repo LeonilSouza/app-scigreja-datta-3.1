@@ -1,7 +1,7 @@
 // Angular import
 import { CommonModule } from '@angular/common';
 import { Component, ViewEncapsulation, effect, inject, input } from '@angular/core';
-import { ThemeService } from '../../../service1/theme.service';
+import { ThemeService } from '../../../services/theme.service';
 
 // project import
 

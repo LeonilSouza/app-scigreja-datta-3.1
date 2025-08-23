@@ -1,0 +1,112 @@
+<!-- Inicio Breadcamb Inicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio Breadcamb-->
+<section class="main-content">
+    <div class="page-header">
+        <ul class="breadcrumb breadcrumb-style mt-0 mb-2">
+            <li class="breadcrumb-item">
+                <h5 class="page-title m-b-0">Disciplina</h5>
+            </li>
+            <li class="breadcrumb-item bcrumb-1">
+                <a routerLink="/dashboard/main">
+                    <i class="fas fa-home font-17"></i></a>
+            </li>
+            <li class="breadcrumb-item">Disciplina</li>
+        </ul>
+        <!-- fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb -->
+
+        <!-- Inicio Botões-->
+        <ng-container style="height: 100;">
+            <form [formGroup]="disciplinaForm" autocomplete="off" (submit)="submitForm()">
+                <div class="row">
+                    <!-- Botões Inicio-->
+                    <div class="">
+                        <span class="float-end  mb-2 ">
+                            @if(currentAction !== 'new'){
+                            <p-button type="button" (click)="exclusaoDisciplina(disciplina)"
+                                [style]="{'height':'30px', 'margin-left':'10px'}" size="small" icon='pi pi-times'
+                                variant="outlined" severity="danger" label="Excluir" class="" />
+                            }
+                        </span>
+
+
+                        <span class="float-end mb-2 ml-4">
+                            <p-button [disabled]="submittingForm || disciplinaForm.invalid" type="submit" class="mr-4"
+                                [style]="{'height':'30px', 'margin-left':'10px'}" size="small" label="Salvar"
+                                icon='pi pi-check' />
+                        </span>
+
+                        <span class="float-end mb-2">
+                            <p-button routerLink="/disciplinas" icon='pi pi-chevron-left'
+                                [style]="{'height':'30px', 'margin-left':'10px'}" size="small" severity="info"
+                                label="voltar" class=" mt-0" label="Voltar" />
+                        </span>
+                    </div>
+                    <!-- Botões Fim-->
+
+                    <div class="col-md-12   ">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <nav aria-label="breadcrumb" class="">
+                                    <div class="form-group row col-sm-12  mb-0 ">
+                                        <div class="card mb-0 "
+                                            style="background-color: rgb(77, 83, 90); border-radius: 5px; margin-left: 12px">
+                                            <span class="mb-1 mt-1 text-white" style="font-size: 18px; ">{{ pageTitle
+                                                }}</span>
+                                        </div>
+                                    </div>
+                                </nav>
+                                <div class="card ">
+
+                                    <!-- Id -->
+                                    <div class="card-body">
+                                        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-3">
+                                            <label class="mb-1">Código <span class="text-danger">*</span></label>
+                                            <input readonly type="text" class="form-control " placeholder="id"
+                                                formControlName="id">
+                                        </div>
+
+                                        <!-- Nome -->
+
+                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
+                                            <label class="mb-1">nome <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" placeholder="nome"
+                                                formControlName="nome" required>
+                                            @if(!disciplinaForm.get('nome')?.valid &&
+                                            disciplinaForm.get('nome')?.touched) {
+                                            <small class="form-text text-danger"> O Nome é obrigatório
+                                            </small>
+                                            }
+                                        </div>
+
+                                        <!-- Tipo Admin do sistema -->
+                                        @if(perfil == 'ADMIN'){
+                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                                            <label class="mb-1" >Tipo <span class="text-danger">*</span></label>
+
+                                            <p-select [style]="{'width':'100%','height':'35px'}" class="w-full md"
+                                                formControlName="tipo" [options]="tipos" [editable]="false"
+                                                [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
+                                                resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
+                                                [autofocus]="false" optionValue="nome" placeholder=""
+                                                (onChange)="onChangeTipoPadraoIgreja($event)">
+                                            </p-select>
+                                            <div class="col-sm-12 mt-2">
+                                            </div>
+                                        </div>
+                                        }
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- <div class="row ">
+          <div class="form-group ">
+              <pre> {{disciplinaForm.value | json}} </pre><br>
+          </div>
+      </div> -->
+                </div>
+            </form>
+        </ng-container>
+    </div>
+</section>

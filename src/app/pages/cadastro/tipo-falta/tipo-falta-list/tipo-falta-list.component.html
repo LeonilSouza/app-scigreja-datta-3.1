@@ -1,0 +1,119 @@
+<!-- Cards Estaticticas -->
+<div class="row mb-0">
+    <div class="col-xl-6 col-md-6">
+        <app-card [hidHeader]="true">
+            <div class="row align-items-center m-l-0">
+                <div class="col-auto">
+                    <i class="fas fa-book-reader f-36 text-c-purple"></i>
+                </div>
+                <div class="col-auto">
+                    <h6 class="text-muted m-b-10">Registros padrão do sistema</h6>
+                    <h3 class="m-b-0">10</h3>
+                </div>
+            </div>
+        </app-card>
+    </div>
+
+    <div class="col-xl-6 col-md-6">
+        <app-card [hidHeader]="true">
+            <div class="row align-items-center m-l-0">
+                <div class="col-auto">
+                    <i class="fas fa-home f-36 text-c-dark"></i>
+                </div>
+                <div class="col-auto">
+                    <h6 class="text-muted m-b-10">Lançamentos da Igreja</h6>
+                    <h3 class="m-b-0">20</h3>
+                </div>
+            </div>
+        </app-card>
+    </div>
+</div>
+<!-- Fim Cards Estaticticas -->
+
+<div class="row mb-3">
+    <!-- Pesquisa TipoFaltas -->
+    <span class=" col-sm-4 mt-0 mb-2">
+        <div class="p-inputgroup">
+            <button type="button"
+                style="height: 35px; cursor:default ; border-radius: 10px; border-bottom-right-radius: 0; border-top-right-radius: 0; border: 0; background:#1a82ce;"
+                pButton pRipple class=""> <i class="pi pi-search"></i></button>
+            <input class="form-control" [(ngModel)]="nome" type="text" placeholder="Pesquisar "
+                (input)="dttipoFalta.filterGlobal($event.target.value, 'contains')"
+                style="height: 35px; min-width: 180px; border-radius: 10px; border-bottom-left-radius: 0; border-top-left-radius: 0; font-size: 14px; text-transform: lowercase">
+        </div>
+    </span>
+
+    <!--Fim pesquisa cargos  -->
+
+    <span class="float-right ml-auto mr-3 mt-0">
+        <strong><button routerLink="new" type="button" class="  " pButton pRipple label="Novo"
+                style="width: 6em;  background:#388669;  height: 35px; border-radius: 10px; " icon="pi pi-check">
+            </button></strong>
+    </span>
+</div>
+
+<app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-red  border-1">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="">
+                <div class="mb-3 ">
+                    <div class="">
+                        <p-table #dttipoFalta [value]="tipoFaltas" [globalFilterFields]="['nome']" [lazy]="true"
+                        responsiveLayout="stack" (onLazyLoad)="loadTipoFaltasLazy($event)" [showCurrentPageReport]="true"
+                            [totalRecords]="totalRegistros"
+                            styleClass="p-datatable-sm p-datatable-striped p-datatable-gridlines"
+                            currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros"
+                            [paginator]="true" [rows]="linesPerPage" [responsive]="true"
+                            emptyMessage="Nenhum registro encontrado">
+
+
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th style="font-size: 13px; background-color:rgba(27,32,37,0.06);"><b>Nome</b></th>
+
+                                    <th class="col-acoes-header"
+                                        style="font-size: 13px; background-color: rgba(27,32,37,0.06)">
+                                        Ações</th>
+
+                                </tr>
+                            </ng-template>
+
+                            <!-- Nome -->
+                            <ng-template pTemplate="body" let-tipoFalta>
+                                <tr
+                                    *ngIf="(perfil !== 'ADMIN' && (tipoFalta.igrejaId == igrejaId || tipoFalta.igrejaId == null))">
+                                    <td style=" font-size: 13px; color: rgb(48, 48, 138);">{{ tipoFalta.nome }}<br>
+                                    </td>
+                                    <td class="col-acoes-header">
+                                        <button *ngIf="(perfil !== 'ADMIN' && (tipoFalta.igrejaId == igrejaId ))"
+                                            [routerLink]="[tipoFalta.id, 'edit']" type="button"
+                                            class="btn btn-icon btn-outline-success"
+                                            [style]="{'height': '30px', 'width': '30px'} " [placement]="'top'"
+                                            ngbTooltip="Editar">
+                                            <i class="pi pi-chevron-up"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <tr *ngIf="(perfil == 'ADMIN')">
+                                    <td style=" font-size: 13px; color: rgb(48, 48, 138);">{{ tipoFalta.nome }}<br>
+                                    </td>
+                                    <td class="col-acoes-header">
+                                        <button [routerLink]="[tipoFalta.id, 'edit']" type="button"
+                                            class="btn btn-icon btn-outline-success"
+                                            [style]="{'height': '30px', 'width': '30px'} " [placement]="'top'"
+                                            ngbTooltip="Editar">
+                                            <i class="pi pi-chevron-up"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-card>
+<!--  ativo e inativo body end -->

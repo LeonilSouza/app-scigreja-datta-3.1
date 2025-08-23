@@ -6,7 +6,7 @@ import { RouterModule } from '@angular/router';
 // project import
 import { ThemeConfig } from 'src/app/app-config';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
-import { ThemeService } from 'src/app/theme/shared/service1/theme.service';
+import { ThemeService } from 'src/app/theme/shared/services/theme.service';
 
 @Component({
   selector: 'app-configuration',

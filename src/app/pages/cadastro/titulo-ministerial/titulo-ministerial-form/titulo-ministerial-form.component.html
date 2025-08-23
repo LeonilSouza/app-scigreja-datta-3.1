@@ -1,0 +1,141 @@
+<!-- Inicio Breadcamb Inicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio Breadcamb-->
+<div class="page-header">
+    <ng-container style="height: 100;">
+        <div class="row ">
+            <div class="col-md-12">
+                <i class="fas fa-home f-26 text-dark"></i>   <span class="text-muted" style="font-size: 20px;">{{
+                    nomeIgreja }}</span>
+                <hr class="mt-0 mb-1">
+                <div class="row ">
+                    <div class="col-md-12">
+                        <div class="flex">
+                            <div class="row">
+                                <nav aria-label="breadcrumb mb-0">
+                                    <ol class="breadcrumb mb-0">
+                                        <li class="breadcrumb-item active"><a>Home</a></li>
+                                        <li class="breadcrumb-item active"><a>Cadastro</a></li>
+                                        <li class="breadcrumb-item active"><a>Titulo Ministerial</a></li>
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><br>
+    </ng-container>
+    <!-- fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb -->
+
+    <!-- Inicio Botões-->
+    <ng-container style="height: 100;">
+        <form [formGroup]="tituloMinisterialForm" autocomplete="off" (submit)="submitForm()">
+            <div class="row">
+                <!-- Botões Inicio-->
+                <div class="">
+                    <span class="float-end  ml-0 mr-5   mb-2">
+                        <button *ngIf="currentAction !== 'new'" type="button"
+                            (click)="confirmarExclusaoTituloMinisterial(tituloMinisterial)" styleClass="p-button-sm"
+                            icon='pi pi-times' style="width: 6em; height: 30px; border-radius: 10px;" pButton pRipple
+                            label="Excluir" class="p-button-danger ml-2 p-button-outlined ">
+                        </button>
+                    </span>
+
+                    <span class="float-end  ml-2 mb-2">
+                        <strong><button [disabled]="submittingForm || tituloMinisterialForm.invalid" type="submit"
+                                class=" mr-3 ml-2" pButton pRipple label="Salvar"
+                                style="width: 6em;  background:#388669; height: 30px; border-radius: 10px; " icon='pi pi-check'>
+                            </button></strong>
+                    </span>
+
+                    <span class="float-end  ml-2   mb-2">
+                        <strong><button routerLink="/titulos" styleClass="p-button-sm" icon='pi pi-chevron-left'
+                                type="button" label="voltar" class="p-button-secondary mt-0" pButton pRipple
+                                label="Voltar" style="width: 6em; height: 30px; border-radius: 10px;
+                                 background: rgb(77, 83, 90); color: aliceblue;">
+                            </button></strong>
+                    </span>
+                </div>
+                <!-- Botões Fim-->
+                <nav aria-label="breadcrumb mb-0">
+                    <div class="form-group row col-sm-12 ml-0 mb-0">
+                        <div class="card mb-0" style="background-color: rgb(77, 83, 90); border-radius: 5px;">
+                            <span class="mr-8 mb-1 mt-1 text-white" style="font-size: 18px;">{{ pageTitle
+                                }}</span>
+                        </div>
+                    </div>
+                </nav>
+                <div class="col-md-12   ">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="shadow">
+                                <app-card [hidHeader]="true" cardTitle="" cardClass=" " blockClass="pc-component">
+
+                                    <!-- Id -->
+                                    <div class="form-group row ml-auto mt-3">
+                                        <label class="col-sm-2 col-form-label">Código</label>
+                                        <div class="col-sm-3">
+                                            <input readonly autocomplete="off" type="text" class="form-control"
+                                                formControlName="id">
+                                        </div>
+                                    </div>
+
+                                    <!-- Nome -->
+                                    <div class="form-group row ml-auto">
+                                        <label class="col-sm-2 col-form-label">Nome</label>
+                                        <div class="col-sm-5">
+                                            <input autocomplete="off" type="text" class="form-control"
+                                                formControlName="nome" placeholder="Nome ">
+                                        </div>
+                                    </div>
+
+                                    <!-- Abreviação -->
+                                    <div class="form-group row ml-auto">
+                                        <label class="col-sm-2 col-form-label">Abreviação</label>
+                                        <div class="col-sm-3">
+                                            <input autocomplete="off" type="text" class="form-control"
+                                                formControlName="abreviacao" placeholder="Abreviação ">
+                                        </div>
+                                    </div>
+
+                                    <!-- Tipo Admin do sistema -->
+                                    <div *ngIf="(perfil == 'ADMIN')" class="form-group row ml-auto">
+                                        <label class="col-sm-2 col-form-label">Tipo </label>
+                                        <div class="col-sm-5">
+                                            <ngx-select autocomplete="off" [allowClear]="false" [multiple]="false"
+                                                [placement]="'right'"
+                                                ngbTooltip=" Campo Exclusivo do Adminstrador, Cadastrar o tipo Padrao se quiser que todas as Igrejas vejam"
+                                                [items]="tipos" [autoClearSearch]="true" [noAutoComplete]="false"
+                                                optionValueField="nome" optionTextField="nome" formControlName="tipo"
+                                                placeholder="Selecione" (select)="doSelectTipo($event)">
+                                            </ngx-select>
+
+                                            <div class="col-sm-12 mt-2">
+                                                <P><i class="far fa-lightbulb text-c-yellow f-20"></i>
+                                                      <b>Padrão</b> - Não registra o código da
+                                                    Igreja do
+                                                    usuario, deixando-o nulo. Liberado para o
+                                                    sistema
+                                                    inteiro.<br>
+                                                           <b>Normal</b> - Registra o código da
+                                                    Igreja
+                                                    do usuário, restringe a visibilidade apenas para
+                                                    a
+                                                    Igreja do usuario.
+                                                </P>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </app-card>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="row ">
+          <div class="form-group ">
+              <pre> {{tituloMinisterialForm.value | json}} </pre><br>
+          </div>
+      </div> -->
+            </div>
+        </form>
+    </ng-container>
+</div>

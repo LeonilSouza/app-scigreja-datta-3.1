@@ -1,0 +1,64 @@
+// .danger {
+//     color: red;
+//     font-size: 10px;
+// }
+
+// .nav-pills {
+//     margin-bottom: 1rem;
+// }
+
+@media screen and (max-width: 800px) {
+    .desktop-hidden {
+      display: initial;
+    }
+    .mobile-hidden {
+      display: none;
+    }
+  }
+  
+  @media screen and (min-width: 800px) {
+    .desktop-hidden {
+      display: none;
+    }
+    .mobile-hidden {
+      display: initial;
+    }
+    .datatable-header {
+        color: black;
+      }
+  }
+  
+  .danger {
+      color: red;
+      font-size: 15px;
+  }
+  .font-size {
+      font-size: 10px;
+  }
+  
+  .nav-pills {
+    margin-bottom: 1rem;
+  }
+  
+  /* primNG dropDown Maravilha - Configura tudo no dropdown
+  TEM que colocar no scss do componente*/
+  :host ::ng-deep.p-dropdown {
+    align-items: center  !important;
+    width: 100% !important;
+    height: 30px !important;
+    border-radius: 4px !important;
+    padding-bottom: 2px !important;
+  }
+  :host ::ng-deep.p-dropdown-label {
+    font-size: 14px !important;
+  }
+  
+  :host ::ng-deep.p-dropdown-panel {
+    font-size: 14px !important;
+  }
+  
+  :host ::ng-deep.p-dropdown-filter {
+    max-height: 30px !important;
+  }
+  //Fim DropDown
+        

@@ -1,0 +1,124 @@
+<!-- Cards Estaticticas -->
+<div class="row mb-0">
+    <div class="col-xl-12 col-md-12">
+        <app-card [hidHeader]="true" cardClass="border-light  shadow bg-white ">
+            <div class="row align-items-center m-l-0">
+                <div class="col-auto">
+                    <i class="fas fa-users f-24 text-c-blue"></i>
+                </div>
+                <div class="col-auto">
+                    <h6 class="text-muted m-b-10">Total de usuários</h6>
+                    <h4 class="m-b-0">Em desenvolvimento</h4>
+                </div>
+            </div>
+        </app-card>
+    </div>
+</div>
+<!-- Fim Cards Estaticticas -->
+
+<!-- Pesquisa usuarios -->
+<div class="row mb-3">
+    <span class=" col-sm-4 mt-0 mb-2">
+        <div class="p-inputgroup">
+            <button type="button"
+                style="height: 25px; cursor:default ; border-radius: 5px; border-bottom-right-radius: 0; border-top-right-radius: 0; border: 0; background:#1a82ce;"
+                pButton pRipple class=""> <i class="pi pi-search"></i></button>
+            <input class="form-control" [(ngModel)]="name" type="text" placeholder="Pesquisar "
+                (input)="dtusuario.filterGlobal($event.target.value, 'contains')"
+                style="height: 25px; min-width: 180px; border-radius: 5px; border-bottom-left-radius: 0; border-top-left-radius: 0; font-size: 12px; text-transform: uppercase">
+        </div>
+    </span>
+
+    <!--Fim pesquisa setores  -->
+
+    <span class="col-sm-6 mt-0  ml-3 mr-auto">
+        <strong><button routerLink="new" type="button" class="  " pButton pRipple label="Novo"
+                style="width: 7em;  background:#388669; height: 25px; border-radius: 5px; font-size: small; " icon="pi pi-check">
+            </button></strong>
+    </span>
+</div>
+
+
+
+<app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-blue shadow">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="mb-3 ">
+                <p-table #dtusuario [value]="usuarios" [globalFilterFields]="['name']" [lazy]="true"
+                responsiveLayout="stack" (onLazyLoad)="loadUsuariosLazy($event)" [showCurrentPageReport]="true"
+                    [totalRecords]="totalRegistros"
+                    styleClass="p-datatable-sm p-datatable-striped p-datatable-gridlines"
+                    currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
+                    [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
+
+
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="col-foto"
+                                style="background: rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                                <b>Foto</b>
+                            </th>
+
+                            <th class="col-data-content-4"
+                                style="background: rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                                <b>Nome</b>
+                            </th>
+                            <th class="col-data-content-4"
+                                style="background: rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                                <b>E-mail</b>
+                            </th>
+                            <th class="col-data-content"
+                                style="background: rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                                <b>Password</b>
+                            </th>
+
+                            <th class="col-acoes-header"
+                                style="background: rgb(77, 83, 90);font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                                Ações
+                            </th>
+
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-usuario>
+                        <tr>
+                            <td>
+                                <!-- Quando tem foto -->
+                                <div *ngIf="usuario?.foto" class="col-foto d-inline-block align-center">
+                                    <img src="data:image/jpg;base64,{{ usuario?.foto }}"
+                                        [routerLink]="[usuario.id, 'edit']" class=" img-radius align-center m-r-15"
+                                        style="width: 40px; cursor: pointer;" alt="user image" />
+                                </div>
+
+                                <!-- Quando não tem foto -->
+                                <div *ngIf="!usuario?.foto" class="col-foto d-inline-block align-center">
+                                    <img src="assets/images/foto/Sem_Foto1.png" [routerLink]="[usuario.id, 'edit']"
+                                        class="img-radius align-top m-r-15" style="width: 40px; cursor: pointer;"
+                                        alt="user image" />
+                                </div>
+                            </td>
+
+                            <td [routerLink]="[usuario.id, 'edit']" class="col-data-content-4"
+                                style=" cursor: pointer; font-size: 13px; min-width: 200px;">{{
+                                usuario.name }}
+                            </td>
+                            <td class="col-data-content-3" style=" cursor: pointer; font-size: 13px;">{{
+                                usuario.email }}
+                            </td>
+                            <td class="col-data-content-3" style=" cursor: pointer; font-size: 13px;">{{
+                                usuario.password }}
+                            </td>
+                            <td class="col-acoes-header">
+                                <p-button [routerLink]="[usuario.id, 'edit']" type="button" icon="pi pi-pencil"
+                                    styleClass="p-button-sm  p-button-outlined"
+                                    [style]="{'height': '30px', 'width': '30px'} " ngbTooltip="Editar">
+
+                                </p-button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </div>
+</app-card>

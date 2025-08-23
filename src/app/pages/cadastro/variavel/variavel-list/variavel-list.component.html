@@ -1,0 +1,89 @@
+<!-- Cards Estaticticas -->
+<div class="row mb-0">
+  <div class="col-xl-12 col-md-12">
+      <app-card [hidHeader]="true" cardClass="border-light  shadow bg-white ">
+          <div class="row align-items-center m-l-0">
+              <div class="col-auto">
+                  <i class="feather icon-airplay f-24 text-c-green"></i>
+              </div>
+              <div class="col-auto">
+                  <h6 class="text-muted m-b-10">Total de Variáveis</h6>
+                  <h4 class="m-b-0">Em desenvolvimento</h4>
+              </div>
+          </div>
+      </app-card>
+  </div>
+</div>
+<!-- Fim Cards Estaticticas -->
+
+<div class="row mb-3">
+
+  <!-- Pesquisa Variavel -->
+  <span class=" col-sm-4 mt-0 mb-1">
+    <div class="p-inputgroup">
+      <button type="button"
+        style="height: 25px; cursor:default ; border-radius: 5px; border-bottom-right-radius: 0; border-top-right-radius: 0; border: 0; background:#1a82ce;"
+        pButton pRipple class=""> <i class="pi pi-search"></i></button>
+      <input class="form-control" [(ngModel)]="variavel" type="text" placeholder="Pesquisar "
+        (input)="dtvariavel.filterGlobal($event.target.value, 'contains')"
+        style="height: 25px; min-width: 180px; border-radius: 5px; border-bottom-left-radius: 0; border-top-left-radius: 0; font-size: 12px; text-transform: uppercase">
+    </div>
+  </span>
+
+  <span class="col-sm-6 mt-0  ml-3 mr-auto">
+    <strong><button routerLink="new" type="button" class="  " pButton pRipple label="Novo"
+        style="width: 7em; font-size: 14px; background:#388669; height: 25px; border-radius: 5px; " icon="pi pi-check">
+      </button></strong>
+  </span>
+</div>
+
+
+<app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-green shadow">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="mb-3 ">
+        <div class="">
+          <p-table #dtvariavel [value]="variaveis" [globalFilterFields]="['variavel']" [lazy]="true"
+          responsiveLayout="stack" (onLazyLoad)="loadVariavelLazy($event)" [showCurrentPageReport]="true" [totalRecords]="totalRegistros"
+            styleClass="p-datatable-sm p-datatable-striped p-datatable-gridlines"
+            currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
+            [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
+
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th class="col-data-content-4" style="background: rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                  <b>variavel</b></th>
+                <th class="col-data-content-4" style="background: rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                  <b>nome</b></th>
+                <th class="col-data-content-4" style="background: rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                  <b>Local</b></th>
+
+                <th class="col-acoes-header" style="background: rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                  Ações</th>
+
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-variavel>
+              <tr>
+                <td class="col-data-content-3" style=" font-size: 12px">{{ variavel.variavel }}
+                <td class="col-data-content-3" style=" font-size: 13px">{{ variavel.nome }}
+                <td class="col-data-content-3" style=" font-size: 13px">{{ variavel.local }}
+                </td>
+
+                <td class="col-acoes-header">
+                  <button [routerLink]="[variavel.id, 'edit']" type="button"
+                    class="btn btn-icon btn-outline-success p-1" [style]="{'height': '30px', 'width': '30px'} "
+                    [placement]="'top'" ngbTooltip="Editar">
+                    <i class="pi pi-chevron-up"></i>
+                  </button>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-card>

@@ -1,0 +1,118 @@
+<div class="row">
+    <div class="col-sm-12 ">
+      <div style="width: 95%; margin: auto">
+        <app-card cardTitle="     Cadastro e Configuração dos Departamentos"  cardClass="" [options]="false">
+          <div class="row col-md-12">
+             <div class=" col-md">
+               <div class="input-group mr-2">
+                 <span class="input-group-prepend  ">
+                  <button type="button" class="btn btn-primary  "><i class="fa fa-search "></i></button>
+                 </span>
+                 <input
+                   type="text"
+                   class="form-control"
+                   placeholder="Pesquisa por nome ou sobrenome"
+                   (keyup)="updateFilter($event)">
+                   <a routerLink="new" class="btn btn-success float-left ml-3 ">
+                      Novo
+                   </a>
+                   </div>
+                 </div>
+  
+                 <div class="form-group  col-md-7">
+  
+                   <select class="float-right" (change)="changeLimit($event)">
+                     <option [value]="10">1-</option>
+                     <option [value]="20">20</option>
+                     <option [value]="30">30</option>
+                   </select>
+  
+                 </div>
+                 <span   class=" float-right"> Página:</span>
+               <br>
+  
+    <ngx-datatable
+      style="width: 99%; margin: auto"
+      class="material expandable bootstrap expandable virtualized "
+      [rows]="rows"
+      #filterDepartamento
+      [columnMode]="ColumnMode.flex"
+      [footerHeight]="50"
+      [rowHeight]="40"
+      [scrollbarH]="true"
+      [limit]="limit"
+      [count]="count"
+      [offset]="offset"
+      (page)="onPage($event)">
+  
+      <!-- Column Templates -->
+      <ngx-datatable-column
+        [width]="30"
+        [resizeable]="false"
+        [sortable]="false"
+        [draggable]="false"
+        [canAutoResize]="true"
+  
+      >
+        <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+          <a
+            href="#"
+            [class.datatable-icon-right]="!expanded"
+            [class.datatable-icon-down]="expanded"
+            title="Expand/Collapse Row"
+            (click)="toggleExpandRow(row)"
+            class="desktop-hidden"
+          >
+          </a>
+        </ng-template>
+      </ngx-datatable-column>
+  
+           <!--Responsivo quando no celular aparece somente o nome  -->
+          <ngx-datatable-column *ngIf="(perfil === 'ADMIN')" name="Código" prop="id" [flexGrow]="1" [minWidth]="300" >
+            <ng-template let-value="value" ngx-datatable-cell-template>
+              {{ value }}  <!--Quando coloca este valor a responsividade nao esconde -->
+            </ng-template>
+          </ngx-datatable-column>
+  
+           <!--Responsivo quando no celular aparece somente o nome  -->
+           <ngx-datatable-column name="Nome" prop="nome" [flexGrow]="1" [minWidth]="300" >
+            <ng-template let-value="value" ngx-datatable-cell-template>
+              {{ value }}  <!--Quando coloca este valor a responsividade nao esconde -->
+            </ng-template>
+          </ngx-datatable-column>
+  
+          <ngx-datatable-column name="Nome do Conjunto" prop="nomeConjunto" [flexGrow]="1" [minWidth]="300" >
+            <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
+              <span class="mobile-hidden">{{ column.name }}</span>
+            </ng-template>
+  
+            <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+              <span class="mobile-hidden">{{ value }}</span>
+            </ng-template>
+          </ngx-datatable-column>
+  
+          <ngx-datatable-column *ngIf="(perfil === 'ADMIN')" name="Tipo" prop="tipo" [flexGrow]="1" [minWidth]="300" >
+            <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
+              <span class="mobile-hidden">{{ column.name }}</span>
+            </ng-template>
+  
+            <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+              <span class="mobile-hidden">{{ value }}</span>
+            </ng-template>
+          </ngx-datatable-column>
+  
+            <ngx-datatable-column  name="Actions"  [flexGrow]="1" [minWidth]="70">
+                  <ng-template let-row="row" ngx-datatable-cell-template>
+                      <a  *ngIf="(perfil !== 'ADMIN' && row.tipo == 'Normal')" [routerLink]="[row.id, 'edit']" ><i class="fa fa-edit" ></i></a> <!-- linhas para controlar o direito de edição-->
+                      <a  *ngIf="(perfil == 'ADMIN')" [routerLink]="[row.id, 'edit']" ><i class="fa fa-edit" ></i></a>
+  
+                      <a  *ngIf="(perfil !== 'ADMIN' && row.tipo !== 'Padrao')" class="danger" style="cursor: pointer;" (click)="deleteDepartamento(row)"><i class="fa fa-trash ml-4"></i></a> <!--2 linhas para controlar o direito de exclusão-->
+                      <a  *ngIf="(perfil == 'ADMIN')" class="danger" style="cursor: pointer;" (click)="deleteDepartamento(row)"><i class="fa fa-trash ml-4"></i></a> <!--2 linhas para controlar o direito de  exclusão-->
+  
+                  </ng-template>
+            </ngx-datatable-column>
+  
+    </ngx-datatable>
+  
+  
+  

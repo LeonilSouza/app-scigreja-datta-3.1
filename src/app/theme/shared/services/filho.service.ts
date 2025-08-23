@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
-import { API_CONFIG } from "../config/api-config";
 import { Observable, throwError } from "rxjs";
 import { catchError, map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { FilhoDTO } from "../models/filho.dto";
+import { API_CONFIG } from "src/app/app-config";
 
 
 

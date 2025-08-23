@@ -1,0 +1,140 @@
+<!-- Cards Estaticticas -->
+<section class="main-content">
+    <!-- <ul class="breadcrumb breadcrumb-style mt-0 mb-0">
+        <li class="breadcrumb-item">
+            <h5 class="page-title m-b-0">Disciplina</h5>
+        </li>
+        <li class="breadcrumb-item bcrumb-1">
+            <a routerLink="/dashboard/main">
+                <i class="fas fa-home font-17"></i></a>
+        </li>
+        <li class="breadcrumb-item">Disciplina</li>
+    </ul> -->
+    <div class="row mb-0 ">
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+            <div class="card card-border-c-red border-2  ">
+                <div class="row align-items-center m-l-0">
+                    <div class="col-auto">
+                        <i class="fas fa-book-reader f-28 text-success"></i>
+                    </div>
+                    <div class="col-auto">
+                        <h6 class="text-dark mt-2">Disciplinas Padrão</h6>
+                        <h4 class="">10</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+            <div class="card card-border-c-yellow border-2  ">
+                <div class="row align-items-center m-l-0">
+                    <div class="col-auto">
+                        <i class="fas fa-home f-28 text-primary"></i>
+                    </div>
+                    <div class="col-auto">
+                        <h6 class="text-dark mt-2">Disciplinas da Igreja</h6>
+                        <h4 class="">20</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fim Cards Estaticticas -->
+
+    <!-- Pesquisa Disciplinas -->
+    <div class="row mb-2">
+        <span class=" col-sm-4 mt-0 mb-2">
+            <p-inputgroup>
+                <button type="button" style="height: 30px; cursor:default ; border-radius: 10px; border-bottom-right-radius:0;
+               border-top-right-radius: 0; border: 0; background:#1a82ce;" pButton pRipple class=""> <i
+                        class="pi pi-search"></i></button>
+                <input pInputText class="form-control " placeholder="Pesquisar "
+                    (input)="dtdisciplina.filterGlobal($event.target?.addEventListener, 'contains')" style="height: 30px; min-width: 180px; border-radius: 6px; border-bottom-left-radius: 0; 
+              border-top-left-radius: 0; font-size: 14px; text-transform: lowercase">
+            </p-inputgroup>
+        </span>
+
+        <!--Fim pesquisa disciplinas  -->
+
+        <span class="col-sm-8 ">
+            <p-button routerLink="new" type="button" class="float-end" label="Novo" [style]="{'height':'30px'}"
+                size="small" icon="pi pi-check" />
+        </span>
+
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="">
+                <div class="mb-3 ">
+                    <div class="">
+                        <div class="card mt-0">
+                            <p-table #dtdisciplina [value]="disciplinas"
+                                [globalFilterFields]="['nome', 'country.name', 'representative.name', 'status']"
+                                [lazy]="true" responsiveLayout="stack" (onLazyLoad)="loadDisciplinasLazy($event)"
+                                [showCurrentPageReport]="true" [totalRecords]="totalRegistros" showGridlines stripedRows
+                                currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros"
+                                [paginator]="true" [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
+
+
+                                <ng-template #header>
+                                    <tr>
+                                        <th class="col-data-100"
+                                            style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-left-radius: 5px;">
+                                            <b>Código</b>
+                                        </th>
+                                        <th
+                                            style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                                            <b>Nome</b>
+                                        </th>
+                                        <th class="col-acoes-header"
+                                            style="font-size: 13px; background-color: rgb(77, 83, 90); color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-right-radius: 5px;">
+                                            Ações</th>
+
+                                    </tr>
+                                </ng-template>
+
+                                <ng-template #body let-disciplina>
+                                    @if(perfil !== 'ADMIN' && (disciplina.igrejaId == igrejaId ||
+                                    disciplina.igrejaId ==
+                                    null)){
+                                    <tr>
+                                        <td class="col-data-100" style=" font-size: 13px">{{ disciplina.id }}
+                                        </td>
+                                        <td style=" font-size: 13px">{{ disciplina.nome }}</td>
+                                        <td class="col-acoes-header">
+
+                                            @if(perfil !== 'ADMIN' && (disciplina.igrejaId == igrejaId )){
+                                            <button [routerLink]="[disciplina.id, 'edit']" type="button"
+                                                class="btn btn-icon btn-outline-success p-1"
+                                                [style]="{'height': '30px', 'width': '30px'} ">
+                                                <i class="pi pi-pencil"></i>
+                                            </button>
+                                            }
+                                        </td>
+                                    </tr>
+                                    }
+
+                                    @if(perfil == 'ADMIN'){
+                                    <tr>
+                                        <td class="col-data-100" style=" font-size: 13px">{{ disciplina.id }}
+                                        </td>
+                                        <td style=" font-size: 13px;">{{ disciplina.nome }}<br>
+                                        </td>
+                                        <td class="col-acoes-header">
+                                            <button [routerLink]="[disciplina.id, 'edit']" type="button"
+                                                class="btn btn-icon btn-outline-info p-1 mt-0 mb-0"
+                                                [style]="{'height': '30px', 'width': '30px'} ">
+                                                <i class="pi pi-chevron-up"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    }
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--  ativo e inativo body end -->

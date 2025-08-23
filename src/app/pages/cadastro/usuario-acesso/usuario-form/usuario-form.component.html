@@ -1,0 +1,415 @@
+<!-- Inicio Breadcamb Inicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio Breadcamb-->
+<div class=" page-header">
+  <ng-container style="height: 100;">
+    <div class="row ">
+      <div class="col-md-12">
+        <i class="fas fa-home f-26 text-dark"></i>   <span class="text-muted" style="font-size: 20px;">{{
+          nomeIgreja }}</span>
+        <hr class="mt-0 mb-2">
+        <div class="row ">
+          <div class="col-md-12">
+            <div class="flex">
+              <div class="row">
+                <nav aria-label="breadcrumb mb-0">
+                  <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item active"><a>Home</a></li>
+                    <li class="breadcrumb-item active"><a>Cadastro</a></li>
+                    <li class="breadcrumb-item active"><a>Usuários</a></li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><br>
+  </ng-container>
+  <!-- fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb -->
+  
+  <!-- Inicio Botões-->
+  <div class="card-header">
+    <ng-container style="height: 100;">
+      <div class="row ">
+        <div class="col-md-12">
+          <div class="row">
+            <!-- Botões Inicio-->
+            <div class="">
+              <span class="float-end  ml-0 mr-5   mb-2">
+                <button *ngIf="usuario.id > 0 && activeTab == 'user'" type="button"
+                  (click)="confirmarExclusaoUsuario(usuario)" styleClass="p-button-sm" icon='pi pi-times' style="width: 7em;
+                    height: 25px; border-radius: 5px; font-size: small;" pButton pRipple label="Excluir" class="p-button-danger ml-2
+                    p-button-outlined ">
+                </button>
+              </span>
+
+              <span class="float-end  ml-2 mb-2">
+                <strong><button *ngIf="activeTab == 'user'" (click)="submitForm()"
+                    [disabled]="submittingForm || usuarioForm.invalid" type="button" class=" mr-3 ml-2"
+                    pButton pRipple label="Salvar" style="width: 7em;  background:#388669; height: 25px; border-radius: 5px; font-size: small"
+                    icon='pi pi-check'>
+                  </button></strong>
+              </span>
+              <span class="float-end  ml-2   mb-2">
+                <strong><button routerLink="/usuarios" styleClass="p-button-sm" icon='pi pi-chevron-left' type="button"
+                    label="voltar" class="p-button-purple mt-0" pButton pRipple label="Voltar" style="width: 7em; height: 25px; border-radius: 5px;
+                          background: #1a82ce; color: aliceblue; font-size: small">
+                  </button></strong>
+              </span>
+            </div>
+            <!-- Botões Fim-->
+            <nav aria-label="breadcrumb mb-0">
+              <div class="form-group row col-sm-12 ml-0 mb-0">
+                <div class="card mb-2  mt-2" style="background-color: rgb(77, 83, 90); border-radius: 5px;">
+                  <span class="mr-8 text-white f-16" style="min-height: 30px; align-content: center; ">{{ pageTitle }}</span>
+                </div>
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <!-- Fim botões -->
+
+  <!-- CABEÇALHO DAS ABAS  -->
+
+  <ul class="nav nav-tabs profile-tabs nav-fills" style="font-size: 12px;" id="myTab" role="tablist">
+
+    <li *ngIf="currentAction == 'edit' && usuario.id > 0" class="nav-item mt-2">
+      <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab === 'user' }" (click)="this.activeTab= 'user'"
+        id="user-tab" data-toggle="tab" href="javascript:" role="tab" aria-controls="user" aria-selected="true"> <i
+          class="fas fa-user mr-2 text-c-blue f-16"></i>Usuário </a>
+    </li>
+
+    <li *ngIf="currentAction == 'edit'" class="nav-item mt-2">
+      <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab === 'acesso' }"
+        (click)="this.activeTab= 'acesso' " id="acesso-tab" data-toggle="tab" href="javascript:" role="tab"
+        aria-controls="acesso" aria-selected="false"><i class="fas fa-check mr-2 text-c-green f-16"></i>Acesso
+      </a>
+    </li>
+  </ul>
+  <!-- FIM CABEÇALHO DAS ABAS  -->
+
+  <!-- ABAS - INICIO  -->
+  <form [formGroup]="usuarioForm" autocomplete="off" (submit)="submitForm()">
+    <div class="tab-content shadow mb-2" id="myTabContent">
+      <!-- ABA USUARIO  -->
+      <div class="tab-pane fade" [ngClass]="{ 'show active': this.activeTab === 'user' }" id="user" role="tabpanel"
+        aria-labelledby="user-tab">
+           
+            <!-- Foto Quando tem foto-->
+            <div class="row">
+              <ng-container>
+                <div class="mb-1 col-sm-2 ml-0 mr-3 
+                                        mt-0 mr-0" *ngIf="usuario.foto">
+                  <div class="card-header"></div>
+                  <div class="card-body " style="height: 100%;">
+                    <div class="user-about-block">
+                      <div class="row">
+                        <div class="text-center ">
+                          <div class="change-profile text-center">
+                            <div class="dropdown w-auto
+                                                    d-inline-block" ngbDropdown>
+                              <div class="profile-dp">
+                                <div class="position-relative
+                                                          d-inline-block">
+                                  <img class="img-camera img-fluid
+                                                            wid-100 ml-0" src="data:image/jpg;base64,{{
+                                                            usuario?.foto }}" />
+                                </div>
+                              </div>
+
+                              <div class="certificated-badge" [placement]="'right'" ngbTooltip="Foto"
+                                style="cursor: pointer;">
+                                <!-- Circulo azul para acesso ao recorte de imagem-->
+                                <i class="fas fa-certificate text-c-blue bg-icon "></i>
+                                <i (click)="modalCropper.show(src)" href="javascript:" class='pi pi-camera front-icon
+                                                    text-white f-30'></i>
+                              </div>
+
+                              <div class="certificated-badge-2" style="cursor: pointer;" [placement]="'bottom'"
+                                ngbTooltip="Remover">
+                                <!-- Circulo azul para acesso ao recorte de imagem-->
+                                <i class="fas fa-certificate
+                                                          text-c-red bg-icon "></i>
+                                <i (click)="removerFoto(usuario)" href="javascript:" class='pi pi-times front-icon
+                                                          text-white f-30'></i>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+
+              <!-- Foto - Quando não tem foto-->
+              <ng-container>
+                <div class="user-profile user-card mb-1 col-sm-2 ml-4 mt-0 " *ngIf="(!usuario.foto && usuario.id> 0 )">
+                  <div class="card-header border-0 p-3 "></div>
+                  <div class="card-body py-0" style="height: 100%;">
+                    <div class="user-about-block m-0">
+                      <div class="row">
+                        <div class="text-center mt-n5">
+                          <div class="change-profile text-center">
+                            <div class="dropdown w-auto d-inline-block" ngbDropdown>
+                              <div class="profile-dp">
+                                <div class="position-relative
+                                                          d-inline-block">
+                                  <img class="img-radius img-fluid
+                                                            wid-100" src="assets/images/foto/Sem_Foto1.png" />
+                                </div>
+                              </div>
+
+                              <div class="certificated-badge" style="cursor: pointer;" [placement]="'right'"
+                                ngbTooltip="Foto">
+                                <!-- Circulo azul para acesso ao recorte de imagem-->
+                                <i class="fas fa-certificate text-c-blue bg-icon "></i>
+                                <i (click)="modalCropper.show()" href="javascript:" class='pi pi-camera front-icon
+                                                          text-white f-30'></i>
+                              </div>
+
+                              <div *ngIf="usuario.foto" style="cursor: pointer;" class="certificated-badge-2"
+                                [placement]="'bottom'" ngbTooltip="Remover">
+                                <!-- Circulo azul para acesso ao recorte de imagem-->
+                                <i class="fas fa-certificate
+                                                          text-c-red bg-icon "></i>
+                                <i (click)="removerFoto(usuario)" href="javascript:" class='pi pi-times front-icon
+                                                          text-white f-30'></i>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+
+            <div class="row">
+              <!-- codigo -->
+              <div hidden class="form-group col-md-2">
+                <b><label for="id">Código</label></b>
+                <input readonly type="text" class="form-control" id="id" formControlName="id">
+              </div>
+
+              <!-- name -->
+              <div class="form-group col-md-6 ">
+                <b><label for="nome">Nome</label></b>
+                <input autocomplete="off" type="text" class="form-control " id="name" formControlName="name">
+                <p class="danger" *ngIf="usuarioForm.controls['name'].dirty && usuarioForm.controls['name'].errors"
+                  margin-left>Nome inválido</p>
+              </div>
+            </div>
+
+            <!--Modal  Cropper image -->
+            <ng-container>
+              <app-ui-modal #modalCropper [dialogClass]="'modal-lg btn-page'">
+                <div class="app-modal-header">
+                  <h4 class="modal-title">Edição de imagem</h4>
+                  <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+                    (click)="modalCropper.hide()">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+
+                <div class="app-modal-body">
+
+                  <label class="label-file mt-0" for="foto">Selecionar
+                    Imagem</label>
+                  <input label="foto" name="foto" id="foto" style="border-radius: 5px;" type="file"
+                    (change)="fileChangeEvent($event, usuario)" />
+                  <div class="row" style="margin-top: 1px;">
+                    <div class="text-left col-md-3" style="height: 15rem;"><br>
+                      <h5>Recortar Imagem</h5>
+                      <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true"
+                        [aspectRatio]="4 / 4" [resizeToWidth]="256" [onlyScaleDown]="false" [roundCropper]="false"
+                        [canvasRotation]="canvasRotation" [transform]="transform" [alignImage]="'left'"
+                        [style.display]="showCropper ? null : 'none'" format="jpg" (imageCropped)="imageCropped($event)"
+                        (imageLoaded)="imageLoaded()" (loadImageFailed)="loadImageFailed()">
+                      </image-cropper>
+                    </div>
+
+                    <div class="text-center col-md-5"><br>
+                      <h5 *ngIf="imageLoaded">Visualizar</h5>
+                      <img [src]="croppedImage" /> <br><br>
+                      <span class="p-buttonset"><br>
+
+                        <button *ngIf="croppedImage" pButton pRipple type="button" 
+                          (click)="uploadFoto(usuario)" (click)="modalCropper.hide()" class="p-button-sm ml-3
+                                                  " label="Salvar" style="width: 6em;  background:#388669; height: 35px;
+                                                  border-radius: 10px;" icon='pi pi-check'>
+                        </button>
+
+                      </span>
+                    </div>
+
+                    <div *ngIf="imageChangedEvent" class="col-md-4">
+                      <br><br> <br>
+                      <button pButton pRipple type="button" class="p-button-sm p-button-secondary"
+                        style="width: 14em; height: 35px; border-radius: 10px;" (click)="rotateLeft()">Rodar
+                        a Esquerda             </button>
+                      <br />
+                      <br />
+                      <button pButton pRipple type="button" class="p-button-sm p-button-secondary"
+                        style="width: 14em; height: 35px; border-radius: 10px;" (click)="rotateRight()">Rodar
+                        a
+                        Direita            </button>
+                      <br />
+                      <br />
+                      <button pButton pRipple type="button" class="p-button-sm p-button-secondary"
+                        style="width: 14em; height: 35px; border-radius: 10px;" (click)="resetImage()">
+                        Recarregar Imagem          </button>
+                      <br />
+                      <br />
+                      <button pButton pRipple type="button" class="p-button-sm p-button-secondary"
+                        style="width: 14em; height: 35px; border-radius: 10px;" (click)="zoomOut()">Zoom
+                        -</button>
+                      <br />
+                      <br />
+                      <button pButton pRipple type="button" class="p-button-sm p-button-secondary"
+                        style="width: 14em; height: 35px; border-radius: 10px;" (click)="zoomIn()">Zoom
+                        +</button>
+                    </div>
+
+                  </div>
+                </div>
+              </app-ui-modal>
+            </ng-container>
+            <!-- fim modal crooper -->
+
+            <div class="row">
+
+              <!-- email -->
+              <div class="form-group col-md-4">
+                <b><label for="email">E-mail de acesso</label></b>
+                <input type="text" class="form-control" id="email" formControlName="email">
+                <p class="danger" *ngIf="usuarioForm.controls['email'].dirty && usuarioForm.controls['email'].errors"
+                  margin-left>
+                  email inválido</p>
+              </div>
+
+              <!-- senha -->
+              <div class="form-group col-md-4 as was-validated">
+                <b><label>Senha - (Não atualiza por aqui) </label></b>
+                <input minlength="6" type="text" class="form-control" formControlName="password">
+                <div class="invalid-feedback">Senha mínimo 6 caracteres. </div>
+              </div>
+            </div>
+
+          </div>
+
+      <!-- ABA ACESSO  -->
+      <div class="tab-pane fade" [ngClass]="{ 'show active': this.activeTab === 'acesso' }" id="acesso" role="tabpanel"
+        aria-labelledby="acesso-tab">
+        <form [formGroup]="setorForm" (ngSubmit)="$event.preventDefault()">
+      
+          <!--INICIO ABA-2 CONTROLE DE ACESSO-->
+
+              <!--setorForm -->
+              <div class="shadow-1 p-3 mb-3 bg-light rounded text-dark card-border-c-blue">
+                <div class="row">
+
+                  <div class="form-group col-md-4">
+                    <b><label>Setor</label></b>
+                    <ngx-select formControlName="id" [allowClear]="false" [multiple]="false" [items]="setores"
+                      [autoClearSearch]="true" [noAutoComplete]="false" optionValueField="id" optionTextField="nome"
+                      placeholder="Selecione..." (select)="doSelectSetor($event)"
+                      (selectionChanges)="doSelectOptionsSetor($event)">
+                    </ngx-select>
+                  </div>
+
+                  <div class="form-group col-md-4">
+                    <!--acessoForm -->
+                    <form [formGroup]="acessoForm" (ngSubmit)="$event.preventDefault()">
+                      <b><label>Igreja</label></b>
+                      <ngx-select [disabled]="submittingForm || acessoForm.invalid" formControlName="igrejaId"
+                        [allowClear]="false" [multiple]="false" [items]="igrejasSetor" [autoClearSearch]="true"
+                        [noAutoComplete]="false" optionValueField="id" optionTextField="nome" placeholder="Selecione..."
+                        (selectionChanges)="doSelectOptionsIgreja($event)"
+                        (select)="doSelectIgreja($event)"></ngx-select>
+                    </form>
+                  </div>
+
+                  <div class="form-group col-md-4 p-3 mt-1">
+                    <span>
+                      <strong><button [disabled]="submittingForm || acessoForm.invalid" (click)="createAcesso() "
+                          type="button" class="  " pButton pRipple label="Inserir"
+                          style="width: 7em; font-size: small;  background:#388669; height: 25px; border-radius: 5px; " icon="pi pi-plus">
+                        </button></strong>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tabela primeNg Acesso -->
+              <!-- <div class="shadow mb-3"> -->
+                <p-table #dtacesso [value]="acessos" [globalFilterFields]="['nomeIgreja']"
+                  styleClass="p-datatable-sm p-datatable-striped p-datatable-gridlines"
+                  emptyMessage="Nenhum registro encontrado">
+
+                  <ng-template pTemplate="caption">
+                    <!-- DATA QUE TIVER AQUI FICAR DENTRO DESTE NG-TEMPLATE FICA DESFORMATADA Só pra Lembrar -->
+                  </ng-template>
+
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th class="col-data-id" style="background: rgb(14, 52, 80); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                        Código</th>
+                      <th style="background: rgb(14, 52, 80); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                        <b>Igreja</b>
+                      </th>
+                      <th class="col-data-content-4"
+                        style="background: rgb(14, 52, 80); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                        <b>Setor</b>
+                      </th>
+
+                      <th style="background: rgb(14, 52, 80); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px;"
+                        class="col-acoes-header">
+                        Ações
+                      </th>
+
+                    </tr>
+                  </ng-template>
+
+                  <ng-template pTemplate="body" let-acesso>
+                    <tr>
+                      <td class="col-data-id" style="font-size: 13px;">{{ acesso.id }}</td>
+                      <td style=" font-size: 13px; color: rgb(48, 48, 138);">{{ acesso.nomeIgreja }}</td>
+                      <td class="col-data-content-4" style=" font-size: 13px; color: rgb(48, 48, 138);">{{
+                        acesso.setor }}</td>
+
+                      <td class="col-acoes">
+                        <button (click)="confirmarExclusaoAcesso(acesso)" [placement]="'right'" ngbTooltip="Excluir"
+                          pButton pRipple type="button" icon="pi pi-times"
+                          [style]="{'height': '2rem', 'width': '2rem'} " [placement]="'top'" ngbTooltip="Excluir"
+                          class="p-button-rounded  p-button-sm p-button-danger p-button-outlined">
+                        </button>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+
+              <!-- Fim Table -->
+        </form>
+
+  
+      </div>
+      <!-- <div class="row ">
+              <div class="form-group ">
+                <pre> {{usuarioForm.value | json}} </pre><br>
+              </div>
+        
+              <div class="form-group ">
+                <pre> {{acessoForm.value | json}} </pre><br>
+              </div>
+        
+              <div class="form-group ">
+                <pre> {{setorForm.value | json}} </pre><br>
+              </div>
+        
+            </div> -->
+          </div>
+  </form>

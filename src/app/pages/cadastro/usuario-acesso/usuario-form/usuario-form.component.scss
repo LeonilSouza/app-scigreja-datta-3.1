@@ -1,0 +1,129 @@
+
+.danger {
+  color: red;
+  font-size: 10px;
+}
+
+.font-size {
+  font-size: 10px;
+}
+
+
+.nav-pills {
+margin-bottom: 1rem;
+}
+
+// cropper
+
+input[type="file"] {
+display: none;
+}
+
+.label-file { // Melhoraar a aoarencia di input da foto
+padding: 7px 7px;
+width: 180px;
+background: #fff;
+color: black;
+display: block;
+margin-top: 10px;
+font-family: Arial, Helvetica, sans-serif;
+text-align: left;
+cursor: pointer;
+transition: .5s;
+border: 1px solid rgb(175, 170, 170);
+border-radius: 5px;
+
+}
+.label-file:hover {
+color:#333;
+background: rgb(255, 255, 255);
+border-color: blue;
+
+}
+
+
+// CONFIGURAÇÃO DA FOTO
+.profile-dp {
+position: relative;
+overflow: hidden;
+padding: 5px;
+width: 110px;
+height: 110px;
+border-radius: 50%;
+
+.overlay {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: calc(100% - 10px);
+    height: calc(100% - 10px);
+    border-radius: 50%;
+    opacity: 0;
+    z-index: 1;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease-in-out;
+
+    span {
+        background: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+        border-top: 1px solid rgba(255, 255, 255, 0.4);
+        padding: 0 0 5px;
+    }
+}
+
+&:hover {
+    .overlay {
+        opacity: 1;
+    }
+}
+}
+
+.certificated-badge-2 {
+position: absolute;
+bottom: -5px;
+left: -5px;
+border-radius: 50%;
+width: 30px;
+height: 30px;
+background: #fff;
+padding: 5px 3px;
+
+.bg-icon {
+    font-size: 22px;
+}
+
+.front-icon {
+    font-size: 11px;
+    position: absolute;
+    top: 11px;
+    left: 9px;
+}
+}
+
+.certificated-badge {
+position: absolute;
+bottom: -5px;
+right: -5px;
+border-radius: 50%;
+width: 30px;
+height: 30px;
+background: #fff;
+padding: 5px 3px;
+
+.bg-icon {
+    font-size: 22px;
+}
+
+.front-icon {
+    font-size: 11px;
+    position: absolute;
+    top: 11px;
+    left: 9px;
+}
+}
+//FIM CONFIG FOTO

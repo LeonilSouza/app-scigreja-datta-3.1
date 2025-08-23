@@ -1,185 +1,178 @@
-<div class="row">
-  @for (sale of sales; track sale) {
-    <div class="{{ sale.design }} col-xl-4">
-      @defer (on viewport) {
-        <app-card [hidHeader]="true">
-          <h6 class="mb-4">{{ sale.title }}</h6>
-          <div class="row d-flex align-items-center">
-            <div class="col-9">
-              <h3 class="f-w-300 d-flex align-items-center m-b-0">
-                <i class="feather {{ sale.icon }} f-30 m-r-10"></i>
-                {{ sale.amount }}
-              </h3>
+<!-- Inicio Breadcamb Inicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio Breadcamb-->
+<section>
+  <div class="row">
+    <div class="col-md-12 col-xl-9 mb-3">
+      <div >
+        <div class="px-2 py-2 shadow">
+          <div class="row">
+            <!-- Escondida -->
+
+            <div hidden class="col-md-2 col-sm-8 p-l-30">
+              <p>Eventos - Cores</p>
+              <div class="filter-container">
+                <ul class="filterCheck">
+                  <li *ngFor="let filter of filters; let i = index" class="mb-2">
+                    <input type="checkbox" name="filter{{i}}" [name]="calCheck" [value]="filter.value"
+                      [checked]="filter.checked === true" (change)="changeCategory($event, filter)" />
+                    {{filter.value}}
+                  </li>
+                </ul>
+              </div>
             </div>
-            <div class="col-3 text-end">
-              <p class="m-b-0">{{ sale.percentage }}</p>
+            <!-- fim Escondida -->
+            <div class="col-md-12 col-lg-12 col-xl-12 col-sm-12">
+              <!-- Cabeçalho calendário -->
+              <div class="col-auto border-1 mt-0 mb-2" style="background-color: rgb(255, 255, 255); border-color: rgb(233, 234, 240) ; 
+                            padding-left: 10px; padding-top: 3px; padding-bottom: 3px; border-radius: 5px;">
+                <span class="text-dark" style="font-size: 18px; " href="javascript:">Agenda da Igreja</span>
+                <button type="button" class="btn btn-primary p-0 float-end" style="border-radius: 5px; height: 30px"
+                  (click)="eventWindowCall($event, 'addEvent')">
+                    Novo Evento  
+                </button>
+              </div>
+              <!-- Fim Cabeçalho calendário -->
+              <div id="calendar">
+                <full-calendar #calendar [options]="calendarOptions"></full-calendar>
+              </div>
             </div>
           </div>
-          <div class="m-t-30">
-            <ngb-progressbar type="progress-bar {{ sale.progress_bg }}" height="7px" [value]="sale.progress"></ngb-progressbar>
-          </div>
-        </app-card>
-      } @placeholder {
-        <app-placeholder-card-1 [height]="169" />
-      }
-    </div>
-  }
-  <div class="col-xl-8 col-md-6">
-    @defer (on viewport) {
-      <app-card cardTitle="Users From United States">
-        <div id="world-low" style="height: 450px"></div>
-      </app-card>
-    } @placeholder {
-      <app-placeholder-card-1 [height]="572" />
-    }
-  </div>
-  <div class="col-xl-4 col-md-6">
-    @defer (on viewport) {
-      <div class="card bg-c-blue">
-        <div class="card-header borderless">
-          <h5 class="text-white">Earnings</h5>
-        </div>
-        <div class="card-block" style="padding: 0 25px">
-          <div class="earning-text mb-0">
-            <h3 class="mb-2 text-white f-w-300">
-              $4295.36
-              <i class="feather icon-arrow-up teal accent-3"></i>
-            </h3>
-            <span class="text-uppercase text-white d-block">Total Earnings</span>
-          </div>
-          <div id="widget-line-chart" class="WidgetlineChart2 ChartShadow" style="height: 180px"></div>
         </div>
       </div>
-      <div class="card">
-        @for (list of card; track list) {
-          <div class="card-block {{ list.design }}">
-            <div class="row d-flex align-items-center">
-              <div class="col-auto">
-                <i class="feather {{ list.icon }} f-30"></i>
-              </div>
-              <div class="col">
-                <h3 class="f-w-300">{{ list.number }}</h3>
-                <span class="d-block text-uppercase">{{ list.text }}</span>
-              </div>
-            </div>
-          </div>
-        }
-      </div>
-    } @placeholder {
-      <app-placeholder-card-1 [height]="572" />
-    }
-  </div>
-  @for (list of social_card; track list) {
-    <div class="{{ list.design }} col-xl-4">
-      @defer (on viewport) {
-        <div class="card card-social">
-          <div class="card-block border-bottom">
-            <div class="row align-items-center justify-content-center">
-              <div class="col-auto">
-                <i class="{{ list.icon }} f-36"></i>
-              </div>
-              <div class="col text-end">
-                <h3>{{ list.amount }}</h3>
-                <h5 class="{{ list.color }} mb-0">
-                  {{ list.percentage }}
-                  <span class="text-muted">Total Likes</span>
-                </h5>
-              </div>
-            </div>
-          </div>
-          <div class="card-block">
-            <div class="row align-items-center justify-content-center card-active">
-              <div class="col-6">
-                <h6 class="text-center m-b-10">
-                  <span class="text-muted m-r-5">Target:</span>
-                  {{ list.target }}
-                </h6>
-                <ngb-progressbar type="progress-bar {{ list.progress_bg }}" height="6px" [value]="list.progress"></ngb-progressbar>
-              </div>
-              <div class="col-6">
-                <h6 class="text-center m-b-10">
-                  <span class="text-muted m-r-5">Duration:</span>
-                  {{ list.duration }}
-                </h6>
-                <ngb-progressbar type="progress-bar {{ list.progress_bg_2 }}" height="6px" [value]="list.progress2"></ngb-progressbar>
-              </div>
-            </div>
-          </div>
-        </div>
-      } @placeholder {
-        <app-placeholder-card-1 [height]="215" />
-      }
     </div>
-  }
-  <div class="col-xl-4 col-md-6">
-    @defer (on viewport) {
-      <app-card cardTitle="Rating">
-        <div class="row align-items-center justify-content-center m-b-20">
-          <div class="col-6">
-            <h2 class="f-w-300 d-flex align-items-center float-start m-0">
-              4.7
-              <i class="fas fa-star f-10 m-l-10 text-c-yellow"></i>
-            </h2>
-          </div>
-          <div class="col-6">
-            <h6 class="d-flex align-items-center float-end m-0">
-              0.4
-              <i class="fas fa-caret-up text-c-green f-22 m-l-10"></i>
-            </h6>
-          </div>
-        </div>
-        <div class="row">
-          @for (list of progressing; track list; let last = $last) {
-            <div class="col-xl-12">
-              <h6 class="align-items-center float-start">
-                <i class="fas fa-star f-10 m-r-10 text-c-yellow"></i>
-                {{ list.number }}
+  
+      <!-- Membro Ativos  -->
+    <div class="col-md-12 col-xl-3">
+
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card card-border-c-green border-2 mb-3  shadow">
+          <div class="row align-items-center m-l-0">
+            <div class="col-auto">
+              <i class="fas fa-users f-28 text-success"></i>
+            </div>
+            <div class="col-auto">
+              <h6 class="text-dark mt-2">Membros Ativos</h6>
+              <h6 class="m-b-2">
+                <p>{{ totalGeralMembros }}</p>
               </h6>
-              <h6 class="align-items-center float-end">{{ list.amount }}</h6>
-              <div class="m-t-30" [ngClass]="{ 'm-b-20': !last }">
-                <ngb-progressbar type="progress-bar {{ list.progress_bg }}" height="6px" [value]="list.progress"></ngb-progressbar>
-              </div>
             </div>
-          }
+          </div>
         </div>
-      </app-card>
-    } @placeholder {
-      <app-placeholder-card-1 [height]="475" />
-    }
-  </div>
-  <div class="col-xl-8 col-md-6">
-    @defer (on viewport) {
-      <app-card cardTitle="Recent Users" cardClass="Recent-Users table-card" blockClass="p-0">
-        <div class="table-responsive">
-          <table class="table table-hover mb-0">
-            <tbody>
-              @for (table of tables; track table) {
-                <tr class="unread">
-                  <td>
-                    <img class="rounded-circle" style="width: 40px" src="{{ table.src }}" alt="activity-user" />
-                  </td>
-                  <td>
-                    <h6 class="mb-1">{{ table.title }}</h6>
-                    <p class="m-0">{{ table.text }}</p>
-                  </td>
-                  <td>
-                    <h6 class="text-muted">
-                      <i class="fas fa-circle {{ table.color }} f-10 m-r-15"></i>
-                      {{ table.time }}
-                    </h6>
-                  </td>
-                  <td>
-                    <a href="javascript:" class="badge me-2 theme-bg2 text-white f-12">Reject</a>
-                    <a href="javascript:" class="badge me-2 theme-bg text-white f-12">Approve</a>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
+      </div>
+
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card card-border-c-blue border-2 mb-3 shadow">
+          <div class="row align-items-center m-l-0">
+            <div class="col-auto">
+              <i class="fas fa-users f-28 text-dark"></i>
+            </div>
+            <div class="col-auto">
+              <h6 class="text-dark mt-2">Obreiros</h6>
+              <h6 class="m-b-2">
+                <p>{{ totalObreiros }}</p>
+              </h6>
+            </div>
+          </div>
         </div>
-      </app-card>
-    } @placeholder {
-      <app-placeholder-card-1 [height]="475" />
-    }
+      </div>
+
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card card-border-c-yellow border-2 mb-3  shadow">
+          <div class="row align-items-center m-l-0">
+            <div class="col-auto">
+              <i class="fas fa-users f-28 text-warning"></i>
+            </div>
+            <div class="col-auto">
+              <h6 class="text-dark mt-2">Congregados</h6>
+              <h6 class="m-b-2">
+                <p>{{ totalCongregados }}</p>
+              </h6>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+    </div>
   </div>
-</div>
+
+  <!-- Adiciona registro modal -->
+  <ng-template #eventWindow let-modal>
+    <div class="modal-header editRowModal">
+      <h4 class="modal-title" id="modal-basic-title">
+        <div class="table-modal-header">
+          <div class="modal-about">
+            <div class="fw-bold p-t-10 font-17">
+              {{dialogTitle}}</div>
+          </div>
+        </div>
+      </h4>
+    </div>
+    <div class="modal-body">
+      <form class="register-form" [formGroup]="calendarForm">
+        <div class="input-field col s12 d-none">
+          <input formControlName="id" class="form-control form-control-sm " type="hidden">
+        </div>
+
+        <div class="row">
+          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
+            <label>Título/Nome<span class="text-danger">*</span></label>
+            <input type="text" class="form-control form-control-sm" placeholder="Título/Nome" formControlName="title" required>
+            <small class="form-text text-danger"
+              *ngIf="!calendarForm.get('title')?.valid && calendarForm.get('title')?.touched"> Título é
+              obrigatório</small>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-4">
+            <label>Inicio<span class="text-danger">*</span></label>
+            <input type="datetime-local" class="form-control form-control-sm" placeholder="Data Inicial" formControlName="startDate"
+              required>
+            <small class="form-text text-danger"
+              *ngIf="!calendarForm.get('startDate')?.valid && calendarForm.get('startDate')?.touched">O início do evento
+              é
+              obrigatório</small>
+          </div>
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-4">
+            <label>Término<span class="text-danger">*</span></label>
+            <input type="datetime-local" class="form-control form-control-sm" placeholder="Data Final" formControlName="endDate"
+              required>
+            <small class="form-text text-danger"
+              *ngIf="!calendarForm.get('endDate')?.valid && calendarForm.get('endDate')?.touched"> O termino do evento é
+              obrigatório</small>
+          </div>
+
+
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+            <label>Selecione uma cor <span class="text-danger">*</span></label>
+            <select class="form-select form-control form-control-sm" style="font-size: 13px;" formControlName="category" required>
+              <!-- <option value="" selected disabled>Selecione um tipo de evento</option> -->
+              <option id="work" value="work">Verde</option>
+              <option id="personal" value="personal">Laranja</option>
+              <option id="important" value="important">Azul</option>
+              <option id="friends" value="friends">Azul Claro</option>
+              <option id="travel" value="travel">Vermelho</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
+            <label>Detalhes</label>
+            <textarea type="textarea" class="form-control" placeholder="Detalhes" formControlName="details"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button *ngIf=isEditClick type="button" class="btn btn-sm btn-danger " (click)="modal.close('Close click')"
+            (click)="excluirEvent(calendarForm.value)">Excluir</button>
+
+          <button *ngIf=!isEditClick type="button" class="btn btn-sm btn-primary" (click)="saveEvent(calendarForm)"
+            [disabled]="!calendarForm.valid">Adicionar</button>
+
+          <button *ngIf=isEditClick type="button" class="btn btn-sm btn-primary" (click)="eventClick(calendarForm)"
+            [disabled]="!calendarForm.valid">Salvar</button>
+          <button type="button" class="btn btn-sm btn-light" (click)="modal.close('Close click')">Fechar</button>
+        </div>
+      </form>
+    </div>
+  </ng-template>
+</section>

@@ -1,0 +1,108 @@
+<!-- Inicio Breadcamb Inicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio Breadcamb-->
+<div class=" page-header">
+  <ng-container style="height: 100;">
+    <div class="row ">
+      <div class="col-md-12">
+        <i class="fas fa-home f-26 text-dark"></i>   <span class="text-muted" style="font-size: 20px;">{{
+          nomeIgreja }}</span>
+        <hr class="mt-0 mb-2">
+        <div class="row ">
+          <div class="col-md-12">
+            <div class="flex">
+              <div class="row">
+                <nav aria-label="breadcrumb mb-0">
+                  <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item active"><a>Home</a></li>
+                    <li class="breadcrumb-item active"><a>Cadastro</a></li>
+                    <li class="breadcrumb-item active"><a>Variáveis</a></li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><br>
+  </ng-container>
+  <!-- fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb -->
+  <!-- Inicio Botões-->
+  <div class="card-header">
+    <ng-container style="height: 100;">
+      <div class="row ">
+        <div class="col-md-12">
+          <div class="row">
+            <!-- Botões Inicio-->
+            <div class="" >
+              <span class="float-end  ml-0 mr-5   mb-2">
+                <button type="button"
+                  (click)="confirmarExclusaoVariavel(variavel)" styleClass="p-button-sm" icon='pi pi-times' style="width: 7em; font-size: 13px;
+                    height: 25px; border-radius: 5px;" pButton pRipple label="Excluir" class="p-button-danger ml-2
+                    p-button-outlined ">
+                </button>
+              </span>
+
+              <span class="float-end  ml-2 mb-2">
+                <strong><button (click)="submitForm()"
+                    [disabled]="submittingForm || variavelForm.invalid" type="button" class=" mr-3 ml-2"
+                    pButton pRipple label="Salvar" style="width: 7em;  background:#388669; height: 25px; border-radius: 5px; font-size: 13px"
+                    icon='pi pi-check'>
+                  </button></strong>
+              </span>
+              <span class="float-end  ml-2   mb-2">
+                <strong><button routerLink="/variaveis" styleClass="p-button-sm" icon='pi pi-chevron-left' type="button"
+                    label="voltar" class="p-button-purple mt-0" pButton pRipple label="Voltar" style="width: 7em; height: 25px; border-radius: 5px; font-size: 13px;
+                          background: #1a82ce; color: aliceblue;">
+                  </button></strong>
+              </span>
+            </div>
+            <!-- Botões Fim-->
+            <nav aria-label="breadcrumb mb-0">
+              <div class="form-group row col-sm-12 ml-0 mb-0">
+                <div class="card mb-2  mt-2" style="background-color: rgb(77, 83, 90); border-radius: 5px;">
+                  <span class="mr-8 text-white f-14" style="min-height: 30px; align-content: center; ">{{ pageTitle }}</span>
+                </div>
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <!-- Fim botões -->
+
+  <form [formGroup]="variavelForm" autocomplete="off" (submit)="submitForm()">
+
+    <div class="tab-content shadow mb-2" id="myTabContent">
+    
+        <div class="row mb-0">
+
+          <!-- Variavel -->
+          <div class="form-group col-md-4 mb-0">
+            <label >Variavel</label>
+            <input autocomplete="off" type="text" class="
+              form-control" formControlName="variavel">
+          </div>
+
+          <!-- Nome -->
+          <div class="form-group col-md-4 mb-0">
+            <label for="nome">Nome</label>
+            <input autocomplete="off" type="text" class="
+                    form-control" formControlName="nome">
+          </div>
+
+          <!-- Local -->
+          <div class="form-group col-md-4 mb-0">
+            <label for="nome">Local</label>
+            <input autocomplete="off" type="text" class="
+              form-control" formControlName="local">
+          </div>
+
+        </div>
+
+        <div class="row ">
+          <!-- <div class="form-group ">
+            <pre> {{variavelForm.value | json}} </pre><br>
+          </div> -->
+        </div>
+      </div>
+  </form>

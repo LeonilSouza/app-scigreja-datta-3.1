@@ -1,0 +1,84 @@
+<div class="container">
+    <!-- <div style="width: 95%;  margin: auto"> -->
+    <nav class="page-header mb-0 ">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item "><a routerLink="/">Cadastro</a></li>
+        <li class="breadcrumb-item"><a routerLink="/departamentos">Departamentos</a></li>
+        <li class="breadcrumb-item active">{{pageTitle}}</li>
+        <li class=" col-md ">
+          <button routerLink="/departamentos" type="button"  class="btn btn-primary white float-right">Voltar</button>
+        </li>
+      </ol>
+    </nav>
+    <br>
+  
+  <form [formGroup]="departamentoForm" autocomplete="off" (submit)="submitForm()">
+        <div  class="card mb-3 tab-pane "><br>
+  
+          <div class="form-row ml-1 mr-1 ">
+                <!-- codigo -->
+               <div class="form-group col-md-1">
+              <b><label >Código</label></b>
+                  <input readonly type="text" class="form-control" id="id" formControlName="id">
+                </div>
+  
+                  <!-- name -->
+                  <div class="form-group col-md-3 ">
+                  <b><label for="nome">Nome do Departamento</label></b>
+                    <input autocomplete="off" type="text" style="height: 37px" class="form-control " id="nome" formControlName="nome">
+                    <p class="danger" *ngIf="departamentoForm.controls.nome.dirty && departamentoForm.controls.nome.errors" margin-left>Nome inválido</p>
+                  </div>
+  
+                   <!-- nomeConjunto -->
+                   <div class="form-group col-md-3 ">
+                    <b><label for="nomeConjunto">Nome do Conjunto</label></b>
+                    <input autocomplete="off" type="text" style="height: 37px" class="form-control " id="nome" formControlName="nomeConjunto">
+                    <p class="danger" *ngIf="departamentoForm.controls.nomeConjunto.dirty && departamentoForm.controls.nomeConjunto.errors" margin-left>Nome inválido</p>
+                  </div>
+  
+                  <!-- Tipo -->
+                  <div  *ngIf="(perfil === 'ADMIN')"  class="form-group col-md-3 ">
+                  <b><label>Tipo</label></b>
+                    <select formControlName="tipo" class="form-control">
+                        <option selected >Padrao</option>
+                        <option >Normal</option>
+                      </select>
+                  </div>
+                </div>
+              </div>
+                  <nav class="page-header">
+                    <div class="form row col md " >
+                      <div class="form row " >
+                        <button [disabled]="submittingForm || departamentoForm.invalid" type="submit" class="btn btn-primary">
+                          Salvar
+                        </button>
+                      </div>
+                    </div>
+                  </nav>
+  
+  
+     </form>
+    <p></p>
+    <div class=" alert alert-secondary card">
+    <div class="form-row " >
+    <div class="form-group ">
+    <pre> {{departamentoForm.value | json}} </pre><br>
+    </div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

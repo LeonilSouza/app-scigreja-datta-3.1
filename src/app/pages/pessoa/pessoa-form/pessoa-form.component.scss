@@ -1,0 +1,60 @@
+.danger {
+  color: red;
+  font-size: 10px;
+}
+
+
+// cropper
+
+input[type="file"] {
+  display: none;
+}
+
+.label-file {
+  // Melhoraar a aoarencia di input da foto
+  padding: 7px 7px;
+  width: 180px;
+  background: #fff;
+  color: black;
+  display: block;
+  margin-top: 10px;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: left;
+  cursor: pointer;
+  transition: .5s;
+  border: 1px solid rgb(175, 170, 170);
+  border-radius: 5px;
+
+}
+
+.label-file:hover {
+  color: #333;
+  background: rgb(255, 255, 255);
+  border-color: blue;
+
+}
+
+
+/* primNG select Maravilha - Configura tudo no select
+TEM que colocar no scss do componente*/
+:host ::ng-deep.p-select {
+  align-items: center !important;
+  width: 100% !important;
+  height: 30px !important;
+  border-radius: 4px !important;
+  padding-bottom: 2px !important;
+}
+
+:host ::ng-deep.p-select-label {
+  font-size: 14px !important;
+}
+
+:host ::ng-deep.p-select-panel {
+  font-size: 14px !important;
+}
+
+:host ::ng-deep.p-select-filter {
+  max-height: 30px !important;
+}
+
+//Fim select
