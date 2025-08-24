@@ -1,6 +1,6 @@
-@use "sass:list";
-@use "sass:map";
-@use "variable";
+@use 'sass:list';
+@use 'sass:map';
+@use 'variable';
 
 @mixin shadow($size: 0 4px 25px 0, $color: rgba(0, 0, 0, 0.1)) {
   box-shadow: $size $color;

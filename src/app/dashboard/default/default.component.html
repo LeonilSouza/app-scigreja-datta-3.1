@@ -3,7 +3,7 @@
   <div class="row">
     <div class="col-md-12 col-xl-9 mb-3">
       <div >
-        <div class="px-2 py-2 shadow">
+        <div class="card-border-c-blue shadow border-2 col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="row">
             <!-- Escondida -->
 
@@ -20,18 +20,20 @@
               </div>
             </div>
             <!-- fim Escondida -->
-            <div class="col-md-12 col-lg-12 col-xl-12 col-sm-12">
-              <!-- Cabeçalho calendário -->
-              <div class="col-auto border-1 mt-0 mb-2" style="background-color: rgb(255, 255, 255); border-color: rgb(233, 234, 240) ; 
-                            padding-left: 10px; padding-top: 3px; padding-bottom: 3px; border-radius: 5px;">
+             
+            <!-- Cabeçalho calendário -->
+           <div class=" col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+              <div class="px-3  mt-3 mb-0 col-auto " style=" border-color: rgb(233, 234, 240) ; 
+                           border-radius: 5px; ">
                 <span class="text-dark" style="font-size: 18px; " href="javascript:">Agenda da Igreja</span>
                 <button type="button" class="btn btn-primary p-0 float-end" style="border-radius: 5px; height: 30px"
                   (click)="eventWindowCall($event, 'addEvent')">
                     Novo Evento  
                 </button>
+                <!-- Fim Cabeçalho calendário -->
               </div>
-              <!-- Fim Cabeçalho calendário -->
-              <div id="calendar">
+              <hr class="mb-2">
+              <div id="calendar" class="px-2 pb-2  ">
                 <full-calendar #calendar [options]="calendarOptions"></full-calendar>
               </div>
             </div>
@@ -144,7 +146,7 @@
 
           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
             <label>Selecione uma cor <span class="text-danger">*</span></label>
-            <select class="form-select form-control form-control-sm" style="font-size: 13px;" formControlName="category" required>
+            <select class="form-select form-control " style="font-size: 13px; padding-top: 5px;" formControlName="category" required>
               <!-- <option value="" selected disabled>Selecione um tipo de evento</option> -->
               <option id="work" value="work">Verde</option>
               <option id="personal" value="personal">Laranja</option>

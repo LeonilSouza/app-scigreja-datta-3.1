@@ -1139,7 +1139,7 @@ $popover-border-radius: $border-radius-lg;
 $popover-inner-border-radius: subtract($popover-border-radius, $popover-border-width);
 $popover-box-shadow: $box-shadow;
 
-$popover-header-bg: darken($popover-bg, 3%);
+// $popover-header-bg: darken($popover-bg, 3%);
 $popover-header-color: $headings-color;
 $popover-header-padding-y: 0.5rem;
 $popover-header-padding-x: 0.75rem;
@@ -1152,7 +1152,7 @@ $popover-arrow-width: 1rem;
 $popover-arrow-height: 0.5rem;
 $popover-arrow-color: $popover-bg;
 
-$popover-arrow-outer-color: fade-in($popover-border-color, 0.05);
+// $popover-arrow-outer-color: fade-in($popover-border-color, 0.05);
 
 // Toasts
 

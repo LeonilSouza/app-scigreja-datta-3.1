@@ -27,7 +27,7 @@
 
                 <!-- Excluir -->
                 @if(activeTab == "home" ){
-                <button class="btn btn-outline-danger float-end mb-2" type="button"
+                <button  class="btn btn-outline-danger float-end mb-2" type="button"
                  style="margin-left: 10px;" (click)="exclusaoPessoa(pessoa)">Excluir</button>
                 }
 
@@ -1033,7 +1033,7 @@
 
                             @if(ctr_situacao == 4){        
                             <div class="col-12 card  card-secondary pt-1 pb-1 f-17 text-white"
-                            style="padding-left: 10px; margin-left: 10px; padding-right: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 7px;">
+                             style="padding-left: 10px; margin-left: 10px; padding-right: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 7px;">
                               Tipo de Membro
                             </div>
                             }
@@ -1072,14 +1072,11 @@
                             <!-- FIM - Tipo de Membro -->
 
                             @if(ctr_situacao == 4 && pessoaForm.controls['tipoMembro'].value == 'Obreiro'){
-                            <nav aria-label="breadcrumb">
-                              <div class="form-group row col-sm-12 ml-0 mb-0">
-                                <div class="card mb-2  mt-0"
-                                  style="background-color: rgb(77, 83, 90); border-radius: 5px;">
-                                  <span class="mr-8 m-b-4 m-t-4 text-white font-16">Título | Credencial</span>
-                                </div>
-                              </div>
-                            </nav>
+                               <div class="col-12 card  card-secondary pt-1 pb-1 f-17 text-white"
+                             style="padding-left: 10px; margin-left: 10px; padding-right: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 7px;">
+                              Título | Credencial
+                            </div>
+
                             }
 
                             <!-- INICIO - Titulo/Situação Ministerial -->

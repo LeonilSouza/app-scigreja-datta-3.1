@@ -42,60 +42,57 @@
                     </div>
                     <!-- Botões Fim-->
 
-                    <div class="col-md-12   ">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <nav aria-label="breadcrumb" class="">
-                                    <div class="form-group row col-sm-12  mb-0 ">
-                                        <div class="card mb-0 "
-                                            style="background-color: rgb(77, 83, 90); border-radius: 5px; margin-left: 12px">
-                                            <span class="mb-1 mt-1 text-white" style="font-size: 18px; ">{{ pageTitle
-                                                }}</span>
+                    <div class="col-sm-12">
+                        <div class="card  px-3  py-3  shadow pt-0 px-0 ">
+                            <nav aria-label="breadcrumb" class=" ">
+                                <div class="form-group row col-sm-12  mb-4 ">
+                                    <div class="card mb-0 px-3 py-1 mx-0 "
+                                        style="background-color: rgb(77, 83, 90); border-radius: 5px; margin-left: 12px">
+                                        <span class=" text-white py-1" style="font-size: 18px; ">{{ pageTitle
+                                            }}</span>
+                                    </div>
+                                </div>
+                            </nav>
+                            <div class="form-group ">
+                                <div class="col-lg-8">
+                                    <div class="row mb-3">
+                                        <label class="col-lg-2 col-form-label text-lg-end px-lg-0">Codigo:</label>
+                                        <div class="col-lg-3">
+                                            <input readonly formControlName="id" type="text"
+                                                class="form-control form-control-sm  mt-1" />
                                         </div>
                                     </div>
-                                </nav>
-                                <div class="card ">
-
-                                    <!-- Id -->
-                                    <div class="card-body">
-                                        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-3">
-                                            <label class="mb-1">Código <span class="text-danger">*</span></label>
-                                            <input readonly type="text" class="form-control " placeholder="id"
-                                                formControlName="id">
+                                </div>
+                                <div class="col-lg-8">
+                                    <div class="row mb-3">
+                                        <label class="col-lg-2 col-form-label text-lg-end px-lg-0">Nome:</label>
+                                        <div class="col-lg-6">
+                                            <input type="text" formControlName="nome"
+                                                class="form-control form-control-sm mt-1 " placeholder="Nome" />
                                         </div>
+                                    </div>
+                                </div>
 
-                                        <!-- Nome -->
-
-                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
-                                            <label class="mb-1">nome <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" placeholder="nome"
-                                                formControlName="nome" required>
-                                            @if(!disciplinaForm.get('nome')?.valid &&
-                                            disciplinaForm.get('nome')?.touched) {
-                                            <small class="form-text text-danger"> O Nome é obrigatório
-                                            </small>
-                                            }
-                                        </div>
-
-                                        <!-- Tipo Admin do sistema -->
-                                        @if(perfil == 'ADMIN'){
-                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
-                                            <label class="mb-1" >Tipo <span class="text-danger">*</span></label>
-
-                                            <p-select [style]="{'width':'100%','height':'35px'}" class="w-full md"
+                                <!-- Tipo Admin do sistema -->
+                                @if(perfil == 'ADMIN'){
+                                <div class="col-lg-8">
+                                    <div class="row">
+                                        <label class="col-lg-2 col-form-label text-lg-end ">Tipo:</label>
+                                        <div class="col-lg-6">
+                                            <p-select [style]="{'width':'100%','height':'35px'}" class="w-full md  mb-2"
                                                 formControlName="tipo" [options]="tipos" [editable]="false"
                                                 [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
                                                 resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
                                                 [autofocus]="false" optionValue="nome" placeholder=""
                                                 (onChange)="onChangeTipoPadraoIgreja($event)">
                                             </p-select>
-                                            <div class="col-sm-12 mt-2">
-                                            </div>
-                                        </div>
-                                        }
-                                    </div>
+                                            <span class="text-mutted">Igreja: Visivel a Igreja especifica</span><br>
+                                            <span class="text-mutted">Padrao: Visivel a todas as Igrejas </span>
 
+                                        </div>
+                                    </div>
                                 </div>
+                                }
                             </div>
 
                         </div>

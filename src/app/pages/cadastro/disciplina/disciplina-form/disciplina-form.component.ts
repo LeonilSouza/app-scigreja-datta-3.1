@@ -72,16 +72,16 @@ export class DisciplinaFormComponent implements OnInit, AfterContentChecked {
 
     // Depois que passou para standalone component, o codigo abaixo parou de funcionar
 
-     if (this.route.parent) {
-      console.log('A rota é uma rota filha');
-      console.log(this.route.parent);
+    //  if (this.route.parent) {
+    //   console.log('A rota é uma rota filha');
+    //   console.log(this.route.parent);
       // console.log(this.route.parent.snapshot.routeConfig.children[0].data['path'])
-    } else {
-      console.log('A rota não é uma rota filha');
-    }
+    // } else {
+    //   console.log('A rota não é uma rota filha');
+    // }
 
     const path: any = this.route.snapshot.parent;
-    console.log(path)
+    // console.log(path)
     // console.log(this.route.snapshot.parent.url[0]?.path)
 
   }
@@ -92,7 +92,6 @@ export class DisciplinaFormComponent implements OnInit, AfterContentChecked {
 
   private setCurrentAction() {
     if (this.route.snapshot.url[0].path == "new"){
-      console.log(this.route.snapshot.url[0].path)
       this.currentAction = "new"
     }else
       this.currentAction = "edit"

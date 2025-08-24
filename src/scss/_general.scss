@@ -311,7 +311,7 @@ p.text-muted {
     &:active,
     &:focus,
     &:hover {
-      background: transparentize($primary, 0.9);
+      // background: transparentize($primary, 0.9);
 
       > a {
         background: transparent;
