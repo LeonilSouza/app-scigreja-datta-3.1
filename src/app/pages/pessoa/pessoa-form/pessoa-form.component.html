@@ -6,7 +6,7 @@
     </li>
     <li class="breadcrumb-item bcrumb-1">
       <a routerLink="/dashboard/main">
-        <i class="fas fa-home font-17"></i></a>
+        <i class="fas fa-home font-17"></i></a> 
     </li>
     <li class="breadcrumb-item">Cadastro de Membros</li>
   </ul>
@@ -86,14 +86,14 @@
   <div class="section-body">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 
-      <div class="row">
+      <div class="row ">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 
           <!-- Fim botões -->
 
           <!-- CABEÇALHO DAS ABAS  -->
 
-          <ul class="nav nav-tabs " style="font-size: 12px; height: 40px;" id="myTab" role="tablist">
+          <ul class=" nav nav-tabs " style="font-size: 12px; height: 40px;" id="myTab" role="tablist">
 
 
             <!-- ABA PARA INSERÇÃO DE PESSOAS-->
@@ -162,17 +162,17 @@
           <!-- FIM CABEÇALHO DAS ABAS  -->
 
 
-          <div class="card mb-0">
-            <div class="padding-20 " style="padding-top: 1px;">
+          <div class="mb-0 ">
+            <div class=" padding-20 " style="padding-top: 1px;">
               <form [formGroup]="pessoaForm" autocomplete="off" (submit)="submitForm()">
 
                 <!-- OBSERVAÇÃO PARTE  DE INCLUSÃO DE PESSOAS -->
 
                 <!-- CONTROLE GERAL DAS ABAS -->
-                <div class="tab-content  mb-2" id="myTabContent">
+                <div class=" shadow tab-content  mb-2" id="myTabContent">
 
                   <!-- INICIO ABA DADOS INICIAIS -->
-                  <div class="tab-pane fade" [ngClass]="{ 'show active': this.activeTab === 'novo' }" id="novo"
+                  <div class=" tab-pane fade" [ngClass]="{ 'show active': this.activeTab === 'novo' }" id="novo"
                     role="tabpanel" aria-labelledby="novo-tab">
                     <div class="row">
                       <div class="col-12">

@@ -1,21 +1,11 @@
 <!-- Cards Estaticticas -->
 <section class="main-content">
-    <!-- <ul class="breadcrumb breadcrumb-style mt-0 mb-0">
-        <li class="breadcrumb-item">
-            <h5 class="page-title m-b-0">Disciplina</h5>
-        </li>
-        <li class="breadcrumb-item bcrumb-1">
-            <a routerLink="/dashboard/main">
-                <i class="fas fa-home font-17"></i></a>
-        </li>
-        <li class="breadcrumb-item">Disciplina</li>
-    </ul> -->
     <div class="row mb-0 ">
         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
             <div class="card card-border-c-red border-2  ">
                 <div class="row align-items-center m-l-0">
                     <div class="col-auto">
-                        <i class="fas fa-book-reader f-28 text-success"></i>
+                        <i class="fas fa-book-reader f-28 text-danger"></i>
                     </div>
                     <div class="col-auto">
                         <h6 class="text-dark mt-2">Disciplinas Padrão</h6>
@@ -28,7 +18,7 @@
             <div class="card card-border-c-yellow border-2  ">
                 <div class="row align-items-center m-l-0">
                     <div class="col-auto">
-                        <i class="fas fa-home f-28 text-primary"></i>
+                        <i class="fas fa-home f-28 text-c-yellow"></i>
                     </div>
                     <div class="col-auto">
                         <h6 class="text-dark mt-2">Disciplinas da Igreja</h6>
@@ -66,7 +56,7 @@
             <div class="">
                 <div class="mb-3 ">
                     <div class="">
-                        <div class="card mt-0">
+                        <div class="card shadow mt-0">
                             <p-table #dtdisciplina [value]="disciplinas"
                                 [globalFilterFields]="['nome', 'country.name', 'representative.name', 'status']"
                                 [lazy]="true" responsiveLayout="stack" (onLazyLoad)="loadDisciplinasLazy($event)"
@@ -97,10 +87,10 @@
                                     disciplina.igrejaId ==
                                     null)){
                                     <tr>
-                                        <td class="col-data-100" style=" font-size: 13px">{{ disciplina.id }}
+                                        <td class="col-data-100 py-2" style=" font-size: 13px">{{ disciplina.id }}
                                         </td>
-                                        <td style=" font-size: 13px">{{ disciplina.nome }}</td>
-                                        <td class="col-acoes-header">
+                                        <td class="py-2" style=" font-size: 13px">{{ disciplina.nome }}</td>
+                                        <td class="col-acoes-header py-2">
 
                                             @if(perfil !== 'ADMIN' && (disciplina.igrejaId == igrejaId )){
                                             <button [routerLink]="[disciplina.id, 'edit']" type="button"
@@ -115,11 +105,11 @@
 
                                     @if(perfil == 'ADMIN'){
                                     <tr>
-                                        <td class="col-data-100" style=" font-size: 13px">{{ disciplina.id }}
+                                        <td class="col-data-100 py-2" style=" font-size: 13px">{{ disciplina.id }}
                                         </td>
-                                        <td style=" font-size: 13px;">{{ disciplina.nome }}<br>
+                                        <td class="py-2" style=" font-size: 13px;">{{ disciplina.nome }}<br>
                                         </td>
-                                        <td class="col-acoes-header">
+                                        <td class="col-acoes-header py-2">
                                             <button [routerLink]="[disciplina.id, 'edit']" type="button"
                                                 class="btn btn-icon btn-outline-info p-1 mt-0 mb-0"
                                                 [style]="{'height': '30px', 'width': '30px'} ">

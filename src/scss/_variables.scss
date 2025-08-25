@@ -32,10 +32,10 @@
 // temp variables
 $theme-color: linear-gradient(-135deg, #1de9b6 0%, #1dc4e9 100%);
 $theme-color2: linear-gradient(-135deg, #899fd4 0%, #a389d4 100%);
-$primary-color: #04a9f5;
+$primary-color: #1a82ce;
 $warning-color: #f4c22b;
 $danger-color: #f44236;
-$success-color: #1de9b6;
+$success-color: #25aa88;
 $purple-color: #a389d4;
 $info-color: #3ebfea;
 $secondary-color: #748892;
@@ -48,7 +48,7 @@ $theme-border: #eaeaea;
 // header
 $header-dark-background: #3f4d67;
 $header-dark-text-color: #fff;
-$header-light-background: #fff;
+$header-light-background: hsl(0, 0%, 100%);
 $header-light-text-color: #3f4d67;
 
 // Menu
@@ -57,7 +57,7 @@ $menu-dark-background: #3f4d67;
 $menu-dark-text-color: #a9b7d0;
 $menu-light-background: #fff;
 $menu-light-text-color: #3f4d67;
-$menu-active-color: #04a9f5;
+$menu-active-color: #1a82ce;
 
 // dark layout colors
 $dark-layout: #324059; // Alterei para usar no header -------------------------------

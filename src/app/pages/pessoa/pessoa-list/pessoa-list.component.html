@@ -1,11 +1,11 @@
 <section class="main-content">
-  <ul class="breadcrumb breadcrumb-style mt-0 mb-0">
+  <ul class="breadcrumb breadcrumb-style mt-0 mb-2">
     <li class="breadcrumb-item">
       <h5 class="page-title m-b-0">Membros</h5>
     </li>
     <li class="breadcrumb-item bcrumb-1">
-      <a routerLink="/dashboard/main">
-        <i class="fas fa-home font-17"></i></a>
+      <a routerLink="/dashboard/default">
+        <i class="fas fa-home f-17"></i></a>
     </li>
     <li class="breadcrumb-item">Lista de Membros</li>
   </ul>
@@ -60,8 +60,7 @@
 
   <!-- Fim ToolBar -->
 
-  <div class="card  card-success mt-0" >
-    <span class="m-b-20"></span>
+  <div class="card shadow mt-0" >
     <div class="padding-20 " style="padding-top: 1px;">
       <p-table #dtpessoa [value]="pessoas" responsiveLayout="stack"
         [globalFilterFields]="['nomeSemAcento','cpfOuCnpj','tipoMembro','situacaoCadastral']" [lazy]="true"
@@ -99,8 +98,8 @@
         </ng-template>
 
         <ng-template #body let-pessoa>
-          <tr>
-            <td>
+          <tr >
+            <td class="py-2">
               <!-- Quando tem foto -->
               @if (pessoa?.foto) {
               <div class="flex items-center gap-2 ">
@@ -121,10 +120,10 @@
               }
             </td>
 
-            <td class="" [routerLink]="[pessoa.id, 'edit']" class=" m-l-0 float-left "
+            <td  [routerLink]="[pessoa.id, 'edit']" class="py-2 m-l-0 float-left "
               style="min-width:16rem; cursor: pointer; font-size: 12px; color: rgb(6, 6, 6);">{{ pessoa.nome
               }}<br>
-              <small class="text-secondary"><i class="fas fa-envelope font-12 text-dark"></i> {{ pessoa.tipoMembro }}
+              <small class="text-secondary"><i class="fas fa-envelope f-12 text-dark"></i> {{ pessoa.tipoMembro }}
                 desde
                 {{
                 pessoa.membroDesde }}</small> 
@@ -161,28 +160,28 @@
             </td>
 
             <!-- Igreja/Setor -->
-            <td [routerLink]="[pessoa.id, 'edit']" class="col-data-content-3 float-left"
+            <td [routerLink]="[pessoa.id, 'edit']" class="py-2 col-data-content-3 float-left" 
               style="font-size: 12px; cursor: pointer">
-              <i class="fas fa-home font-12 text-dark"></i>  {{ pessoa.nomeIgreja }}<br>
-              <small class="text-secondary"> <i class="fab fa-microsoft font-12 text-primary"></i>   {{
+              <i class="fas fa-home f-12 text-dark"></i>  {{ pessoa.nomeIgreja }}<br>
+              <small class="text-secondary"> <i class="fab fa-microsoft f-12 text-primary"></i>   {{
                 pessoa.setor }}</small> 
             </td>
 
             <!-- Bairro/Contatos -->
-            <td [routerLink]="[pessoa.id, 'edit']" class="col-data-content-3" style="font-size: 12px; cursor: pointer">
+            <td  [routerLink]="[pessoa.id, 'edit']" class="py-2 col-data-content-3" style="font-size: 12px; cursor: pointer">
 
               @if(pessoa?.bairro){
-              <i class="fas fa-map-marker font-12 text-success float-left"></i>  {{ pessoa?.bairro }}<br>
+              <i class="fas fa-map-marker f-12 text-success float-left"></i>  {{ pessoa?.bairro }}<br>
               }
 
               @if(pessoa?.celular1){
-              <small><i class="fas fa-phone font-12 text-danger float-left"></i> {{ pessoa?.celular1
+              <small><i class="fas fa-phone f-12 text-danger float-left"></i> {{ pessoa?.celular1
                 }}</small>
               }
 
             </td>
 
-            <td class="col-acoes" style="min-width:7rem;">
+            <td class="py-2 col-acoes" style="min-width:7rem;">
 
               <button [routerLink]="[pessoa.id, 'edit']" type="button" class="btn btn-icon btn-outline-info p-1"
                 [style]="{'height': '30px', 'width': '30px'} " [placement]="'top'" ngbTooltip="Alterar Cadastro">
