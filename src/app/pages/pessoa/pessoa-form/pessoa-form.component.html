@@ -56,11 +56,11 @@
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 ">
 
                 <!-- Salvar -->
-                <button class="btn btn-success float-end" (click)="submitForm()"
+                <button class="btn btn-success float-end" style="margin-left: 10px;" (click)="submitForm()"
                   [disabled]="submittingForm || pessoaForm.invalid">Salvar</button>
 
                 <!-- Voltar -->
-                <button routerLink="/pessoas" class="btn btn-primary float-end  msr-3 ">Voltar</button>
+                <button routerLink="/pessoas" class="btn btn-primary float-end ">Voltar</button>
 
                 <span class="float-left">
                   <label class="text-dark font-14">
@@ -184,7 +184,7 @@
                             *</label>
                           <div class="col-sm-5">
                             <input autofocus autocomplete="off" type="text"
-                              class="form-control  uppercase" formControlName="nome" placeholder="Nome">
+                              class="form-control form-control-sm uppercase" formControlName="nome" placeholder="Nome">
                             <!--text-transform: uppercase apenas muda no visual HTML. Não muda o payLoad tirei por enquanto-->
                             @if(pessoaForm.controls['nome'].dirty && pessoaForm.controls['nome'].errors){
                             <p class="danger" style="font-size: 11px;" margin-left>
@@ -1253,9 +1253,10 @@
                               <!-- Pesquisa nome em pessoa -->
                               @if((valorSN === 's')){
                               <div class="form-group col-md-4 ">
-                                <p-select formControlName="nome" [options]="pessoas" p-select optionValue="nome"
-                                  optionLabel="nome" (onChange)="doSelectFilhos($event)"
-                                  placeholder="Selecione um filho " />
+                                <p-select (onChange)="doSelectFilhos($event)" formControlName="nome" [options]="pessoas" 
+                                 optionLabel="nome" [options]="pessoas" [editable]="false" [filter]="true" filterBy="nome"
+                                 [showClear]="false" resetFilterOnHide="true" dropdownIcon="pi pi-user" optionValue="id"
+                                 [autofocus]="true" placeholder="Selecione um filho" />
                               </div>
                               }
                             </div>
@@ -1337,9 +1338,6 @@
                                   class="pt-1 pb-1" style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 1px; padding-bottom: 1px; border-top-left-radius: 5px; ">
                                   Nome</th>
                                 <th
-                                 class="pt-1 pb-1" style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 1px; padding-bottom: 1px;">
-                                  E-mail</th>
-                                <th
                                   style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 1px; padding-bottom: 1px;"
                                   class="col-data-200 pt-1 pb-1">
                                   Sexo</th>
@@ -1360,8 +1358,6 @@
                               <tr>
                                 <td class="m-r-15" style="font-size: 12px;">{{
                                   filho.nome }}</td>
-                                <td style="font-size: 12px;">{{
-                                  filho.email }}</td>
                                 <td class="col-data-content" style="font-size:
                                     12px;">{{ filho.sexo }}
                                 </td>

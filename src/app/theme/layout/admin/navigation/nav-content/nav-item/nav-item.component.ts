@@ -12,7 +12,6 @@ import { SharedModule } from 'src/app/theme/shared/shared.module';
 import { AuthenticationService } from 'src/app/theme/shared/services';
 
 // type
-import { Role } from 'src/app/theme/shared/_helpers/role';
 
 @Component({
   selector: 'app-nav-item',

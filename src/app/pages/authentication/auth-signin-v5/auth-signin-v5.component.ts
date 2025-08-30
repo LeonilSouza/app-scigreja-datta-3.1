@@ -71,15 +71,6 @@ private formBuilder = inject(FormBuilder);
       perfil: [null],
       imageUrl: [null]
     });
-
-    if (window.location.pathname !== '/login-v5') {
-      if (this.authenticationService.user) {
-        this.router.navigate(['/dashboard/default']);
-      }
-    }
-
-    // get return url from route parameters or default to '/'
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'];
   }
 
   // public method
@@ -109,14 +100,15 @@ private formBuilder = inject(FormBuilder);
       .login(this.formValues?.['email']?.value, this.formValues?.['password']?.value)
       .pipe(first())
       .subscribe({
-        next: (response) => {
+        next: (response): void => {
           this.authenticationService.successfulLogin(response.headers.get('Authorization'));
           this.checkAcesso();
           this.router.navigate(['/dashboard/default']);
         },
         error: (error) => {
-          this.error = error;
+          this.error = error.message;
           this.loading = false;
+         
         }
       });
   }
@@ -147,17 +139,10 @@ private formBuilder = inject(FormBuilder);
               GLOBALS.igrejaId = response['igrejas'][0].id;
               GLOBALS.setorId = response['igrejas'][0].setor.id,
               GLOBALS.nomeIgreja = response['igrejas'][0].nome;
-              // this.sharedService.setIgrejaId(response['igrejas'][0].id);
-              // this.sharedService.setNomeIgreja(response['igrejas'][0].nome);
-              // this.sharedService.setSetorId(response['igrejas'][0].setor.id);
             } else {
               GLOBALS.igrejaId = this.usuario.igrejaAtivaId;
               GLOBALS.setorId = response['igrejas'][0].setor.id,
               GLOBALS.nomeIgreja = this.usuario.igrejaAtivaNome;
-              // this.sharedService.setIgrejaId(this.usuario.igrejaAtivaId);
-              // this.sharedService.setNomeIgreja(this.usuario.igrejaAtivaNome);
-              // this.sharedService.setSetorId(response['igrejas'][0].setor.id);
-
             }
 
             // Grava no locaStorage

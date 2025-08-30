@@ -33,7 +33,8 @@ import { UsuarioService } from './services/usuario.service';
 import { StorageService } from './services/storage.service';
 import { providePrimeNG } from 'primeng/config';
 import { MyPreset } from './_helpers/styles';
-import { FilterMatchMode } from 'primeng/api';
+import { ConfirmationService, FilterMatchMode, MessageService } from 'primeng/api';
+import { IgrejaService } from './services/igreja.service';
 
 @NgModule({
   declarations: [],
@@ -84,6 +85,10 @@ import { FilterMatchMode } from 'primeng/api';
     SharedService,
     AuthenticationService,
     StorageService,
+    MessageService ,
+    IgrejaService,
+    ConfirmationService,
+
     // Configuração PrimeNg
     providePrimeNG({
       ripple: true,

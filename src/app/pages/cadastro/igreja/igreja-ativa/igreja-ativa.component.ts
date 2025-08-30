@@ -3,13 +3,14 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { LazyLoadEvent, SharedModule } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
-import { IgrejaAtivaDTO } from 'src/app/models/igreja-ativa.dto';
-import { LocalIgreja, UsuarioDTO } from 'src/app/models/usuario.dto';
-import { SharedService } from 'src/app/services/shared.service';
-import { StorageService } from 'src/app/services/storage.service';
-import { UsuarioService } from 'src/app/services/usuario.service';
-import { GLOBALS } from 'src/app/_helpers/globals';
-import { CardComponent } from '../../../../shared/components/card/card.component';
+import { GLOBALS } from 'src/app/app-config';
+import { CardComponent } from 'src/app/theme/shared/components/card/card.component';
+import { IgrejaAtivaDTO } from 'src/app/theme/shared/models/igreja-ativa.dto';
+import { LocalIgreja, UsuarioDTO } from 'src/app/theme/shared/models/usuario.dto';
+import { SharedService } from 'src/app/theme/shared/services/shared.service';
+import { StorageService } from 'src/app/theme/shared/services/storage.service';
+import { UsuarioService } from 'src/app/theme/shared/services/usuario.service';
+
 
 @Component({
     selector: 'app-igreja-ativa',

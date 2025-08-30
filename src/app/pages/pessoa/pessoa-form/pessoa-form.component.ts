@@ -753,10 +753,12 @@ export class PessoaFormComponent implements OnInit, AfterViewInit, OnDestroy {
   //   this.pessoaForm.controls['conjugeId'].setValue(options[0].data.id) // Escolhe os combo para gravar em banco
   // }
 
-  public doSelectFilhos(value: any) {
-    this.filhoForm.controls['email'].setValue(this.pessoaForm.controls['email'].value);
-    this.filhoForm.controls['sexo'].setValue(this.pessoaForm.controls['sexo'].value);
-    this.filhoForm.controls['dataNascimento'].setValue(this.pessoaForm.controls['dataNascimento'].value);
+  public doSelectFilhos(id: any) {
+    let filho = this.pessoas.filter( f => f.id == id.value) ;
+
+    this.filhoForm.controls['nome'].setValue(filho[0].nome);
+    this.filhoForm.controls['sexo'].setValue(filho[0].sexo);
+    this.filhoForm.controls['dataNascimento'].setValue(filho[0]['dataNascimento']);
     this.createFilho();
 
   }

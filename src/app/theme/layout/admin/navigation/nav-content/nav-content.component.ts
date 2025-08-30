@@ -14,7 +14,6 @@ import { NavGroupComponent } from './nav-group/nav-group.component';
 
 
 //role
-import { Role } from 'src/app/theme/shared/_helpers/role';
 import { AuthenticationService } from 'src/app/theme/shared/services';
 import { ThemeService } from 'src/app/theme/shared/services/theme.service';
 
@@ -56,22 +55,7 @@ export class NavContentComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngOnInit(): void {
-  }
-
-  roleBaseFilterMenu(NavigationItems: NavigationItem[], userRoles: string[], parentRoles: string[] = [Role.Admin]): NavigationItem[] {
-    return NavigationItems.map((item) => {
-      // If item doesn't have a specific role, inherit roles from parent
-      const itemRoles = item.role ? item.role : parentRoles;
-
-      // If item has children, recursively filter them, passing current item's roles as parentRoles
-      if (item.children) {
-        item.children = this.roleBaseFilterMenu(item.children, userRoles, itemRoles);
-      }
-
-      return item; // Return the item whether it is visible or disabled
-    });
-  }
+  ngOnInit(): void {}
 
   // private method
   private rerenderChartOnDirectionChange(isRtl: boolean) {

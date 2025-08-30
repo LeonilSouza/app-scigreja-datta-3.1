@@ -23,9 +23,9 @@
 .custom-select,
 .form-control {
   background-color: $theme-background;
-  padding: 10px 20px;
+  padding: 5px 20px; ///////////////////////////(Alerei de 10px para 5px coloquei-----------------------------------
   font-size: 13px;
-  height: 32px !important; ///////////////////////////(Mudei para input -----------------------------------
+  // height: 32px !important; ///////////////////////////(Adicionei e muda tambem-----------------------------------
   border-radius: 5px;
 
   &:focus {

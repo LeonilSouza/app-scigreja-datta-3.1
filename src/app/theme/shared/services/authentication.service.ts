@@ -36,7 +36,7 @@ export class AuthenticationService {
     return this.http.post(`${API_CONFIG.baseUrl}/login`, { email, password },
       {
         observe: 'response',
-        responseType: 'text'
+        responseType: 'text',
       });
   }
 

@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, throwError } from "rxjs";
-import { API_CONFIG } from '../config/api-config';
 import { catchError, map } from 'rxjs/operators';
 import { AcessoDTO } from "../models/acesso.dto.";
+import { API_CONFIG } from "src/app/app-config";
 
 @Injectable()
 export class AcessoService {

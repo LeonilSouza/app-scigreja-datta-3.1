@@ -1,4 +1,3 @@
-import { AcessoService } from 'src/app/services/acesso.service';
 import { IgrejaAtivaComponent } from './igreja-ativa/igreja-ativa.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -7,15 +6,14 @@ import { ImageCropperModule } from 'ngx-image-cropper';
 import { IgrejaRoutingModule } from './igreja-routing.module';
 import { IgrejaListComponent } from './igreja-list/igreja-list.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgxSelectModule } from 'ngx-select-ex';
 import { CalendarModule } from 'primeng/calendar';
-
-import { IgrejaService } from 'src/app/services/igreja.service';
-import { SetorService } from 'src/app/services/setor.service';
-import { CargoService } from 'src/app/services/cargo.service';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { IgrejaFormComponent } from './igreja-form/igreja-form.component';
 import { DropdownModule } from 'primeng/dropdown';
+import { SharedModule } from 'src/app/theme/shared/shared.module';
+import { IgrejaService } from 'src/app/theme/shared/services/igreja.service';
+import { SetorService } from 'src/app/theme/shared/services/setor.service';
+import { AcessoService } from 'src/app/theme/shared/services/acesso.service';
+import { CargoService } from 'src/app/theme/shared/services/cargo.service';
 
 
 @NgModule({
@@ -25,7 +23,6 @@ import { DropdownModule } from 'primeng/dropdown';
         FormsModule,
         ReactiveFormsModule,
         CalendarModule,
-        NgxSelectModule,
         SharedModule,
         DropdownModule,
         // NgxDatatableModule,

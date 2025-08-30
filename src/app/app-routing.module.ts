@@ -21,7 +21,12 @@ const routes: Routes = [
       {
         path: 'dashboard',
         loadChildren: () =>
-          import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
+          import('./dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTE),
+      },
+       {
+        path: 'pessoas',
+        loadChildren: () =>
+          import('./pages/pessoa/pessoa.routes').then((m) => m.PESSOA_ROUTES),
       },
       {
         path: 'disciplinas',
@@ -31,10 +36,96 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'pessoas',
+        path: 'cargos',
         loadChildren: () =>
-          import('./pages/pessoa/pessoa.routes').then((m) => m.PESSOA_ROUTES),
+          import('./pages/cadastro/cargo/cargo.routes').then(
+            (d) => d.CARGO_ROUTES
+          ),
       },
+      {
+        path: 'igrejas',
+        loadChildren: () =>
+          import('./pages/cadastro/igreja/igreja.module').then(
+            (module) => module.IgrejaModule
+          ),
+      },
+      {
+        path: 'ativas',
+        loadChildren: () =>
+          import('./pages/cadastro/igreja/igreja.module').then(
+            (module) => module.IgrejaModule
+          ),
+      },
+      // {
+      //   path: 'cartas',
+      //   loadChildren: () =>
+      //     import('./pages/carta/carta.module').then(
+      //       (module) => module.CartaModule
+      //     ),
+      // },
+      // {
+      //   path: 'casos',
+      //   loadChildren: () =>
+      //     import('./pages/caso/caso.module').then(
+      //       (module) => module.CasoModule
+      //     ),
+      // },
+      // {
+      //   path: 'usuarios',
+      //   loadChildren: () =>
+      //     import('./pages/cadastro/usuario-acesso/usuario.module').then(
+      //       (module) => module.UsuarioModule
+      //     ),
+      // },
+      // {
+      //   path: 'setores',
+      //   loadChildren: () =>
+      //     import('./pages/cadastro/setor/setor.module').then(
+      //       (module) => module.SetorModule
+      //     ),
+      // },
+      // {
+      //   path: 'modelodocumentos',
+      //   loadChildren: () =>
+      //     import(
+      //       './pages/cadastro/modelo-documento/modelo-documento.module'
+      //     ).then((module) => module.ModeloDocumentoModule),
+      // },
+      // {
+      //   path: 'titulos',
+      //   loadChildren: () =>
+      //     import(
+      //       './pages/cadastro/titulo-ministerial/titulo-ministerial.module'
+      //     ).then((module) => module.TituloMinisterialModule),
+      // },
+      // {
+      //   path: 'cargodeptos',
+      //   loadChildren: () =>
+      //     import('./pages/cargo-departamento/cargo-departamento.module').then(
+      //       (module) => module.CargoDepartamentoModule
+      //     ),
+      // },
+      // {
+      //   path: 'variaveis',
+      //   loadChildren: () =>
+      //     import('./pages/cadastro/variavel/variavel.module').then(
+      //       (module) => module.VariavelModule
+      //     ),
+      // },
+      // {
+      //   path: 'cadastros',
+      //   loadChildren: () =>
+      //     import('./pages/financeiro/cadastro/cadastro.module').then(
+      //       (module) => module.CadastroModule
+      //     ),
+      // },
+      // {
+      //   path: 'lancamentos',
+      //   loadChildren: () =>
+      //     import('./pages/financeiro/lancamento/lancamento.module').then(
+      //       (module) => module.LancamentoModule
+      //     ),
+      // },
       {
         path: 'layout',
         loadChildren: () =>

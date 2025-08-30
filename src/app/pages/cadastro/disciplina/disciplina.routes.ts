@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { DisciplinaListComponent } from './disciplina-list/disciplina-list.component';
+import { DisciplinaFormComponent } from '../disciplina/disciplina-form/disciplina-form.component';
 
 export const DISCIPLINA_ROUTES: Routes = [
   {
@@ -6,25 +8,25 @@ export const DISCIPLINA_ROUTES: Routes = [
     children: [
       {
         path: '',
-        loadComponent: () => import('../disciplina/disciplina-list/disciplina-list.component').then((dl) => dl.DisciplinaListComponent),
+        component: DisciplinaListComponent,
         data: {
-          title: 'Disciplinas'
-        }
+          title: 'Disciplinas',
+        },
       },
       {
         path: 'new',
-        loadComponent: () => import('../disciplina/disciplina-form/disciplina-form.component').then((df) => df.DisciplinaFormComponent),
+        component: DisciplinaFormComponent,
         data: {
-          title: 'Disciplinas'
-        }
+          title: 'Disciplinas',
+        },
       },
       {
         path: ':id/edit',
-        loadComponent: () => import('../disciplina/disciplina-form/disciplina-form.component').then((df) => df.DisciplinaFormComponent),
+        component: DisciplinaFormComponent,
         data: {
-          title: 'Disciplinas'
-        }
-      }
-    ]
-  }
+          title: 'Disciplinas',
+        },
+      },
+    ],
+  },
 ];

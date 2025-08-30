@@ -13,7 +13,6 @@ import { NavItemComponent } from '../nav-item/nav-item.component';
 // service
 import { AuthenticationService } from 'src/app/theme/shared/services';
 // type
-import { Role } from 'src/app/theme/shared/_helpers/role';
 
 
 @Component({
