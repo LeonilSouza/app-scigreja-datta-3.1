@@ -23,7 +23,7 @@ export class ThemeConfig {
 
 export const API_CONFIG = {
   // baseUrl: "https://api-scigreja-4fbe1bc9e551.herokuapp.com" 
-  // baseUrl: "http://localhost:8080"
+  baseUrl: "http://localhost:8080"
 }
 
 export let GLOBALS: any = {
