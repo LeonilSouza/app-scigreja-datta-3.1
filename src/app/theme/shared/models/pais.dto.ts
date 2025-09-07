@@ -1,6 +1,6 @@
 export class PaisDTO {
     id?: number;
-    nome?: string;
+    nomeSemAcento?: string;
     nomePt?: string;
     sigla?: string;
 }

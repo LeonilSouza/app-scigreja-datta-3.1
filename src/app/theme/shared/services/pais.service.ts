@@ -29,9 +29,9 @@ export class PaisService {
         )
       }
 
-      getListaPaisSigla(nomeSemAcento: any = '') {
+      getListaPaisSigla(nomePt: any = '') {
 
-        return this.http.get(`${API_CONFIG.baseUrl}/paises/?nomeSemAcento=${nomeSemAcento}`)
+        return this.http.get(`${API_CONFIG.baseUrl}/paises/?nomePt=${nomePt}`)
           .pipe(
             catchError(this.handleError)
         );
