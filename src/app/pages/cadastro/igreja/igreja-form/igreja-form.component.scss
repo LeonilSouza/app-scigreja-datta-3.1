@@ -44,7 +44,7 @@
 TEM que colocar no scss do componente*/
 :host ::ng-deep.p-select {
   align-items: center !important;
-  // width: 100% !important; // Somente por causa do select da paginação que desconfigura
+  width: 100% !important;
   height: 30px !important;
   border-radius: 4px !important;
   padding-bottom: 2px !important;

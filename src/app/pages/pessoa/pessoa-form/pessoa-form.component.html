@@ -608,7 +608,7 @@
 
                             <!-- Naturalidade Qdo Brasil-->
                             <!-- ng-select   ng-select   ng-select   ng-select   ng-select   ng-select   ng-select  -->
-                            @if(pessoaForm.controls['nacionalidade'].value == 'Brasil'){
+                            @if(pessoaForm.controls['nacionalidade'].value == 'Brasil/BR'){
                             <div class="form-group col-md-3 ">
                               <label class="">Naturalidade</label>
 
@@ -619,8 +619,8 @@
                                 [fixedPlaceholder]="true" notFoundText="Item não encontrado"
                                 placeholder="Selecione uma Cidade">
                                 <ng-template ng-header-tmp class="card flex flex-wrap justify-center gap-4">
-                                  <p-iconfield>
-                                    <p-inputicon styleClass="float-end pi pi-search" />
+                                  <p-iconfield >
+                                    <p-inputicon styleClass="pi pi-search" />
                                     <input type="text" pInputText id="focus-input" type="text"
                                       class="form-control  custom-search-input"
                                       (input)="onSearch($event)">
@@ -634,7 +634,7 @@
                             </div>
                             }
 
-                            @if(pessoaForm.controls['nacionalidade'].value !== 'Brasil'){
+                            @if(pessoaForm.controls['nacionalidade'].value !== 'Brasil/BR'){
                             <div class="form-group col-md-3">
                               <label>Naturalidade/UF</label>
                               <input type="text" class="form-control " formControlName="naturalidade"

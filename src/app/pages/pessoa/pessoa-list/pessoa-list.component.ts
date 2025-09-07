@@ -12,6 +12,7 @@ import { TabsModule } from 'primeng/tabs';
 import { PessoaListDTO } from 'src/app/theme/shared/models/pessoa.dto';
 import { API_CONFIG, GLOBALS } from 'src/app/app-config';
 import { PessoaService } from 'src/app/theme/shared/services/pessoa.service';
+import { PaisService } from 'src/app/theme/shared/services/pais.service';
 
 
 @Component({

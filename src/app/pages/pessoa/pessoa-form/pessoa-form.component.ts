@@ -51,6 +51,7 @@ import { StorageService } from 'src/app/theme/shared/services/storage.service';
 import { IgrejaService } from 'src/app/theme/shared/services/igreja.service';
 import { FilhoService } from 'src/app/theme/shared/services/filho.service';
 import { HistoricoService } from 'src/app/theme/shared/services/historico.service';
+import { PaisService } from 'src/app/theme/shared/services/pais.service';
 
 
 //declare const $: any;
@@ -66,12 +67,10 @@ import { HistoricoService } from 'src/app/theme/shared/services/historico.servic
     NgClass,
     FormsModule,
     ReactiveFormsModule,
-    DropdownModule,
     InputMaskModule,
     RouterLinkActive,
     NgbTooltip,
     InputTextModule,
-    CalendarModule,
     ImageCropperModule,
     TableModule,
     SelectModule,
@@ -94,7 +93,7 @@ import { HistoricoService } from 'src/app/theme/shared/services/historico.servic
     ConfirmationService, DocumentoService,
     CargoService,
     CidadeService,
-    // provideNgxMask()
+    PaisService
   ]
 })
 
@@ -293,6 +292,7 @@ export class PessoaFormComponent implements OnInit, AfterViewInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private sharedService: SharedService,
+    private paisService: PaisService,
     private formBuilder: FormBuilder,
     private separacaoService: SeparacaoService,
     private documentoService: DocumentoService,
@@ -415,7 +415,7 @@ export class PessoaFormComponent implements OnInit, AfterViewInit, OnDestroy {
       nomeSemAcento: [null],
       email: [''], //[Validators.required, Validators.email]],
       cpfOuCnpj: [null],//['', [Validators.required, Validators.minLength(11), Validators.maxLength(14)]],
-      nacionalidade: ["Brasil", [Validators.required]],
+      nacionalidade: ['Brasil/BR', [Validators.required]],
       naturalidade: [null],
       ufNatal: [null, [Validators.maxLength(2)]],
       rg: [null],
@@ -534,7 +534,8 @@ export class PessoaFormComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onSelectNacionalidade() {
-    if (this.pessoaForm.controls['nacionalidade'].value !== 'Brasil') {
+    console.log(this.pessoaForm.controls['nacionalidade'].value)
+    if (this.pessoaForm.controls['nacionalidade'].value !== 'Brasil/BR') {
       this.pessoaForm.controls['naturalidade'].setValue(" ");
       this.pessoaForm.controls['ufNatal'].setValue('');
     }
@@ -726,20 +727,22 @@ export class PessoaFormComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   loadPaises() {
-    this.sharedService.getDataPaises()
-      .then(async (dataPaises: any) => {
-        let paises = await dataPaises.json();
-        this.paises = paises.map((p: { id: { [x: string]: any; }; nome: any; }) => {
-          return {
-            sigla: p.id['ISO-ALPHA-2'], //Mapeia apenas o nome e a sigla do pais
-            nome: p.nome
-          }
-        });
-      },
-        (error: any) => {
-          this.errorApiIBGE(error);
-        });
-
+    this.paisService
+      .getListaPaisSigla()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.paises = response['content'].map(
+            (p: { sigla: { [x: string]: any }; nomePt: any }) => {
+              return {
+                sigla: p.sigla,
+                nome: p.nomePt + '/' + p.sigla,
+              };
+            }
+          );
+        },
+        error: () => {},
+      });
   }
 
   onCloseTMembroDropDown() {
@@ -1297,7 +1300,7 @@ export class PessoaFormComponent implements OnInit, AfterViewInit, OnDestroy {
     if (error.status === 422) {
       this.serverErrorMessages = JSON.parse(error._body).errors;
     } else if (error.status == 403) {
-      this.router.navigate(['login/signin'])
+      this.router.navigate(['login'])
 
     } else {
       this.serverErrorMessages = ["Falha na comunicação com o servidor. Por favor, teste mais tarde."]

@@ -12,6 +12,7 @@ import { StorageService } from 'src/app/theme/shared/services/storage.service';
 import { UsuarioService } from 'src/app/theme/shared/services/usuario.service';
 import { InputGroup } from "primeng/inputgroup";
 import { SharedModule } from 'src/app/theme/shared/shared.module';
+import { DatePicker } from 'primeng/datepicker';
 
 @Component({
   selector: 'app-igreja-list',
@@ -26,7 +27,7 @@ import { SharedModule } from 'src/app/theme/shared/shared.module';
     TableModule,
     SharedModule,
     NgbTooltip,
-    InputGroup
+    InputGroup,
 ],
 providers: []
 })

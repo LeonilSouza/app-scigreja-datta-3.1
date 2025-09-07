@@ -35,11 +35,13 @@ import { providePrimeNG } from 'primeng/config';
 import { MyPreset } from './_helpers/styles';
 import { ConfirmationService, FilterMatchMode, MessageService } from 'primeng/api';
 import { IgrejaService } from './services/igreja.service';
+import { SelectModule } from 'primeng/select';
 
 @NgModule({
   declarations: [],
   imports: [
     CommonModule,
+    SelectModule,
     FormsModule,
     ReactiveFormsModule,
     CardComponent,
@@ -79,6 +81,7 @@ import { IgrejaService } from './services/igreja.service';
     GalleryModule,
     TranslateModule,
     BidiModule,
+    SelectModule,
   ],
   providers: [
     UsuarioService,

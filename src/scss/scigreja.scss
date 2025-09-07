@@ -169,11 +169,13 @@
 .custom-search-input {
   width: 98%;
   padding: 8px;
+  padding-left: 35px !important;
   height: 30px;
   box-sizing: border-box;
   text-transform: uppercase;
   border: 1px solid rgb(62, 155, 235);
   border-radius: 5px;
+  font-size: 13px !important;
 }
 
 // Css para input de pesquisa Ng Select Original

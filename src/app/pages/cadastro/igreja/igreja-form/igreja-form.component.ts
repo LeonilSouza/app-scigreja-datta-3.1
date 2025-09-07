@@ -3,7 +3,6 @@ import {
   Component,
   OnDestroy,
   OnInit,
-  ViewEncapsulation,
 } from '@angular/core';
 import {
   FormBuilder,
@@ -13,9 +12,9 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription, takeUntil } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService, SharedModule } from 'primeng/api';
 
 import Swal from 'sweetalert2';
 
@@ -26,7 +25,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
-import { NgIf, NgClass } from '@angular/common';
+import { NgClass, JsonPipe } from '@angular/common';
 import { EstadoDTO } from 'src/app/theme/shared/models/estado.dto';
 import { IgrejaDTO } from 'src/app/theme/shared/models/igreja.dto';
 import { GLOBALS } from 'src/app/app-config';
@@ -41,6 +40,8 @@ import { SetorService } from 'src/app/theme/shared/services/setor.service';
 import { CargoService } from 'src/app/theme/shared/services/cargo.service';
 import { PessoaService } from 'src/app/theme/shared/services/pessoa.service';
 import { SharedService } from 'src/app/theme/shared/services/shared.service';
+import { SelectModule } from 'primeng/select';
+import { PaisService } from 'src/app/theme/shared/services/pais.service';
 
 //declare const $: any;
 
@@ -48,9 +49,10 @@ import { SharedService } from 'src/app/theme/shared/services/shared.service';
   selector: 'app-igreja-form',
   templateUrl: './igreja-form.component.html',
   styleUrls: ['./igreja-form.component.scss'],
-  encapsulation: ViewEncapsulation.None, //as vezes não deixa aparecer o input da foto
+  // encapsulation: ViewEncapsulation.None, //as vezes não deixa aparecer o input da foto
   standalone: true,
   imports: [
+    SharedModule,
     ButtonModule,
     RouterLink,
     NgClass,
@@ -60,13 +62,21 @@ import { SharedService } from 'src/app/theme/shared/services/shared.service';
     CalendarModule,
     InputNumberModule,
     ImageCropperModule,
+    SelectModule,
+    JsonPipe,
+    // DatePicker
   ],
+  providers: [PaisService],
 })
 export class IgrejaFormComponent
   implements OnInit, AfterContentChecked, OnDestroy
 {
+  private destroy$: Subject<void> = new Subject<void>();
+
   // Consulta CEP ViaCep
   dataCep!: any[];
+
+  public nomeSemAcento = '';
 
   // Consulta Estados
   estados: EstadoDTO[] = [];
@@ -135,22 +145,26 @@ export class IgrejaFormComponent
   cidades: CidadeDTO[] = [];
 
   paises: PaisDTO[] = [];
+  pais: PaisDTO[] = [];
+
+  divitionArr: PaisDTO[] = []; //Para pegar mais de um valor no optionValue e optionLabel no select primeNg
 
   error = '';
 
   igreja: IgrejaDTO = new IgrejaDTO();
   filiais: IgrejaDTO = new IgrejaDTO();
-  pessoas: PessoaListDTO[];
+
   id: number;
 
   setorId: number;
+  paisId: number;
 
   modo: number = 0;
 
   igrejaId: number = GLOBALS.igrejaId;
 
   tipo = [{ nome: 'Sede' }, { nome: 'Subsede' }, { nome: 'Subcongregação' }]; //PrimeNG
-  status = ['Ativa', 'Inativa'];
+  status = [{ nome: 'Ativa' }, { nome: 'Inativa' }]; //PrimeNG
 
   PageTitleModal: string;
   /*  Referente a ABA SeparacaoDTO */
@@ -172,10 +186,10 @@ export class IgrejaFormComponent
     public translate: TranslateService,
     public pessoaService: PessoaService,
     private sharedService: SharedService,
+    private paisService: PaisService,
     private toastr: ToastrService
   ) {
     this.activeTab = 'dados';
-    //Calendar PrimeNG
   }
 
   //Fim Calendar PrimeNG
@@ -184,8 +198,8 @@ export class IgrejaFormComponent
     this.igrejaId = GLOBALS.igrejaId;
     this.setCurrentAction();
     this.buildIgrejaForm();
-    this.loadIgreja();
     this.loadPaises();
+    this.loadIgreja();
     this.loadEstados();
     // this.loadCargos();
   }
@@ -247,10 +261,8 @@ export class IgrejaFormComponent
       status: ['Ativa'],
       telefone1: [null],
       celular1: [null],
-      pais: ['Brasil'],
       cidade: [null],
       estado: [null],
-      sigla: [null],
       percentualMaior: [0.0],
       percentualMenor: [0.0],
       contribuicao1: [0.001],
@@ -260,6 +272,8 @@ export class IgrejaFormComponent
       nivel: [null],
 
       setorId: [null, [Validators.required]],
+
+      pais: [null],
 
       setor: (this.igrejaForm = this.formBuilder.group({
         id: [null],
@@ -441,20 +455,22 @@ export class IgrejaFormComponent
   // FIM FOTO
 
   loadPaises() {
-    this.sharedService.getDataPaises().then(
-      async (response: any) => {
-        let paises = await response.json();
-        this.paises = paises.map((p) => {
-          return {
-            sigla: p.id['ISO-ALPHA-2'], //Mapeia apenas o nome e a sigla do pais
-            nome: p.nome,
-          };
-        });
-      },
-      (error: any) => {
-        this.errorApiIBGE(error);
-      }
-    );
+    this.paisService
+      .getListaPaisSigla()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.paises = response['content'].map(
+            (p: { sigla: { [x: string]: any }; nomePt: any }) => {
+              return {
+                sigla: p.sigla,
+                nome: p.nomePt + '/' + p.sigla,
+              };
+            }
+          );
+        },
+        error: () => {},
+      });
   }
 
   loadEstados() {
@@ -490,19 +506,13 @@ export class IgrejaFormComponent
     }
   }
 
-  // public doSelectOptionsSetor = (options: INgxSelectOption[]) => { // PEGA O NOME DO SELECT
-  //     this.igrejaForm.controls['nomeSetor'].setValue(options[0].text);
-  // }
+  public doSelectSetor(nome: { value: any }) {
+    this.igrejaForm.controls['nomeSetor'].setValue(nome.value);
+  }
 
-  // doSelectOptionsPaises = (options: INgxSelectOption[]) => {
-  //     this.igrejaForm.controls['pais'].setValue(options[0].data.nome);
-  //     this.igrejaForm.controls['sigla'].setValue(options[0].data.sigla);
-  // }
-
-  // doSelectOptionsEstados = (options: INgxSelectOption[]) => {
-  //     this.igrejaForm.controls['estado'].setValue(options[0].data.nome);
-  //     this.igrejaForm.controls['uf'].setValue(options[0].data.uf);
-  // }
+  doSelectPaises(pais: { value: any }) {
+    // Com esta comfiguração, aqui vai usar apenas Id quando precisar
+  }
 
   /////////////////////////////  CONTROLE CIDADES  ///////////////////////////
 
@@ -519,6 +529,7 @@ export class IgrejaFormComponent
             this.igrejaForm.patchValue(this.igreja); // binds loaded category data to CategoryForm
             this.setor = response['setor'];
             this.igrejaForm.controls['setorId'].setValue(this.setor.id);
+
             this.setorId = this.setor.id;
             this.loadSetorIgreja();
           },
@@ -623,9 +634,11 @@ export class IgrejaFormComponent
     this.igrejaForm.controls['nome'].setValue(
       this.igrejaForm.controls['nome'].value.toUpperCase()
     ); /* Aqui que real mente coloca em caixa alta.*/
+
     const igreja: IgrejaDTO = Object.assign(
       new IgrejaDTO(),
-      this.igrejaForm.value
+      this.igrejaForm.value,
+      console.log(this.igrejaForm.value)
     );
     // igreja.nivel = this.nivel;
     this.igrejaService.update(igreja).subscribe({

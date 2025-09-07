@@ -146,21 +146,20 @@
           <!-- Tipo de Igreja -->
           <div class="form-group col-md-3">
             <label>Tipo</label>
-            <p-dropdown (onChange)="onChangeTipo($event)" formControlName="tipo" [options]="tipo" optionLabel="nome"
-              [style]="{'width':'100%','height':'30px', 'align-items':'center'}"
-              [autofocus]="false" resetFilterOnHide="true" dropdownIcon="pi pi-flag" optionValue="nome" [filter]="false"
-              filterBy="nome" placeholder="Selecione um tipo" [showClear]="false" [editable]="false">
-            </p-dropdown>
+            
+          <p-select formControlName="tipo" [options]="tipo" [editable]="false" [filter]="false" filterBy="nome"
+              [showClear]="false" optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
+              optionValue="nome" [autofocus]="false" placeholder="Selecione um tipo"
+              (onChange)="onChangeTipo($event)" />
           </div>
 
           <!-- setorId-->
           <div class="form-group col-md-3">
             <label for="setor">Setor</label>
-            <!-- <ngx-select formControlName="setorId" autocomplete="off" [allowClear]="false" [multiple]="false"
-              [items]="setores" [autoClearSearch]="true" [noAutoComplete]="false" optionValueField="id"
-              optionTextField="nome" noResultsFound="Nenhum registro encontrado" placeholder="Selecione um setor "
-              (selectionChanges)="doSelectOptionsSetor($event)">
-            </ngx-select> -->
+            <p-select formControlName="setorId" [options]="setores" [editable]="false" [filter]="true" filterBy="nome"
+              [showClear]="false" optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
+              optionValue="id" [autofocus]="true" placeholder="Selecione um setor"
+              (selectionChanges)="doSelectSetor($event)" />
           </div>
 
           <!-- dataFundacao -->
@@ -197,13 +196,9 @@
           <!-- situacao -->
           <div class="form-group col-md-2">
             <label for="situacao">Status</label>
-            <!-- <ngx-select formControlName="status" autocomplete="off" [allowClear]="false" [multiple]="false"
-              [items]="status" [autoClearSearch]="true" [noAutoComplete]="false" optionValueField="nome"
-              optionTextField="nome" placeholder="Selecione... ">
-              <ng-template ngx-select-option-not-found>
-                Opção Inválida
-              </ng-template>
-            </ngx-select> -->
+            <p-select formControlName="status" [options]="status" [editable]="false" [filter]="false" filterBy="nome"
+              [showClear]="false" optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
+              optionValue="nome" [autofocus]="true" placeholder="Selecione..." />
           </div>
 
           <!-- telefone1 -->
@@ -233,26 +228,20 @@
 
           <!-- Pais-->
           <!-- Nacionalidade com Nome e Sigla do Pais -->
-          <div class="form-group col-md-4 ">
+          <div class="form-group col-md-5 ">
             <label>País</label>
-            <!-- <ngx-select formControlName="pais" autocomplete="off" [allowClear]="false" [multiple]="false"
-              [items]="paises" [autoClearSearch]="true" [noAutoComplete]="false" optionTextField="nome"
-              placeholder="Selecione... " (selectionChanges)="doSelectOptionsPaises($event)">
-            </ngx-select> -->
+             <p-select  [options]="paises" [editable]="false" [filter]="true" filterBy="nome"
+              [showClear]="false"  optionLabel="nome"  resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
+              optionValue="nome" [autofocus]="false" placeholder="Selecione um país"
+              (onChange)="doSelectPaises($event)"  formControlName="pais" />
           </div>
 
-          <!-- sigla -->
-          <div readonly class="form-group col-md-2">
-            <label>Sigla</label>
-            <input type="text" class="form-control " formControlName="sigla">
-          </div>
-
-          <div class="form-group col-md-4 ">
+          <div class="form-group col-md-5 ">
             <label>Estado</label>
-            <!-- <ngx-select formControlName="estado" autocomplete="off" [allowClear]="false" [multiple]="false"
+            <!-- <p-select formControlName="estado" autocomplete="off" [allowClear]="false" [multiple]="false"
               [items]="estados" [autoClearSearch]="true" [noAutoComplete]="false" optionTextField="nome"
               placeholder="Selecione... " (selectionChanges)="doSelectOptionsEstados($event)">
-            </ngx-select> -->
+            </p-select> -->
           </div>
 
           <!-- UF -->
@@ -350,8 +339,8 @@
               Informe um percentual.</p>
           </div>
 
-           <!-- Valor de contribuicao  -->
-           <div class="form-group col-md-3 p-fluid ">
+          <!-- Valor de contribuicao  -->
+          <div class="form-group col-md-3 p-fluid ">
             <label>Valor de contribuição1 - Sbe(GT)</label>
             <p-inputNumber formControlName="contribuicao1" inputId="contribuicao1" mode="decimal" locale="pt-BR"
               class="ml-auto" [minFractionDigits]="2"
@@ -518,11 +507,11 @@
 
       </div>
 
-      <!-- <div class="row ">
+      <div class="row ">
         <div class="form-group ">
           <pre> {{igrejaForm.value | json}} </pre><br>
         </div>
-      </div> -->
+      </div>
 
     </div>
   </form>

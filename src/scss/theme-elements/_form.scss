@@ -23,7 +23,8 @@
 .custom-select,
 .form-control {
   background-color: $theme-background;
-  padding: 5px 20px; ///////////////////////////(Alerei de 10px para 5px coloquei-----------------------------------
+  padding-left: 5px !important;
+  padding: 4px 20px; ///////////////////////////(Alterei de 10px para 5px coloquei-----------------------------------
   font-size: 13px;
   // height: 32px !important; ///////////////////////////(Adicionei e muda tambem-----------------------------------
   border-radius: 5px;
