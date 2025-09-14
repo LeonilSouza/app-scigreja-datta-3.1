@@ -38,7 +38,8 @@
 
   </div>
 
-  <div class="card shadow mt-0 f-12">
+ <div class="card shadow mt-0">
+    <div class="padding-20 " style="padding-top: 1px;">
     <p-table #dtigreja [value]="igrejas" responsiveLayout="stack" [globalFilterFields]="['nome']" [lazy]="true"
       (onLazyLoad)="loadIgrejasLazy($event)" [showCurrentPageReport]="true" [totalRecords]="totalRegistros"
       showGridlines stripedRows [rowsPerPageOptions]="[8, 10, 25, 50]"
@@ -115,5 +116,6 @@
       </ng-template>
     </p-table>
   </div>
+</div>
 </section>
 <!--  ativo e inativo body end --><!--  ativo e inativo body end -->

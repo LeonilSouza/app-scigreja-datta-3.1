@@ -75,16 +75,14 @@ import { PaisService } from 'src/app/theme/shared/services/pais.service';
     TableModule,
     SelectModule,
     DatePicker,
-    InputGroupModule,
-    InputGroupAddonModule,
-    PaginatorModule,
     UiModalComponent,
     // JsonPipe,
     NgbCollapse,
     NgSelectModule,
     NgSelectComponent,
-    // NgxMaskDirective
-    InputIcon, IconField, InputTextModule
+    InputIcon, 
+    IconField, 
+    InputTextModule
   ],
   providers: [
     MessageService,
@@ -97,7 +95,7 @@ import { PaisService } from 'src/app/theme/shared/services/pais.service';
   ]
 })
 
-export class PessoaFormComponent implements OnInit, AfterViewInit, OnDestroy {
+export class PessoaFormComponent implements OnInit,  OnDestroy {
 
   public isCollapsed = false;
   public isCollapsed1 = false;
@@ -175,7 +173,7 @@ export class PessoaFormComponent implements OnInit, AfterViewInit, OnDestroy {
   // Consulta Paises API IBGE
   paises: PaisDTO[] = [];
 
-  // Consulta Cidades API IBGE
+
   cidades: any[] = [];
 
   files!: Set<File>;
@@ -311,6 +309,7 @@ export class PessoaFormComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activeTab = 'home';
   }
 
+
   ngOnInit(): void {
     this.igrejaId = GLOBALS.igrejaId;
     this.setCurrentAction();
@@ -351,7 +350,8 @@ export class PessoaFormComponent implements OnInit, AfterViewInit, OnDestroy {
     this.valorSN = s;
   }
 
-  ngAfterViewInit(): void {
+
+  ngAfterContentChecked() {
     this.setPageTitle();
   }
 
@@ -878,11 +878,10 @@ export class PessoaFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  private setPageTitle() {
-    if (this.currentAction == 'new')
-      this.pageTitle = "Novo Membro"
+   private setPageTitle() {
+    if (this.currentAction == "new") this.pageTitle = "Inserindo: Novo Membro";
     else {
-      const pessoaName = this.pessoa?.nome || ""
+      const pessoaName = this.pessoa.nome || "";
       this.pageTitle = "Editando:  " + pessoaName;
     }
   }

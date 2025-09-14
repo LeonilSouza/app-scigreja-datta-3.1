@@ -12,7 +12,6 @@ import { TabsModule } from 'primeng/tabs';
 import { PessoaListDTO } from 'src/app/theme/shared/models/pessoa.dto';
 import { API_CONFIG, GLOBALS } from 'src/app/app-config';
 import { PessoaService } from 'src/app/theme/shared/services/pessoa.service';
-import { PaisService } from 'src/app/theme/shared/services/pais.service';
 
 
 @Component({
@@ -74,7 +73,7 @@ export class PessoaListComponent implements OnInit {
   printItems!: MenuItem[];
 
   public page = 0;
-  public linesPerPage: any = 8;
+  public linesPerPage: any = 10;
   public nomeSemAcento = ''; // Coluna alternativa para gravar dados sem acento
   public cpfOuCnpj = ''
   pessoaList!: FormGroup;

@@ -9,7 +9,11 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-card',
-  imports: [CommonModule, NgbDropdownModule],
+  standalone:true,
+  imports: [
+    CommonModule, 
+    NgbDropdownModule
+  ],
   templateUrl: './card.component.html',
   styleUrls: ['./card.component.scss'],
   providers: [NgbDropdownConfig],

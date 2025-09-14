@@ -3,22 +3,30 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { LazyLoadEvent, SharedModule } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
-import { UsuarioDTO } from 'src/app/models/usuario.dto';
-import { StorageService } from 'src/app/services/storage.service';
-import { UsuarioService } from 'src/app/services/usuario.service';
-import { GLOBALS } from 'src/app/_helpers/globals';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { CardComponent } from '../../../../shared/components/card/card.component';
+import { CardComponent } from 'src/app/theme/shared/components/card/card.component';
+import { GLOBALS } from 'src/app/app-config';
+import { UsuarioDTO } from 'src/app/theme/shared/models/usuario.dto';
+import { UsuarioService } from 'src/app/theme/shared/services/usuario.service';
+import { StorageService } from 'src/app/theme/shared/services/storage.service';
 
 @Component({
-    selector: 'app-usuario-list',
-    templateUrl: './usuario-list.component.html',
-    styleUrls: ['./usuario-list.component.scss'],
-    standalone: true,
-    imports: [CardComponent, ButtonModule, FormsModule, RouterLink, TableModule, SharedModule, NgIf, NgbTooltip]
+  selector: 'app-usuario-list',
+  templateUrl: './usuario-list.component.html',
+  styleUrls: ['./usuario-list.component.scss'],
+  standalone: true,
+  imports: [
+    CardComponent,
+    ButtonModule,
+    FormsModule,
+    RouterLink,
+    TableModule,
+    SharedModule,
+    NgIf,
+    NgbTooltip]
 })
 export class UsuarioListComponent implements OnInit {
 
@@ -56,20 +64,20 @@ export class UsuarioListComponent implements OnInit {
 
 
   loadUsuarios(name, page, linesPerPage) {
-      this.usuarioService
-        .getPageFromUsuario(name, page, linesPerPage)
-        .subscribe(
-          response => {
-            this.usuarios = response['content'].sort((a, b) => b.id - a.id)
-            this.totalRegistros = response.totalElements
-          }),
-        error => {
-          if (error.status == 403) {
-            this.router.navigate(['auth/signin'])
+    this.usuarioService
+      .getPageFromUsuario(name, page, linesPerPage)
+      .subscribe(
+        response => {
+          this.usuarios = response['content'].sort((a, b) => b.id - a.id)
+          this.totalRegistros = response.totalElements
+        }),
+      error => {
+        if (error.status == 403) {
+          this.router.navigate(['auth/signin'])
 
-          } else {
-            this.router.navigate(['maintenance/offline-ui'])
-          }
-        };
+        } else {
+          this.router.navigate(['maintenance/offline-ui'])
+        }
+      };
   }
 }

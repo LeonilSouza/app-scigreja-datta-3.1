@@ -15,11 +15,14 @@ import { TranslateService } from '@ngx-translate/core';
 import { UserDTO, UsuarioDTO } from 'src/app/theme/shared/models/usuario.dto';
 import { StorageService } from 'src/app/theme/shared/services/storage.service';
 import { UsuarioService } from 'src/app/theme/shared/services/usuario.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-nav-right',
-  imports: [SharedModule],
+  imports: [
+    SharedModule,
+    RouterLink
+  ],
   templateUrl: './nav-right.component.html',
   styleUrls: ['./nav-right.component.scss'],
   providers: [NgbDropdownConfig],
@@ -93,7 +96,8 @@ export class NavRightComponent implements DoCheck, OnInit {
             this.nomeIgreja = response['igrejas'][0].nome;
             this.perfis0 = response['perfis'][0]
             this.perfis1 = response['perfis'][1]
-            
+            GLOBALS.igrejaId = response['igrejas'][0].id;
+            //  GLOBALS.igrejaId = this.usuario.igrejaAtivaId;
             GLOBALS.nomeUsuario = this.usuario.name;
 
             this.perfis();

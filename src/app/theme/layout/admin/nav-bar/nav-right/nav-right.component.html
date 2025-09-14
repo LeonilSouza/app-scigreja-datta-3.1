@@ -82,13 +82,13 @@
           <li><a href="javascript:" class="dropdown-item"><i class="feather icon-user"></i> Perfil</a></li>
           <li><a href="javascript:" class="dropdown-item"><i class="feather icon-settings"></i> Settings</a></li>
           <!-- <li><a routerLink='usuarios' class="dropdown-item"><i class="feather icon-users"></i>Usuários</a></li> -->
+         
           @if(perfil == 'ADMIN'){
-          <li><a routerLink='usuarios' class="dropdown-item"><i class="feather icon-lock  f-10"></i>Cadastro de
-              Usuários</a></li>
+          <li><a href="javascript:" routerLink='/usuarios' class="dropdown-item"><i class="feather icon-user"></i> Cadastro de Usuários</a></li>
           }
 
           @if(perfil == 'ADMIN'){
-          <li><a routerLink='setores' class="dropdown-item"><i class="feather icon-lock f-10"></i>Cadastro de
+          <li><a routerLink='javascript:'  routerLink='/setores'class="dropdown-item"><i class="feather icon-settings f-10"></i>
               setores</a></li>
           }
 

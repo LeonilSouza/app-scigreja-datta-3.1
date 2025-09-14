@@ -6,28 +6,28 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { ConfirmationService, MessageService, SharedModule } from 'primeng/api';
 
 // import { TranslateService } from '@ngx-translate/core';
-import { INgxSelectOption, NgxSelectModule } from 'ngx-select-ex';
-import { SetorDTO } from 'src/app/models/setor.dto';
 import { Dimensions, ImageCroppedEvent, ImageTransform, ImageCropperModule } from 'ngx-image-cropper';
-import { UsuarioDTO } from 'src/app/models/usuario.dto';
-import { AcessoDTO } from 'src/app/models/acesso.dto.';
-import { IgrejaDTO } from 'src/app/models/igreja.dto';
 
 import Swal from 'sweetalert2';
 
-import { AcessoService } from 'src/app/services/acesso.service';
-import { CargoService } from 'src/app/services/cargo.service';
-import { IgrejaService } from 'src/app/services/igreja.service';
-import { SetorService } from 'src/app/services/setor.service';
-import { SharedService } from 'src/app/services/shared.service';
-import { StorageService } from 'src/app/services/storage.service';
-import { UsuarioService } from 'src/app/services/usuario.service';
-import { GLOBALS } from 'src/app/_helpers/globals';
 import { TableModule } from 'primeng/table';
-import { UiModalComponent } from '../../../../shared/components/modal/ui-modal/ui-modal.component';
 import { NgbDropdown, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonModule } from 'primeng/button';
 import { NgIf, NgClass } from '@angular/common';
+import { UsuarioDTO } from 'src/app/theme/shared/models/usuario.dto';
+import { IgrejaDTO } from 'src/app/theme/shared/models/igreja.dto';
+import { AcessoDTO } from 'src/app/theme/shared/models/acesso.dto.';
+import { SetorDTO } from 'src/app/theme/shared/models/setor.dto';
+import { GLOBALS } from 'src/app/app-config';
+import { UsuarioService } from 'src/app/theme/shared/services/usuario.service';
+import { StorageService } from 'src/app/theme/shared/services/storage.service';
+import { AcessoService } from 'src/app/theme/shared/services/acesso.service';
+import { IgrejaService } from 'src/app/theme/shared/services/igreja.service';
+import { SetorService } from 'src/app/theme/shared/services/setor.service';
+import { CargoService } from 'src/app/theme/shared/services/cargo.service';
+import { SharedService } from 'src/app/theme/shared/services/shared.service';
+import { UiModalComponent } from 'src/app/theme/shared/components/modal/ui-modal/ui-modal.component';
+import { SelectModule } from 'primeng/select';
 
 //declare const $: any;
 
@@ -38,7 +38,28 @@ import { NgIf, NgClass } from '@angular/common';
     encapsulation: ViewEncapsulation.None //as vezes não deixa aparecer o input da foto
     ,
     standalone: true,
-    imports: [NgIf, ButtonModule, RouterLink, NgClass, FormsModule, ReactiveFormsModule, NgbDropdown, NgbTooltip, UiModalComponent, ImageCropperModule, NgxSelectModule, TableModule, SharedModule]
+    imports: [
+        NgIf,
+        ButtonModule,
+        RouterLink,
+        NgClass,
+        FormsModule,
+        ReactiveFormsModule,
+        NgbDropdown,
+        NgbTooltip,
+        UiModalComponent,
+        ImageCropperModule,
+        SelectModule,
+        TableModule,
+        SharedModule
+    ],
+    providers: [
+        UsuarioService,
+        SharedService,
+        AcessoService,
+        SetorService,
+        CargoService
+    ]
 })
 
 export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDestroy {
@@ -193,20 +214,20 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
 
 
     //   Inicio Eventos NGX-Select
-    public doSelectOptionsSetor = (options: INgxSelectOption[]) => { // PEGA O NOME DO SELECT
-        this.setorForm.controls['nome'].setValue(options[0].data.nome);
-        this.acessoForm.controls['setor'].setValue(options[0].data.nome);
-    }
+    // public doSelectOptionsSetor = (options: INgxSelectOption[]) => { // PEGA O NOME DO SELECT
+    //     this.setorForm.controls['nome'].setValue(options[0].data.nome);
+    //     this.acessoForm.controls['setor'].setValue(options[0].data.nome);
+    // }
 
-    public doSelectOptionsIgreja = (options: INgxSelectOption[]) => { // PEGA O NOME DO SELECT
-        if (options[0] !== undefined) {
-            this.acessoForm.controls['nomeIgreja'].setValue(options[0].data.nome);
-        } else {
-            Swal.fire('Informação', 'Setor ainda não possui igrejas cadastrada.!', 'info');
-            this.acessoForm.controls['setor'].setValue(null);
+    // public doSelectOptionsIgreja = (options: INgxSelectOption[]) => { // PEGA O NOME DO SELECT
+    //     if (options[0] !== undefined) {
+    //         this.acessoForm.controls['nomeIgreja'].setValue(options[0].data.nome);
+    //     } else {
+    //         Swal.fire('Informação', 'Setor ainda não possui igrejas cadastrada.!', 'info');
+    //         this.acessoForm.controls['setor'].setValue(null);
 
-        }
-    }
+    //     }
+    // }
 
     public doSelectIgreja = (value: any) => {
         this.igrejaId = value;
@@ -562,35 +583,36 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
 
     uploadFoto(UsuarioDTO: UsuarioDTO) {
         if (this.croppedImage) {// Imagem base64 no formato png 
-          this.convertPngToJpeg(this.croppedImage); // Enviada para ser convertida em para o formato jpeg ou jpg. Formatos diferentes somente no nome 
-          let numero = 'data:image/jpeg;base64,';
-          let N = numero.length;
-    
-          const base64 = this.croppedImage.substr(N, this.croppedImage.length); //Retira estes dados da imagem "data:image/png;base64"
-          const nome = this.usuarioFoto.name;
-          const nome_sem_espacos = nome.replace(/ /g, "_"); // regex que substitui todos os espaços por _
-    
-          const imageName = (nome_sem_espacos + '.jpeg'); // Tanto faz jpeg ou jpg
-          const imageBlob = this.dataURItoBlob(base64);
-          const imageFile = new File([imageBlob], imageName, { type: 'image/jpeg' });
-    
-          const tamanhoImagem = imageFile.size;
-    
-          if (tamanhoImagem > 10000) {
-            Swal.fire('Imagem', 'Imagem muito grande!', 'warning');
-            // this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Imagem muito grande' });
-          } else {
-            const foto = imageFile;
-            const formData: FormData = new FormData();
-            formData.append("foto", foto);
-            this.usuarioService
-              .upload(UsuarioDTO, formData)
-              .subscribe(() => {
-                  this.loadUsuario();
-              }
-          )}
+            this.convertPngToJpeg(this.croppedImage); // Enviada para ser convertida em para o formato jpeg ou jpg. Formatos diferentes somente no nome 
+            let numero = 'data:image/jpeg;base64,';
+            let N = numero.length;
+
+            const base64 = this.croppedImage.substr(N, this.croppedImage.length); //Retira estes dados da imagem "data:image/png;base64"
+            const nome = this.usuarioFoto.name;
+            const nome_sem_espacos = nome.replace(/ /g, "_"); // regex que substitui todos os espaços por _
+
+            const imageName = (nome_sem_espacos + '.jpeg'); // Tanto faz jpeg ou jpg
+            const imageBlob = this.dataURItoBlob(base64);
+            const imageFile = new File([imageBlob], imageName, { type: 'image/jpeg' });
+
+            const tamanhoImagem = imageFile.size;
+
+            if (tamanhoImagem > 10000) {
+                Swal.fire('Imagem', 'Imagem muito grande!', 'warning');
+                // this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Imagem muito grande' });
+            } else {
+                const foto = imageFile;
+                const formData: FormData = new FormData();
+                formData.append("foto", foto);
+                this.usuarioService
+                    .upload(UsuarioDTO, formData)
+                    .subscribe(() => {
+                        this.loadUsuario();
+                    }
+                    )
+            }
         }
-      }
+    }
 
     dataURItoBlob(dataURI) {
         const byteString = window.atob(dataURI);

@@ -12,7 +12,6 @@ import { StorageService } from 'src/app/theme/shared/services/storage.service';
 import { UsuarioService } from 'src/app/theme/shared/services/usuario.service';
 import { InputGroup } from "primeng/inputgroup";
 import { SharedModule } from 'src/app/theme/shared/shared.module';
-import { DatePicker } from 'primeng/datepicker';
 
 @Component({
   selector: 'app-igreja-list',
@@ -52,7 +51,7 @@ export class IgrejaListComponent implements OnInit {
   setor: number = 0;
 
   public page = 0;
-  public linesPerPage = 6;
+  public linesPerPage: any = 10;
   public nome = '';
 
   constructor(

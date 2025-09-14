@@ -8,7 +8,11 @@ import { StorageService } from './theme/shared/services/storage.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, SpinnerComponent],
+  standalone: true,
+  imports: [
+    RouterOutlet, 
+    SpinnerComponent
+  ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })

@@ -36,13 +36,19 @@ import { SharedService } from 'src/app/theme/shared/services/shared.service';
 
 @Component({
   selector: 'app-default',
-  imports: [CommonModule, SharedModule, CommonModule,
+  standalone: true,
+  imports: [
+    CommonModule, 
+    SharedModule,
+    CommonModule,
     SharedModule,
     FormsModule,
     ReactiveFormsModule,
     FullCalendarModule,
   ],
-  providers: [CalendarService, SharedService],
+  providers: [
+    CalendarService,
+    SharedService],
   templateUrl: './default.component.html',
   styleUrls: ['./default.component.scss']
 })

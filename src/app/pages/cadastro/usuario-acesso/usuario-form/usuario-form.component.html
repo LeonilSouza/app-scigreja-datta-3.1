@@ -314,22 +314,22 @@
 
                   <div class="form-group col-md-4">
                     <b><label>Setor</label></b>
-                    <ngx-select formControlName="id" [allowClear]="false" [multiple]="false" [items]="setores"
+                    <!-- <ngx-select formControlName="id" [allowClear]="false" [multiple]="false" [items]="setores"
                       [autoClearSearch]="true" [noAutoComplete]="false" optionValueField="id" optionTextField="nome"
                       placeholder="Selecione..." (select)="doSelectSetor($event)"
                       (selectionChanges)="doSelectOptionsSetor($event)">
-                    </ngx-select>
+                    </ngx-select> -->
                   </div>
 
                   <div class="form-group col-md-4">
                     <!--acessoForm -->
                     <form [formGroup]="acessoForm" (ngSubmit)="$event.preventDefault()">
                       <b><label>Igreja</label></b>
-                      <ngx-select [disabled]="submittingForm || acessoForm.invalid" formControlName="igrejaId"
+                      <!-- <ngx-select [disabled]="submittingForm || acessoForm.invalid" formControlName="igrejaId"
                         [allowClear]="false" [multiple]="false" [items]="igrejasSetor" [autoClearSearch]="true"
                         [noAutoComplete]="false" optionValueField="id" optionTextField="nome" placeholder="Selecione..."
                         (selectionChanges)="doSelectOptionsIgreja($event)"
-                        (select)="doSelectIgreja($event)"></ngx-select>
+                        (select)="doSelectIgreja($event)"></ngx-select> -->
                     </form>
                   </div>
 

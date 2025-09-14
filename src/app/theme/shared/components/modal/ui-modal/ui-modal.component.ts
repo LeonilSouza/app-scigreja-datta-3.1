@@ -3,8 +3,11 @@ import { CommonModule } from '@angular/common';
 import { Component, ViewEncapsulation, input } from '@angular/core';
 
 @Component({
+  standalone:true,
   selector: 'app-ui-modal',
-  imports: [CommonModule],
+  imports: [
+    CommonModule
+  ],
   templateUrl: './ui-modal.component.html',
   styleUrls: ['./ui-modal.component.scss'],
   encapsulation: ViewEncapsulation.None

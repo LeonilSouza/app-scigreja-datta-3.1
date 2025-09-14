@@ -128,10 +128,8 @@ private formBuilder = inject(FormBuilder);
             this.perfis1 = response['perfis'][1]
             this.nome = this.usuario.name;
             this.email = this.usuario.email;
-            // this.sharedService.setFotoUsuario(response.foto);
             GLOBALS.nomeUsuario = this.usuario.name;
 
-            GLOBALS.nomeUsuario = this.usuario.name;
             GLOBALS.setorId = this.setorId;
             this.perfil();
 

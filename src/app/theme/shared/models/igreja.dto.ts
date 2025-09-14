@@ -27,6 +27,7 @@ export class IgrejaDTO {
        public email?: string,
        public setorId?: number,
        public nivel?: number,
+       public idCidade?: number,
        public configuracaoSistemaId?: number,
        )
        {}

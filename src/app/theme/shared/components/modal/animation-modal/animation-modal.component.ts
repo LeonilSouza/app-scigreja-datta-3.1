@@ -7,6 +7,7 @@ import { ThemeService } from '../../../services/theme.service';
 
 @Component({
   selector: 'app-animation-modal',
+   standalone:true,
   imports: [CommonModule],
   templateUrl: './animation-modal.component.html',
   styleUrls: ['./animation-modal.component.scss'],

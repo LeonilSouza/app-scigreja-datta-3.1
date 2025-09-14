@@ -47,8 +47,9 @@
                   [model]="printItems" severity="contrast" outlined size="small"
                   [style]="{'height':'30px',  'border-radius':'6px'}" />
 
-                <p-button  routerLink="new" label="Novo Membro"  icon="pi pi-user" size="small" severity="success" 
-                [style]="{ 'height':'30px',  'border-radius':'6px', 'margin-right':'10px'}" class="float-end " />               
+                <p-button routerLink="new" label="Novo Membro" icon="pi pi-user" size="small" severity="success"
+                  [style]="{'background':'#388669', 'height':'30px',  'border-radius':'6px', 'margin-right':'10px'}"
+                  class="float-end " /> 
 
               </span>
             </div>
@@ -60,12 +61,12 @@
 
   <!-- Fim ToolBar -->
 
-  <div class="card shadow mt-0" >
+  <div class="card shadow mt-0">
     <div class="padding-20 " style="padding-top: 1px;">
       <p-table #dtpessoa [value]="pessoas" responsiveLayout="stack"
         [globalFilterFields]="['nomeSemAcento','cpfOuCnpj','tipoMembro','situacaoCadastral']" [lazy]="true"
         (onLazyLoad)="loadPessoasLazy($event)" [showCurrentPageReport]="true" [totalRecords]="totalRegistros"
-        showGridlines stripedRows [rowsPerPageOptions]="[8, 10, 25, 50]" 
+        showGridlines stripedRows [rowsPerPageOptions]="[8, 10, 25, 50]"
         currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
         [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
 
@@ -98,7 +99,7 @@
         </ng-template>
 
         <ng-template #body let-pessoa>
-          <tr >
+          <tr>
             <td class="py-2">
               <!-- Quando tem foto -->
               @if (pessoa?.foto) {
@@ -120,7 +121,7 @@
               }
             </td>
 
-            <td  [routerLink]="[pessoa.id, 'edit']" class="py-2 m-l-0 float-left "
+            <td [routerLink]="[pessoa.id, 'edit']" class="py-2 m-l-0 float-left "
               style="min-width:16rem; cursor: pointer; font-size: 12px; color: rgb(6, 6, 6);">{{ pessoa.nome
               }}<br>
               <small class="text-secondary"><i class="fas fa-envelope f-12 text-dark"></i> {{ pessoa.tipoMembro }}
@@ -160,7 +161,7 @@
             </td>
 
             <!-- Igreja/Setor -->
-            <td [routerLink]="[pessoa.id, 'edit']" class="py-2 col-data-content-3 float-left" 
+            <td [routerLink]="[pessoa.id, 'edit']" class="py-2 col-data-content-3 float-left"
               style="font-size: 12px; cursor: pointer">
               <i class="fas fa-home f-12 text-dark"></i>  {{ pessoa.nomeIgreja }}<br>
               <small class="text-secondary"> <i class="fab fa-microsoft f-12 text-primary"></i>   {{
@@ -168,7 +169,8 @@
             </td>
 
             <!-- Bairro/Contatos -->
-            <td  [routerLink]="[pessoa.id, 'edit']" class="py-2 col-data-content-3" style="font-size: 12px; cursor: pointer">
+            <td [routerLink]="[pessoa.id, 'edit']" class="py-2 col-data-content-3"
+              style="font-size: 12px; cursor: pointer">
 
               @if(pessoa?.bairro){
               <i class="fas fa-map-marker f-12 text-success float-left"></i>  {{ pessoa?.bairro }}<br>

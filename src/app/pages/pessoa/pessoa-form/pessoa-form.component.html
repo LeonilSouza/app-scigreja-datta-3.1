@@ -6,7 +6,7 @@
     </li>
     <li class="breadcrumb-item bcrumb-1">
       <a routerLink="/dashboard/main">
-        <i class="fas fa-home font-17"></i></a> 
+        <i class="fas fa-home font-17"></i></a>
     </li>
     <li class="breadcrumb-item">Cadastro de Membros</li>
   </ul>
@@ -25,15 +25,17 @@
               @if(currentAction !== 'new'){
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 float-right">
 
-                <!-- Excluir -->
+
                 @if(activeTab == "home" ){
-                <button  class="btn btn-outline-danger float-end mb-2" type="button"
-                 style="margin-left: 10px;" (click)="exclusaoPessoa(pessoa)">Excluir</button>
+                <button class="btn btn-outline-danger float-end mb-2" type="button" style="margin-left: 10px;"
+                  (click)="exclusaoPessoa(pessoa)">Excluir</button>
                 }
 
                 <!-- Salvar -->
-                <button size="small" class="btn btn-success msl-3  float-end mb-2" (click)="submitForm()"
-                 style="margin-left: 10px;" [disabled]="submittingForm || pessoaForm.invalid">Salvar</button>
+                <button size="small" pButton pRipple label="Salvar" class="btn btn-success msl-3  float-end mb-2"
+                  (click)="submitForm()"
+                  style="background: #388669; width: 6em; margin-left: 10px; margin-left: 10px; height: 32px; border-radius: 5px"
+                  [disabled]="submittingForm || pessoaForm.invalid"></button>
 
                 <!-- Voltar -->
                 <button routerLink="/pessoas" class="btn btn-primary float-end mb-2">Voltar</button>
@@ -44,8 +46,7 @@
                   </label>
                   <span class="font-15"
                     [style.color]="pessoaForm.controls['situacaoCadastral'].value == 'Ativo' ? 'green' : 'red'">[
-                    {{
-                    pessoaForm.controls['situacaoCadastral'].value }} ]
+                    {{ pessoaForm.controls['situacaoCadastral'].value }} ]
                   </span>
                 </span>
               </div>
@@ -74,6 +75,13 @@
               </div>
               }
             </span>
+
+            <nav class="col-6  card-secondary  m-l-10  text-white">
+              <div class="form-group row col-sm-12  pt-1 pb-1  f-14"
+                style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 5px;">
+                {{ pageTitle }}
+              </div>
+            </nav>
 
             <!-- Botões Fim-->
           </div>
@@ -311,7 +319,7 @@
 
                     <div class="col-12 card card-secondary pt-1 pb-1   f-17 text-white"
                       (click)="isCollapsed = !isCollapsed"
-                      style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 7px;"
+                      style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 5px;"
                       [attr.aria-expanded]="!isCollapsed" aria-controls="collapseExample">
                       Perfil
                     </div>
@@ -355,15 +363,13 @@
                             <!--Codigo  -->
                             <div hidden class="form-group col-md-1">
                               <label for="id">Código</label>
-                              <input readonly type="text" class="form-control " id="id"
-                                formControlName="id">
+                              <input readonly type="text" class="form-control " id="id" formControlName="id">
                             </div>
 
                             <!-- name -->
                             <div class="form-group col-md-4 col-12 mt-4">
                               <label for="nome">Nome</label>
-                              <input autocomplete="off" type="text" class="form-control "
-                                formControlName="nome">
+                              <input autocomplete="off" type="text" class="form-control " formControlName="nome">
                               @if(pessoaForm.controls['nome'].dirty && pessoaForm.controls['nome'].errors){
                               <p class="danger" style="font-size: 11px;" margin-left>
                                 Nome inválido</p>
@@ -423,8 +429,8 @@
                             <!-- idade -->
                             <div class="form-group col-md-1 ">
                               <label for="rg">Idade</label>
-                              <input readonly type="text" class=" form-control "
-                                style="background: rgb(238, 236, 236);" formControlName="idade">
+                              <input readonly type="text" class=" form-control " style="background: rgb(238, 236, 236);"
+                                formControlName="idade">
                             </div>
 
                             <!-- Genero Sexo -->
@@ -619,11 +625,10 @@
                                 [fixedPlaceholder]="true" notFoundText="Item não encontrado"
                                 placeholder="Selecione uma Cidade">
                                 <ng-template ng-header-tmp class="card flex flex-wrap justify-center gap-4">
-                                  <p-iconfield >
+                                  <p-iconfield>
                                     <p-inputicon styleClass="pi pi-search" />
                                     <input type="text" pInputText id="focus-input" type="text"
-                                      class="form-control  custom-search-input"
-                                      (input)="onSearch($event)">
+                                      class="form-control  custom-search-input" (input)="onSearch($event)">
                                   </p-iconfield>
                                 </ng-template>
                                 <ng-template ng-option-tmp let-item="item">
@@ -646,8 +651,7 @@
                             <div class="form-group col-md-1">
                               <label>UF</label>
                               <input style="border: 1; text-transform: uppercase; border-color: rgb(216, 214, 214);"
-                                type="text" class="form-control " formControlName="ufNatal"
-                                placeholder="UF">
+                                type="text" class="form-control " formControlName="ufNatal" placeholder="UF">
                             </div>
 
                             <!-- escolaridade -->
@@ -670,15 +674,13 @@
                               <!-- Igreja -->
                               <div class="form-group col-md-2" hidden>
                                 <label>Igreja</label>
-                                <input readonly type="text" class="form-control "
-                                  formControlName="nomeIgreja">
+                                <input readonly type="text" class="form-control " formControlName="nomeIgreja">
                               </div>
 
                               <!-- Tipo de Pessoa -->
                               <div class="form-group col-md-0 mb-0">
                                 <label for="tipoPessoa" hidden>Tipo de Pessoa</label>
-                                <select id="tipoPessoa" formControlName="tipoPessoa"
-                                  class="form-control " hidden>
+                                <select id="tipoPessoa" formControlName="tipoPessoa" class="form-control " hidden>
                                   <option selected>Pessoa Fisica</option>
                                   <option>Pessoa Juridica</option>
                                 </select>
@@ -692,7 +694,7 @@
                     <!------------------------------------ Divisão Lista preta Endereço ------------------------------------------>
 
                     <div class="col-12 card card-secondary  pt-1 pb-1 font-17 text-white"
-                      style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 7px;"
+                      style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 5px;"
                       (click)="isCollapsed1 = !isCollapsed1" [attr.aria-expanded]="!isCollapsed1">
                       Endereço | Contato
                     </div>
@@ -708,23 +710,22 @@
                             <!-- Cep -->
                             <div class="form-group col-md-3 ">
                               <label>Cep</label>
-                              <input placeholder="____-___" type="text" class="form-control  uppercase"
-                                maxlength="9" (blur)="consultaCep($event.target?.addEventListener)"
-                                placeholder="Digite um Cep" formControlName="cep">
+                              <input placeholder="____-___" type="text" class="form-control  uppercase" maxlength="9"
+                                (blur)="consultaCep($event.target?.addEventListener)" placeholder="Digite um Cep"
+                                formControlName="cep">
                             </div>
 
                             <!-- logradouro -->
                             <div class="form-group col-md-9">
                               <label for="logradouro">Endereço</label>
-                              <input type="text" class="form-control " style="text-transform: uppercase"
-                                id="logradouro" formControlName="logradouro">
+                              <input type="text" class="form-control " style="text-transform: uppercase" id="logradouro"
+                                formControlName="logradouro">
                             </div>
 
                             <!-- numero -->
                             <div class="form-group col-md-4">
                               <label for="numero">Número</label>
-                              <input type="text" class="form-control " id="numero"
-                                formControlName="numero">
+                              <input type="text" class="form-control " id="numero" formControlName="numero">
                             </div>
 
                             <!-- Complemento -->
@@ -903,8 +904,7 @@
                             <!--  data -->
                             <div class="form-group col-md-4 ">
                               <label>Data</label>
-                              <input readonly type="text" class="form-control "
-                                formControlName="dataHistorico">
+                              <input readonly type="text" class="form-control " formControlName="dataHistorico">
                             </div>
 
                             <!--  Membro -->
@@ -1031,9 +1031,9 @@
                             }
                             <!-- FIM - Situação Espiritual-->
 
-                            @if(ctr_situacao == 4){        
+                            @if(ctr_situacao == 4){
                             <div class="col-12 card  card-secondary pt-1 pb-1 f-17 text-white"
-                             style="padding-left: 10px; margin-left: 10px; padding-right: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 7px;">
+                              style="padding-left: 10px; margin-left: 10px; padding-right: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 5px;">
                               Tipo de Membro
                             </div>
                             }
@@ -1072,8 +1072,8 @@
                             <!-- FIM - Tipo de Membro -->
 
                             @if(ctr_situacao == 4 && pessoaForm.controls['tipoMembro'].value == 'Obreiro'){
-                               <div class="col-12 card  card-secondary pt-1 pb-1 f-17 text-white"
-                             style="padding-left: 10px; margin-left: 10px; padding-right: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 7px;">
+                            <div class="col-12 card  card-secondary pt-1 pb-1 f-17 text-white"
+                              style="padding-left: 10px; margin-left: 10px; padding-right: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 5px;">
                               Título | Credencial
                             </div>
 
@@ -1133,7 +1133,7 @@
                             <!-- Salvar -->
                             <strong><button (click)="modalSituacao.hide(); submitForm()" [disabled]="pessoaForm.invalid"
                                 type="button" class="msl-3 float-end mt-0" pButton pRipple label="Salvar"
-                                style="width: 7em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
+                                style="width: 7em;  background:#388669; height: 30px; border-radius: 5px; font-size: small; "
                                 icon='pi pi-check'>
                               </button></strong>
                           </div>
@@ -1162,7 +1162,7 @@
                     this.activeTab === 'familiar' } " id="familiar" role="tabpanel" aria-labelledby="familiar-tab">
 
                     <div class="col-12 card card-secondary  pt-1 pb-1 font-17 text-white"
-                      style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 7px;"
+                      style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 5px;"
                       (click)="isCollapsed3 = !isCollapsed3" [attr.aria-expanded]="!isCollapsed3">
                       Conjuge
                     </div>
@@ -1184,8 +1184,7 @@
                           <div class="form-group col-md-4">
                             <label>Conjuge não cadastrado </label>
                             <input autocomplete="off" type="text" class="uppercase
-                              form-control " formControlName="conjuge"
-                              style="text-transform: uppercase">
+                              form-control " formControlName="conjuge" style="text-transform: uppercase">
                           </div>
                           }
 
@@ -1204,7 +1203,7 @@
                     <!--FIM CONJUGE  -->
 
                     <div class="col-12 card card-secondary  pt-1 pb-1 font-17 text-white"
-                      style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 7px;"
+                      style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 5px;"
                       (click)="isCollapsed4 = !isCollapsed4" [attr.aria-expanded]="!isCollapsed4">
                       Filiação
                     </div>
@@ -1218,15 +1217,15 @@
                             <!-- namePai -->
                             <div class="form-group col-md-5">
                               <label>Nome do pai</label>
-                              <input autocomplete="off" type="text" class="form-control "
-                                formControlName="nomePai" style="text-transform: uppercase">
+                              <input autocomplete="off" type="text" class="form-control " formControlName="nomePai"
+                                style="text-transform: uppercase">
                             </div>
 
                             <!-- nameMãe -->
                             <div class="form-group col-md-5">
                               <label>Nome da mãe</label>
-                              <input autocomplete="off" type="text" class="form-control "
-                                formControlName="nomeMae" style="text-transform: uppercase">
+                              <input autocomplete="off" type="text" class="form-control " formControlName="nomeMae"
+                                style="text-transform: uppercase">
                             </div>
                             <!-- </div> -->
                           </div>
@@ -1239,7 +1238,7 @@
                       <ng-container>
 
                         <div class="col-12 card card-secondary  pt-1 pb-1 font-17 text-white"
-                          style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 7px;"
+                          style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 5px;"
                           (click)="isCollapsed5 = !isCollapsed5" [attr.aria-expanded]="!isCollapsed5">
                           Filhos
                         </div>
@@ -1253,10 +1252,10 @@
                               <!-- Pesquisa nome em pessoa -->
                               @if((valorSN === 's')){
                               <div class="form-group col-md-4 ">
-                                <p-select (onChange)="doSelectFilhos($event)" formControlName="nome" [options]="pessoas" 
-                                 optionLabel="nome" [options]="pessoas" [editable]="false" [filter]="true" filterBy="nome"
-                                 [showClear]="false" resetFilterOnHide="true" dropdownIcon="pi pi-user" optionValue="id"
-                                 [autofocus]="true" placeholder="Selecione um filho" />
+                                <p-select (onChange)="doSelectFilhos($event)" formControlName="nome" [options]="pessoas"
+                                  optionLabel="nome" [options]="pessoas" [editable]="false" [filter]="true"
+                                  filterBy="nome" [showClear]="false" resetFilterOnHide="true" dropdownIcon="pi pi-user"
+                                  optionValue="id" [autofocus]="true" placeholder="Selecione um filho" />
                               </div>
                               }
                             </div>
@@ -1334,8 +1333,8 @@
 
                             <ng-template #header>
                               <tr class="pt-1 pb-1">
-                                <th
-                                  class="pt-1 pb-1" style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 1px; padding-bottom: 1px; border-top-left-radius: 5px; ">
+                                <th class="pt-1 pb-1"
+                                  style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 1px; padding-bottom: 1px; border-top-left-radius: 5px; ">
                                   Nome</th>
                                 <th
                                   style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 1px; padding-bottom: 1px;"
@@ -1439,8 +1438,8 @@
                                                         style="border-top-left-radius: 5px; border-bottom-left-radius: 5px; background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 1px; padding-bottom: 1px;"
                                                         class="col-data-content pt-1 pb-1">Data</th>
 
-                                                      <th
-                                                        class="pt-1 pb-1" style="font-size: 12px; background-color:rgb(77, 83, 90); color: aliceblue; padding-top: 1px; padding-bottom: 1px;">
+                                                      <th class="pt-1 pb-1"
+                                                        style="font-size: 12px; background-color:rgb(77, 83, 90); color: aliceblue; padding-top: 1px; padding-bottom: 1px;">
                                                         <b>Documento </b>
                                                       </th>
                                                       <th class="col-acoes-header pt-1 pb-1"
@@ -1468,13 +1467,13 @@
                                                           <i class="pi pi-download"></i>
                                                         </button>
 
-                                                        <Script>
+                                                        <script>
                                                           // Pegar somente a ultima parte, afinal podem ter pastas com . no caminho
                                                           var ext = path.split('/').pop();
                                                           // se não houver extensão, retorna vazio, se houver retorna a extensão
                                                           // sendo que .htaccess é um arquivo escondido e não uma extensão
                                                           ext = ext.indexOf('.') < 1 ? '' : ext.split('.').pop();
-                                                        </Script>
+                                                        </script>
 
                                                         <!-- Excluir -->
                                                         <button (click)="exclusaoDocumento(documento)" type="button"
@@ -1514,7 +1513,7 @@
                  this.activeTab === 'titulo' } " id="titulo" role="tabpanel" aria-labelledby="titulo-tab">
 
                     <div class="col-12 card card-secondary  pt-1 pb-1 font-17 text-white"
-                      style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 7px;"
+                      style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 5px;"
                       (click)="isCollapsed2 = !isCollapsed2" [attr.aria-expanded]="!isCollapsed2">
                       Dados Ministeriais
                     </div>
@@ -1683,8 +1682,8 @@
 
                                               <div class="form-group col-md-7">
                                                 <label>Local da Separação</label>
-                                                <input class="form-control "
-                                                  formControlName="localSeparacao" style="text-transform: uppercase">
+                                                <input class="form-control " formControlName="localSeparacao"
+                                                  style="text-transform: uppercase">
 
                                                 @if(separacaoForm.controls['localSeparacao'].dirty &&
                                                 separacaoForm.controls['localSeparacao'].errors){
@@ -1695,9 +1694,8 @@
                                               <!-- Observação -->
                                               <div class="form-group col-md-12">
                                                 <label>Observação</label>
-                                                <textarea class="form-control "
-                                                  formControlName="observacao" style="text-transform: uppercase"
-                                                  rows="3"></textarea>
+                                                <textarea class="form-control " formControlName="observacao"
+                                                  style="text-transform: uppercase" rows="3"></textarea>
                                               </div>
                                             </div>
 
@@ -1739,8 +1737,8 @@
                                               <th class="col-foto pt-1 pb-1"
                                                 style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue;  padding-top: 1px; padding-bottom: 1px;  border-top-left-radius: 5px;">
                                                 Código</th>
-                                              <th
-                                               class="pt-1 pb-1" style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 1px; padding-bottom: 1px;">
+                                              <th class="pt-1 pb-1"
+                                                style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 1px; padding-bottom: 1px;">
                                                 Credencial</th>
                                               <th class="col-data-content-3 pt-1 pb-1"
                                                 style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue;  padding-top: 1px; padding-bottom: 1px;">
@@ -1839,8 +1837,8 @@
                                     Ação
                                   </th>
 
-                                  <th
-                                    class="pt-1 pb-1" style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue;  border-top-right-radius: 5px;">
+                                  <th class="pt-1 pb-1"
+                                    style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue;  border-top-right-radius: 5px;">
                                     Dados | Informações
                                   </th>
 
