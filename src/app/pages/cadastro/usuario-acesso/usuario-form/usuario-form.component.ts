@@ -1,9 +1,9 @@
-import { AfterContentChecked, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { AfterContentChecked, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { ConfirmationService, MessageService, SharedModule } from 'primeng/api';
+import { MessageService, SharedModule } from 'primeng/api';
 
 // import { TranslateService } from '@ngx-translate/core';
 import { Dimensions, ImageCroppedEvent, ImageTransform, ImageCropperModule } from 'ngx-image-cropper';
@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
 import { TableModule } from 'primeng/table';
 import { NgbDropdown, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonModule } from 'primeng/button';
-import { NgIf, NgClass } from '@angular/common';
+import { NgClass, CommonModule } from '@angular/common';
 import { UsuarioDTO } from 'src/app/theme/shared/models/usuario.dto';
 import { IgrejaDTO } from 'src/app/theme/shared/models/igreja.dto';
 import { AcessoDTO } from 'src/app/theme/shared/models/acesso.dto.';
@@ -35,11 +35,10 @@ import { SelectModule } from 'primeng/select';
     selector: 'app-usuario-form',
     templateUrl: './usuario-form.component.html',
     styleUrls: ['./usuario-form.component.scss'],
-    encapsulation: ViewEncapsulation.None //as vezes não deixa aparecer o input da foto
-    ,
+    // encapsulation: ViewEncapsulation.None //as vezes não deixa aparecer o input da foto,
     standalone: true,
     imports: [
-        NgIf,
+        CommonModule,
         ButtonModule,
         RouterLink,
         NgClass,
@@ -131,7 +130,6 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
         public setorService: SetorService,
         public cargoService: CargoService,
         private messageService: MessageService,
-        private confirmationService: ConfirmationService,
         private sharedService: SharedService
 
 
@@ -191,7 +189,11 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
             password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(120)]],
             foto: [null],
             igrejaAtivaId: [null],
-            igrejaAtivaNome: [null]
+            igrejaAtivaNome: [null],
+
+            igrejaIdHome: [null],
+            igrejaNomeHome: [null],
+            setorIdHome: [null],
         });
     }
 
@@ -212,33 +214,51 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
         });
     }
 
+    public doSelectSetor(event: any) {
+        if (event.value) {
+            let setor = this.setores.filter(s => s.id == event.value)
 
-    //   Inicio Eventos NGX-Select
-    // public doSelectOptionsSetor = (options: INgxSelectOption[]) => { // PEGA O NOME DO SELECT
-    //     this.setorForm.controls['nome'].setValue(options[0].data.nome);
-    //     this.acessoForm.controls['setor'].setValue(options[0].data.nome);
-    // }
+            this.setorForm.controls['nome'].setValue(setor[0].nome);
+            this.acessoForm.controls['setor'].setValue(setor[0].nome);
 
-    // public doSelectOptionsIgreja = (options: INgxSelectOption[]) => { // PEGA O NOME DO SELECT
-    //     if (options[0] !== undefined) {
-    //         this.acessoForm.controls['nomeIgreja'].setValue(options[0].data.nome);
-    //     } else {
-    //         Swal.fire('Informação', 'Setor ainda não possui igrejas cadastrada.!', 'info');
-    //         this.acessoForm.controls['setor'].setValue(null);
-
-    //     }
-    // }
-
-    public doSelectIgreja = (value: any) => {
-        this.igrejaId = value;
-        this.acessoForm.controls['igrejaId'].setValue(value);
+            this.setorForm.controls['id'].setValue(setor[0].id);
+            this.updateIgrejas(setor[0].id);
+        }
     }
 
-    public doSelectSetor = (value: any) => {
-        if (value) {
-            this.setorForm.controls['id'].setValue(value);
-            this.updateIgrejas(value);
-        }
+    setIgrejaAnfitria(acesso: AcessoDTO) {
+        this.usuarioForm.controls['igrejaIdHome'].setValue(acesso['igreja'].id);
+        this.usuarioForm.controls['setorIdHome'].setValue(acesso['igreja'].setor.id);
+        this.usuarioForm.controls['igrejaNomeHome'].setValue(acesso.nomeIgreja);
+
+        this.usuarioForm.controls['igrejaAtivaId'].setValue(acesso['igreja'].id);
+        this.usuarioForm.controls['igrejaAtivaNome'].setValue(acesso.nomeIgreja);
+        this.updateAcessoAnfitria();
+    }
+
+    public doSelectIgreja(event: any) {
+        this.igrejaService.getById(event.value)
+            .subscribe({
+                next: (response) => {
+                    this.igreja = response;
+                    if (event.value) {
+                        this.acessoForm.controls['nomeIgreja'].setValue(this.igreja.nome);
+
+                        this.igrejaId = event.value;
+                        this.acessoForm.controls['igrejaId'].setValue(event.value);
+                    } else {
+                        Swal.fire('Informação', 'Setor ainda não possui igrejas cadastrada.!', 'info');
+                        this.acessoForm.controls['setor'].setValue(null);
+
+                    }
+
+                },
+                error: (error) => {
+                    this.error = error;
+                    this.showError(error)
+                }
+            })
+
     }
 
     // Fim Eventos NGX-Select    
@@ -291,6 +311,7 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
                     this.igrejasSetor = response['content'];
                     if (this.igrejasSetor.length > 0) {
                         this.acessoForm.controls['igrejaId'].setValue(this.igrejasSetor[0].id)
+                        this.acessoForm.controls['nomeIgreja'].setValue(this.igrejasSetor[0].nome)
                     }
                 },
                 error: (error) => {
@@ -333,6 +354,48 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
             });
     }
 
+    public atualizaUsuario() {
+        // ESTE PARA DEIXAR TUDO EM CAIXA ALTA
+        // this.usuarioForm.controls.nome.setValue(this.usuarioForm.controls.nome.value.toUpperCase()); /* Aqui que real mente coloca em caixa alta. 
+        // Poque se o teclado estiver com o caps desl. grava miniscula  RsRS*/
+
+        //ESTE PARA PRIMEIRA MAIUSCULAS
+        this.usuarioForm.controls['name'].setValue(this.sharedService.formataNome(this.usuarioForm.controls['name'].value)); // Aqui formata o nome completo
+        const usuario: UsuarioDTO = Object.assign(new UsuarioDTO(), this.usuarioForm.value);
+
+        this.usuarioService
+            .update(usuario)
+            .subscribe({
+                next: () => {},
+                error: (error) => {
+                    this.error = error;
+                    this.showError(error)
+                }
+            });
+    }
+
+    public updateAcessoAnfitria() {
+        // ESTE PARA DEIXAR TUDO EM CAIXA ALTA
+        // this.usuarioForm.controls.nome.setValue(this.usuarioForm.controls.nome.value.toUpperCase()); /* Aqui que real mente coloca em caixa alta. 
+        // Poque se o teclado estiver com o caps desl. grava miniscula  RsRS*/
+
+        //ESTE PARA PRIMEIRA MAIUSCULAS
+        this.usuarioForm.controls['name'].setValue(this.sharedService.formataNome(this.usuarioForm.controls['name'].value)); // Aqui formata o nome completo
+        const usuario: UsuarioDTO = Object.assign(new UsuarioDTO(), this.usuarioForm.value);
+
+        this.usuarioService
+            .update(usuario)
+            .subscribe({
+                next: () => {
+                    Swal.fire('Acesso', 'Igreja Anfitriã Registrado com sucesso!', 'success');
+                },
+                error: (error) => {
+                    this.error = error;
+                    this.showError(error)
+                }
+            });
+    }
+
     public updateUsuario() {
         // ESTE PARA DEIXAR TUDO EM CAIXA ALTA
         // this.usuarioForm.controls.nome.setValue(this.usuarioForm.controls.nome.value.toUpperCase()); /* Aqui que real mente coloca em caixa alta. 
@@ -356,35 +419,42 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
     }
 
 
-    confirmarExclusaoUsuario(usuario: UsuarioDTO): void {
-        let user = usuario.name;
-        this.confirmationService.confirm({
-            message: 'Tem certeza que deseja excluir - ' + ' ' + user + '?',
-            accept: () => {
-                this.excluir(usuario);
+    exclusaoUsuario(usuario: UsuarioDTO) {
+        Swal.fire({
+            title: 'Exclusão',
+            text: 'Tem certeza que deseja excluir este Usuário?',
+            icon: 'error',
+            // showCloseButton: true,
+            showCancelButton: true
+        }).then((willDelete) => {
+            if (willDelete.dismiss) {
+                // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
+            } else {
+                this.excluirUsuario(usuario);
             }
         });
     }
 
-    excluir(usuario: UsuarioDTO) {
-        this.usuarioService
-            .delete(usuario.id)
+    excluirUsuario(usuario: UsuarioDTO) {
+        this.usuarioService.delete(usuario.id)
             .subscribe({
                 next: (): void => {
                     this.router.navigate(['/usuarios'])
-                    Swal.fire('Exclusão', 'Usuário excluido com sucesso!', 'success');
+                    Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
                 },
                 error: (error) => {
                     this.error = error;
-                    this.showError(error)
+                    Swal.fire('Atenção', error.message, 'warning');
                 }
             });
     }
+
 
     // REFERENTE A TABELA DE ACESSO
     public createAcesso() {
         let busca = 0;
         this.acesso = Object.assign(new AcessoDTO(), this.acessoForm.value);
+        console.log(this.acesso)
 
         if (this.acesso.igrejaId == 0 || this.acesso.igrejaId == null) {
             Swal.fire('Informação', 'Selecione uma Igreja', 'warning');
@@ -402,6 +472,13 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
                                         this.acesso.id = this.id;
                                         Swal.fire('Cadastro', 'Acesso inserido com sucesso', 'success');
                                         this.loadAcesso();
+                                        this.usuarioForm.controls['igrejaIdHome'].setValue(this.acesso.igrejaId);
+                                        this.usuarioForm.controls['setorIdHome'].setValue(GLOBALS.setorId);
+                                        this.usuarioForm.controls['igrejaNomeHome'].setValue(this.acesso.nomeIgreja);
+
+                                        this.usuarioForm.controls['igrejaAtivaId'].setValue(this.acesso.igrejaId);
+                                        this.usuarioForm.controls['igrejaAtivaNome'].setValue(this.acesso.nomeIgreja);
+                                        this.atualizaUsuario();
                                     },
                                     error: (error) => {
                                         this.error = error;
@@ -416,22 +493,37 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
 
     }
 
-    confirmarExclusaoAcesso(acesso: AcessoDTO): void {
-        this.confirmationService.confirm({
-            message: 'Tem certeza que deseja excluir este acesso?',
-            accept: () => {
+    exclusaoAcessoUsuario(acesso: AcessoDTO) {
+        Swal.fire({
+            title: 'Exclusão',
+            text: 'Tem certeza que deseja excluir este Acesso?',
+            icon: 'error',
+            // showCloseButton: true,
+            showCancelButton: true
+        }).then((willDelete) => {
+            if (willDelete.dismiss) {
+                // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
+            } else {
                 this.excluirAcesso(acesso);
             }
         });
     }
 
-    excluirAcesso(acesso) {
-        this.acessoService
-            .delete(acesso.id)
+    excluirAcesso(acesso: any) {
+        this.acessoService.delete(acesso.id)
             .subscribe({
-                next: () => {
+                next: (): void => {
                     this.acessos = this.acessos.filter(element => element != acesso)
-                    Swal.fire('Exclusão', 'Acesso removido com sucesso', 'success');
+
+                    this.usuarioForm.controls['igrejaIdHome'].setValue(null);
+                    this.usuarioForm.controls['setorIdHome'].setValue(null);
+                    this.usuarioForm.controls['igrejaNomeHome'].setValue(null);
+
+                    this.usuarioForm.controls['igrejaAtivaId'].setValue(null);
+                    this.usuarioForm.controls['igrejaAtivaNome'].setValue(null);
+                    this.atualizaUsuario();
+
+                    Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
                 },
                 error: (error) => {
                     this.error = error;
@@ -459,11 +551,9 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
     // }
 
     private showError(error) {
-        this.messageService.add({ severity: 'error', summary: 'Erro', detail: error.message });
         this.submittingForm = false;
+        this.messageService.add({ severity: 'error', summary: 'Erro', detail: error.message });
     }
-
-
 
     // Metodos Utilitários
 

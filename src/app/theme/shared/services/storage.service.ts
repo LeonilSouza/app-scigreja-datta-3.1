@@ -2,10 +2,27 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from "@angular/core";
 import { LocalIgreja, LocalUser, UsuarioDTO } from '../models/usuario.dto';
 import { Router } from '@angular/router';
-import { GLOBALS, STORAGE_KEYS } from 'src/app/app-config';
+import { STORAGE_KEYS } from 'src/app/app-config';
+import { igrejaIdSignal, nomeIgrejaSignal, nomeUsuarioSignal, perfilSignal, setorIdSignal } from '../_helpers/shared-signals';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class StorageService {
+
+    nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+    igrejaIdSignal = igrejaIdSignal;
+    nomeUsuarioSignal = nomeUsuarioSignal;
+    perfilSignal = perfilSignal;
+    setorIdSignal = setorIdSignal;
+
+    nomeIgreja = nomeIgrejaSignal();
+    igrejaId = igrejaIdSignal();
+    nomeUsuario = nomeUsuarioSignal();
+    perfil = perfilSignal();
+    setorId = setorIdSignal();
+
+
 
     usuario!: UsuarioDTO;
 
@@ -81,12 +98,18 @@ export class StorageService {
         if (!igreja) {
             this.router.navigate(['login'])
         } else {
-            GLOBALS.igrejaId = this.getLocalIgreja().igrejaId;
-            GLOBALS.setorId = this.getLocalIgreja().setorId;
-            GLOBALS.nomeIgreja = this.getLocalIgreja().nomeIgreja;
-            GLOBALS.nomeUsuario = this.getLocalIgreja().nomeUser;
-            GLOBALS.imageUrl = this.getLocalUser().imageUrl;
-            GLOBALS.perfil = this.getLocalIgreja().perfil;
+            this.igrejaId = this.getLocalIgreja().igrejaId;
+            this.setorId = this.getLocalIgreja().setorId;
+            this.nomeIgreja = this.getLocalIgreja().nomeIgreja;
+            this.nomeUsuario = this.getLocalIgreja().nomeUser;
+            this.perfil = this.getLocalIgreja().perfil;
+
+            // Atualiza o signal qdo resset do navegador
+            this.nomeIgrejaSignal.update(() => this.getLocalIgreja().nomeIgreja);
+            this.igrejaIdSignal.update(() => this.getLocalIgreja().igrejaId);
+            this.setorIdSignal.update(() => this.getLocalIgreja().setorId);
+            this.nomeUsuarioSignal.update(() => this.getLocalIgreja().nomeUser);
+            this.perfilSignal.update(() => this.getLocalIgreja().perfil);
         }
     }
 

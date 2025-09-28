@@ -1,15 +1,18 @@
 export class UsuarioDTO {
-  constructor(
-      public id?: number,
-      public name?: string,
-      public email?: string,
-      public password?: string,
-      public rememberMe?: string,
-      public imageUrl?: string,
-      public foto?: string,
-      public igrejaAtivaId?: number,
-      public igrejaAtivaNome?: string
-  ){}
+    constructor(
+        public id?: number,
+        public name?: string,
+        public email?: string,
+        public password?: string,
+        public rememberMe?: string,
+        public imageUrl?: string,
+        public foto?: string,
+        public igrejaAtivaId?: number,
+        public igrejaAtivaNome?: string,
+        public igrejaIdHome?: number,
+        public igrejaNomeHome?: string,
+        public setorIdHome?: number,
+    ) { }
 }
 
 export class UserDTO {
@@ -21,11 +24,11 @@ export class UserDTO {
         public perfil?: string,
         public imageUrl?: string
 
-        ){}
+    ) { }
 }
 
 export interface LocalToken {
-  token: string;
+    token: string;
 }
 
 export interface LocalUser {

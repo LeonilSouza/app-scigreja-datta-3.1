@@ -2,7 +2,7 @@
 <section>
   <div class="row">
     <div class="col-md-12 col-xl-9 mb-3">
-      <div >
+      <div>
         <div class="card-border-c-blue shadow border-2 col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="row">
             <!-- Escondida -->
@@ -20,9 +20,11 @@
               </div>
             </div>
             <!-- fim Escondida -->
-             
+
             <!-- Cabeçalho calendário -->
-           <div class=" col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+
+            <div class=" col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
               <div class="px-3  mt-3 mb-0 col-auto " style=" border-color: rgb(233, 234, 240) ; 
                            border-radius: 5px; ">
                 <span class="text-dark" style="font-size: 18px; " href="javascript:">Agenda da Igreja</span>
@@ -41,8 +43,8 @@
         </div>
       </div>
     </div>
-  
-      <!-- Membro Ativos  -->
+
+    <!-- Membro Ativos  -->
     <div class="col-md-12 col-xl-3">
 
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -92,7 +94,7 @@
           </div>
         </div>
       </div>
-  
+
     </div>
   </div>
 
@@ -117,7 +119,8 @@
         <div class="row">
           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
             <label>Título/Nome<span class="text-danger">*</span></label>
-            <input type="text" class="form-control form-control-sm" placeholder="Título/Nome" formControlName="title" required>
+            <input type="text" class="form-control form-control-sm" placeholder="Título/Nome" formControlName="title"
+              required>
             <small class="form-text text-danger"
               *ngIf="!calendarForm.get('title')?.valid && calendarForm.get('title')?.touched"> Título é
               obrigatório</small>
@@ -127,8 +130,8 @@
         <div class="row">
           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-4">
             <label>Inicio<span class="text-danger">*</span></label>
-            <input type="datetime-local" class="form-control form-control-sm" placeholder="Data Inicial" formControlName="startDate"
-              required>
+            <input type="datetime-local" class="form-control form-control-sm" placeholder="Data Inicial"
+              formControlName="startDate" required>
             <small class="form-text text-danger"
               *ngIf="!calendarForm.get('startDate')?.valid && calendarForm.get('startDate')?.touched">O início do evento
               é
@@ -136,8 +139,8 @@
           </div>
           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-4">
             <label>Término<span class="text-danger">*</span></label>
-            <input type="datetime-local" class="form-control form-control-sm" placeholder="Data Final" formControlName="endDate"
-              required>
+            <input type="datetime-local" class="form-control form-control-sm" placeholder="Data Final"
+              formControlName="endDate" required>
             <small class="form-text text-danger"
               *ngIf="!calendarForm.get('endDate')?.valid && calendarForm.get('endDate')?.touched"> O termino do evento é
               obrigatório</small>
@@ -146,7 +149,8 @@
 
           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
             <label>Selecione uma cor <span class="text-danger">*</span></label>
-            <select class="form-select form-control " style="font-size: 13px; padding-top: 5px;" formControlName="category" required>
+            <select class="form-select form-control " style="font-size: 13px; padding-top: 5px;"
+              formControlName="category" required>
               <!-- <option value="" selected disabled>Selecione um tipo de evento</option> -->
               <option id="work" value="work">Verde</option>
               <option id="personal" value="personal">Laranja</option>

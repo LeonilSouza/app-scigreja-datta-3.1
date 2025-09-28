@@ -8,7 +8,7 @@
             <h3 class="text-muted m-b-0">IGREJA ATIVA:  {{ nomeIgreja }}</h3>
         </div>
         <div class="col-auto ml-auto">
-            <h4 class="text-muted m-b-0 ">Total - {{ totalRegistros }}</h4>
+            <h4 class="text-muted m-b-0 ">TOTAL - {{ totalRegistros }}</h4>
         </div>
     </div>
 
@@ -31,7 +31,7 @@
 
                     <ng-template pTemplate="header">
                         <tr>
-                            <th class="col-data-content-4"
+                            <th class="coltr-data-content-4"
                                 style="background: rgb(77, 83, 90); font-size: 11px ;color: aliceblue;">
                                 <b>Nome</b>
                             </th>
@@ -41,8 +41,7 @@
                     <ng-template pTemplate="body" let-igrejaAtiva>
                         <tr>
                             <td (click)="trocaIgreja(igrejaAtiva)" class="col-data-content-4" color="green"
-                                style=" cursor: pointer; font-size: 13px; min-width: 200px;">{{
-                                igrejaAtiva.nome }}
+                                style=" cursor: pointer; font-size: 13px; min-width: 200px;">{{ igrejaAtiva.nome }}
                             </td>
                         </tr>
                     </ng-template>

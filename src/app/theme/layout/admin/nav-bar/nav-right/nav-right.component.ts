@@ -1,5 +1,5 @@
 // angular import
-import { Component, DoCheck, OnInit, inject } from '@angular/core';
+import { Component, DoCheck, OnDestroy, OnInit, inject } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
 
 // bootstrap import
@@ -8,7 +8,7 @@ import { AuthenticationService } from 'src/app/theme/shared/services';
 
 // project import
 import { SharedModule } from 'src/app/theme/shared/shared.module';
-import { GLOBALS, ThemeConfig } from 'src/app/app-config';
+import { ThemeConfig } from 'src/app/app-config';
 
 // third party
 import { TranslateService } from '@ngx-translate/core';
@@ -16,9 +16,13 @@ import { UserDTO, UsuarioDTO } from 'src/app/theme/shared/models/usuario.dto';
 import { StorageService } from 'src/app/theme/shared/services/storage.service';
 import { UsuarioService } from 'src/app/theme/shared/services/usuario.service';
 import { Router, RouterLink } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { igrejaIdSignal, nomeIgrejaSignal, nomeUsuarioSignal, } from 'src/app/theme/shared/_helpers/shared-signals';
+
 
 @Component({
   selector: 'app-nav-right',
+  standalone: true,
   imports: [
     SharedModule,
     RouterLink
@@ -37,7 +41,18 @@ import { Router, RouterLink } from '@angular/router';
     ])
   ]
 })
-export class NavRightComponent implements DoCheck, OnInit {
+export class NavRightComponent implements DoCheck, OnInit, OnDestroy {
+
+
+  nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+  nomeUsuarioSignal = nomeUsuarioSignal;
+
+  igrejaId = igrejaIdSignal();
+  nomeUsuario = nomeUsuarioSignal();
+
+
+  private subscription: Subscription;
+
   authenticationService = inject(AuthenticationService);
   private translate = inject(TranslateService);
   private storage = inject(StorageService);
@@ -46,9 +61,6 @@ export class NavRightComponent implements DoCheck, OnInit {
 
   user!: UserDTO;
 
-  nomeIgreja: string = GLOBALS.nomeIgreja;
-  imageUrl: string = GLOBALS.imageUrl;
-  nomeUsuario?: string = GLOBALS.nomeUsuario;
   fotoUsuario?: string
   acessoId!: number;
   usuario: UsuarioDTO = new UsuarioDTO();
@@ -74,6 +86,7 @@ export class NavRightComponent implements DoCheck, OnInit {
     translate.setDefaultLang(ThemeConfig.i18n);
   }
 
+
   ngOnInit() {
     setTimeout(() => {
       this.useLanguage(ThemeConfig.i18n);
@@ -81,29 +94,28 @@ export class NavRightComponent implements DoCheck, OnInit {
     this.checkLocalUser();
   }
 
-   checkLocalUser() {
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  checkLocalUser() {
     const localToken = this.storage.getLocalToken();
     const localUser = this.storage.getLocalUser();
     if (localToken && localUser.email) {
       const email = localUser.email;
-      this.usuarioService
-        .getUsuarioFromEmail(email)
+      this.usuarioService.getUsuarioFromEmail(email)
         .subscribe({
           next: (response) => {
             this.usuario = response;
-            this.nomeUsuario = this.usuario.name;
             this.fotoUsuario = this.usuario.foto;
-            this.nomeIgreja = response['igrejas'][0].nome;
             this.perfis0 = response['perfis'][0]
             this.perfis1 = response['perfis'][1]
-            GLOBALS.igrejaId = response['igrejas'][0].id;
-            //  GLOBALS.igrejaId = this.usuario.igrejaAtivaId;
-            GLOBALS.nomeUsuario = this.usuario.name;
-
+            this.nomeUsuarioSignal.update(() => this.usuario.name);
             this.perfis();
-
           },
-          error: () => {}
+          error: () => { }
         });
     } else {
       this.router.navigate(['login'])
@@ -112,11 +124,9 @@ export class NavRightComponent implements DoCheck, OnInit {
 
   private perfis() {// perfil de ADMIN
     if (this.perfis0 === 'ADMIN' || this.perfis1 === 'ADMIN') { // Se for ADMIN
-      GLOBALS.perfil = 'ADMIN'
-      this.perfil='ADMIN'
+      this.perfil = 'ADMIN'
     } else { // Se for USUARIO
-      GLOBALS.perfil = 'USUARIO'
-      this.perfil='USUARIO'
+      this.perfil = 'USUARIO'
     }
   }
 

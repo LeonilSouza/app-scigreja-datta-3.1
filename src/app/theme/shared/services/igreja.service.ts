@@ -4,128 +4,124 @@ import { HttpClient } from "@angular/common/http";
 import { Observable, throwError } from "rxjs";
 import { catchError, map } from "rxjs/operators";
 import { IgrejaDTO } from "../models/igreja.dto";
-import { API_CONFIG, GLOBALS } from "src/app/app-config";
+import { API_CONFIG } from "src/app/app-config";
+// import { nomeIgrejaSignal } from "../_helpers/shared-signals";
 
 
 
 @Injectable({
-    providedIn: 'root'
-  })
- export class IgrejaService {
+  providedIn: 'root'
+})
+export class IgrejaService {
 
-    private apiPath: string = `${API_CONFIG.baseUrl}/igrejas`;
+  private apiPath: string = `${API_CONFIG.baseUrl}/igrejas`;
 
-    emitirNomeIgreja = new EventEmitter<string>();
+  // nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+  // nomeIgreja = nomeIgrejaSignal();
 
-    public nomeIgreja: string = GLOBALS.nomeIgreja;
+  constructor(
+    public http: HttpClient
+  ) {
+    // this.nomeIgreja = GLOBALS.nomeIgreja
+  }
 
 
-    constructor(
-      public http: HttpClient
-      ) {
-        this.nomeIgreja = GLOBALS.nomeIgreja
-    }
+  getPageFromIgreja(nome, setor, page, linesPerPage) {
 
-    getNomeIgreja() {
-      return this.nomeIgreja
-    }
-
-    getPageFromIgreja(nome, setor, page, linesPerPage) {
-
-      return this.http.get(`${API_CONFIG.baseUrl}/igrejas/page/?nome=${nome}&setor=${setor}&page=${page}&linesPerPage=${linesPerPage}`)
-        .pipe(
-          catchError(this.handleError)
+    return this.http.get(`${API_CONFIG.baseUrl}/igrejas/page/?nome=${nome}&setor=${setor}&page=${page}&linesPerPage=${linesPerPage}`)
+      .pipe(
+        catchError(this.handleError)
       );
-    }
+  }
 
-    upload(igreja: IgrejaDTO, formData: FormData) : Observable<any>{
-      const url = `${this.apiPath}/${igreja.id}/logo`;
-      return this.http.put(url, formData, { responseType : 'blob' });
-    }
+  upload(igreja: IgrejaDTO, formData: FormData): Observable<any> {
+    const url = `${this.apiPath}/${igreja.id}/logo`;
+    return this.http.put(url, formData, { responseType: 'blob' });
+  }
 
 
-      getByIgrejaFromSetor(setor_id : number) {
+  getByIgrejaFromSetor(setor_id: number) {
 
-        return this.http.get(`${API_CONFIG.baseUrl}/igrejas/page/?setor=${setor_id}`)
+    return this.http.get(`${API_CONFIG.baseUrl}/igrejas/page/?setor=${setor_id}`)
 
-          .pipe(
-            catchError(this.handleError)
-        );
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  findAll(): Observable<IgrejaDTO[]> {
+    return this.http.get<IgrejaDTO>(this.apiPath).pipe(
+
+      catchError(this.handleError)
+      //,map(this.jsonDataToIgrejas) // DA PROBLEMAS COM ENDPOINT PAGINADOS
+    )
+  }
+
+  getById(id: number) {
+
+    const url = `${this.apiPath}/${id}`;
+
+    return this.http.get(url).pipe(
+      catchError(this.handleError)
+    )
+  }
+
+  create(igreja: IgrejaDTO) {
+    return this.http.post(this.apiPath,
+      igreja,
+      {
+        observe: 'response',
+        responseType: 'text'
       }
+    );
+  }
 
-     findAll(): Observable<IgrejaDTO[]> {
-        return this.http.get<IgrejaDTO>(this.apiPath).pipe(
+  update(igreja: IgrejaDTO): Observable<IgrejaDTO> {
+    const url = `${this.apiPath}/${igreja.id}`;
 
-          catchError(this.handleError)
-          //,map(this.jsonDataToIgrejas) // DA PROBLEMAS COM ENDPOINT PAGINADOS
-        )
-      }
-
-       getById(id: number){
-
-        const url = `${this.apiPath}/${id}`;
-
-        return this.http.get(url).pipe(
-          catchError(this.handleError)
-        )
-      }
-
-     create(igreja : IgrejaDTO) {
-      return this.http.post(this.apiPath,
-        igreja,
-          {
-              observe: 'response',
-              responseType: 'text'
-          }
-        );
-     }
-
-      update(igreja: IgrejaDTO): Observable<IgrejaDTO> {
-        const url = `${this.apiPath}/${igreja.id}`;
-
-        return this.http.put(url, igreja)
-          .pipe(
-           map(this.jsonDataToIgreja),
-           catchError(this.handleError),
-           //map(this.jsonDataToIgreja)
-           map(() => igreja)
-        )
-      }
+    return this.http.put(url, igreja)
+      .pipe(
+        map(this.jsonDataToIgreja),
+        catchError(this.handleError),
+        //map(this.jsonDataToIgreja)
+        map(() => igreja)
+      )
+  }
 
 
-      delete(id: number): Observable<any> {
+  delete(id: number): Observable<any> {
 
-        const url = `${this.apiPath}/${id}`;
+    const url = `${this.apiPath}/${id}`;
 
-        return this.http.delete(url).pipe(
-          catchError(this.handleError),
-          map(() => null)
-        )
-      }
+    return this.http.delete(url).pipe(
+      catchError(this.handleError),
+      map(() => null)
+    )
+  }
 
 
 
-      // PRIVATE METHODS
+  // PRIVATE METHODS
 
-      private jsonDataToIgrejas(jsonData: any[]): IgrejaDTO[] {
-        const igrejas: IgrejaDTO[] = [];
+  private jsonDataToIgrejas(jsonData: any[]): IgrejaDTO[] {
+    const igrejas: IgrejaDTO[] = [];
 
-        jsonData.forEach(element => {
-          const igreja = (new IgrejaDTO(), element);
-          igrejas.push(igreja);
-        });
+    jsonData.forEach(element => {
+      const igreja = (new IgrejaDTO(), element);
+      igrejas.push(igreja);
+    });
 
-        return igrejas;
-      }
+    return igrejas;
+  }
 
 
-      private jsonDataToIgreja(jsonData: any): IgrejaDTO {
-        return (new IgrejaDTO(), jsonData);
-      }
+  private jsonDataToIgreja(jsonData: any): IgrejaDTO {
+    return (new IgrejaDTO(), jsonData);
+  }
 
-      private handleError(error: any): Observable<any>{
-        console.log("ERRO NA REQUISIÇÃO => ", error);
-        return throwError(error);
-      }
+  private handleError(error: any): Observable<any> {
+    console.log("ERRO NA REQUISIÇÃO => ", error);
+    return throwError(error);
+  }
 
 }

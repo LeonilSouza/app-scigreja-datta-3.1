@@ -1,17 +1,17 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { LazyLoadEvent } from 'primeng/api';
-import { Table, TableModule } from 'primeng/table';
 import { Router, RouterLink } from '@angular/router';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { GLOBALS } from 'src/app/app-config';
 import { IgrejaDTO } from 'src/app/theme/shared/models/igreja.dto';
 import { IgrejaService } from 'src/app/theme/shared/services/igreja.service';
 import { StorageService } from 'src/app/theme/shared/services/storage.service';
 import { UsuarioService } from 'src/app/theme/shared/services/usuario.service';
 import { InputGroup } from "primeng/inputgroup";
 import { SharedModule } from 'src/app/theme/shared/shared.module';
+import { TableModule, Table } from 'primeng/table';
+import { igrejaIdSignal, perfilSignal } from 'src/app/theme/shared/_helpers/shared-signals';
 
 @Component({
   selector: 'app-igreja-list',
@@ -19,19 +19,26 @@ import { SharedModule } from 'src/app/theme/shared/shared.module';
   styleUrls: ['./igreja-list.component.scss'],
   standalone: true,
   imports: [
+    TableModule,
     ButtonModule,
     FormsModule,
     ReactiveFormsModule,
     RouterLink,
-    TableModule,
     SharedModule,
     NgbTooltip,
-    InputGroup,
-],
-providers: []
+    InputGroup
+  ],
+  providers: []
 })
 
 export class IgrejaListComponent implements OnInit {
+
+  perfilSignal = perfilSignal;
+  igrejaIdSignal = igrejaIdSignal;
+
+  perfil = perfilSignal();
+  igrejaId = igrejaIdSignal();
+
   @ViewChild('dtigreja') grid!: Table;
 
   active = 1;
@@ -40,18 +47,16 @@ export class IgrejaListComponent implements OnInit {
 
   public activeTab: string;
 
-  igrejaId: number = GLOBALS.igrejaId;
-
   totalRegistros: number = 0;
 
-  perfil: string = GLOBALS.perfil;
+  // perfil: string = GLOBALS.perfil;
 
   igrejas: IgrejaDTO[] = [];
 
   setor: number = 0;
 
   public page = 0;
-  public linesPerPage: any = 10;
+  public linesPerPage: any = 8;
   public nome = '';
 
   constructor(
@@ -105,19 +110,19 @@ export class IgrejaListComponent implements OnInit {
       //Se  for Usuario, busca Apenas as Igreja do setor que o usuario recebeu acesso
       this.igrejaService
         .getPageFromIgreja(nome, this.setor, page, linesPerPage)
-        .subscribe(
-          (response) => {
+        .subscribe({
+          next: (response) => {
             this.igrejas = response['content'].sort((a, b) => b.id - a.id);
             this.totalRegistros = response.totalElements;
           },
-          (error) => {
+            error: (error) => {
             if (error.status == 403) {
               this.router.navigate(['login']);
             } else {
               this.router.navigate(['login']);
             }
-          }
-        );
+          },
+        });
     }
   }
 }

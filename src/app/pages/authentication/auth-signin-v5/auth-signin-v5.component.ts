@@ -1,16 +1,17 @@
 // angular import
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { first } from 'rxjs';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 import { AuthenticationService } from 'src/app/theme/shared/services';
 import { LocalIgreja, UsuarioDTO } from 'src/app/theme/shared/models/usuario.dto';
-import { GLOBALS } from 'src/app/app-config';
 import { ToastrService } from 'ngx-toastr';
 import { StorageService } from 'src/app/theme/shared/services/storage.service';
 import { UsuarioService } from 'src/app/theme/shared/services/usuario.service';
+import { igrejaIdSignal, nomeIgrejaSignal, nomeUsuarioSignal, perfilSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
+
 
 
 @Component({
@@ -19,28 +20,44 @@ import { UsuarioService } from 'src/app/theme/shared/services/usuario.service';
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    CommonModule, 
-    SharedModule, 
+    CommonModule,
+    SharedModule,
     RouterModule
-],
+  ],
   templateUrl: './auth-signin-v5.component.html',
   styleUrls: ['./auth-signin-v5.component.scss', '../auth-v5-style.scss']
 })
 export class AuthSigninV5Component {
-private formBuilder = inject(FormBuilder);
-  private route = inject(ActivatedRoute);
+
+  nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+  igrejaIdSignal = igrejaIdSignal;
+  nomeUsuarioSignal = nomeUsuarioSignal;
+  perfilSignal = perfilSignal;
+  setorIdSignal = setorIdSignal;
+
+  nomeIgreja = nomeIgrejaSignal();
+  igrejaId = igrejaIdSignal();
+  nomeUsuario = nomeUsuarioSignal();
+  perfil = perfilSignal();
+  setorId = setorIdSignal();
+
+
+
+  private formBuilder = inject(FormBuilder);
   private router = inject(Router);
   authenticationService = inject(AuthenticationService);
   private storage = inject(StorageService);
   private toast = inject(ToastrService);
   private usuarioService = inject(UsuarioService);
 
+
+
   usuario: UsuarioDTO = new UsuarioDTO();
   toggler: string;
   nome: string;
   email: string;
   acessoId: number;
-  setorId: number;
+  // setorId: number;
   perfis0: string;
   perfis1: string;
 
@@ -55,7 +72,7 @@ private formBuilder = inject(FormBuilder);
   classList!: { toggle: (arg0: string) => void };
 
 
-    constructor() {
+  constructor() {
     // redireciona para home se já estiver logado
     if (this.authenticationService.user.email) {
       this.router.navigate(['/dashboard/default']);
@@ -64,7 +81,7 @@ private formBuilder = inject(FormBuilder);
   // life cycle hook
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
-      id: [null],   
+      id: [null],
       name: [null],
       email: ['leonilsouza@gmail.com', Validators.compose([Validators.required, emailValidator])],
       password: ['01020102', Validators.compose([Validators.required, Validators.minLength(6)])],
@@ -108,12 +125,12 @@ private formBuilder = inject(FormBuilder);
         error: (error) => {
           this.error = error.message;
           this.loading = false;
-         
+
         }
       });
   }
 
- checkLocalUser() {
+  checkLocalUser() {
     const localToken = this.storage.getLocalToken();
     const localUser = this.storage.getLocalUser();
     if (localToken && localUser.email) {
@@ -123,36 +140,52 @@ private formBuilder = inject(FormBuilder);
         .subscribe({
           next: (response) => {
             this.usuario = response;
-            this.setorId = response['igrejas'][0].setor.id;
+            this.usuario.igrejaAtivaId = this.usuario.igrejaIdHome;
+            this.usuario.igrejaAtivaNome = this.usuario.igrejaNomeHome;
+
+            this.setorId = this.usuario.setorIdHome;
             this.perfis0 = response['perfis'][0]
             this.perfis1 = response['perfis'][1]
             this.nome = this.usuario.name;
             this.email = this.usuario.email;
-            GLOBALS.nomeUsuario = this.usuario.name;
 
-            GLOBALS.setorId = this.setorId;
-            this.perfil();
+            this.perfils();
 
-            if(this.usuario.igrejaAtivaId === null && this.usuario.igrejaAtivaNome === null) {
-              GLOBALS.igrejaId = response['igrejas'][0].id;
-              GLOBALS.setorId = response['igrejas'][0].setor.id,
-              GLOBALS.nomeIgreja = response['igrejas'][0].nome;
-            } else {
-              GLOBALS.igrejaId = this.usuario.igrejaAtivaId;
-              GLOBALS.setorId = response['igrejas'][0].setor.id,
-              GLOBALS.nomeIgreja = this.usuario.igrejaAtivaNome;
-            }
+            // Atualiza o signal para Igreja Padrão do Usuario
+            this.nomeIgrejaSignal.update(() => this.usuario.igrejaNomeHome);
+            this.igrejaIdSignal.update(() => this.usuario.igrejaIdHome);
+            this.setorIdSignal.update(() => this.usuario.setorIdHome);
+            this.nomeUsuarioSignal.update(() => this.usuario.name);
+            this.perfilSignal.update(() => this.perfil);
 
-            // Grava no locaStorage
+            this.nomeUsuario = this.usuario.name;
+            this.igrejaId = this.usuario.igrejaIdHome;
+            this.setorId = this.usuario.setorIdHome;
+            this.nomeIgreja = this.usuario.igrejaNomeHome;
+
+
+            // Objeto locaStorage - Os dados são atualizados para o Usuario e Igreja Padão
             const igr: LocalIgreja = {
-              igrejaId: response['igrejas'][0].id,
-              setorId: response['igrejas'][0].setor.id,
-              nomeIgreja: response['igrejas'][0].nome,
+              igrejaId: this.usuario.igrejaIdHome,
+              setorId: this.usuario.setorIdHome,
+              nomeIgreja: this.usuario.igrejaNomeHome,
               nomeUser: this.usuario.name,
-              perfil: GLOBALS.perfil
+              perfil: this.perfil
             };
+
+            // Grava Objeto no locaStorage - Os dados são atualizados para o Usuario e Igreja Padão
             this.storage.setLocalIgreja(igr);
 
+            this.usuario.igrejaAtivaId = this.usuario.igrejaIdHome;
+            this.usuario.igrejaAtivaNome = this.usuario.igrejaNomeHome;
+            const usuario: UsuarioDTO = Object.assign(new UsuarioDTO(), this.usuario);
+            usuario.igrejaAtivaId = this.usuario.igrejaIdHome;
+            usuario.igrejaAtivaNome = this.usuario.igrejaNomeHome;
+
+            this.usuarioService.update(usuario)
+              .subscribe({
+                next: () => { }
+              })
           },
           error: (error) => {
             if (error.status == 403) {
@@ -168,11 +201,11 @@ private formBuilder = inject(FormBuilder);
     }
   }
 
-  private perfil() {// perfil de ADMIN
+  private perfils() {// perfil de ADMIN
     if (this.perfis0 === 'ADMIN' || this.perfis1 === 'ADMIN') { // Se for ADMIN
-      GLOBALS.perfil = 'ADMIN'
+      this.perfil = 'ADMIN'
     } else { // Se for USUARIO
-      GLOBALS.perfil = 'USUARIO'
+      this.perfil = 'USUARIO'
     }
   }
 

@@ -28,7 +28,6 @@ import { ButtonModule } from "primeng/button";
 import { NgClass } from "@angular/common";
 import { EstadoDTO } from "src/app/theme/shared/models/estado.dto";
 import { IgrejaDTO } from "src/app/theme/shared/models/igreja.dto";
-import { GLOBALS } from "src/app/app-config";
 import { SetorDTO } from "src/app/theme/shared/models/setor.dto";
 import { CargoDTO } from "src/app/theme/shared/models/cargo.dto";
 import { CidadeDTO } from "src/app/theme/shared/models/cidade.dto";
@@ -41,6 +40,7 @@ import { SharedService } from "src/app/theme/shared/services/shared.service";
 import { SelectModule } from "primeng/select";
 import { PaisService } from "src/app/theme/shared/services/pais.service";
 import { CidadeService } from "src/app/theme/shared/services/cidade.service";
+import { nomeIgrejaSignal, perfilSignal } from "src/app/theme/shared/_helpers/shared-signals";
 
 //declare const $: any;
 
@@ -75,6 +75,12 @@ export class IgrejaFormComponent
   implements OnInit, AfterContentChecked, OnDestroy {
   private destroy$: Subject<void> = new Subject<void>();
 
+  nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+  perfilSignal = perfilSignal;
+
+  nomeIgreja = nomeIgrejaSignal();
+  perfil = perfilSignal();
+
   // Consulta CEP ViaCep
   dataCep!: any[];
 
@@ -96,7 +102,6 @@ export class IgrejaFormComponent
 
   subscription: Subscription;
 
-  nomeIgreja: string = GLOBALS.nomeIgreja;
 
   // @ViewChild('dtigreja') grid!: Table;
 
@@ -111,7 +116,6 @@ export class IgrejaFormComponent
   cargos: CargoDTO[];
   setor: SetorDTO = new SetorDTO();
 
-  perfil: string = GLOBALS.perfil;
 
   paises: PaisDTO[] = [];
   pais: PaisDTO[] = [];
@@ -135,7 +139,7 @@ export class IgrejaFormComponent
 
   modo: number = 0;
 
-  igrejaId: number = GLOBALS.igrejaId;
+  // igrejaId: number = GLOBALS.igrejaId;
 
   tipo = [{ nome: "Sede" }, { nome: "Subsede" }, { nome: "Subcongregação" }]; //PrimeNG
   status = [{ nome: "Ativa" }, { nome: "Inativa" }]; //PrimeNG
@@ -170,7 +174,7 @@ export class IgrejaFormComponent
   //Fim Calendar PrimeNG
 
   ngOnInit(): void {
-    this.igrejaId = GLOBALS.igrejaId;
+    // this.igrejaId = GLOBALS.igrejaId;
     this.setCurrentAction();
     this.buildIgrejaForm();
     this.loadPaises();
@@ -346,7 +350,7 @@ export class IgrejaFormComponent
   }
   cropperReady() { }
   loadImageFailed() {
-    console.error("Load image failed");
+    // console.error("Load image failed");
   }
   //   fim cropped
 
@@ -637,7 +641,6 @@ export class IgrejaFormComponent
     const igreja: IgrejaDTO = Object.assign(
       new IgrejaDTO(),
       this.igrejaForm.value,
-      console.log(this.igrejaForm.value)
     );
     // igreja.nivel = this.nivel;
     this.igrejaService.update(igreja).subscribe({
@@ -653,32 +656,32 @@ export class IgrejaFormComponent
 
   // METODOS PRIVADOS
 
- exclusaoIgreja(igreja: IgrejaDTO) {
-      Swal.fire({
-        // title: 'Exclusão',
-        text: 'Tem certeza que deseja excluir esta Igreja?',
-        icon: 'error',
-        // showCloseButton: true,
-        showCancelButton: true
-      }).then((willDelete) => {
-        if (willDelete.dismiss) {
-          // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
-        } else {
-          this.excluirIgreja(igreja);
-          Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
-        }
-      });
-    }
-  
-    excluirIgreja(igreja: any) {
-      this.igrejaService.delete(igreja.id)
-        .subscribe(() => {
-          this.router.navigate(['/igrejas'])
-          // this.toastr.success('Registro excluido com sucesso!', 'Exclusão',);
-          // Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
-        },
-          error => { });
-    }
+  exclusaoIgreja(igreja: IgrejaDTO) {
+    Swal.fire({
+      // title: 'Exclusão',
+      text: 'Tem certeza que deseja excluir esta Igreja?',
+      icon: 'error',
+      // showCloseButton: true,
+      showCancelButton: true
+    }).then((willDelete) => {
+      if (willDelete.dismiss) {
+        // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
+      } else {
+        this.excluirIgreja(igreja);
+        Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
+      }
+    });
+  }
+
+  excluirIgreja(igreja: any) {
+    this.igrejaService.delete(igreja.id)
+      .subscribe(() => {
+        this.router.navigate(['/igrejas'])
+        // this.toastr.success('Registro excluido com sucesso!', 'Exclusão',);
+        // Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
+      },
+        error => { });
+  }
 
   private actionsForSuccess(igreja: IgrejaDTO) {
     const path: string = this.route.snapshot.data['path'];

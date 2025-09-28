@@ -9,14 +9,27 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { LocalUser, UserDTO, UsuarioDTO } from '../models/usuario.dto';
 import { ToastrService } from 'ngx-toastr';
 import { StorageService } from './storage.service';
-import { API_CONFIG, GLOBALS } from 'src/app/app-config';
+import { API_CONFIG } from 'src/app/app-config';
+import { nomeIgrejaSignal, igrejaIdSignal, nomeUsuarioSignal, perfilSignal, setorIdSignal } from '../_helpers/shared-signals';
 
 
 @Injectable({ providedIn: 'root' })
 
 export class AuthenticationService {
-  jwtHelperService: JwtHelperService = new JwtHelperService();
 
+  nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+  igrejaIdSignal = igrejaIdSignal;
+  nomeUsuarioSignal = nomeUsuarioSignal;
+  perfilSignal = perfilSignal;
+  setorIdSignal = setorIdSignal;
+
+  nomeIgreja = nomeIgrejaSignal();
+  igrejaId = igrejaIdSignal();
+  nomeUsuario = nomeUsuarioSignal();
+  perfil = perfilSignal();
+  setorId = setorIdSignal();
+
+  jwtHelperService: JwtHelperService = new JwtHelperService();
   user: UserDTO = {};
   usuario: UsuarioDTO;
   user$ = (new BehaviorSubject<UserDTO>(this.user));
@@ -56,7 +69,7 @@ export class AuthenticationService {
     const user: LocalUser = {
       email: this.jwtHelperService.decodeToken(tok).sub,
       name: this.user.name,
-      perfil: GLOBALS.perfil,
+      perfil: this.perfil,
       imageUrl: ''
     };
 
@@ -70,12 +83,12 @@ export class AuthenticationService {
             this.usuario = response;
             this.perfis0 = response['perfis'][0]
             this.perfis1 = response['perfis'][1]
-            this.perfil();
+            this.perfils();
 
             const user: LocalUser = {
               email: this.usuario.email,
               name: this.usuario.name,
-              perfil: GLOBALS.perfil,
+              perfil: this.perfil,
               imageUrl: this.usuario.imageUrl
             };
             this.user = user;
@@ -92,11 +105,13 @@ export class AuthenticationService {
     }
   }
 
-  private perfil() {// perfil de ADMIN
+  private perfils() {// perfil de ADMIN
     if (this.perfis0 === 'ADMIN' || this.perfis1 === 'ADMIN') { // Se for ADMIN
-      GLOBALS.perfil = 'ADMIN'
+      this.perfil = 'ADMIN'
+      this.perfilSignal.update(() => this.perfil);
     } else { // Se for USUARIO
-      GLOBALS.perfil = 'USUARIO'
+      this.perfil = 'USUARIO'
+      this.perfilSignal.update(() => this.perfil);
     }
   }
 
@@ -114,10 +129,11 @@ export class AuthenticationService {
     this.storage.setLocalToken(null);
     this.storage.setLocalUser(null);
     this.storage.setLocalIgreja(null);
-    GLOBALS.igrejaId = 0;
-    GLOBALS.nomeUsuario = 'IEAD';
-    GLOBALS.nomeUsuario = '';
-    GLOBALS.perfil = '';
+
+    // Atualiza o signal
+    this.igrejaIdSignal.update(() => 0);
+    this.nomeUsuarioSignal.update(() => '');
+    this.perfilSignal.update(() => '');
     this.toast.info('Usuario desconectado com sucesso.')
     this.router.navigate(['login']);
   }

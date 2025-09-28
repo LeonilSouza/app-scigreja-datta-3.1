@@ -6,6 +6,8 @@ import { Observable, catchError, map, throwError } from 'rxjs';
 import { API_CONFIG } from 'src/app/app-config';
 import { UsuarioDTO } from '../models/usuario.dto';
 
+import Swal from 'sweetalert2';
+
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
   private apiPath: string = `${API_CONFIG.baseUrl}/usuarios`;
@@ -76,7 +78,7 @@ export class UsuarioService {
   }
 
 
-  delete(id: number): Observable<any> {
+  delete(id: number): Observable<UsuarioDTO> {
 
     const url = `${this.apiPath}/${id}`;
 
@@ -107,8 +109,8 @@ export class UsuarioService {
   }
 
   private handleError(error: any): Observable<any> {
-    console.log("ERRO NA REQUISIÇÃO => ", error);
-    return throwError(() => new Error(error));
+    // console.log("ERRO NA REQUISIÇÃO => ", error);
+     return throwError(error);
   }
 
 }

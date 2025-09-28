@@ -10,7 +10,7 @@ import { StorageService } from './theme/shared/services/storage.service';
   selector: 'app-root',
   standalone: true,
   imports: [
-    RouterOutlet, 
+    RouterOutlet,
     SpinnerComponent
   ],
   templateUrl: './app.component.html',
@@ -32,5 +32,7 @@ export class AppComponent implements OnInit {
       }
       window.scrollTo(0, 0);
     });
+
+
   }
 }

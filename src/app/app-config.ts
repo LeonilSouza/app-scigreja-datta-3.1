@@ -27,12 +27,7 @@ export const API_CONFIG = {
 }
 
 export let GLOBALS: any = {
-  igrejaId: 0,
-  setorId: 0,
-  nomeIgreja: 'Assembleia de Deus',
-  nomeUsuario: '',
-  imageUrl: "",
-  perfil: ''
+  igrejaIdAux: 0
 };
 
 export const STORAGE_KEYS = {

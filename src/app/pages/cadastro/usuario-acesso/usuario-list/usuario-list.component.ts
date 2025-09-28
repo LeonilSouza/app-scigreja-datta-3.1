@@ -4,7 +4,6 @@ import { Router, RouterLink } from '@angular/router';
 import { LazyLoadEvent, SharedModule } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { CardComponent } from 'src/app/theme/shared/components/card/card.component';
@@ -12,6 +11,7 @@ import { GLOBALS } from 'src/app/app-config';
 import { UsuarioDTO } from 'src/app/theme/shared/models/usuario.dto';
 import { UsuarioService } from 'src/app/theme/shared/services/usuario.service';
 import { StorageService } from 'src/app/theme/shared/services/storage.service';
+import { InputGroup } from "primeng/inputgroup";
 
 @Component({
   selector: 'app-usuario-list',
@@ -25,8 +25,9 @@ import { StorageService } from 'src/app/theme/shared/services/storage.service';
     RouterLink,
     TableModule,
     SharedModule,
-    NgIf,
-    NgbTooltip]
+    NgbTooltip,
+    InputGroup
+]
 })
 export class UsuarioListComponent implements OnInit {
 
@@ -39,7 +40,7 @@ export class UsuarioListComponent implements OnInit {
   usuarios: UsuarioDTO[] = [];
 
   public page = 0;
-  public linesPerPage = 6;
+  public linesPerPage = 8;
   public name = '';
 
   constructor(

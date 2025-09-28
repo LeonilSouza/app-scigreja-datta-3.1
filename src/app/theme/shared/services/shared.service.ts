@@ -1,36 +1,28 @@
-import { EventEmitter, Injectable } from "@angular/core";
+import { Injectable, signal, WritableSignal } from "@angular/core";
 
 import moment from 'moment';
 
-const data = new Date();
+@Injectable({
+  providedIn: 'root'
+})
 
-@Injectable()
 export class SharedService {
 
-  eventIgrejaId = new EventEmitter<any>();
-  eventSetorId = new EventEmitter<any>();
-  eventNomeIgreja = new EventEmitter<any>();
-  eventCroppedImage = new EventEmitter<any>();
-  eventPessoaId = new EventEmitter<any>();
+  private valorCompartilhado = signal(0);
 
-  eventNomeUsuario = new EventEmitter<any>();
-  eventFotoUsuario = new EventEmitter<any>();
-  eventPerfil = new EventEmitter<string>();
+  getValor(): WritableSignal<number> {
+    return this.valorCompartilhado;
+  }
 
-  private igrejaId: number;
-  private setorId: number;
-  private nomeIgreja: string;
-  private pessoaId: number;
-  private croppedImage: any;
-
-  private fotoUsuario: string;
-  private nomeUsuario: string;
-  private perfil: string;
+  atualizarValor(novoValor: number) {
+    this.valorCompartilhado.set(novoValor);
+  }
 
   dataAtual: any = moment();
 
   constructor(
   ) {
+    
   }
 
 
@@ -72,18 +64,6 @@ export class SharedService {
     return `${dia}/${mes}/${ano}`;
 
   }
-
-  // dataHoraAtualFormatada() {
-  //   let data = new Date(),
-  //     dia = data.getDate().toString().padStart(2, '0'),
-  //     mes = (data.getMonth() + 1).toString().padStart(2, '0'),
-  //     ano = data.getFullYear();
-      
-  //     let hora = data.getHours();
-  //     let minuto = data.getMinutes();
-
-  //   return `${dia}/${mes}/${ano}`+ " às "+ `${hora}:${minuto}`;
-  // }
 
   rangeMesAtual() {
     let data = new Date();
@@ -184,86 +164,6 @@ export class SharedService {
     }
 
     return cnpjCpf.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g, "\$1.\$2.\$3/\$4-\$5");
-  }
-
-  //Igreja nome
-  getNomeIgreja() {
-    return this.nomeIgreja;
-  }
-
-  setNomeIgreja(nome: string) {
-    this.nomeIgreja = nome;
-    this.eventNomeIgreja.emit(nome);
-  }
-
-  //Igreja Id
-  getIgrejaId() {
-    return this.igrejaId;
-  }
-
-  setIgrejaId(igrejaId: number) {
-    this.igrejaId = igrejaId;
-    this.eventIgrejaId.emit(igrejaId);
-  }
-
-  //Setor Id
-  getSetorId() {
-    return this.setorId;
-  }
-
-  setSetorId(setorId: number) {
-    this.setorId = setorId;
-    this.eventSetorId.emit(setorId);
-  }
-
-  //PessoaId
-  getPessoaId() {
-    return this.pessoaId;
-  }
-
-  setPessoaId(id: number) {
-    this.pessoaId = id;
-    this.eventPessoaId.emit(id);
-  }
-
-  //Usuario
-  getFotoUsuario() {
-    return this.fotoUsuario;
-  }
-
-  setFotoUsuario(foto: string) {
-    this.fotoUsuario = foto;
-    this.eventFotoUsuario.emit(foto);
-  }
-
-  //Perfil usuario
-  getPerfil() {
-    return this.perfil;
-  }
-
-  setPerfil(perfil: string) {
-    this.perfil = perfil;
-    this.eventPerfil.emit(perfil);
-  }
-
-  //Nome usuario
-  getNomeUsuario() {
-    return this.nomeUsuario;
-  }
-
-  setNomeUsuario(nome: string) {
-    this.nomeUsuario = nome;
-    this.eventNomeUsuario.emit(nome);
-  }
-
-  //Foto Pessoa
-  getCroppedImage() {
-    return this.croppedImage;
-  }
-
-  setCroppedImage(croppedImage: string) {
-    this.croppedImage = croppedImage;
-    this.eventCroppedImage.emit(croppedImage);
   }
 
   //  METODOS AUXILIARES PARA DATAS

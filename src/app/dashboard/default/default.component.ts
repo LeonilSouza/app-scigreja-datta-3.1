@@ -6,7 +6,6 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 import { StorageService } from 'src/app/theme/shared/services/storage.service';
 import { UsuarioService } from 'src/app/theme/shared/services/usuario.service';
-import { GLOBALS } from 'src/app/app-config';
 import { UsuarioDTO } from 'src/app/theme/shared/models/usuario.dto';
 import { Calendar } from 'src/app/theme/shared/models/calendar.model';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
@@ -33,12 +32,13 @@ import listPlugin from '@fullcalendar/list';
 import { formatDate } from '@angular/common';
 import moment from 'moment';
 import { SharedService } from 'src/app/theme/shared/services/shared.service';
+import { nomeIgrejaSignal, igrejaIdSignal, nomeUsuarioSignal, perfilSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
 
 @Component({
   selector: 'app-default',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     SharedModule,
     CommonModule,
     SharedModule,
@@ -50,11 +50,25 @@ import { SharedService } from 'src/app/theme/shared/services/shared.service';
     CalendarService,
     SharedService],
   templateUrl: './default.component.html',
-  styleUrls: ['./default.component.scss']
+  styleUrls: ['./default.component.scss'],
+  // changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DefaultComponent implements OnInit {
- private destroy$: Subject<void> = new Subject<void>(); 
- private storage = inject(StorageService);
+
+  nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+  igrejaIdSignal = igrejaIdSignal;
+  nomeUsuarioSignal = nomeUsuarioSignal;
+  perfilSignal = perfilSignal;
+  setorIdSignal = setorIdSignal;
+
+  nomeIgreja = nomeIgrejaSignal();
+  igrejaId = igrejaIdSignal();
+  nomeUsuario = nomeUsuarioSignal();
+  perfil = perfilSignal();
+  setorId = setorIdSignal();
+
+  private destroy$: Subject<void> = new Subject<void>();
+  private storage = inject(StorageService);
   private usuarioService = inject(UsuarioService);
 
   totalMembros: number = 0;
@@ -65,10 +79,8 @@ export class DefaultComponent implements OnInit {
   // calendario
 
   @ViewChild('calendar', { static: false })
-  igrejaId = GLOBALS.igrejaId;
 
   usuario: UsuarioDTO = new UsuarioDTO();
-  setorId!: number;
 
   perfis0!: string;
   perfis1!: string;
@@ -122,82 +134,43 @@ export class DefaultComponent implements OnInit {
     this.calendarForm = this.createCalendarForm(this.calendar);
   }
 
+
   ngOnInit() {
-    if (this.igrejaId == 0) {
-      //Arquivos de inicialização foi passado para carregarInit para pegar o igrejaId no login
-      this.checkLocalUser();
+    if (this.igrejaId === 0) {
+      // if (!this.storage.getLocalIgreja()) {
+      this.getUser();
+      // }
     } else {
-      this.carregarInit();
+      // window.location.href="dashboard/default";
+      // window.location.reload()
+      // this.router.navigate(['/dashboard/default']);
+
+      this.carregarOnInit();
     }
   }
 
-  checkLocalUser() {
-    const localToken = this.storage.getLocalToken();
+  getUser() {
     const localUser = this.storage.getLocalUser();
-    if (localToken && localUser.email) {
+    if (localUser.email) {
       const email = localUser.email;
-      this.usuarioService.getUsuarioFromEmail(email).subscribe({
-        next: (response) => {
-          this.usuario = response;
-          this.setorId = response['igrejas'][0].setor.id;
-          this.perfis0 = response['perfis'][0];
-          this.perfis1 = response['perfis'][1];
+      return this.usuarioService
+        .getUsuarioFromEmail(email)
+        .subscribe({
+          next: (response) => {
+            this.usuario = response;
 
-          GLOBALS.nomeUsuario = this.usuario.name;
-          GLOBALS.setorId = this.setorId;
-          this.perfil();
+            this.igrejaIdSignal.update(() => this.usuario.igrejaIdHome);
+            this.igrejaId = igrejaIdSignal();
 
-          if (
-            this.usuario.igrejaAtivaId === null &&
-            this.usuario.igrejaAtivaNome === null
-          ) {
-            GLOBALS.igrejaId = response['igrejas'][0].id;
-            (GLOBALS.setorId = response['igrejas'][0].setor.id),
-              (GLOBALS.nomeIgreja = response['igrejas'][0].nome);
-            this.igrejaId = response['igrejas'][0].id;
-          } else {
-            GLOBALS.igrejaId = this.usuario.igrejaAtivaId;
-            (GLOBALS.setorId = response['igrejas'][0].setor.id),
-              (GLOBALS.nomeIgreja = this.usuario.igrejaAtivaNome);
-            this.igrejaId = this.usuario.igrejaAtivaId;
+            this.carregarOnInit();
+            console.log(this.igrejaId)
           }
-          this.carregarInit();
-
-          // Grava no locaStorage
-          const igr: any = {
-            igrejaId: response['igrejas'][0].id,
-            setorId: response['igrejas'][0].setor.id,
-            nomeIgreja: response['igrejas'][0].nome,
-            nomeUser: this.usuario.name,
-            perfil: GLOBALS.perfil,
-          };
-          this.storage.setLocalIgreja(igr);
-        },
-        error: () => {},
-      });
-    } else {
-      this.router.navigate(['authentication/signin']);
+        });
     }
   }
 
-  private perfil() {
-    // perfil de ADMIN
-    if (this.perfis0 === 'ADMIN' || this.perfis1 === 'ADMIN') {
-      // Se for ADMIN
-      GLOBALS.perfil = 'ADMIN';
-    } else {
-      // Se for USUARIO
-      GLOBALS.perfil = 'USUARIO';
-    }
-  }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  carregarInit() {
-    // ngOnInit agora aqui
+  carregarOnInit() {
     this.countMembrosAtivos();
     this.countObreirosAtivos();
     this.countCongregadosAtivos();
@@ -205,6 +178,42 @@ export class DefaultComponent implements OnInit {
     this.loadEventos(this.igrejaId);
     this.tempEvents = this.calendarEvents;
     this.calendarOptions.initialEvents = this.calendarEvents;
+  }
+
+  // checkLocalUser() {
+  //   const localToken = this.storage.getLocalToken();
+  //   const localUser = this.storage.getLocalUser();
+
+  //   if (localToken && localUser.email) {
+  //     const email = localUser.email;
+  //     this.usuarioService.getUsuarioFromEmail(email).subscribe({
+  //       next: (response) => {
+  //         this.usuario = response;
+  //         this.setorId = response['igrejas'][0].setor.id;
+  //         this.perfis0 = response['perfis'][0];
+  //         this.perfis1 = response['perfis'][1];
+
+  //         // Atualiza o signal
+  //         this.nomeIgrejaSignal.update(() => this.usuario.igrejaAtivaNome);
+  //         this.igrejaIdSignal.update(() => this.usuario.igrejaAtivaId);
+  //         this.setorIdSignal.update(() => response['igrejas'][0].setor.id);
+  //         this.nomeUsuarioSignal.update(() => this.usuario.name);
+
+  //         this.igrejaId = this.igrejaIdSignal();
+
+  //         this.carregarOnInit();
+  //       },
+  //       error: () => { },
+  //     });
+  //   } else {
+  //     this.router.navigate(['authentication/signin']);
+  //   }
+  // }
+
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   ngAfterContentChecked() {
@@ -220,7 +229,7 @@ export class DefaultComponent implements OnInit {
     const situacaoCadastral = 'Ativo';
     this.pessoaService
       .countMembrosAtivosFromIgreja(
-        GLOBALS.igrejaId,
+        this.igrejaId,
         situacaoCadastral,
         tipoMembro
       )
@@ -229,7 +238,7 @@ export class DefaultComponent implements OnInit {
         next: (response) => {
           response ? (this.totalMembros = response) : 0;
         },
-        error: (): void => {},
+        error: (): void => { },
       });
   }
 
@@ -238,7 +247,7 @@ export class DefaultComponent implements OnInit {
     const situacaoCadastral = 'Ativo';
     this.pessoaService
       .countMembrosAtivosFromIgreja(
-        GLOBALS.igrejaId,
+        this.igrejaId,
         situacaoCadastral,
         tipoMembro
       )
@@ -247,7 +256,7 @@ export class DefaultComponent implements OnInit {
         next: (response) => {
           response ? (this.totalObreiros = response) : 0;
         },
-        error: (): void => {},
+        error: (): void => { },
       });
   }
 
@@ -256,7 +265,7 @@ export class DefaultComponent implements OnInit {
     const situacaoCadastral = 'Ativo';
     this.pessoaService
       .countMembrosAtivosFromIgreja(
-        GLOBALS.igrejaId,
+        this.igrejaId,
         situacaoCadastral,
         tipoMembro
       )
@@ -265,7 +274,7 @@ export class DefaultComponent implements OnInit {
         next: (response) => {
           response ? (this.totalCongregados = response) : 0;
         },
-        error: (): void => {},
+        error: (): void => { },
       });
   }
 
@@ -321,7 +330,7 @@ export class DefaultComponent implements OnInit {
           });
           this.calendarOptions.events = [...this.calendarEvents];
         },
-        error: (): void => {},
+        error: (): void => { },
       });
   }
 
@@ -374,7 +383,7 @@ export class DefaultComponent implements OnInit {
     singleEvent.details = this.calendarData.details;
     singleEvent.className = this.getClassNameValue(this.calendarData.category);
     singleEvent.groupId = this.calendarData.category;
-    singleEvent.igrejaId = GLOBALS.igrejaId;
+    singleEvent.igrejaId = this.igrejaId;
     this.calendarService
       .addCalendar(singleEvent)
       .pipe(takeUntil(this.destroy$))
@@ -416,7 +425,7 @@ export class DefaultComponent implements OnInit {
     singleEvent['dataFinal'] = calendarData.endDate;
     singleEvent.className = this.getClassNameValue(calendarData.category);
     singleEvent.groupId = calendarData.category;
-    singleEvent['igrejaId'] = GLOBALS.igrejaId;
+    singleEvent['igrejaId'] = this.igrejaId;
     singleEvent['details'] = calendarData.details;
     calendarEvents[eventIndex] = singleEvent;
     this.calendarService

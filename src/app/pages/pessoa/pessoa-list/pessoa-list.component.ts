@@ -12,6 +12,7 @@ import { TabsModule } from 'primeng/tabs';
 import { PessoaListDTO } from 'src/app/theme/shared/models/pessoa.dto';
 import { API_CONFIG, GLOBALS } from 'src/app/app-config';
 import { PessoaService } from 'src/app/theme/shared/services/pessoa.service';
+import { CardComponent } from 'src/app/theme/shared/components/card/card.component';
 
 
 @Component({
@@ -28,9 +29,9 @@ import { PessoaService } from 'src/app/theme/shared/services/pessoa.service';
     RouterLink,
     TableModule,
     NgbTooltip,
-    SelectModule,
     TabsModule,
     InputGroup,
+    CardComponent,
     RouterModule
   ],
   providers: [MessageService]
@@ -38,12 +39,12 @@ import { PessoaService } from 'src/app/theme/shared/services/pessoa.service';
 
 export class PessoaListComponent implements OnInit {
 
-   tabs = [
-        { route: 'dashboard', label: 'Dashboard', icon: 'pi pi-home' },
-        { route: 'transactions', label: 'Transactions', icon: 'pi pi-chart-line' },
-        { route: 'products', label: 'Products', icon: 'pi pi-list' },
-        { route: 'messages', label: 'Messages', icon: 'pi pi-inbox' }
-    ];
+  tabs = [
+    { route: 'dashboard', label: 'Dashboard', icon: 'pi pi-home' },
+    { route: 'transactions', label: 'Transactions', icon: 'pi pi-chart-line' },
+    { route: 'products', label: 'Products', icon: 'pi pi-list' },
+    { route: 'messages', label: 'Messages', icon: 'pi pi-inbox' }
+  ];
 
   situacaoCadastral = [
     { nome: 'Ativo', id: 0 }, { nome: 'Inativo', id: 1 },
@@ -73,7 +74,7 @@ export class PessoaListComponent implements OnInit {
   printItems!: MenuItem[];
 
   public page = 0;
-  public linesPerPage: any = 10;
+  public linesPerPage: any = 9;
   public nomeSemAcento = ''; // Coluna alternativa para gravar dados sem acento
   public cpfOuCnpj = ''
   pessoaList!: FormGroup;
@@ -94,7 +95,7 @@ export class PessoaListComponent implements OnInit {
     this.buildPessoaList();
     this.countCongregadosAtivos();
     this.printItems = this.getPrintItems;
-    this.pessoaList.controls['nome'].setValue('Ativo')
+    this.pessoaList.controls['nome'].setValue('Ativo');
   };
 
   private buildPessoaList() {
