@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Observable, Subject, Subscription, takeUntil } from 'rxjs';
@@ -12,19 +12,14 @@ import { TranslateService } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
 
 import { TableModule } from 'primeng/table';
-import { CalendarModule } from 'primeng/calendar';
 import { InputTextModule } from 'primeng/inputtext';
 import { NgbCollapse, NgbNavChangeEvent, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { Dimensions, ImageCroppedEvent, ImageCropperModule, ImageTransform } from 'ngx-image-cropper';
 import { InputMaskModule } from 'primeng/inputmask';
-import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
 import { NgClass } from '@angular/common';
 import { SelectModule } from 'primeng/select';
 import { DatePicker } from 'primeng/datepicker';
-import { InputGroupModule } from 'primeng/inputgroup';
-import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
-import { PaginatorModule } from 'primeng/paginator'
 import { NgSelectComponent, NgSelectModule } from '@ng-select/ng-select';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
@@ -35,7 +30,6 @@ import { DocumentoService } from 'src/app/theme/shared/services/documento.servic
 import { CargoService } from 'src/app/theme/shared/services/cargo.service';
 import { CidadeService } from 'src/app/theme/shared/services/cidade.service';
 import { PaisDTO } from 'src/app/theme/shared/models/pais.dto';
-import { GLOBALS } from 'src/app/app-config';
 import { PessoaDTO, PessoaListDTO } from 'src/app/theme/shared/models/pessoa.dto';
 import { DocumentoDTO } from 'src/app/theme/shared/models/documento.dto';
 import { IgrejaDTO } from 'src/app/theme/shared/models/igreja.dto';
@@ -52,6 +46,7 @@ import { IgrejaService } from 'src/app/theme/shared/services/igreja.service';
 import { FilhoService } from 'src/app/theme/shared/services/filho.service';
 import { HistoricoService } from 'src/app/theme/shared/services/historico.service';
 import { PaisService } from 'src/app/theme/shared/services/pais.service';
+import { igrejaIdSignal, nomeIgrejaSignal, nomeUsuarioSignal, perfilSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
 
 
 //declare const $: any;
@@ -76,13 +71,14 @@ import { PaisService } from 'src/app/theme/shared/services/pais.service';
     SelectModule,
     DatePicker,
     UiModalComponent,
-    // JsonPipe,
+
     NgbCollapse,
     NgSelectModule,
     NgSelectComponent,
-    InputIcon, 
-    IconField, 
-    InputTextModule
+    InputIcon,
+    IconField,
+    InputTextModule,
+     // JsonPipe,
   ],
   providers: [
     MessageService,
@@ -95,7 +91,17 @@ import { PaisService } from 'src/app/theme/shared/services/pais.service';
   ]
 })
 
-export class PessoaFormComponent implements OnInit,  OnDestroy {
+export class PessoaFormComponent implements OnInit, OnDestroy {
+
+  nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+  igrejaIdSignal = igrejaIdSignal;
+  nomeUsuarioSignal = nomeUsuarioSignal;
+  setorIdSignal = setorIdSignal;
+
+  nomeIgreja = nomeIgrejaSignal();
+  igrejaId = igrejaIdSignal();
+  nomeUsuario = nomeUsuarioSignal();
+  setorId = setorIdSignal();
 
   public isCollapsed = false;
   public isCollapsed1 = false;
@@ -186,15 +192,11 @@ export class PessoaFormComponent implements OnInit,  OnDestroy {
 
   subscription!: Subscription;
 
-  nomeIgreja: string = GLOBALS.nomeIgreja;
-
   iModo: number = 1;
 
   tipo_membro!: any;
 
   ctr_tipo_membro: boolean = false;
-
-  perfil: string = GLOBALS.perfil;
 
   limpar_cargo: boolean = false;
 
@@ -273,7 +275,6 @@ export class PessoaFormComponent implements OnInit,  OnDestroy {
   historicos: HistoricoDTO[] = [];
   historico: HistoricoDTO = new HistoricoDTO();
 
-  igrejaId: any = GLOBALS.igrejaId;
   pessoaId!: any;
   nomeHieraquia!: string;
 
@@ -311,7 +312,6 @@ export class PessoaFormComponent implements OnInit,  OnDestroy {
 
 
   ngOnInit(): void {
-    this.igrejaId = GLOBALS.igrejaId;
     this.setCurrentAction();
     this.buildPessoaForm();
     this.buildHistoricoForm();
@@ -442,7 +442,7 @@ export class PessoaFormComponent implements OnInit,  OnDestroy {
       dataCasamento: [null],
       nomeMae: [null],
       setor: [null],
-      nomeIgreja: [GLOBALS.nomeIgreja],
+      nomeIgreja: [this.nomeIgreja],
       foto: [null],
       sexo: [null, [Validators.required]],
       dataCadastro: [null],
@@ -464,7 +464,7 @@ export class PessoaFormComponent implements OnInit,  OnDestroy {
       ufEndereco: [null],
       conjugeId: [null],
       estadoId: [null],
-      igrejaId: [GLOBALS.igrejaId, [Validators.required]],
+      igrejaId: [this.igrejaId, [Validators.required]],
       cargoPrincipal: [null],
       tituloMinisterialId: [10, [Validators.required]],
       dataHistorico: [null],
@@ -689,7 +689,7 @@ export class PessoaFormComponent implements OnInit,  OnDestroy {
 
   loadPessoas() {
     let situacaoCadastral = 'Ativo'
-    this.pessoaService.getPessoasAtivasFromIgreja(GLOBALS.igrejaId, situacaoCadastral)
+    this.pessoaService.getPessoasAtivasFromIgreja(this.igrejaId, situacaoCadastral)
       .subscribe({
         next: (response) => {
           this.pessoas = response;
@@ -741,7 +741,7 @@ export class PessoaFormComponent implements OnInit,  OnDestroy {
             }
           );
         },
-        error: () => {},
+        error: () => { },
       });
   }
 
@@ -757,7 +757,7 @@ export class PessoaFormComponent implements OnInit,  OnDestroy {
   // }
 
   public doSelectFilhos(id: any) {
-    let filho = this.pessoas.filter( f => f.id == id.value) ;
+    let filho = this.pessoas.filter(f => f.id == id.value);
 
     this.filhoForm.controls['nome'].setValue(filho[0].nome);
     this.filhoForm.controls['sexo'].setValue(filho[0].sexo);
@@ -788,7 +788,7 @@ export class PessoaFormComponent implements OnInit,  OnDestroy {
               this.historicoForm.controls['pessoaId'].setValue(this.pessoaId)
               this.historicoForm.controls['data'].setValue(this.sharedService.dataAtualFormatada());
               this.pessoaForm.controls['dataHistorico'].setValue(this.sharedService.dataAtualFormatada());
-              this.historicoForm.controls['usuario'].setValue(GLOBALS.nomeUsuario);
+              this.historicoForm.controls['usuario'].setValue(this.nomeUsuario);
               this.historicoForm.controls['acao'].setValue('Alteração');
 
 
@@ -808,7 +808,7 @@ export class PessoaFormComponent implements OnInit,  OnDestroy {
 
               this.tipo_membro = this.pessoa.tipoMembro;
 
-              this.pessoaForm.controls['igrejaId'].setValue(GLOBALS.igrejaId);
+              this.pessoaForm.controls['igrejaId'].setValue(this.igrejaId);
 
               if (this.pessoa.dataNascimento) {
                 this.pessoaForm.controls['idade'].setValue(this.sharedService.calcularIdade(this.pessoa.dataNascimento))
@@ -820,7 +820,7 @@ export class PessoaFormComponent implements OnInit,  OnDestroy {
               this.separacao.id = this.id;
 
               // Igreja
-              this.pessoaForm.controls['igrejaId'].setValue(GLOBALS.igrejaId);
+              this.pessoaForm.controls['igrejaId'].setValue(this.igrejaId);
               this.loadIgreja();// PARA PEGAR O NOME DO SETOR
               this.listaSeparacoes();
               this.cpf = this.sharedService.validaCPF(this.pessoaForm.controls['cpfOuCnpj'].value);
@@ -833,7 +833,7 @@ export class PessoaFormComponent implements OnInit,  OnDestroy {
       if (this.currentAction == "new") {
         this.pessoaForm.controls['igrejaId'].setValue(this.igrejaId);
         //Historico
-        this.historicoForm.controls['usuario'].setValue(GLOBALS.nomeUsuario);
+        this.historicoForm.controls['usuario'].setValue(this.nomeUsuario);
         this.historicoForm.controls['acao'].setValue('Inclusão');
         this.historicoForm.controls['ocorrencia'].setValue('Novo Membro');
 
@@ -878,7 +878,7 @@ export class PessoaFormComponent implements OnInit,  OnDestroy {
 
   }
 
-   private setPageTitle() {
+  private setPageTitle() {
     if (this.currentAction == "new") this.pageTitle = "Inserindo: Novo Membro";
     else {
       const pessoaName = this.pessoa.nome || "";

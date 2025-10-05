@@ -3,11 +3,12 @@ import { LazyLoadEvent, SharedModule } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
 import { Router, RouterLink, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { GLOBALS } from 'src/app/app-config';
 import { CargoDTO } from 'src/app/theme/shared/models/cargo.dto';
 import { CargoService } from 'src/app/theme/shared/services/cargo.service';
 import { InputGroup } from 'primeng/inputgroup';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { nomeIgrejaSignal, igrejaIdSignal, nomeUsuarioSignal, perfilSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
+import { CardComponent } from 'src/app/theme/shared/components/card/card.component';
 
 @Component({
   selector: 'app-cargo-list',
@@ -16,27 +17,37 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   encapsulation: ViewEncapsulation.None,
   standalone: true,
   imports: [
-     ReactiveFormsModule,
+    ReactiveFormsModule,
     RouterModule,
     TableModule,
     InputGroup,
     ButtonModule,
     RouterLink,
     SharedModule,
-     FormsModule,
+    FormsModule,
+    CardComponent
   ],
   providers: [CargoService],
 })
 export class CargoListComponent implements OnInit {
+
+  nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+  igrejaIdSignal = igrejaIdSignal;
+  nomeUsuarioSignal = nomeUsuarioSignal;
+  perfilSignal = perfilSignal;
+  setorIdSignal = setorIdSignal;
+
+  nomeIgreja = nomeIgrejaSignal();
+  igrejaId = igrejaIdSignal();
+  nomeUsuario = nomeUsuarioSignal();
+  perfil = perfilSignal();
+
   @ViewChild('dtcargo') grid!: Table;
 
   totalCargosSistema: number;
   totalCargosIgreja: number;
 
   totalRegistros: number = 0;
-  igrejaId: number = GLOBALS.igrejaId;
-
-  perfil: string = GLOBALS.perfil;
 
   cargos: CargoDTO[] = [];
 
@@ -47,7 +58,7 @@ export class CargoListComponent implements OnInit {
   constructor(
     private cargoService: CargoService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     // this.grid.reset();//atualiza a tabela do primeng

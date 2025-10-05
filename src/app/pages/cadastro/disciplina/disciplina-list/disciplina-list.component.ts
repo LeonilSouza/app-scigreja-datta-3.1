@@ -7,9 +7,9 @@ import { InputGroup } from 'primeng/inputgroup';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
 import { DisciplinaService } from 'src/app/theme/shared/services/disciplina.service';
-import { GLOBALS } from 'src/app/app-config';
 import { DisciplinaDTO } from 'src/app/theme/shared/models/disciplina.dto';
 import { SharedModule } from "src/app/theme/shared/shared.module";
+import { igrejaIdSignal, perfilSignal } from 'src/app/theme/shared/_helpers/shared-signals';
 
 
 // project import
@@ -21,7 +21,13 @@ import { SharedModule } from "src/app/theme/shared/shared.module";
   styleUrl: './disciplina-list.component.scss',
   providers: [DisciplinaService, DecimalPipe, MessageService]
 })
-export class DisciplinaListComponent implements OnInit {  
+export class DisciplinaListComponent implements OnInit {
+
+  igrejaIdSignal = igrejaIdSignal;
+  perfilSignal = perfilSignal;
+
+  igrejaId = igrejaIdSignal();
+  perfil = perfilSignal();
 
   @ViewChild('dtdisciplina') grid!: Table;
 
@@ -29,11 +35,6 @@ export class DisciplinaListComponent implements OnInit {
   totalDisciplinasIgreja!: number;
 
   totalRegistros: number = 0
-  igrejaId: number = GLOBALS.igrejaId;
-
-  perfil: string = GLOBALS.perfil;
-
-  nomeIgreja: string = GLOBALS.nomeIgreja;
 
   disciplinas: DisciplinaDTO[] = [];
 
@@ -48,7 +49,7 @@ export class DisciplinaListComponent implements OnInit {
     private messageService: MessageService,
 
 
-  ) {}
+  ) { }
 
 
 

@@ -37,7 +37,7 @@
                 <button type="button" style="height: 30px; cursor:default ; border-radius: 10px; border-bottom-right-radius:0;
                border-top-right-radius: 0; border: 0; background:#1a82ce;" pButton pRipple class=""> <i
                         class="pi pi-search"></i></button>
-                <input pInputText class="form-control "  placeholder="Pesquisar " [(ngModel)]="nome" type="text"
+                <input pInputText class="form-control " placeholder="Pesquisar " [(ngModel)]="nome" type="text"
                     [ngModelOptions]="{standalone: true}"
                     (input)="dtdisciplina.filterGlobal($event.target?.addEventListener, 'contains')" style="height: 30px; min-width: 180px; border-radius: 6px; border-bottom-left-radius: 0; 
               border-top-left-radius: 0; font-size: 14px; text-transform: lowercase">
@@ -52,80 +52,71 @@
         </span>
 
     </div>
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="">
-                <div class="mb-3 ">
-                    <div class="">
-                        <div class="card shadow mt-0">
-                            <p-table #dtdisciplina [value]="disciplinas"
-                                [globalFilterFields]="['nome', 'country.name', 'representative.name', 'status']"
-                                [lazy]="true" responsiveLayout="stack" (onLazyLoad)="loadDisciplinasLazy($event)"
-                                [showCurrentPageReport]="true" [totalRecords]="totalRegistros" showGridlines stripedRows
-                                currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros"
-                                [paginator]="true" [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
+    <app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-purple shadow  border-1">
+        <div class="p-0">
+            <p-table #dtdisciplina [value]="disciplinas"
+                [globalFilterFields]="['nome', 'country.name', 'representative.name', 'status']" [lazy]="true"
+                responsiveLayout="stack" (onLazyLoad)="loadDisciplinasLazy($event)" [showCurrentPageReport]="true"
+                [totalRecords]="totalRegistros" showGridlines stripedRows
+                currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
+                [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
 
 
-                                <ng-template #header>
-                                    <tr>
-                                        <th class="col-data-100"
-                                            style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-left-radius: 5px;">
-                                            <b>Código</b>
-                                        </th>
-                                        <th
-                                            style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
-                                            <b>Nome</b>
-                                        </th>
-                                        <th class="col-acoes-header"
-                                            style="font-size: 13px; background-color: rgb(77, 83, 90); color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-right-radius: 5px;">
-                                            Ações</th>
+                <ng-template #header>
+                    <tr>
+                        <th class="col-data-100"
+                            style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-left-radius: 5px;">
+                            <b>Código</b>
+                        </th>
+                        <th
+                            style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                            <b>Nome</b>
+                        </th>
+                        <th class="col-acoes-header"
+                            style="font-size: 13px; background-color: rgb(77, 83, 90); color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-right-radius: 5px;">
+                            Ações</th>
 
-                                    </tr>
-                                </ng-template>
+                    </tr>
+                </ng-template>
 
-                                <ng-template #body let-disciplina>
-                                    @if(perfil !== 'ADMIN' && (disciplina.igrejaId == igrejaId ||
-                                    disciplina.igrejaId ==
-                                    null)){
-                                    <tr>
-                                        <td class="col-data-100 py-2" style=" font-size: 13px">{{ disciplina.id }}
-                                        </td>
-                                        <td class="py-2" style=" font-size: 13px">{{ disciplina.nome }}</td>
-                                        <td class="col-acoes-header py-2">
+                <ng-template #body let-disciplina>
+                    @if(perfil !== 'ADMIN' && (disciplina.igrejaId == igrejaId ||
+                    disciplina.igrejaId == null)){
+                    <tr>
+                        <td class="col-data-100 py-2" style=" font-size: 13px">{{ disciplina.id }}
+                        </td>
+                        <td class="py-2" style=" font-size: 13px">{{ disciplina.nome }}</td>
+                        <td class="col-acoes-header py-2">
 
-                                            @if(perfil !== 'ADMIN' && (disciplina.igrejaId == igrejaId )){
-                                            <button [routerLink]="[disciplina.id, 'edit']" type="button"
-                                                class="btn btn-icon btn-outline-success p-1"
-                                                [style]="{'height': '30px', 'width': '30px'} ">
-                                                <i class="pi pi-pencil"></i>
-                                            </button>
-                                            }
-                                        </td>
-                                    </tr>
-                                    }
+                            @if(perfil !== 'ADMIN' && (disciplina.igrejaId == igrejaId )){
+                            <button [routerLink]="[disciplina.id, 'edit']" type="button"
+                                class="btn btn-icon btn-outline-success p-1"
+                                [style]="{'height': '30px', 'width': '30px'} ">
+                                <i class="pi pi-pencil"></i>
+                            </button>
+                            }
+                        </td>
+                    </tr>
+                    }
 
-                                    @if(perfil == 'ADMIN'){
-                                    <tr>
-                                        <td class="col-data-100 py-2" style=" font-size: 13px">{{ disciplina.id }}
-                                        </td>
-                                        <td class="py-2" style=" font-size: 13px;">{{ disciplina.nome }}<br>
-                                        </td>
-                                        <td class="col-acoes-header py-2">
-                                            <button [routerLink]="[disciplina.id, 'edit']" type="button"
-                                                class="btn btn-icon btn-outline-info p-1 mt-0 mb-0"
-                                                [style]="{'height': '30px', 'width': '30px'} ">
-                                                <i class="pi pi-chevron-up"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    }
-                                </ng-template>
-                            </p-table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    @if(perfil == 'ADMIN'){
+                    <tr>
+                        <td class="col-data-100 py-2" style=" font-size: 13px">{{ disciplina.id }}
+                        </td>
+                        <td class="py-2" style=" font-size: 13px;">{{ disciplina.nome }}<br>
+                        </td>
+                        <td class="col-acoes-header py-2">
+                            <button [routerLink]="[disciplina.id, 'edit']" type="button"
+                                class="btn btn-icon btn-outline-info p-1 mt-0 mb-0"
+                                [style]="{'height': '30px', 'width': '30px'} ">
+                                <i class="pi pi-chevron-up"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    }
+                </ng-template>
+            </p-table>
         </div>
-    </div>
+    </app-card>
 </section>
 <!--  ativo e inativo body end -->

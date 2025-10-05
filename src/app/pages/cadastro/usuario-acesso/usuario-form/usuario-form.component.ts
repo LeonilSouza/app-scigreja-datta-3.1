@@ -18,7 +18,6 @@ import { UsuarioDTO } from 'src/app/theme/shared/models/usuario.dto';
 import { IgrejaDTO } from 'src/app/theme/shared/models/igreja.dto';
 import { AcessoDTO } from 'src/app/theme/shared/models/acesso.dto.';
 import { SetorDTO } from 'src/app/theme/shared/models/setor.dto';
-import { GLOBALS } from 'src/app/app-config';
 import { UsuarioService } from 'src/app/theme/shared/services/usuario.service';
 import { StorageService } from 'src/app/theme/shared/services/storage.service';
 import { AcessoService } from 'src/app/theme/shared/services/acesso.service';
@@ -28,6 +27,7 @@ import { CargoService } from 'src/app/theme/shared/services/cargo.service';
 import { SharedService } from 'src/app/theme/shared/services/shared.service';
 import { UiModalComponent } from 'src/app/theme/shared/components/modal/ui-modal/ui-modal.component';
 import { SelectModule } from 'primeng/select';
+import { nomeIgrejaSignal, igrejaIdSignal, nomeUsuarioSignal, perfilSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
 
 //declare const $: any;
 
@@ -62,6 +62,18 @@ import { SelectModule } from 'primeng/select';
 })
 
 export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDestroy {
+
+    nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+    igrejaIdSignal = igrejaIdSignal;
+    nomeUsuarioSignal = nomeUsuarioSignal;
+    perfilSignal = perfilSignal;
+    setorIdSignal = setorIdSignal;
+
+    nomeIgreja = nomeIgrejaSignal();
+    igrejaId = igrejaIdSignal();
+    nomeUsuario = nomeUsuarioSignal();
+    perfil = perfilSignal();
+    setorId = setorIdSignal();
 
     // cropper
     imageChangedEvent: any = '';
@@ -106,13 +118,7 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
     acessos: AcessoDTO[] = [];
     setores: SetorDTO[] = [];
 
-    igrejaId: number;
-
-    nomeUsuario: string = GLOBALS.nomeUsuario;
-
-    nomeIgreja: string = GLOBALS.nomeIgreja;
     setor: string;
-    perfil: string = GLOBALS.perfil;
 
 
     jwtHelperService: JwtHelperService = new JwtHelperService();
@@ -138,7 +144,6 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
     }
 
     ngOnInit(): void {
-        this.igrejaId = GLOBALS.igrejaId;
         this.setCurrentAction();
         this.buildUsuarioForm();
         this.buildAcessoForm();
@@ -366,7 +371,7 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
         this.usuarioService
             .update(usuario)
             .subscribe({
-                next: () => {},
+                next: () => { },
                 error: (error) => {
                     this.error = error;
                     this.showError(error)
@@ -473,7 +478,7 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
                                         Swal.fire('Cadastro', 'Acesso inserido com sucesso', 'success');
                                         this.loadAcesso();
                                         this.usuarioForm.controls['igrejaIdHome'].setValue(this.acesso.igrejaId);
-                                        this.usuarioForm.controls['setorIdHome'].setValue(GLOBALS.setorId);
+                                        this.usuarioForm.controls['setorIdHome'].setValue(this.setorId);
                                         this.usuarioForm.controls['igrejaNomeHome'].setValue(this.acesso.nomeIgreja);
 
                                         this.usuarioForm.controls['igrejaAtivaId'].setValue(this.acesso.igrejaId);

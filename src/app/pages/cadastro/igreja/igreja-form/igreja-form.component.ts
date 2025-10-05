@@ -41,6 +41,7 @@ import { SelectModule } from "primeng/select";
 import { PaisService } from "src/app/theme/shared/services/pais.service";
 import { CidadeService } from "src/app/theme/shared/services/cidade.service";
 import { nomeIgrejaSignal, perfilSignal } from "src/app/theme/shared/_helpers/shared-signals";
+import { DatePicker } from "primeng/datepicker";
 
 //declare const $: any;
 
@@ -62,8 +63,8 @@ import { nomeIgrejaSignal, perfilSignal } from "src/app/theme/shared/_helpers/sh
     InputNumberModule,
     ImageCropperModule,
     SelectModule,
+    DatePicker,
     // JsonPipe,
-    // DatePicker
   ],
   providers: [
     PaisService,

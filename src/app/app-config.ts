@@ -26,10 +26,6 @@ export const API_CONFIG = {
   baseUrl: "http://localhost:8080"
 }
 
-export let GLOBALS: any = {
-  igrejaIdAux: 0
-};
-
 export const STORAGE_KEYS = {
   localToken: "localToken",
   localUser: "localUser",

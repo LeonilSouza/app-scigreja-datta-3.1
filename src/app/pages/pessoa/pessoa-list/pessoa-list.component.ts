@@ -10,9 +10,10 @@ import { SelectModule } from 'primeng/select';
 import { InputGroup } from 'primeng/inputgroup';
 import { TabsModule } from 'primeng/tabs';
 import { PessoaListDTO } from 'src/app/theme/shared/models/pessoa.dto';
-import { API_CONFIG, GLOBALS } from 'src/app/app-config';
+import { API_CONFIG } from 'src/app/app-config';
 import { PessoaService } from 'src/app/theme/shared/services/pessoa.service';
 import { CardComponent } from 'src/app/theme/shared/components/card/card.component';
+import { igrejaIdSignal, perfilSignal } from 'src/app/theme/shared/_helpers/shared-signals';
 
 
 @Component({
@@ -38,6 +39,12 @@ import { CardComponent } from 'src/app/theme/shared/components/card/card.compone
 })
 
 export class PessoaListComponent implements OnInit {
+  
+  igrejaIdSignal = igrejaIdSignal;
+  perfilSignal = perfilSignal;
+
+  igrejaId = igrejaIdSignal();
+  perfil = perfilSignal();
 
   tabs = [
     { route: 'dashboard', label: 'Dashboard', icon: 'pi pi-home' },
@@ -63,9 +70,9 @@ export class PessoaListComponent implements OnInit {
   totalGeralMembros!: number;
 
   totalRegistros: number = 0
-  igrejaId: number = GLOBALS.igrejaId;
+  // igrejaId: number = this.igrejaId;
 
-  perfil: string = GLOBALS.perfil;
+  // perfil: string = this.perfil;
 
   statusNome: string = 'Ativo';
 
@@ -74,7 +81,7 @@ export class PessoaListComponent implements OnInit {
   printItems!: MenuItem[];
 
   public page = 0;
-  public linesPerPage: any = 9;
+  public linesPerPage: any = 10;
   public nomeSemAcento = ''; // Coluna alternativa para gravar dados sem acento
   public cpfOuCnpj = ''
   pessoaList!: FormGroup;
@@ -147,7 +154,7 @@ export class PessoaListComponent implements OnInit {
   countMembrosAtivos() {
     const tipoMembro = 'Membro';
     const situacaoCadastral = 'Ativo';
-    this.pessoaService.countMembrosAtivosFromIgreja(GLOBALS.igrejaId, situacaoCadastral, tipoMembro)
+    this.pessoaService.countMembrosAtivosFromIgreja(this.igrejaId, situacaoCadastral, tipoMembro)
       .subscribe(
         response => {
           response ? this.totalMembros = response : 0;
@@ -158,7 +165,7 @@ export class PessoaListComponent implements OnInit {
   countObreirosAtivos() {
     const tipoMembro = 'Obreiro';
     const situacaoCadastral = 'Ativo';
-    this.pessoaService.countMembrosAtivosFromIgreja(GLOBALS.igrejaId, situacaoCadastral, tipoMembro)
+    this.pessoaService.countMembrosAtivosFromIgreja(this.igrejaId, situacaoCadastral, tipoMembro)
       .subscribe(
         response => {
           response ? this.totalObreiros = response : 0;
@@ -220,7 +227,7 @@ export class PessoaListComponent implements OnInit {
 
   countNovos() {
     const situacaoCadastral = 'Ativo';
-    this.pessoaService.countNovos(GLOBALS.igrejaId, situacaoCadastral)
+    this.pessoaService.countNovos(this.igrejaId, situacaoCadastral)
       .subscribe(
         response => {
           response ? this.totalNovos = response.length : 0;
@@ -231,7 +238,7 @@ export class PessoaListComponent implements OnInit {
   countCongregadosAtivos() {
     const tipoMembro = 'Congregado';
     const situacaoCadastral = 'Ativo';
-    this.pessoaService.countMembrosAtivosFromIgreja(GLOBALS.igrejaId, situacaoCadastral, tipoMembro)
+    this.pessoaService.countMembrosAtivosFromIgreja(this.igrejaId, situacaoCadastral, tipoMembro)
       .subscribe(
         response => {
           response ? this.totalCongregados = response : 0;

@@ -22,30 +22,30 @@ const routes: Routes = [
         path: 'dashboard',
         loadChildren: () => import('./dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTE),
       },
-      // {
-      //   path: 'pessoas',
-      //   loadChildren: () => import('./pages/pessoa/pessoa.routes').then((m) => m.PESSOA_ROUTES),
-      // },
-      // {
-      //   path: 'disciplinas',
-      //   loadChildren: () => import('./pages/cadastro/disciplina/disciplina.routes').then((d) => d.DISCIPLINA_ROUTES),
-      // },
-      // {
-      //   path: 'cargos',
-      //   loadChildren: () => import('./pages/cadastro/cargo/cargo.routes').then((d) => d.CARGO_ROUTES),
-      // },
+      {
+        path: 'pessoas',
+        loadChildren: () => import('./pages/pessoa/pessoa.routes').then((m) => m.PESSOA_ROUTES),
+      },
+      {
+        path: 'disciplinas',
+        loadChildren: () => import('./pages/cadastro/disciplina/disciplina.routes').then((d) => d.DISCIPLINA_ROUTES),
+      },
+      {
+        path: 'cargos',
+        loadChildren: () => import('./pages/cadastro/cargo/cargo.routes').then((d) => d.CARGO_ROUTES),
+      },
       {
         path: 'igrejas',
         loadChildren: () => import('./pages/cadastro/igreja/igreja.routes').then((module) => module.IGREJA_ROUTES),
       },
-      // {
-      //   path: 'ativas',
-      //   loadChildren: () => import('./pages/cadastro/igreja/igreja.routes').then((module) => module.IGREJA_ROUTES ),
-      // },
-      // {
-      //   path: 'usuarios',
-      //   loadChildren: () => import('./pages/cadastro/usuario-acesso/usuario.routes').then((module) => module.USUARIO_ROUTES),
-      // },
+      {
+        path: 'ativas',
+        loadChildren: () => import('./pages/cadastro/igreja/igreja.routes').then((module) => module.IGREJA_ROUTES ),
+      },
+      {
+        path: 'usuarios',
+        loadChildren: () => import('./pages/cadastro/usuario-acesso/usuario.routes').then((module) => module.USUARIO_ROUTES),
+      },
       // {
       //   path: 'cartas',
       //   loadChildren: () =>

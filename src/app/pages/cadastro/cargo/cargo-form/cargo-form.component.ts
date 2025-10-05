@@ -19,9 +19,9 @@ import Swal from 'sweetalert2';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CargoDTO } from 'src/app/theme/shared/models/cargo.dto';
-import { GLOBALS } from 'src/app/app-config';
 import { CargoService } from 'src/app/theme/shared/services/cargo.service';
 import { SelectModule } from 'primeng/select';
+import { nomeIgrejaSignal, igrejaIdSignal, nomeUsuarioSignal, perfilSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
 
 //declare const $: any;
 
@@ -41,11 +41,23 @@ import { SelectModule } from 'primeng/select';
   providers: [CargoService, MessageService],
 })
 export class CargoFormComponent implements OnInit, AfterContentChecked {
+
+  nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+  igrejaIdSignal = igrejaIdSignal;
+  nomeUsuarioSignal = nomeUsuarioSignal;
+  perfilSignal = perfilSignal;
+  setorIdSignal = setorIdSignal;
+
+  nomeIgreja = nomeIgrejaSignal();
+  igrejaId = igrejaIdSignal();
+  nomeUsuario = nomeUsuarioSignal();
+  perfil = perfilSignal();
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private formBuilder = inject(FormBuilder);
   private cargoService = inject(CargoService);
-   private messageService = inject(MessageService);
+  private messageService = inject(MessageService);
 
   tipos = [{ nome: 'Padrao' }, { nome: 'Igreja' }]; // Tipo padrão é o tipo que grava null no igrejaId do Banco, tadas a Igreja podem ver. Igreja grava o id da igreja do usuario, outras igreja não pode ver.
 
@@ -57,20 +69,14 @@ export class CargoFormComponent implements OnInit, AfterContentChecked {
   cargo: CargoDTO = new CargoDTO();
   id: number;
 
-  nomeIgreja: string = GLOBALS.nomeIgreja;
-
   separacaoId: number;
 
   tipoCargo: number = null;
   cargoId: number;
 
-  perfil: string = GLOBALS.perfil;
-
-  igrejaId: number = GLOBALS.igrejaId;
-
   subscription: Subscription;
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit(): void {
     this.setCurrentAction();
@@ -83,7 +89,7 @@ export class CargoFormComponent implements OnInit, AfterContentChecked {
   }
 
   private setCurrentAction() {
-    if (this.route.snapshot.url[0].path == 'new') 
+    if (this.route.snapshot.url[0].path == 'new')
       this.currentAction = 'new';
     else this.currentAction = 'edit';
   }
@@ -111,7 +117,7 @@ export class CargoFormComponent implements OnInit, AfterContentChecked {
     if (event.value === 'Padrao') {
       this.cargoForm.controls['igrejaId'].setValue(null);
     } else {
-      this.cargoForm.controls['igrejaId'].setValue(GLOBALS.igrejaId);
+      this.cargoForm.controls['igrejaId'].setValue(this.igrejaId);
     }
   }
 
@@ -137,7 +143,7 @@ export class CargoFormComponent implements OnInit, AfterContentChecked {
       () => {
         this.router.navigate(['/cargos']);
       },
-      (error) => {}
+      (error) => { }
     );
   }
 
@@ -204,7 +210,7 @@ export class CargoFormComponent implements OnInit, AfterContentChecked {
   // METODOS PRIVADOS
 
   private actionsForSuccess() {
-     const path: string = 'cargos';
+    const path: string = 'cargos';
 
     this.messageService.add({
       severity: 'success',

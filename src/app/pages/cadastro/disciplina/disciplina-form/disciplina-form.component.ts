@@ -17,7 +17,7 @@ import { SelectModule } from 'primeng/select';
 import { MessageService } from 'primeng/api';
 import { DisciplinaService } from 'src/app/theme/shared/services/disciplina.service';
 import { DisciplinaDTO } from 'src/app/theme/shared/models/disciplina.dto';
-import { GLOBALS } from 'src/app/app-config';
+import { nomeIgrejaSignal, igrejaIdSignal, perfilSignal } from 'src/app/theme/shared/_helpers/shared-signals';
 
 @Component({
   selector: 'app-disciplina-form',
@@ -33,6 +33,13 @@ import { GLOBALS } from 'src/app/app-config';
   providers: [MessageService, DisciplinaService],
 })
 export class DisciplinaFormComponent implements OnInit, AfterContentChecked {
+
+  igrejaIdSignal = igrejaIdSignal;
+  perfilSignal = perfilSignal;
+
+  igrejaId = igrejaIdSignal();
+  perfil = perfilSignal();
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private formBuilder = inject(FormBuilder);
@@ -48,17 +55,11 @@ export class DisciplinaFormComponent implements OnInit, AfterContentChecked {
   disciplina: DisciplinaDTO = new DisciplinaDTO();
   id!: number;
 
-  nomeIgreja: string = GLOBALS.nomeIgreja;
-
   disciplinaId!: number;
-
-  perfil: string = GLOBALS.perfil;
-
-  igrejaId: number = GLOBALS.igrejaId;
 
   subscription!: Subscription;
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit(): void {
     this.setCurrentAction();
@@ -111,7 +112,7 @@ export class DisciplinaFormComponent implements OnInit, AfterContentChecked {
     if (event.value === 'Padrao') {
       this.disciplinaForm.controls['igrejaId'].setValue(null);
     } else {
-      this.disciplinaForm.controls['igrejaId'].setValue(GLOBALS.igrejaId);
+      this.disciplinaForm.controls['igrejaId'].setValue(this.igrejaId);
     }
   }
 
@@ -180,7 +181,7 @@ export class DisciplinaFormComponent implements OnInit, AfterContentChecked {
         this.actionsForSuccess();
         Swal.fire('Cadastro', 'Registro inserido com sucesso!', 'success');
       },
-      (_error) => {}
+      (_error) => { }
     );
   }
 

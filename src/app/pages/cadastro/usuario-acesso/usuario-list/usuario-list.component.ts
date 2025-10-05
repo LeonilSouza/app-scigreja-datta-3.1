@@ -7,11 +7,11 @@ import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { CardComponent } from 'src/app/theme/shared/components/card/card.component';
-import { GLOBALS } from 'src/app/app-config';
 import { UsuarioDTO } from 'src/app/theme/shared/models/usuario.dto';
 import { UsuarioService } from 'src/app/theme/shared/services/usuario.service';
 import { StorageService } from 'src/app/theme/shared/services/storage.service';
 import { InputGroup } from "primeng/inputgroup";
+import { nomeIgrejaSignal, igrejaIdSignal, nomeUsuarioSignal, perfilSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
 
 @Component({
   selector: 'app-usuario-list',
@@ -27,15 +27,24 @@ import { InputGroup } from "primeng/inputgroup";
     SharedModule,
     NgbTooltip,
     InputGroup
-]
+  ]
 })
 export class UsuarioListComponent implements OnInit {
+
+  nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+  igrejaIdSignal = igrejaIdSignal;
+  nomeUsuarioSignal = nomeUsuarioSignal;
+  perfilSignal = perfilSignal;
+  setorIdSignal = setorIdSignal;
+
+  nomeIgreja = nomeIgrejaSignal();
+  igrejaId = igrejaIdSignal();
+  nomeUsuario = nomeUsuarioSignal();
+  perfil = perfilSignal();
 
   @ViewChild('dtusuario') grid!: Table;
 
   totalRegistros: number = 0
-
-  perfil: string = GLOBALS.perfil;
 
   usuarios: UsuarioDTO[] = [];
 
