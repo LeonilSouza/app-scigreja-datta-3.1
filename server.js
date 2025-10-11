@@ -1,14 +1,16 @@
-// Arquivo exigido pela platataforma Heroku
+// Arquivo exigida pela platataforma Heroku
 const express = require('express')
 const path = require('path')
 const app = express();
 
 // const appName = 'sc-igreja'
 
-app.use(express.static(__dirname + '/dist/oreva/browser'))
+
+
+app.use(express.static(__dirname + '/dist'))
 
 app.get('/*', (req, res)=>{
-      res.sendFile(path.join(__dirname + '/dist/oreva/browser/index.html'))
+      res.sendFile(path.join(__dirname + '/dist/index.html'))
 });
 
 app.listen(process.env.PORT || 8000)

@@ -27,7 +27,7 @@ import { nomeIgrejaSignal, igrejaIdSignal, nomeUsuarioSignal, perfilSignal, seto
         RouterLink,
         FormsModule,
         ReactiveFormsModule,
-        CardComponent
+        // CardComponent
     ],
     providers: [
         SetorService,
