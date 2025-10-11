@@ -78,7 +78,7 @@ import { igrejaIdSignal, nomeIgrejaSignal, nomeUsuarioSignal, perfilSignal, seto
     InputIcon,
     IconField,
     InputTextModule,
-     // JsonPipe,
+    // JsonPipe,
   ],
   providers: [
     MessageService,
@@ -1017,12 +1017,12 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
 
   excluirPessoa(pessoa: any) {
     this.pessoaService.delete(pessoa.id)
-      .subscribe(() => {
-        this.router.navigate(['/pessoas'])
-        // this.toastr.success('Registro excluido com sucesso!', 'Exclusão',);
-        // Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
-      },
-        error => { });
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/pessoas']);
+        },
+        error: () => { },
+      });
   }
 
   limparConjuge() {
@@ -1038,7 +1038,8 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
 
   loadSeparacao(separacao: any) {    // Recebendo item do ngFor do Html passado como parametro no evento (click)="loadMinisterio(item)"
     this.separacaoId = separacao.id;
-    this.separacaoService.findById(this.separacaoId)
+    this.separacaoService
+      .findById(this.separacaoId)
       .subscribe(
         (response) => {
           this.separacao = response;

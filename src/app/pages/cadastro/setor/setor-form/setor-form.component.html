@@ -1,105 +1,107 @@
 <!-- Inicio Breadcamb Inicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio Breadcamb-->
-<div class=" page-header">
-  <ng-container style="height: 100;">
-    <div class="row ">
-      <div class="col-md-12">
-        <i class="fas fa-home f-26 text-dark"></i>   <span class="text-muted" style="font-size: 20px;">{{
-          nomeIgreja }}</span>
-        <hr class="mt-0 mb-2">
-        <div class="row ">
-          <div class="col-md-12">
-            <div class="flex">
-              <div class="row">
-                <nav aria-label="breadcrumb mb-0">
-                  <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item active"><a>Home</a></li>
-                    <li class="breadcrumb-item active"><a>Cadastro</a></li>
-                    <li class="breadcrumb-item active"><a>Setores</a></li>
-                  </ol>
-                </nav>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div><br>
-  </ng-container>
-  <!-- fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb -->
-  <!-- Inicio Botões-->
-  <div class="card-header">
+<section class="main-content">
+  <div class=" page-header">
     <ng-container style="height: 100;">
       <div class="row ">
         <div class="col-md-12">
-          <div class="row">
-            <!-- Botões Inicio-->
-            <div class="">
-              <span class="float-end  ml-0 mr-5   mb-2">
-                <button *ngIf="currentAction !== 'new'" type="button" (click)="confirmarExclusaoSetor(setor)"
-                  styleClass="p-button-sm" icon='pi pi-times' style="width: 7em; height: 25px; font-size: 14px; border-radius: 5px;" 
-                  pButton pRipple label="Excluir" class="p-button-danger ml-2 p-button-outlined ">
-                </button>
-              </span>
-
-              <span class="float-end  ml-2 mb-2">
-                <strong><button (click)="submitForm()" [disabled]="submittingForm || setorForm.invalid" type="submit"
-                    class=" mr-3 ml-2" pButton pRipple label="Salvar"
-                    style="width: 7em;  background:#388669; height: 25px; font-size: 14px; border-radius: 5px;" icon='pi pi-check'>
-                  </button></strong>
-              </span>
-              <span class="float-end  ml-2   mb-2">
-                <strong><button routerLink="/setores" styleClass="p-button-sm" icon='pi pi-chevron-left' type="button"
-                    label="voltar" class="p-button-purple mt-0" pButton pRipple label="Voltar" style="width: 7em; height: 25px; font-size: 14px; border-radius: 5px;
-                            background: #1a82ce; color: aliceblue;">
-                  </button></strong>
-              </span>
-
-            </div>
-            <!-- Botões Fim-->
-            <nav aria-label="breadcrumb mb-0">
-              <div class="form-group row col-sm-12 ml-0 mb-0">
-                <div class="card mb-2  mt-2" style="background-color: rgb(77, 83, 90); border-radius: 5px;">
-                  <span class="mr-8 text-white f-16" style="min-height: 30px; align-content: center;">{{ pageTitle
-                    }}</span>
+          <i class="fas fa-home f-26 text-dark"></i>   <span class="text-muted" style="font-size: 20px;">{{
+            nomeIgreja }}</span>
+          <div class="row ">
+            <div class="col-md-12">
+              <div class="flex">
+                <div class="row">
+                  <nav aria-label="breadcrumb mb-0">
+                    <ol class="breadcrumb mb-0">
+                      <li class="breadcrumb-item active"><a>Home</a></li>
+                      <li class="breadcrumb-item active"><a>Cadastro</a></li>
+                      <li class="breadcrumb-item active"><a>Setores</a></li>
+                    </ol>
+                    <hr class="mt-1 mb-0">
+                  </nav>
                 </div>
               </div>
-            </nav>
+            </div>
+          </div>
+        </div>
+      </div><br>
+    </ng-container>
+    <!-- fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb -->
+    <!-- Inicio Botões-->
+    <div class="card-header">
+      <ng-container style="height: 100;">
+        <div class="row ">
+          <div class="col-md-12">
+            <div class="row">
+              <!-- Botões Inicio-->
+              <div class="">
+                <span class="float-end  mb-2 ">
+                  @if(currentAction !== 'new'){
+                  <p-button type="button" (click)="exclusaoSetor(setor)"
+                    [style]="{'height':'30px', 'margin-left':'10px'}" size="small" icon='pi pi-times' variant="outlined"
+                    severity="danger" label="Excluir" class="" />
+                  }
+                </span>
+
+
+                <span class="float-end mb-2 ml-4">
+                  <p-button (click)="submitForm()" severity="success" [disabled]="submittingForm || setorForm.invalid"
+                    type="submit" class="mr-4" [style]="{'height':'30px', 'margin-left':'10px', 'background':'#388669'}" size="small"
+                    label="Salvar" icon='pi pi-check' />
+                </span>
+
+                <span class="float-end mb-2">
+                  <p-button routerLink="/setores" icon='pi pi-chevron-left'
+                    [style]="{'height':'30px', 'margin-left':'10px'}" size="small" severity="info" label="voltar"
+                    class=" mt-0" label="Voltar" />
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+    <!-- Fim botões -->
+
+
+    <form [formGroup]="setorForm" autocomplete="off" (submit)="submitForm()">
+      <div class="col-sm-12">
+        <div class=" py-3 pt-0 px-0 ">
+          <div class="col-sm-12">
+            <div class="card py-3  shadow pt-0  ">
+              <nav aria-label="breadcrumb" class=" mb-4">
+                <div class="card mb-0 px-3  py-1  " style="background-color: rgb(77, 83, 90); border-radius: 5px">
+                  <span class=" text-white py-0 " style="font-size: 18px; ">{{ pageTitle
+                    }}</span>
+                </div>
+              </nav>
+              <div class="form-group px-3  ">
+                <div class="col-lg-8">
+                  <div class="row mb-3">
+                    <label class="col-lg-2 col-form-label text-lg-end px-lg-0">Codigo:</label>
+                    <div class="col-lg-3">
+                      <input readonly formControlName="id" type="text" class="form-control form-control-sm  mt-1" />
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <div class="row mb-3">
+                    <label class="col-lg-2 col-form-label text-lg-end px-lg-0">Nome:</label>
+                    <div class="col-lg-6">
+                      <input type="text" formControlName="nome" class="form-control form-control-sm mt-1 "
+                        placeholder="Nome" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </ng-container>
-  </div>
-  <!-- Fim botões -->
-
-
-  <form [formGroup]="setorForm" autocomplete="off" (submit)="submitForm()">
-    <div class="col-sm-12">
-      <div class="user-profile-list">
-        <app-card [hidHeader]="true" cardClass="shadow">
-
-          <!-- Id -->
-          <div class="form-group row ml-auto mt-3">
-            <label class="col-sm-2 col-form-label ml-1">Código</label>
-            <div class="col-sm-3 ">
-              <input readonly type="text" class="form-control-sm  bg-light  bg-light form-control" formControlName="id">
-            </div>
-          </div>
-
-          <!-- Nome -->
-          <div class="form-group row ml-auto">
-            <label class="col-sm-2 col-form-label ml-1">Nome</label>
-            <div class="col-sm-5">
-              <input autocomplete="off" type="text" class="form-control form-control-sm" formControlName="nome"
-                placeholder="Nome ">
-            </div>
-          </div>
-
-        </app-card>
-      </div>
-    </div>
-    <!-- <div class="row ">
+      <!-- <div class="row ">
             <div class="form-group ">
                 <pre> {{setorForm.value | json}} </pre><br>
             </div>
         </div> -->
-  </form>
-</div>
+    </form>
+  </div>
+</section>

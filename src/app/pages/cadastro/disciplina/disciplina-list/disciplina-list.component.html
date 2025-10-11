@@ -2,7 +2,7 @@
 <section class="main-content">
     <div class="row mb-0 ">
         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
-            <div class="card card-border-c-red border-2  ">
+            <div class="card card-border-c-red border-1  ">
                 <div class="row align-items-center m-l-0">
                     <div class="col-auto">
                         <i class="fas fa-book-reader f-28 text-danger"></i>
@@ -15,7 +15,7 @@
             </div>
         </div>
         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12">
-            <div class="card card-border-c-yellow border-2  ">
+            <div class="card card-border-c-yellow border-1  ">
                 <div class="row align-items-center m-l-0">
                     <div class="col-auto">
                         <i class="fas fa-home f-28 text-c-yellow"></i>
@@ -34,7 +34,7 @@
     <div class="row mb-2">
         <span class=" col-sm-4 mt-0 mb-2">
             <p-inputgroup>
-                <button type="button" style="height: 30px; cursor:default ; border-radius: 10px; border-bottom-right-radius:0;
+                <button type="button" style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius:0;
                border-top-right-radius: 0; border: 0; background:#1a82ce;" pButton pRipple class=""> <i
                         class="pi pi-search"></i></button>
                 <input pInputText class="form-control " placeholder="Pesquisar " [(ngModel)]="nome" type="text"
@@ -47,7 +47,7 @@
         <!--Fim pesquisa disciplinas  -->
 
         <span class="col-sm-8 ">
-            <p-button routerLink="new" type="button" class="float-end" label="Novo" [style]="{'height':'30px'}"
+            <p-button routerLink="new" type="button" severity="success" class="float-end" label="Novo" [style]="{'height':'30px', 'background':'#388669'}"
                 size="small" icon="pi pi-check" />
         </span>
 
@@ -80,6 +80,7 @@
                 </ng-template>
 
                 <ng-template #body let-disciplina>
+                    
                     @if(perfil !== 'ADMIN' && (disciplina.igrejaId == igrejaId ||
                     disciplina.igrejaId == null)){
                     <tr>

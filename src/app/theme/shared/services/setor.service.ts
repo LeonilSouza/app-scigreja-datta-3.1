@@ -88,14 +88,12 @@ export class SetorService {
   }
 
   update(setor: SetorDTO): Observable<SetorDTO> {
-    console.log(setor)
     const url = `${this.apiPath}/${setor.id}`;
 
     return this.http.put(url, setor)
       .pipe(
         map(this.jsonDataToSetor),
         catchError(this.handleError),
-        //map(this.jsonDataToSetor)
         map(() => setor)
       )
   }

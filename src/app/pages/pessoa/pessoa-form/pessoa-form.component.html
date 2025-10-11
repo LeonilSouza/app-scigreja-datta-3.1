@@ -1,16 +1,28 @@
 <section class="main-content">
   <!-- Inicio Breadcamb Inicio Bre☻adcambInicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio Breadcamb-->
-  <ul class="breadcrumb breadcrumb-style mt-0 mb-0" style="padding-top: 1px;">
-    <li class="breadcrumb-item">
-      <h5 class="page-title m-b-0">Membros</h5>
-    </li>
-    <li class="breadcrumb-item bcrumb-1">
-      <a routerLink="/dashboard/main">
-        <i class="fas fa-home font-17"></i></a>
-    </li>
-    <li class="breadcrumb-item">Cadastro de Membros</li>
-  </ul>
-  <hr style="margin-top: 0px;">
+   <ng-container style="height: 100;">
+            <div class="row ">
+                <div class="col-md-12">
+                    <i class="fas fa-home f-26 text-dark"></i>   <span class="text-muted" style="font-size: 20px;">{{
+                        nomeIgreja }}</span>
+                    <div class="row ">
+                        <div class="col-md-12">
+                            <div class="flex">
+                                <div class="row">
+                                    <nav aria-label="breadcrumb mb-0">
+                                        <ol class="breadcrumb mb-0">
+                                            <li class="breadcrumb-item active"><a routerLink="/dashboard/default">Home</a></li>
+                                            <li class="breadcrumb-item active"><a>Membros</a></li>
+                                        </ol>
+                                        <hr class="mt-1 mb-0">
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><br>
+        </ng-container>
   <!-- fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb -->
   <div class="row">
     <ng-container style="height: 100;">
@@ -27,18 +39,22 @@
 
 
                 @if(activeTab == "home" ){
-                <button class="btn btn-outline-danger float-end mb-2" type="button" style="margin-left: 10px;"
-                  (click)="exclusaoPessoa(pessoa)">Excluir</button>
+                <p-button type="button" (click)="exclusaoPessoa(pessoa)"
+                  [style]="{'height':'30px', 'margin-left':'10px'}" size="small" icon='pi pi-times' variant="outlined"
+                  severity="danger" label="Excluir" class="float-end mb-2" />
                 }
 
                 <!-- Salvar -->
-                <button size="small" pButton pRipple label="Salvar" class="btn btn-success msl-3  float-end mb-2"
-                  (click)="submitForm()"
-                  style="background: #388669; width: 6em; margin-left: 10px; margin-left: 10px; height: 32px; border-radius: 5px"
-                  [disabled]="submittingForm || pessoaForm.invalid"></button>
+                <p-button (click)="submitForm()" severity="success" [disabled]="submittingForm || pessoaForm.invalid"
+                  type="submit" class="float-end mb-2"
+                  [style]="{'height':'30px', 'margin-left':'10px', 'background':'#388669'}" size="small" label="Salvar"
+                  icon='pi pi-check' />
+
 
                 <!-- Voltar -->
-                <button routerLink="/pessoas" class="btn btn-primary float-end mb-2">Voltar</button>
+                <p-button routerLink="/pessoas" icon='pi pi-chevron-left'
+                  [style]="{'height':'30px', 'margin-left':'10px'}" size="small" severity="info" label="voltar"
+                  class="float-end mb-2" label="Voltar" />
 
                 <span class="float-left">
                   <label class="text-dark font-15">
@@ -52,16 +68,23 @@
               </div>
               }
 
+
+
               <!--  Botões de Inserção -->
               @if(currentAction == 'new'){
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 ">
 
                 <!-- Salvar -->
-                <button class="btn btn-success float-end" style="margin-left: 10px;" (click)="submitForm()"
-                  [disabled]="submittingForm || pessoaForm.invalid">Salvar</button>
+
+                <p-button (click)="submitForm()" severity="success" [disabled]="submittingForm || pessoaForm.invalid"
+                  type="submit" class="float-end mb-2"
+                  [style]="{'height':'30px', 'margin-left':'10px', 'background':'#388669'}" size="small" label="Salvar"
+                  icon='pi pi-check' />
 
                 <!-- Voltar -->
-                <button routerLink="/pessoas" class="btn btn-primary float-end ">Voltar</button>
+                <p-button routerLink="/pessoas" icon='pi pi-chevron-left'
+                  [style]="{'height':'30px', 'margin-left':'10px'}" size="small" severity="info" label="voltar"
+                  class="float-end mb-2" label="Voltar" />
 
                 <span class="float-left">
                   <label class="text-dark font-14">

@@ -1,16 +1,30 @@
 <!-- Inicio Breadcamb Inicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio Breadcamb-->
 <section class="main-content">
     <div class="page-header">
-        <ul class="breadcrumb breadcrumb-style mt-0 mb-2">
-            <li class="breadcrumb-item">
-                <h5 class="page-title m-b-0">Cargo</h5>
-            </li>
-            <li class="breadcrumb-item bcrumb-1">
-                <a routerLink="/dashboard/default">
-                    <i class="fas fa-home f-17"></i></a>
-            </li>
-            <li class="breadcrumb-item">Cargo</li>
-        </ul>
+        <ng-container style="height: 100;">
+            <div class="row ">
+                <div class="col-md-12">
+                    <i class="fas fa-home f-26 text-dark"></i>   <span class="text-muted" style="font-size: 20px;">{{
+                        nomeIgreja }}</span>
+                    <div class="row ">
+                        <div class="col-md-12">
+                            <div class="flex">
+                                <div class="row">
+                                    <nav aria-label="breadcrumb mb-0">
+                                        <ol class="breadcrumb mb-0">
+                                            <li class="breadcrumb-item active"><a routerLink="/dashboard/default">Home</a></li>
+                                            <li class="breadcrumb-item active"><a>Cadastro</a></li>
+                                            <li class="breadcrumb-item active"><a>Cargo</a></li>
+                                        </ol>
+                                        <hr class="mt-1 mb-0">
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><br>
+        </ng-container>
         <!-- fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb -->
 
         <!-- Inicio Botões-->
@@ -30,8 +44,8 @@
 
                         <span class="float-end mb-2 ml-4">
                             <p-button [disabled]="submittingForm || cargoForm.invalid" type="submit" class="mr-4"
-                                [style]="{'height':'30px', 'margin-left':'10px'}" size="small" label="Salvar"
-                                icon='pi pi-check' />
+                                [style]="{'height':'30px', 'margin-left':'10px', 'background':'#388669'}" size="small"
+                                label="Salvar" icon='pi pi-check' />
                         </span>
 
                         <span class="float-end mb-2">
@@ -86,12 +100,12 @@
                                                 [autofocus]="false" optionValue="nome" placeholder=""
                                                 (onChange)="onChangeTipoPadraoIgreja($event)">
                                             </p-select>
-                                             <div class="col-sm-12 mt-2">
-                                            <P><i class="far fa-lightbulb text-c-yellow f-20"></i>
-                                                  <b>Padrão</b> - Comum a todas as igrejas do sistema<br>
-                                                       <b>Igreja</b> - Exclusivo da Igreja que o criou.
-                                            </P>
-                                        </div>
+                                            <div class="col-sm-12 mt-2">
+                                                <P><i class="far fa-lightbulb text-c-yellow f-20"></i>
+                                                      <b>Padrão</b> - Comum a todas as igrejas do sistema<br>
+                                                           <b>Igreja</b> - Exclusivo da Igreja que o criou.
+                                                </P>
+                                            </div>
 
                                         </div>
                                     </div>

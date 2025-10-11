@@ -676,12 +676,12 @@ export class IgrejaFormComponent
 
   excluirIgreja(igreja: any) {
     this.igrejaService.delete(igreja.id)
-      .subscribe(() => {
-        this.router.navigate(['/igrejas'])
-        // this.toastr.success('Registro excluido com sucesso!', 'Exclusão',);
-        // Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
-      },
-        error => { });
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/igrejas']);
+        },
+        error: () => { },
+      });
   }
 
   private actionsForSuccess(igreja: IgrejaDTO) {

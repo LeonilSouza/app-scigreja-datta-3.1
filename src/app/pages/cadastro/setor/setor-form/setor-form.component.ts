@@ -3,15 +3,14 @@ import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } 
 import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 
-import { ConfirmationService, MessageService, PrimeNGConfig } from 'primeng/api';
-import { SetorDTO } from 'src/app/models/setor.dto';
-import { SetorService } from 'src/app/services/setor.service';
-import { GLOBALS } from 'src/app/_helpers/globals';
-
 import Swal from 'sweetalert2';
-import { CardComponent } from '../../../../shared/components/card/card.component';
 import { ButtonModule } from 'primeng/button';
-import { NgIf } from '@angular/common';
+import { SharedService } from 'src/app/theme/shared/services/shared.service';
+import { CardComponent } from 'src/app/theme/shared/components/card/card.component';
+import { SetorService } from 'src/app/theme/shared/services/setor.service';
+import { SetorDTO } from 'src/app/theme/shared/models/setor.dto';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { nomeIgrejaSignal, igrejaIdSignal, nomeUsuarioSignal, perfilSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
 
 
 //declare const $: any;
@@ -23,10 +22,32 @@ import { NgIf } from '@angular/common';
     encapsulation: ViewEncapsulation.None //as vezes não deixa aparecer o input da foto
     ,
     standalone: true,
-    imports: [NgIf, ButtonModule, RouterLink, FormsModule, ReactiveFormsModule, CardComponent]
+    imports: [
+        ButtonModule,
+        RouterLink,
+        FormsModule,
+        ReactiveFormsModule,
+        CardComponent
+    ],
+    providers: [
+        SetorService,
+        SharedService
+    ]
 })
 
 export class SetorFormComponent implements OnInit, AfterContentChecked {
+
+    nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+    igrejaIdSignal = igrejaIdSignal;
+    nomeUsuarioSignal = nomeUsuarioSignal;
+    perfilSignal = perfilSignal;
+    setorIdSignal = setorIdSignal;
+
+    nomeIgreja = nomeIgrejaSignal();
+    igrejaId = igrejaIdSignal();
+    nomeUsuario = nomeUsuarioSignal();
+    perfil = perfilSignal();
+    setorId = setorIdSignal();
 
 
     error = '';
@@ -39,13 +60,8 @@ export class SetorFormComponent implements OnInit, AfterContentChecked {
     submittingForm = false;
     setor: SetorDTO = new SetorDTO();
     id: number;
-    setorId: number;
     perfis: number;
     setor_id: number;
-
-    nomeIgreja: string = GLOBALS.nomeIgreja;
-
-    perfil: string = GLOBALS.perfil;
 
     subscription: Subscription;
 
@@ -63,7 +79,6 @@ export class SetorFormComponent implements OnInit, AfterContentChecked {
         this.setCurrentAction();
         this.buildSetorForm();
         this.loadSetor();
-
     }
 
     ngAfterContentChecked() {
@@ -94,26 +109,30 @@ export class SetorFormComponent implements OnInit, AfterContentChecked {
         });
     }
 
-    confirmarExclusaoSetor(setor: SetorDTO): void {
-        this.confirmationService.confirm({
-            message: 'Tem certeza que deseja excluir este registro?',
-            accept: () => {
+    exclusaoSetor(setor: SetorDTO) {
+        Swal.fire({
+            title: 'Exclusão',
+            text: 'Tem certeza que deseja excluir este registro?',
+            icon: 'error',
+            showCloseButton: true,
+            showCancelButton: true,
+        }).then((willDelete) => {
+            if (willDelete.dismiss) {
+                // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
+            } else {
                 this.excluir(setor);
+                Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
             }
         });
     }
 
-    excluir(setor: SetorDTO) {
+    excluir(setor: any) {
         this.setorService.delete(setor.id)
             .subscribe({
                 next: () => {
-                    this.router.navigate(['/setores'])
-                    Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
+                    this.router.navigate(['/setores']);
                 },
-                error: (error) => {
-                    this.error = error;
-                    this.showError(error)
-                }
+                error: () => {},
             });
     }
 
@@ -145,20 +164,11 @@ export class SetorFormComponent implements OnInit, AfterContentChecked {
             this.pageTitle = "Novo setor"
         else {
             const setorName = this.setor.nome || ""
-            this.pageTitle = 'Editando Setor |  '+setorName;
+            this.pageTitle = 'Editando Setor |  ' + setorName;
         }
     }
 
     public createSetor() {
-        // ESTE PARA DEIXAR TUDO EM CAIXA ALTA
-        // this.igrejaForm.controls.nome.setValue(this.igrejaForm.controls.nome.value.toUpperCase()); /* Aqui que real mente coloca em caixa alta.
-        // Poque se o teclado estiver com o caps desl. grava miniscula  RsRS*/
-
-        //ESTE PARA PRIMEIRA MAIUSCULAS
-        // ESTE PARA DEIXAR TUDO EM CAIXA ALTA
-        // this.igrejaForm.controls.nome.setValue(this.igrejaForm.controls.nome.value.toUpperCase()); /* Aqui que real mente coloca em caixa alta.
-        // Poque se o teclado estiver com o caps desl. grava miniscula  RsRS*/
-        //ESTE PARA PRIMEIRA MAIUSCULAS
         this.setorForm.controls['nome'].setValue(this.formataNome(this.setorForm.controls['nome'].value)); // Aqui formata o nome completo
         const setor: SetorDTO = this.setorForm.value;
         this.setorService.create(setor)
@@ -195,7 +205,7 @@ export class SetorFormComponent implements OnInit, AfterContentChecked {
 
 
     private actionsForSuccess() {
-        const path: string = this.route.snapshot.parent.url[0].path;
+        const path: string = this.route.snapshot.data['path'];
         this.router.navigateByUrl(path)
     }
 

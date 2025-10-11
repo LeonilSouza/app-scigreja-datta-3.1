@@ -17,7 +17,7 @@ import { SelectModule } from 'primeng/select';
 import { MessageService } from 'primeng/api';
 import { DisciplinaService } from 'src/app/theme/shared/services/disciplina.service';
 import { DisciplinaDTO } from 'src/app/theme/shared/models/disciplina.dto';
-import { nomeIgrejaSignal, igrejaIdSignal, perfilSignal } from 'src/app/theme/shared/_helpers/shared-signals';
+import { igrejaIdSignal, nomeIgrejaSignal, perfilSignal } from 'src/app/theme/shared/_helpers/shared-signals';
 
 @Component({
   selector: 'app-disciplina-form',
@@ -30,13 +30,18 @@ import { nomeIgrejaSignal, igrejaIdSignal, perfilSignal } from 'src/app/theme/sh
   ],
   templateUrl: './disciplina-form.component.html',
   styleUrl: './disciplina-form.component.scss',
-  providers: [MessageService, DisciplinaService],
+  providers: [
+    MessageService,
+    DisciplinaService
+  ],
 })
 export class DisciplinaFormComponent implements OnInit, AfterContentChecked {
 
+  nomeIgrejaSignal = nomeIgrejaSignal;
   igrejaIdSignal = igrejaIdSignal;
   perfilSignal = perfilSignal;
 
+  nomeIgreja = nomeIgrejaSignal();
   igrejaId = igrejaIdSignal();
   perfil = perfilSignal();
 
@@ -134,12 +139,13 @@ export class DisciplinaFormComponent implements OnInit, AfterContentChecked {
   }
 
   excluir(disciplina: any) {
-    this.disciplinaService.delete(disciplina.id).subscribe(
-      () => {
-        this.router.navigate(['/disciplinas']);
-      },
-      (_error) => this.showError()
-    );
+    this.disciplinaService.delete(disciplina.id)
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/disciplinas']);
+        },
+        error: () => { },
+      });
   }
 
   private loadDisciplina() {
@@ -190,10 +196,11 @@ export class DisciplinaFormComponent implements OnInit, AfterContentChecked {
       new DisciplinaDTO(),
       this.disciplinaForm.value
     );
-    this.disciplinaService.update(disciplina).subscribe(() => {
-      this.actionsForSuccess();
-      Swal.fire('Atualização', 'Registro atualizado com sucesso!', 'success');
-    }),
+    this.disciplinaService.update(disciplina)
+      .subscribe(() => {
+        this.actionsForSuccess();
+        Swal.fire('Atualização', 'Registro atualizado com sucesso!', 'success');
+      }),
       (error: any) => this.actionsForError(error);
   }
 

@@ -1,36 +1,51 @@
-import { AfterContentChecked, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { AfterContentChecked, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 
 import Swal from 'sweetalert2';
 
-import { ConfirmationService, MessageService, PrimeNGConfig } from 'primeng/api';
-import { TituloMinisterialDTO } from 'src/app/models/titulo-ministerial.dto';
-import { GLOBALS } from 'src/app/_helpers/globals';
-import { TituloMinisterialService } from 'src/app/services/titulo-ministerial-service';
-import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { NgxSelectModule } from 'ngx-select-ex';
-import { CardComponent } from '../../../../shared/components/card/card.component';
+import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
-import { NgIf } from '@angular/common';
+import { nomeIgrejaSignal, igrejaIdSignal, nomeUsuarioSignal, perfilSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
+import { TituloMinisterialDTO } from 'src/app/theme/shared/models/titulo-ministerial.dto';
+import { TituloMinisterialService } from 'src/app/theme/shared/services/titulo-ministerial-service';
+import { SelectModule } from 'primeng/select';
 
 //declare const $: any;
 
 @Component({
-    selector: 'app-titulo-ministerial-form',
-    templateUrl: './titulo-ministerial-form.component.html',
-    styleUrls: ['./titulo-ministerial-form.component.scss'],
-    encapsulation: ViewEncapsulation.None //as vezes não deixa aparecer o input da foto
-    ,
-    standalone: true,
-    imports: [FormsModule, ReactiveFormsModule, NgIf, ButtonModule, RouterLink, CardComponent, NgxSelectModule, NgbTooltip]
+  selector: 'app-titulo-ministerial-form',
+  templateUrl: './titulo-ministerial-form.component.html',
+  styleUrls: ['./titulo-ministerial-form.component.scss'],
+  standalone: true,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    ButtonModule,
+    RouterLink,
+    SelectModule
+  ],
+  providers: [
+    TituloMinisterialService
+  ]
 })
 
 export class TituloMinisterialFormComponent implements OnInit, AfterContentChecked {
 
-  tipos = ['Padrao', 'Igreja']; // Tipo padrão é o tipo que grava null no igrejaId do Banco, tadas a Igreja podem ver. Igreja grava o id da igreja do usuario, outras igreja não pode ver.
+  nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+  igrejaIdSignal = igrejaIdSignal;
+  nomeUsuarioSignal = nomeUsuarioSignal;
+  perfilSignal = perfilSignal;
+  setorIdSignal = setorIdSignal;
 
+  nomeIgreja = nomeIgrejaSignal();
+  igrejaId = igrejaIdSignal();
+  nomeUsuario = nomeUsuarioSignal();
+  perfil = perfilSignal();
+  setorId = setorIdSignal();
+
+  tipos = [{ nome: 'Padrao' }, { nome: 'Igreja' }]; // Tipo padrão é o tipo que grava null no igrejaId do Banco, tadas a Igreja podem ver. Igreja grava o id da igreja do usuario, outras igreja não pode ver.
   currentAction: string;
   tituloMinisterialForm: FormGroup;
   serverErrorMessages: string[] = null;
@@ -39,13 +54,7 @@ export class TituloMinisterialFormComponent implements OnInit, AfterContentCheck
   tituloMinisterial: TituloMinisterialDTO = new TituloMinisterialDTO();
   id: number;
 
-  nomeIgreja: string = GLOBALS.nomeIgreja;
-
   tituloMinisterialId: number;
-
-  perfil: string = GLOBALS.perfil;
-
-  igrejaId: number = GLOBALS.igrejaId;
 
   subscription: Subscription;
 
@@ -54,9 +63,7 @@ export class TituloMinisterialFormComponent implements OnInit, AfterContentCheck
     private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService
-
+    private messageService: MessageService
 
   ) { }
 
@@ -99,33 +106,41 @@ export class TituloMinisterialFormComponent implements OnInit, AfterContentCheck
   }
 
   ///////////////////////////// Tipo   ///////////////////////////
-  public doSelectTipo = (value: any) => {
-    if (value === 'Padrao') {
+  onChangeTipoPadraoIgreja(event: { value: string }) {
+    if (event.value === 'Padrao') {
       this.tituloMinisterialForm.controls['igrejaId'].setValue(null);
     } else {
-      this.tituloMinisterialForm.controls['igrejaId'].setValue(GLOBALS.igrejaId);
+      this.tituloMinisterialForm.controls['igrejaId'].setValue(this.igrejaId);
     }
   }
 
-
-  confirmarExclusaoTituloMinisterial(tituloMinisterial: TituloMinisterialDTO): void {
-    this.confirmationService.confirm({
-      message: 'Tem certeza que deseja excluir este registro?',
-      accept: () => {
+  exclusaoTitulo(tituloMinisterial: TituloMinisterialDTO) {
+    Swal.fire({
+      title: 'Exclusão',
+      text: 'Tem certeza que deseja excluir este registro?',
+      icon: 'error',
+      showCloseButton: true,
+      showCancelButton: true,
+    }).then((willDelete) => {
+      if (willDelete.dismiss) {
+        // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
+      } else {
         this.excluir(tituloMinisterial);
+        Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
       }
     });
   }
 
-  excluir(tituloMinisterial: TituloMinisterialDTO) {
+  excluir(tituloMinisterial: any) {
     this.tituloMinisterialService.delete(tituloMinisterial.id)
-      .subscribe(() => {
-        this.router.navigate(['/titulos'])
-        Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
-        this.messageService.add({ severity: 'success', summary: 'Successo', detail: 'Registro excluido com sucesso!' });
-      },
-      (error) => this.showError())
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/titulos']);
+        },
+        error: () => { },
+      });
   }
+
 
   private loadTituloMinisterial() {
     if (this.currentAction == "edit") {
@@ -133,7 +148,7 @@ export class TituloMinisterialFormComponent implements OnInit, AfterContentCheck
       params.subscribe(urlParams => {
         this.id = urlParams['id'];
         this.tituloMinisterialId = urlParams['id'];
-       
+
         this.tituloMinisterialService.findById(this.id)
           .subscribe(
             (response) => {
@@ -150,7 +165,7 @@ export class TituloMinisterialFormComponent implements OnInit, AfterContentCheck
     if (this.currentAction == 'new')
       this.pageTitle = "Inserindo: Nova tituloMinisterial"
     else {
-      const tituloMinisterialName = "Editando: "+ this.tituloMinisterial.nome || ""
+      const tituloMinisterialName = "Editando: " + this.tituloMinisterial.nome || ""
       this.pageTitle = tituloMinisterialName;
     }
   }
@@ -162,7 +177,7 @@ export class TituloMinisterialFormComponent implements OnInit, AfterContentCheck
         tituloMinisterial => {
           this.id = parseInt(this.extractId(tituloMinisterial.headers.get('location'))); // Extrai o Id da URI retornada do banco
           this.tituloMinisterial.id = this.id;
-          this.actionsForSuccess(this.tituloMinisterial);
+          this.actionsForSuccess();
           Swal.fire('Cadastro', 'Registro inserido com sucesso!', 'success');
         },
         error => this.actionsForError(error)
@@ -174,7 +189,7 @@ export class TituloMinisterialFormComponent implements OnInit, AfterContentCheck
     this.tituloMinisterialService.update(tituloMinisterial)
       .subscribe(
         tituloMinisterial => {
-          this.actionsForSuccess(tituloMinisterial)
+          this.actionsForSuccess()
           Swal.fire('Atualização', 'Registro atualizado com sucesso!', 'success');
         },
         error => this.actionsForError(error)
@@ -190,11 +205,8 @@ export class TituloMinisterialFormComponent implements OnInit, AfterContentCheck
   // METODOS PRIVADOS
 
 
-  private actionsForSuccess(tituloMinisterial: TituloMinisterialDTO) {
-    const path: string = this.route.snapshot.parent.url[0].path;
-
-    this.messageService.add({ severity: 'success', summary: 'Successo', detail: 'Operacão realizada com sucesso!' });
-
+  private actionsForSuccess() {
+    const path: string = this.route.snapshot.data['path'];
     this.router.navigateByUrl(path)
   }
 

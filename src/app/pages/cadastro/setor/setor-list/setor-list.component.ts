@@ -1,17 +1,16 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { LazyLoadEvent, SharedModule } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
-import { GLOBALS } from 'src/app/_helpers/globals';
-import { SetorDTO } from 'src/app/models/setor.dto';
-import { SetorService } from 'src/app/services/setor.service';
 import { Router, RouterLink } from '@angular/router';
-import { StorageService } from 'src/app/services/storage.service';
-import { STORAGE_KEYS } from 'src/app/config/storage-keys.config';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { CardComponent } from '../../../../shared/components/card/card.component';
+import { CardComponent } from 'src/app/theme/shared/components/card/card.component';
+import { SetorDTO } from 'src/app/theme/shared/models/setor.dto';
+import { SetorService } from 'src/app/theme/shared/services/setor.service';
+import { nomeIgrejaSignal, igrejaIdSignal, nomeUsuarioSignal, perfilSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
+import { SharedService } from 'src/app/theme/shared/services/shared.service';
+import { InputGroup } from 'primeng/inputgroup';
 
 
 @Component({
@@ -20,9 +19,33 @@ import { CardComponent } from '../../../../shared/components/card/card.component
     styleUrls: ['./setor-list.component.scss'],
     encapsulation: ViewEncapsulation.None,
     standalone: true,
-    imports: [CardComponent, ButtonModule, FormsModule, RouterLink, TableModule, SharedModule, NgIf, NgbTooltip]
+    imports: [
+      CardComponent, 
+      ButtonModule, 
+      FormsModule, 
+      RouterLink, 
+      TableModule, 
+      SharedModule, 
+      NgbTooltip,
+      InputGroup
+    ],
+     providers: [
+        SetorService,
+        SharedService
+    ]
 })
 export class SetorListComponent implements OnInit {
+    nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+    igrejaIdSignal = igrejaIdSignal;
+    nomeUsuarioSignal = nomeUsuarioSignal;
+    perfilSignal = perfilSignal;
+    setorIdSignal = setorIdSignal;
+  
+    nomeIgreja = nomeIgrejaSignal();
+    igrejaId = igrejaIdSignal();
+    nomeUsuario = nomeUsuarioSignal();
+    perfil = perfilSignal();
+    setorId = setorIdSignal();
 
   @ViewChild('dtsetor') grid!: Table;
 
@@ -30,9 +53,6 @@ export class SetorListComponent implements OnInit {
   total: number;
 
   totalRegistros = 0
-  igrejaId: number = GLOBALS.igrejaId;
-
-  perfil: string = GLOBALS.perfil;
 
   setores: SetorDTO[] = [];
 
@@ -42,9 +62,7 @@ export class SetorListComponent implements OnInit {
 
   constructor(
     private setorService: SetorService,
-    private router: Router,
-    private storage: StorageService
-
+    private router: Router
   ) {
 
   }
@@ -88,10 +106,10 @@ export class SetorListComponent implements OnInit {
         },
         error: (error) => {
           if (error.status == 403) {
-            this.router.navigate(['login/signin'])
+            this.router.navigate(['login'])
 
           } else {
-            this.router.navigate(['login/signin'])
+            this.router.navigate(['login'])
           }
         }
       });

@@ -1,17 +1,4 @@
 <section class="main-content">
-  <ul class="breadcrumb breadcrumb-style mt-0 mb-2">
-    <li class="breadcrumb-item">
-      <h5 class="page-title m-b-0">Membros</h5>
-    </li>
-    <li class="breadcrumb-item bcrumb-1">
-      <a routerLink="/dashboard/default">
-        <i class="fas fa-home f-17"></i></a>
-    </li>
-    <li class="breadcrumb-item">Lista de Membros</li>
-  </ul>
-  <!-- <hr class="mt-0"> -->
-
-
   <form [formGroup]="pessoaList">
     <div class="section-body" style="background: #f6f7f8;">
       <div class="row " style="margin-left: 0px; margin-right: 0px;">
@@ -23,7 +10,7 @@
                 <label class="text-dark mt-0 "> Pesquisa</label>
                 <p-inputgroup>
                   <button type="button" class=""
-                    style="height: 30px; cursor:default ; border-radius: 5px; border-bottom-right-radius: 0; border-top-right-radius: 0; border: 0; background: #1a82ce   ;"
+                    style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius: 0; border-top-right-radius: 0; border: 0; background: #1a82ce   ;"
                     pButton pRipple> <i class="pi pi-search"></i></button>
                   <input class="form-control" [(ngModel)]="nomeSemAcento" type="text"
                     [ngModelOptions]="{standalone: true}" placeholder="Pesquisar Nome ou Sobrenome"

@@ -2,7 +2,7 @@
 <section class="main-content">
     <div class="row mb-0 ">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <div class="card card-border-c-purple border-2  ">
+            <div class="card card-border-c-purple border-1  ">
                 <div class="row align-items-center m-l-0">
                     <div class="col-auto">
                         <i class="fas fa-book-reader f-28 text-c-purple"></i>
@@ -22,7 +22,7 @@
         <span class=" col-sm-4 mt-0 mb-2">
             <p-inputgroup>
                 <button type="button" class=""
-                    style="height: 30px; cursor:default ; border-radius: 5px; border-bottom-right-radius: 0; border-top-right-radius: 0; border: 0; background: #1a82ce   ;"
+                    style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius: 0; border-top-right-radius: 0; border: 0; background: #1a82ce   ;"
                     pButton pRipple> <i class="pi pi-search"></i></button>
                 <input class="form-control" [(ngModel)]="nome" type="text" [ngModelOptions]="{standalone: true}"
                     placeholder="Pesquisar Nome ou Sobrenome"
@@ -34,7 +34,7 @@
         <!--Fim pesquisa disciplinas  -->
 
         <span class="col-sm-8 ">
-            <p-button routerLink="new" type="button" class="float-end" label="Novo" [style]="{'height':'30px'}"
+            <p-button routerLink="new" type="button"severity="success" class="float-end" label="Novo" [style]="{'height':'30px', 'background':'#388669'}"
                 size="small" icon="pi pi-check" />
         </span>
 

@@ -1,18 +1,18 @@
 <!-- Cards Estaticticas -->
-<div class="row">
-    <div class="col-xl-12 col-md-12">
-        <app-card [hidHeader]="true" cardClass="card-border-c-blue shadow  border-1 bg-light ">
-            <div class="row align-items-center m-l-0">
-                <div class="col-auto">
-                    <i class="fas fa-users f-24 text-c-blue"></i>
-                </div>
-                <div class="col-auto">
-                    <h6 class="text-muted m-b-10">Total de usuários</h6>
-                    <h4 class="m-b-0">Em desenvolvimento</h4>
-                </div>
-            </div>
-        </app-card>
+<div class="row mb-0">
+  <div class="col-xl-12 col-md-12 ">
+    <div class="card card-border-c-green border-1  ">
+      <div class="row align-items-center m-l-0">
+        <div class="col-auto">
+          <i class="fas fa-users f-24 text-c-green"></i>
+        </div>
+        <div class="col-auto ">
+          <h6 class="text-dark  mt-2">Total de usuários</h6>
+          <h4>{{ totalRegistros }}</h4>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 <!-- Fim Cards Estaticticas -->
 
@@ -22,12 +22,12 @@
         <label class="text-dark mt-0 "></label>
         <p-inputgroup>
             <button type="button" class=""
-                style="height: 32px; cursor:default ; border-radius: 5px; border-bottom-right-radius: 0; border-top-right-radius: 0; border: 0; background: #1a82ce   ;"
+                style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius: 0; border-top-right-radius: 0; border: 0; background: #1a82ce   ;"
                 pButton pRipple> <i class="pi pi-search"></i></button>
             <input class="form-control" [(ngModel)]="name" type="text" [ngModelOptions]="{standalone: true}"
                 placeholder="Pesquisar Nome ou Sobrenome"
                 (input)="dtusuario.filterGlobal($event.target?.addEventListener, 'contains')"
-                style="height: 32px; font-size: 12px; text-transform: uppercase ; border-bottom-left-radius: 0; border-top-left-radius: 0;">
+                style="height: 30px; font-size: 12px; text-transform: uppercase ; border-bottom-left-radius: 0; border-top-left-radius: 0;">
         </p-inputgroup>
     </div>
 
@@ -35,7 +35,7 @@
 
     <span class="col-sm-8 mt-0 p-4 ">
         <strong><button routerLink="new" type="button" class="float-end  " pButton pRipple label="Novo"
-                style="width: 7em;  background:#388669; height: 32px; border-radius: 5px; font-size: small; "
+                style="width: 7em;  background:#388669; height: 30px; border-radius: 5px; font-size: small; "
                 icon="pi pi-check">
             </button></strong>
     </span>
@@ -81,7 +81,7 @@
                     <td>
                         <!-- Quando tem foto -->
                         @if (usuario?.foto) {
-                        <div class="col-foto d-inline-block align-center">
+                        <div class="col-foto d-inline-block align-center py-0">
                             <img src="data:image/jpg;base64,{{ usuario?.foto }}" [routerLink]="[usuario.id, 'edit']"
                                 class=" img-radius align-center m-r-15" style=" cursor: pointer;"
                                 alt="user image" />
@@ -90,7 +90,7 @@
 
                         <!-- Quando não tem foto -->
                         @if (!usuario?.foto) {
-                        <div class="col-foto d-inline-block align-center">
+                        <div class="col-foto d-inline-block align-center py-0">
                             <img src="assets/images/foto/Sem_Foto1.png" [routerLink]="[usuario.id, 'edit']"
                                 class="img-radius align-top m-r-15" style="cursor: pointer;"
                                 alt="user image" />
@@ -98,19 +98,19 @@
                         }
                     </td>
 
-                    <td [routerLink]="[usuario.id, 'edit']" class="col-data-content-4"
+                    <td [routerLink]="[usuario.id, 'edit']" class="col-data-content-4 py-0"
                         style=" cursor: pointer; font-size: 13px; min-width: 200px;">{{
                         usuario.name }}
                     </td>
-                    <td class="col-data-content-3" style=" cursor: pointer; font-size: 13px;">{{
+                    <td class="col-data-content-3 py-0" style=" cursor: pointer; font-size: 13px;">{{
                         usuario.email
                         }}
                     </td>
-                    <td class="col-data-content-3" style=" cursor: pointer; font-size: 13px;">{{
+                    <td class="col-data-content-3 py-0" style=" cursor: pointer; font-size: 13px;">{{
                         usuario.password
                         }}
                     </td>
-                    <td class="col-acoes-header">
+                    <td class="col-acoes-header py-0">
                         <button [routerLink]="[usuario.id, 'edit']" type="button"
                             class="btn btn-icon btn-outline-info p-1" [style]="{'height': '30px', 'width': '30px'} "
                             [placement]="'top'" ngbTooltip="Alterar Cadastro">

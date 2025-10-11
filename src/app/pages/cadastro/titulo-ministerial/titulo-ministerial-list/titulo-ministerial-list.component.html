@@ -1,136 +1,118 @@
 <!-- Cards Estaticticas -->
 <div class="row mb-0">
-    <div class="col-xl-6 col-md-6">
-        <app-card [hidHeader]="true">
+    <div class="col-xl-12 col-md-12 ">
+        <div class="card card-border-c-blue border-1  ">
             <div class="row align-items-center m-l-0">
                 <div class="col-auto">
-                    <i class="fas fa-book-reader f-28 text-c-purple"></i>
+                    <i class="fas fa-settings f-24 text-c-blue"></i>
                 </div>
-                <div class="col-auto">
-                    <h6 class="text-muted m-b-10">Titulos Ministeriais Padrão</h6>
-                    <h3 class="m-b-0">10</h3>
-                </div>
-            </div>
-        </app-card>
-    </div>
-
-    <div class="col-xl-6 col-md-6">
-        <app-card [hidHeader]="true">
-            <div class="row align-items-center m-l-0">
-                <div class="col-auto">
-                    <i class="fas fa-home f-28 text-c-dark"></i>
-                </div>
-                <div class="col-auto">
-                    <h6 class="text-muted m-b-10">Titulos Ministeriais da Igreja</h6>
-                    <h3 class="m-b-0">20</h3>
+                <div class="col-auto ">
+                    <h6 class="text-dark  mt-2">Total de Titulos</h6>
+                    <h4>{{ totalRegistros }}</h4>
                 </div>
             </div>
-        </app-card>
+        </div>
     </div>
 </div>
 <!-- Fim Cards Estaticticas -->
 
-<!-- Pesquisa Ministeriais -->
 
-<div class="row mb-3">
+<!-- Pesquisa Titulos -->
+<div class="row mb-2">
     <span class=" col-sm-4 mt-0 mb-2">
-        <div class="p-inputgroup">
-            <button type="button" style="height: 35px; cursor:default ; border-radius: 10px; border-bottom-right-radius:0;
-                 border-top-right-radius: 0; border: 0; background:#1a82ce;" pButton pRipple class=""> <i
+        <p-inputgroup>
+            <button type="button" style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius:0;
+               border-top-right-radius: 0; border: 0; background:#1a82ce;" pButton pRipple class=""> <i
                     class="pi pi-search"></i></button>
-            <input class="form-control" [(ngModel)]="nome" type="text" placeholder="Pesquisar "
-                (input)="dttitulo.filterGlobal($event.target.value, 'contains')" style="height: 35px; min-width: 180px; border-radius: 10px; border-bottom-left-radius: 0; 
-                border-top-left-radius: 0; font-size: 14px; text-transform: lowercase">
-        </div>
+            <input pInputText class="form-control " placeholder="Pesquisar " [(ngModel)]="nome" type="text"
+                [ngModelOptions]="{standalone: true}"
+                (input)="dttitulo.filterGlobal($event.target?.addEventListener, 'contains')" style="height: 30px; min-width: 180px; border-radius: 6px; border-bottom-left-radius: 0; 
+              border-top-left-radius: 0; font-size: 14px; text-transform: lowercase">
+        </p-inputgroup>
     </span>
 
-    <!--Fim pesquisa nivels  -->
+    <!--Fim pesquisa Titulos  -->
 
-    <span class="col-sm-6">
-        <strong><button routerLink="new" type="button" class="  " pButton pRipple label="Novo"
-                style="width: 6em;  background:#388669; height: 35px; border-radius: 10px; " icon="pi pi-check">
-            </button></strong>
+    <span class="col-sm-8 ">
+        <p-button routerLink="new" type="button" severity="success" class="float-end" label="Novo"
+            [style]="{'height':'30px', 'background':'#388669'}" size="small" icon="pi pi-check" />
     </span>
 </div>
 
-<app-card [hidHeader]="true" cardTitle="" cardClass="shadow">
+<app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-green shadow  border-1">
+    <div class="p-0">
+        <p-table #dttitulo [value]="tituloMinisteriais"
+            [globalFilterFields]="['nome', 'country.name', 'representative.name', 'status']" [lazy]="true"
+            responsiveLayout="stack" (onLazyLoad)="loadTituloMinisteriaisLazy($event)" [showCurrentPageReport]="true"
+            [totalRecords]="totalRegistros" showGridlines stripedRows
+            currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
+            [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
 
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="">
-                <div class="mb-3 ">
-                    <div class="">
-                        <p-table #dttitulo [value]="tituloMinisteriais" [globalFilterFields]="['nome']" [lazy]="true"
-                        responsiveLayout="stack" (onLazyLoad)="loadTituloMinisteriaisLazy($event)" [showCurrentPageReport]="true"
-                            [totalRecords]="totalRegistros"
-                            styleClass="p-datatable-sm p-datatable-striped p-datatable-gridlines"
-                            currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros"
-                            [paginator]="true" [rows]="linesPerPage"
-                            emptyMessage="Nenhum registro encontrado">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="col-data-100"
+                        style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-left-radius: 5px;">
+                        <b>Código</b>
+                    </th>
+                    <th
+                        style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                        <b>Título</b>
+                    </th>
+                    <th
+                        style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                        <b>Abreviação</b>
+                    </th>
 
+                    <th class="col-acoes-header"
+                        style="font-size: 13px; background-color: rgb(77, 83, 90); color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-right-radius: 5px;">
+                        Ações</th>
 
-                            <ng-template pTemplate="header">
-                                <tr>
-                                    <th class="col-data-100"
-                                        style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
-                                        <b>Código</b>
-                                    </th>
-                                    <th style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue;">
-                                        <b>Título</b>
-                                    </th>
-                                    <th style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue;">
-                                        <b>Abreviação</b>
-                                    </th>
-                                    <th class="col-acoes-header"
-                                        style="font-size: 13px; background-color: rgb(77, 83, 90); color: aliceblue;">
-                                        Ações</th>
-
-                                </tr>
-                            </ng-template>
+                </tr>
+            </ng-template>
 
 
-                            <ng-template pTemplate="body" let-tituloMinisterial>
-                                <tr
-                                    *ngIf="(perfil !== 'ADMIN' && (tituloMinisterial.igrejaId == igrejaId || tituloMinisterial.igrejaId == null))">
-                                    <td class="col-data-100" style=" font-size: 13px">{{ tituloMinisterial.id }}</td>
-                                    <td style=" font-size: 13px; color: rgb(48, 48, 138);">{{ tituloMinisterial.nome }}
-                                    </td>
-                                    <td class="col-data-content-3" style=" font-size: 13px; color: rgb(48, 48, 138);">{{
-                                        tituloMinisterial.abreviacao }}</td>
-                                    <td class="col-acoes-header">
-                                        <button
-                                            *ngIf="(perfil !== 'ADMIN' && (tituloMinisterial.igrejaId == igrejaId ))"
-                                            [routerLink]="[tituloMinisterial.id, 'edit']" type="button"
-                                            class="btn btn-icon btn-outline-success p-1"
-                                            [style]="{'height': '30px', 'width': '30px'} " [placement]="'top'"
-                                            ngbTooltip="Editar">
-                                            <i class="pi pi-chevron-up"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+            <ng-template pTemplate="body" let-tituloMinisterial>
 
-                                <tr *ngIf="(perfil == 'ADMIN')">
-                                    <td class="col-data-100" style=" font-size: 13px">{{ tituloMinisterial.id }}
-                                    </td>
-                                    <td style=" font-size: 13px; color: rgb(48, 48, 138);">{{ tituloMinisterial.nome }}
-                                    </td>
-                                    <td class="col-data-content-3" style=" font-size: 13px; color: rgb(48, 48, 138);">{{
-                                        tituloMinisterial.abreviacao }}</td>
-                                    <td class="col-acoes-header">
-                                        <button [routerLink]="[tituloMinisterial.id, 'edit']" type="button"
-                                            class="btn btn-icon btn-outline-success p-1"
-                                            [style]="{'height': '30px', 'width': '30px'} " [placement]="'top'"
-                                            ngbTooltip="Editar">
-                                            <i class="pi pi-chevron-up"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </ng-template>
-                        </p-table>
-                    </div>
-                </div>
-            </div>
-        </div>
+                @if((perfil !== 'ADMIN' && (tituloMinisterial.igrejaId == igrejaId || tituloMinisterial.igrejaId ==
+                null))){
+                <tr>
+                    <td class="col-data-100 py-2" style=" font-size: 13px">{{ tituloMinisterial.id }}</td>
+                    <td class="py-2" style=" font-size: 13px; color: rgb(48, 48, 138);">{{ tituloMinisterial.nome }}
+                    </td>
+                    <td class="col-data-content-3 py-2" style=" font-size: 13px; color: rgb(48, 48, 138);">{{
+                        tituloMinisterial.abreviacao }}</td>
+
+                    <td class="col-acoes-header py-2">
+                        @if(perfil !== 'ADMIN' && (tituloMinisterial.igrejaId == igrejaId )){
+                        <button [routerLink]="[tituloMinisterial.id, 'edit']" type="button"
+                            class="btn btn-icon btn-outline-success p-1" [style]="{'height': '30px', 'width': '30px'} "
+                            [placement]="'top'" ngbTooltip="Editar">
+                            <i class="pi pi-chevron-up"></i>
+                        </button>
+                        }
+                    </td>
+                </tr>
+                }
+
+                @if(perfil == 'ADMIN'){
+                <tr>
+                    <td class="col-data-100 py-2">{{ tituloMinisterial.id }}
+                    </td>
+                    <td class="py-2" style=" font-size: 13px; color: rgb(48, 48, 138);">{{ tituloMinisterial.nome }}
+                    </td>
+                    <td class="col-data-content-3 py-2" style=" font-size: 13px; color: rgb(48, 48, 138);">{{
+                        tituloMinisterial.abreviacao }}</td>
+                    <td class="col-acoes-header py-2">
+                        <button [routerLink]="[tituloMinisterial.id, 'edit']" type="button"
+                            class="btn btn-icon btn-outline-success p-1" [style]="{'height': '30px', 'width': '30px'} "
+                            [placement]="'top'" ngbTooltip="Editar">
+                            <i class="pi pi-chevron-up"></i>
+                        </button>
+                    </td>
+                </tr>
+                }
+            </ng-template>
+        </p-table>
     </div>
 </app-card>
 <!--  ativo e inativo body end -->

@@ -5,7 +5,6 @@
       <div class="col-md-12">
         <i class="fas fa-home f-26 text-dark"></i>   <span class="text-muted" style="font-size: 20px;">{{
           nomeIgreja }}</span>
-        <hr class="mt-0 mb-2">
         <div class="row ">
           <div class="col-md-12">
             <div class="flex">
@@ -16,6 +15,7 @@
                     <li class="breadcrumb-item active"><a>Cadastro</a></li>
                     <li class="breadcrumb-item active"><a>Usuários</a></li>
                   </ol>
+                   <hr class="mt-1 mb-0">
                 </nav>
               </div>
             </div>
@@ -40,7 +40,7 @@
                 @if(usuario.id > 0 && activeTab == 'user'){
                 <button type="button" (click)="exclusaoUsuario(usuario)" styleClass="p-button-sm" icon='pi pi-times'
                   style="width: 7em;
-                    height: 32px; border-radius: 5px; font-size: small;" pButton pRipple label="Excluir" class="p-button-danger ml-2
+                    height: 30px; border-radius: 5px; font-size: small;" pButton pRipple label="Excluir" class="p-button-danger ml-2
                     p-button-outlined ">
                 </button>
                 }
@@ -51,7 +51,7 @@
                 @if(activeTab == 'user'){
                 <strong><button (click)="submitForm()" [disabled]="submittingForm || usuarioForm.invalid" type="button"
                     class="mx-3" pButton pRipple label="Salvar"
-                    style="width: 7em;  background:#388669; height: 32px; border-radius: 5px; font-size: small"
+                    style="width: 7em;  background:#388669; height: 30px; border-radius: 5px; font-size: small"
                     icon='pi pi-check'>
                   </button></strong>
                 }
@@ -60,7 +60,7 @@
               <!-- Botões Voltar-->
               <span class="float-end  m-l-2   mb-2">
                 <strong><button routerLink="/usuarios" styleClass="p-button-sm" icon='pi pi-chevron-left' type="button"
-                    label="voltar" class="p-button-purple m-t-0 " pButton pRipple label="Voltar" style="width: 7em; height: 32px; border-radius: 5px;
+                    label="voltar" class="p-button-purple m-t-0 " pButton pRipple label="Voltar" style="width: 7em; height: 30px; border-radius: 5px;
                           background: #1a82ce; color: aliceblue; font-size: small">
                   </button></strong>
               </span>

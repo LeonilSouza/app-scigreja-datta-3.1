@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { DisciplinaListComponent } from './disciplina-list/disciplina-list.component';
 import { DisciplinaFormComponent } from '../disciplina/disciplina-form/disciplina-form.component';
+import path from 'path';
 
 export const DISCIPLINA_ROUTES: Routes = [
   {
@@ -11,6 +12,7 @@ export const DISCIPLINA_ROUTES: Routes = [
         component: DisciplinaListComponent,
         data: {
           title: 'Disciplinas',
+          path: 'disciplinas'
         },
       },
       {
@@ -18,6 +20,7 @@ export const DISCIPLINA_ROUTES: Routes = [
         component: DisciplinaFormComponent,
         data: {
           title: 'Disciplinas',
+          path: 'disciplinas'
         },
       },
       {
@@ -25,6 +28,7 @@ export const DISCIPLINA_ROUTES: Routes = [
         component: DisciplinaFormComponent,
         data: {
           title: 'Disciplinas',
+          path: 'disciplinas'
         },
       },
     ],
