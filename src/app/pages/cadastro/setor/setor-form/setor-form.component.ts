@@ -6,7 +6,6 @@ import { Observable, Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { ButtonModule } from 'primeng/button';
 import { SharedService } from 'src/app/theme/shared/services/shared.service';
-import { CardComponent } from 'src/app/theme/shared/components/card/card.component';
 import { SetorService } from 'src/app/theme/shared/services/setor.service';
 import { SetorDTO } from 'src/app/theme/shared/models/setor.dto';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -26,8 +25,7 @@ import { nomeIgrejaSignal, igrejaIdSignal, nomeUsuarioSignal, perfilSignal, seto
         ButtonModule,
         RouterLink,
         FormsModule,
-        ReactiveFormsModule,
-        // CardComponent
+        ReactiveFormsModule
     ],
     providers: [
         SetorService,

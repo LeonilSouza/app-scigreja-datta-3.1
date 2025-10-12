@@ -54,6 +54,10 @@ const routes: Routes = [
         path: 'titulos',
         loadChildren: () => import('./pages/cadastro/titulo-ministerial/titulo-ministerial.routes').then((module) => module.TITULO_MINISTERIAL_ROUTES),
       },
+      {
+        path: 'modelodocumentos',
+        loadChildren: () => import('./pages/cadastro/modelo-documento/modelo-documento-routes').then((module) => module.MODELO_DOCUMENTO_ROUTES),
+      },
       // {
       //   path: 'cartas', 
       //   loadChildren: () => import('./pages/carta/carta.module').then((module) => module.CartaModule),
@@ -64,27 +68,6 @@ const routes: Routes = [
       //     import('./pages/caso/caso.module').then(
       //       (module) => module.CasoModule
       //     ),
-      // },
-      // {
-      //   path: '',
-      //   loadChildren: () =>
-      //     import('').then(
-      //       (module) => module.UsuarioModule
-      //     ),
-      // },
-      // {
-      //   path: 'setores',
-      //   loadChildren: () =>
-      //     import('./pages/cadastro/setor/setor.module').then(
-      //       (module) => module.SetorModule
-      //     ),
-      // },
-      // {
-      //   path: 'modelodocumentos',
-      //   loadChildren: () =>
-      //     import(
-      //       './pages/cadastro/modelo-documento/modelo-documento.module'
-      //     ).then((module) => module.ModeloDocumentoModule),
       // },
       // {
       //   path: 'cargodeptos',

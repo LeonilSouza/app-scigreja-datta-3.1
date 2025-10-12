@@ -70,19 +70,6 @@ export class DisciplinaFormComponent implements OnInit, AfterContentChecked {
     this.setCurrentAction();
     this.buildDisciplinaForm();
     this.loadDisciplina();
-
-    // Depois que passou para standalone component, o codigo abaixo parou de funcionar
-
-    //  if (this.route.parent) {
-    //   console.log('A rota é uma rota filha');
-    //   console.log(this.route.parent);
-    // console.log(this.route.parent.snapshot.routeConfig.children[0].data['path'])
-    // } else {
-    //   console.log('A rota não é uma rota filha');
-    // }
-
-    // console.log(path)
-    // console.log(this.route.snapshot.parent.url[0]?.path)
   }
 
   ngAfterContentChecked() {

@@ -1,90 +1,115 @@
-  <div class="page-header  mb-3" style="background-color: rgb(244, 244, 244);">
-    <div class="row">
-  
-    <!-- Pesquisa documentos -->
-    <span class=" col-sm-4 mt-0 mb-1">
-      <div class="p-inputgroup">
-        <button type="button"
-          style="height: 25px; cursor:default ; border-radius: 5px; border-bottom-right-radius: 0; border-top-right-radius: 0; border: 0; background:#1a82ce;"
-          pButton pRipple class=""> <i class="pi pi-search"></i></button>
-        <input class="form-control" [(ngModel)]="nome" type="text" placeholder="Pesquisar "
-          (input)="dtmodeloDocumento.filterGlobal($event.target.value, 'contains')"
-          style="height: 25px; min-width: 180px; border-radius: 5px; border-bottom-left-radius: 0; border-top-left-radius: 0; font-size: 14px; text-transform: lowercase">
-      </div>
-    </span>
-  
-    <span class="col-sm-6 mt-0  ml-3 mr-auto">
-      <strong><button routerLink="new" type="button" class="  "pButton pRipple label="Novo"
-          style="width: 7em; font-size: small; background:#388669; height: 25px; border-radius: 5px; " icon="pi pi-check">
-        </button></strong>
-    </span>
-  </div>
-  </div>
-  
-  
-  <app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-blue shadow">
-    <div class="row">
-        <div class="col-sm-12">
-                <div class="mb-3 ">
-                    <div class="">
-                        <p-table #dtmodeloDocumento [value]="modeloDocumentos" [globalFilterFields]="['nome']" [lazy]="true"
-                            responsiveLayout="stack" (onLazyLoad)="loadDocumentoLazy($event)" [showCurrentPageReport]="true"
-                            [totalRecords]="totalRegistros"
-                            styleClass="p-datatable-sm p-datatable-striped p-datatable-gridlines"
-                            currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros"
-                            [paginator]="true" [rows]="linesPerPage"
-                            emptyMessage="Nenhum registro encontrado">
-  
-  
-                            <ng-template pTemplate="header">
-                                <tr>
-                                    <th class="col-data-100" style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;"><b>Código</b></th>
-                                    <th style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;"><b>Nome</b></th>
-                                    <th class="col-data-content-4" style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;"><b>Tipo</b></th>
-  
-                                    <th class="col-acoes-header"
-                                    style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
-                                        Ações</th>
-  
-                                </tr>
-                            </ng-template>
-  
-                            <ng-template pTemplate="body" let-modeloDocumento>
-                                <tr  *ngIf="(perfil !== 'ADMIN' && (modeloDocumento.igrejaId == igrejaId || modeloDocumento.igrejaId == null))">
-                                    <td class="col-data-100" style=" font-size: 13px">{{ modeloDocumento.id }}
-                                    <td  style=" font-size: 13px">{{ modeloDocumento.nome }}
-                                    <td  class="col-data-content-3" style=" font-size: 13px">{{ modeloDocumento.tipo }}
-                                    </td>
-                                    <td class="col-acoes-header">
-                                        <button *ngIf="(perfil !== 'ADMIN' && (modeloDocumento.igrejaId == igrejaId ))"
-                                            [routerLink]="[modeloDocumento.id, 'edit']" type="button"
-                                            class="btn btn-icon btn-outline-success p-1"
-                                            [style]="{'height': '30px', 'width': '30px'} "[placement]="'top'" 
-                                            ngbTooltip="Editar">
-                                            <i class="pi pi-chevron-up"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-  
-                                <tr *ngIf="(perfil == 'ADMIN')">
-                                    <td class="col-data-100" style=" font-size: 13px">{{ modeloDocumento.id }}
-                                    <td [routerLink]="[modeloDocumento.id, 'edit']"  style=" cursor: pointer; font-size: 13px">{{ modeloDocumento.nome }}
-                                    <td [routerLink]="[modeloDocumento.id, 'edit']"  class="col-data-content-3" style=" cursor: pointer; font-size: 13px">{{ modeloDocumento.tipo }}
-                                    </td>
-                                    <td class="col-acoes-header">
-                                        <button [routerLink]="[modeloDocumento.id, 'edit']" type="button"
-                                            class="btn btn-icon btn-outline-success p-1"
-                                            [style]="{'height': '30px', 'width': '30px'} " [placement]="'top'"
-                                            ngbTooltip="Editar">
-                                            <i class="pi pi-chevron-up"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </ng-template>
-                        </p-table>
-                    </div>
+<!-- Cards Estaticticas -->
+<div class="row mb-0">
+    <div class="col-xl-12 col-md-12 ">
+        <div class="card card-border-c-blue border-1  ">
+            <div class="row align-items-center m-l-0">
+                <div class="col-auto">
+                    <i class="fas fa-settings f-24 text-c-blue"></i>
                 </div>
+                <div class="col-auto ">
+                    <h6 class="text-dark  mt-2">Total de Modeloss</h6>
+                    <h4>{{ totalRegistros }}</h4>
+                </div>
+            </div>
         </div>
     </div>
-  </app-card>
-  
+</div>
+<!-- Fim Cards Estaticticas -->
+
+
+<!-- Pesquisa modeloDocumento -->
+<div class="row mb-2">
+    <span class=" col-sm-4 mt-0 mb-2">
+        <p-inputgroup>
+            <button type="button" style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius:0;
+               border-top-right-radius: 0; border: 0; background:#1a82ce;" pButton pRipple class=""> <i
+                    class="pi pi-search"></i></button>
+            <input pInputText class="form-control " placeholder="Pesquisar " [(ngModel)]="nome" type="text"
+                [ngModelOptions]="{standalone: true}"
+                (input)="dtmodeloDocumento.filterGlobal($event.target?.addEventListener, 'contains')" style="height: 30px; min-width: 180px; border-radius: 6px; border-bottom-left-radius: 0; 
+              border-top-left-radius: 0; font-size: 14px; text-transform: lowercase">
+        </p-inputgroup>
+    </span>
+
+    <!--Fim pesquisa modeloDocumento  -->
+
+    <span class="col-sm-8 ">
+        <p-button routerLink="new" type="button" severity="success" class="float-end" label="Novo"
+            [style]="{'height':'30px', 'background':'#388669'}" size="small" icon="pi pi-check" />
+    </span>
+</div>
+
+<app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-blue shadow  border-1">
+    <div class="p-0">
+        <p-table #dtmodeloDocumento [value]="modeloDocumentos"
+            [globalFilterFields]="['nome', 'country.name', 'representative.name', 'status']" [lazy]="true"
+            responsiveLayout="stack" (onLazyLoad)="loadDocumentoLazy($event)" [showCurrentPageReport]="true"
+            [totalRecords]="totalRegistros" showGridlines stripedRows
+            currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
+            [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="col-data-100"
+                        style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-left-radius: 5px;">
+                        <b>Código</b>
+                    </th>
+                    <th
+                        style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                        <b>Nome</b>
+                    </th>
+                    <th class="col-data-content-4"
+                        style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                        <b>Tipo</b>
+                    </th>
+
+                    <th class="col-acoes-header"
+                        style="font-size: 13px; background-color: rgb(77, 83, 90); color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-right-radius: 5px;">
+                        Ações</th>
+
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-modeloDocumento>
+                @if((perfil !== 'ADMIN' && (modeloDocumento.igrejaId == igrejaId || modeloDocumento.igrejaId
+                == null))){
+                <tr>
+                    <td class="col-data-100 py-2" style=" font-size: 13px">{{ modeloDocumento.id }}
+                    <td class="py-2" style=" font-size: 13px">{{ modeloDocumento.nome }}
+                    <td class="col-data-content-3 py-2" style=" font-size: 13px">{{ modeloDocumento.tipo }}
+                    </td>
+                    <td class="col-acoes-header py-2">
+                        @if((perfil !== 'ADMIN' && (modeloDocumento.igrejaId == igrejaId ))){
+                        <button [routerLink]="[modeloDocumento.id, 'edit']" type="button"
+                            class="btn btn-icon btn-outline-success p-1" [style]="{'height': '30px', 'width': '30px'} "
+                            [placement]="'top'" ngbTooltip="Editar">
+                            <i class="pi pi-chevron-up"></i>
+                        </button>
+                        }
+                    </td>
+                </tr>
+                }
+
+                @if(perfil == 'ADMIN'){
+                <tr>
+                    <td class="col-data-100 py-2" style=" font-size: 13px">{{ modeloDocumento.id }}
+                    <td class="py-2" [routerLink]="[modeloDocumento.id, 'edit']"
+                        style=" cursor: pointer; font-size: 13px">{{
+                        modeloDocumento.nome }}
+                    <td [routerLink]="[modeloDocumento.id, 'edit']" class="col-data-content-3 py-2"
+                        style=" cursor: pointer; font-size: 13px">{{ modeloDocumento.tipo }}
+                    </td>
+                    <td class="col-acoes-header py-2">
+                        <button [routerLink]="[modeloDocumento.id, 'edit']" type="button"
+                            class="btn btn-icon btn-outline-success p-1" [style]="{'height': '30px', 'width': '30px'} "
+                            [placement]="'top'" ngbTooltip="Editar">
+                            <i class="pi pi-chevron-up"></i>
+                        </button>
+                    </td>
+                </tr>
+                }
+            </ng-template>
+        </p-table>
+    </div>
+
+</app-card>

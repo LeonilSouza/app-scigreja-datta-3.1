@@ -5,27 +5,26 @@ import { ConfirmationService, LazyLoadEvent, MessageService, SharedModule } from
 
 
 import { TranslateService } from '@ngx-translate/core';
-import { PrimeNGConfig } from 'primeng/api';
-import { GLOBALS } from 'src/app/_helpers/globals';
-import { PessoaListDTO } from 'src/app/models/pessoa.dto';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
 import { Observable, Subscription } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
-import { ModeloDocumentoDTO } from 'src/app/models/modelo-documento.dto';
-import { ModeloDocumentoService } from 'src/app/services/modelo-documento.service';
-
 import Swal from 'sweetalert2';
 
-import { VariavelService } from 'src/app/services/variavel.service';
-import { VariavelDTO } from 'src/app/models/variavel.dto';
 import { Table, TableModule } from 'primeng/table';
-import { CKEditorModule } from 'ng2-ckeditor';
-import { UiModalComponent } from '../../../../shared/components/modal/ui-modal/ui-modal.component';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { NgxSelectModule } from 'ngx-select-ex';
 import { ButtonModule } from 'primeng/button';
-import { NgIf, NgClass } from '@angular/common';;
-
+import { NgClass } from '@angular/common'; import { UiModalComponent } from 'src/app/theme/shared/components/modal/ui-modal/ui-modal.component';
+import { ModeloDocumentoDTO } from 'src/app/theme/shared/models/modelo-documento.dto';
+import { PessoaListDTO } from 'src/app/theme/shared/models/pessoa.dto';
+import { ModeloDocumentoService } from 'src/app/theme/shared/services/modelo-documento.service';
+import { VariavelService } from 'src/app/theme/shared/services/variavel.service';
+import { VariavelDTO } from 'src/app/theme/shared/models/variavel.dto';
+import { igrejaIdSignal, nomeIgrejaSignal, nomeUsuarioSignal, perfilSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
+import { SelectModule } from 'primeng/select';
+import { CKEditorModule } from 'ng2-ckeditor';
+import { DepartamentoService } from 'src/app/theme/shared/services/departamento.service';
+import { CargoService } from 'src/app/theme/shared/services/cargo.service';
+import { CardComponent } from 'src/app/theme/shared/components/card/card.component';
 
 
 //declare const $: any;
@@ -36,22 +35,39 @@ import { NgIf, NgClass } from '@angular/common';;
     styleUrls: ['./modelo-documento-form.component.scss'],
     standalone: true,
     imports: [
-        NgIf,
         ButtonModule,
         RouterLink,
         NgClass,
         FormsModule,
         ReactiveFormsModule,
-        NgxSelectModule,
-        NgbTooltip,
+        CardComponent,
         UiModalComponent,
         TableModule,
         SharedModule,
+        SelectModule,
         CKEditorModule,
     ],
+    providers: [
+        ModeloDocumentoService,
+        DepartamentoService,
+        CargoService,
+        VariavelService
+    ]
 })
 
 export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked, OnDestroy {
+
+    nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+    igrejaIdSignal = igrejaIdSignal;
+    nomeUsuarioSignal = nomeUsuarioSignal;
+    perfilSignal = perfilSignal;
+    setorIdSignal = setorIdSignal;
+
+    nomeIgreja = nomeIgrejaSignal();
+    igrejaId = igrejaIdSignal();
+    nomeUsuario = nomeUsuarioSignal();
+    perfil = perfilSignal();
+    setorId = setorIdSignal();
 
     @ViewChild('dtvariavel') grid!: Table;
 
@@ -64,12 +80,14 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
 
     public variavel = '';
 
-    tipos = ['Padrao', 'Igreja']; // Tipo padrão é o tipo que grava null no igrejaId do Banco, tadas a Igreja podem ver. Igreja grava o id da igreja do usuario, outras igreja não pode ver.
+    tipos = [{ nome: 'Padrao' }, { nome: 'Igreja' }]; // Tipo padrão é o tipo que grava null no igrejaId do Banco, tadas a Igreja podem ver. Igreja grava o id da igreja do usuario, outras igreja não pode ver.
+
     tipoDocumentos = [
-        'Recomendação',
-        'Mudança',
-        'Apresentação',
-        'Outros'];
+        { nome: 'Recomendação' },
+        { nome: 'Mudança' },
+        { nome: 'Apresentação' },
+        { nome: 'Outros' },
+    ];
 
     // cropper
     imageChangedEvent: any = '';
@@ -78,13 +96,7 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
 
     public activeTab: string;
 
-    perfil: string = GLOBALS.perfil;
-
     subscription: Subscription;
-
-    nomeIgreja: string = GLOBALS.nomeIgreja;
-
-    igrejaId: number = GLOBALS.igrejaId;
 
     // @ViewChild('dtdocumento') grid!: Table;
 
@@ -100,7 +112,7 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
     pessoas: PessoaListDTO[];
     id: number;
 
-    public ckeditorContent:string;
+    public ckeditorContent: string;
     public config: any;
 
     constructor(
@@ -112,46 +124,39 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
         public translate: TranslateService,
-        public primeNGConfig: PrimeNGConfig,
         private toastr: ToastrService,
         private variavelService: VariavelService
 
     ) {
-        //Calendar PrimeNG
-        translate.setDefaultLang('pt-br');
-
-        this.subscription = this.translate.stream('primeng').subscribe(data => {
-            this.primeNGConfig.setTranslation(data);
-        });
         this.activeTab = 'modeloDocumento';
 
         this.ckeditorContent = '<div>Hey we are testing CKEditor</div>';
-        
+
         this.config = {
             uiColor: '#F0F3F4',
             height: '500',
             extraPlugins: 'divarea',
             versionCheck: false
-          };
+        };
     }
 
     // ckeDITOR
     onChange(event: any) {
         setTimeout(() => {
-        //   this.ckeditorContent = event;
+            //   this.ckeditorContent = event;
         });
 
-      }
-      onReady(event: any) {
+    }
+    onReady(event: any) {
         // if(event.model.schema.isRegistered('image')) {
         //     event.model.schema.extend( 'image', { allowAttributes: 'blockIdent'})
         // }
-       }
-      onFocus(event: any) { 
+    }
+    onFocus(event: any) {
         //   console.log("editor is focused");
-      }
-      onBlur(event: any) {
-      }
+    }
+    onBlur(event: any) {
+    }
 
     changeLang(lang: string) {
         this.translate.use(lang);
@@ -166,18 +171,18 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
 
     }
 
-    imprimir(): void{
+    imprimir(): void {
         // Linha que remove o cabeçalho e o rodape do previw da impressão 
-        let estilo = "<style>@media print {@page { size:  auto; margin: 5mm; margin-right: 100px }}</style>" ;
-          let win = window.open('',  '', 'height=1080, width=2648');
-          win.document.write('<html><head>');
-          win.document.write('<title></title>');
-          win.document.write('</head><body>');
-          win.document.write(this.ckeditorContent);
-          win.document.write(estilo);
-          win.document.write('</body></html>'); 
-          win.print();
-          win.close();      
+        let estilo = "<style>@media print {@page { size:  auto; margin: 5mm; margin-right: 100px }}</style>";
+        let win = window.open('', '', 'height=1080, width=2648');
+        win.document.write('<html><head>');
+        win.document.write('<title></title>');
+        win.document.write('</head><body>');
+        win.document.write(this.ckeditorContent);
+        win.document.write(estilo);
+        win.document.write('</body></html>');
+        win.print();
+        win.close();
     }
 
     // Carrega lista das Variaveis
@@ -375,14 +380,12 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
     // FIM FOTO
 
 
-    // EVENTOS DO NGX-SELECT-EX
-
     ///////////////////////////// Tipo   ///////////////////////////
-    public doSelectTipoDocumento = (value: any) => {
-        if (value === 'Padrao') {
+    onChangeTipoPadraoIgreja(event: { value: string }) {
+        if (event.value === 'Padrao') {
             this.modeloDocumentoForm.controls['igrejaId'].setValue(null);
         } else {
-            this.modeloDocumentoForm.controls['igrejaId'].setValue(GLOBALS.igrejaId);
+            this.modeloDocumentoForm.controls['igrejaId'].setValue(this.igrejaId);
         }
     }
 
@@ -470,32 +473,40 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
 
     // METODOS PRIVADOS
 
-    confirmarExclusaoModeloDocumento(modeloDocumento: ModeloDocumentoDTO): void {
-        this.confirmationService.confirm({
-            message: 'Tem certeza que deseja excluir este registro?',
-            accept: () => {
+    exclusaoModeloDocumento(modeloDocumento: ModeloDocumentoDTO): void {
+        Swal.fire({
+            title: 'Exclusão',
+            text: 'Tem certeza que deseja excluir este registro?',
+            icon: 'error',
+            showCloseButton: true,
+            showCancelButton: true,
+        }).then((willDelete) => {
+            if (willDelete.dismiss) {
+                // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
+            } else {
                 this.excluir(modeloDocumento);
+                Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
             }
         });
     }
 
-    excluir(modeloDocumento: ModeloDocumentoDTO) {
+    excluir(modeloDocumento: any) {
         this.modeloDocumentoService.delete(modeloDocumento.id)
-            .subscribe(() => {
-                this.router.navigate(['/modelodocumentos'])
-                this.messageService.add({ severity: 'success', summary: 'Successo', detail: 'Registro excluido com sucesso!' });
-            },
-                () => { });
+            .subscribe({
+                next: () => {
+                    this.router.navigate(['/modelodocumentos']);
+                },
+                error: () => { },
+            });
     }
 
     private actionsForSuccess(modeloDocumento: ModeloDocumentoDTO) {
-        const path: string = this.route.snapshot.parent.url[0].path;
+        const path: string = this.route.snapshot.data['path'];
 
         // redirect/reload component page  
         this.router.navigateByUrl(path, { skipLocationChange: true }).then(
             () => this.router.navigate([path, modeloDocumento.id, 'edit']))
     }
-
 
     private actionsForError(error) {
         this.submittingForm = false;

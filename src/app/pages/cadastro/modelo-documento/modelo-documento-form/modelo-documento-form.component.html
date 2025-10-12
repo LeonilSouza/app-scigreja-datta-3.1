@@ -5,24 +5,24 @@
       <div class="col-md-12">
         <i class="fas fa-home f-26 text-dark"></i>   <span class="text-muted" style="font-size: 20px;">{{
           nomeIgreja }}</span>
-        <hr class="mt-0 mb-2">
         <div class="row ">
           <div class="col-md-12">
             <div class="flex">
               <div class="row">
                 <nav aria-label="breadcrumb mb-0">
                   <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item active"><a>Home</a></li>
+                    <li class="breadcrumb-item active"><a routerLink="/dashboard/default">Home</a></li>
                     <li class="breadcrumb-item active"><a>Cadastro</a></li>
-                    <li class="breadcrumb-item active"><a>Modelo de Documentos</a></li>
+                    <li class="breadcrumb-item active"><a>Modelo de documentos</a></li>
                   </ol>
+                  <hr class="mt-1 mb-2">
                 </nav>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div><br>
+    </div>
   </ng-container>
   <!-- fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb -->
   <!-- Inicio Botões-->
@@ -34,37 +34,38 @@
             <!-- Botões Inicio-->
             <div class="">
               <span class="float-end  ml-0  mb-2">
-                <button *ngIf="modeloDocumento.id > 0 && activeTab == 'modeloDocumento'" type="button"
-                  (click)="confirmarExclusaoModeloDocumento(modeloDocumento)" styleClass="p-button-sm"
-                  icon='pi pi-times' style="width: 7em;
-                    height: 30px; font-size: small; border-radius: 5px;" pButton pRipple label="Excluir" class="p-button-danger ml-2
-                    p-button-outlined ">
-                </button>
+                @if(modeloDocumento.id > 0 && activeTab == 'modeloDocumento'){
+                <p-button type="button" (click)="exclusaoModeloDocumento(modeloDocumento)"
+                  [style]="{'height':'30px', 'margin-left':'10px'}" size="small" icon='pi pi-times' variant="outlined"
+                  severity="danger" label="Excluir" />
+                }
               </span>
 
-              <span class="float-end  ml-2 mb-2">
-                <strong><button *ngIf="activeTab == 'modeloDocumento'" (click)="submitForm()"
-                    [disabled]="submittingForm || modeloDocumentoForm.invalid" type="button" class=" mr-3 ml-2" pButton
-                    pRipple label="Salvar" style="width: 7em; font-size: small; border-radius: 5px; background:#388669; height: 30px;"
-                    icon='pi pi-check'>
-                  </button></strong>
+              <span class="float-end mb-2 ">
+                @if(activeTab == 'modeloDocumento'){
+                <p-button severity="success" (click)="submitForm()"
+                  [disabled]="submittingForm || modeloDocumentoForm.invalid" type="submit" class="mr-4"
+                  [style]="{'height':'30px', 'margin-left':'10px', 'background':'#388669'}" size="small" label="Salvar"
+                  icon='pi pi-check' />
+                }
               </span>
               <span class="float-end  ml-2   mb-2">
-                <strong><button routerLink="/modelodocumentos" styleClass="p-button-sm" icon='pi pi-chevron-left'
-                    type="button" label="voltar" class="p-button-purple mt-0" pButton pRipple label="Voltar"
-                    style="width: 7em; font-size: small; border-radius: 5px; height: 30px;
-                          background: #1a82ce; color: aliceblue;">
-                  </button></strong>
+                <p-button routerLink="/modelodocumentos" icon='pi pi-chevron-left'
+                  [style]="{'height':'30px', 'margin-left':'10px'}" size="small" severity="info" label="voltar"
+                  class=" mt-0" label="Voltar" />
               </span>
+              <nav aria-label="breadcrumb mb-0">
+                <div class="form-group row col-sm-12 ml-0 mb-0 ">
+                  <div class="card mb-0"
+                    style="background-color: rgb(77, 83, 90); border-radius: 4px; height: 30px; align-content: center; margin-left: 12px;">
+                    <span class="mb-1  mt-0 text-white">
+                      <p class="f-18">{{ pageTitle }}</p>
+                    </span>
+                  </div>
+                </div>
+              </nav>
             </div>
             <!-- Botões Fim-->
-            <nav aria-label="breadcrumb mb-0">
-              <div class="form-group row col-sm-12 ml-0 mb-0 mr-0">
-                <div class="card mb-0" style="background-color: rgb(77, 83, 90); border-radius: 4px; height: 30px; align-content: center;">
-                  <span class="ml-0 mb-1  mt-1 text-white f-13"><p class="f-12">{{ pageTitle }}</p></span>
-                </div>
-              </div>
-            </nav>
           </div>
         </div>
       </div>
@@ -76,13 +77,14 @@
 
   <ul class="nav nav-tabs profile-tabs nav-fills" id="myTab" role="tablist">
 
-    <li *ngIf="currentAction == 'edit' && modeloDocumento.id > 0" class="nav-item mt-2">
-      <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab === 'modeloDocumento' }"
-        (click)="this.activeTab= 'modeloDocumento'" id="modeloDocumento-tab" data-toggle="tab" href="javascript:"
-        role="tab" aria-controls="modeloDocumento" aria-selected="true"> <i
-          class="fas fa-book mr-2 text-c-blue"></i>Modelos de modeloDocumento
+    @if(currentAction == 'edit' && modeloDocumento.id > 0){
+    <li class="nav-item mt-2 f-18">
+      <a class="nav-link text-c-dark" [ngClass]="{ active: this.activeTab === 'modeloDocumento' }"
+        id="modeloDocumento-tab" data-toggle="tab" role="tab" aria-controls="modeloDocumento" aria-selected="true"> <i
+          class="fas fa-book text-c-blue"></i>  Modelos de documentos
       </a>
     </li>
+    }
   </ul>
   <!-- FIM CABEÇALHO DAS ABAS  -->
 
@@ -98,44 +100,46 @@
             <div class="form-group col-md-4 mb-0">
               <label class="text-dark mt-1">Nome</label>
               <input autocomplete="off" type="text" class="
-              form-control" formControlName="nome">
+              form-control text-dark" style="font-size: 14px" formControlName="nome">
             </div>
 
             <!-- Tipo Padrao/Igreja-->
-            <div *ngIf="(perfil == 'ADMIN')" class="form-group col-md-4 mb-0">
+            @if(perfil == 'ADMIN'){
+            <div class="form-group col-md-4 mb-0">
               <label class="text-dark mt-1">Tipo</label>
-              <ngx-select autocomplete="off" [allowClear]="false" [multiple]="false" [placement]="'right'"
-                ngbTooltip=" Padrão: Visível para todas Igrejas. Igreja: Visível apenas para a Igreja que cadastrar"
-                [items]="tipos" [autoClearSearch]="true" [noAutoComplete]="false" optionValueField="nome"
-                optionTextField="nome" formControlName="tipoDocumento" placeholder="Selecione"
-                (select)="doSelectTipoDocumento($event)">
-              </ngx-select>
+              <p-select [style]="{'width':'100%','height':'30px'}" class="w-full md  mb-2"
+                formControlName="tipoDocumento" [options]="tipos" [editable]="false" [filter]="false" filterBy="nome"
+                [showClear]="false" optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
+                [autofocus]="false" optionValue="nome" placeholder="" (onChange)="onChangeTipoPadraoIgreja($event)">
+              </p-select>
             </div>
+            }
 
             <!-- tipoDocumento -->
             <div class="form-group col-md-4 mb-0">
               <label class="text-dark mt-1">Modelo de Documento</label>
-              <ngx-select autocomplete="off" [allowClear]="false" [multiple]="false" [items]="tipoDocumentos"
-                [autoClearSearch]="true" [noAutoComplete]="false" optionValueField="nome" optionTextField="nome"
-                formControlName="tipo" placeholder="Selecione">
-              </ngx-select>
+              <p-select [style]="{'width':'100%','height':'30px'}" class="w-full md  mb-2" formControlName="tipo"
+                [options]="tipoDocumentos" [editable]="false" [filter]="true" filterBy="nome" [showClear]="false"
+                optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down" [autofocus]="false"
+                optionValue="nome" placeholder="Selecione">
+              </p-select>
             </div>
           </div>
         </div>
 
         <!-- Lista Variaveis -->
-        <div class="row mb-2">
-          <span class=" col-sm-2 mt-0">
+        <div class="col-12 mb-2">
+          <span class="  mt-0">
             <strong><button (click)="modalVariavel.show()" type="button" class="mb-1 " pButton pRipple
-                style="width: 20em; background-color: rgb(77, 83, 90); height: 30px; border-radius: 5px; font-size: 14; "
-                icon="pi pi-check">  Variáveis de Configuração
+                style="background-color: rgb(77, 83, 90); height: 30px; border-radius: 5px; font-size: 14; "
+                icon="pi pi-check">  Variáveis
               </button></strong>
           </span>
 
           <!-- Botao imprimir -->
-          <span class="col-sm-2 mt-0">
-            <strong><button id="btn_imp" type="button" class="p-button-purple mt-0 ml-8  " (click)="imprimir()" pButton
-                pRipple label="Imprimir" style="width: 6em; height: 30px; border-radius: 5px;
+          <span class=" mt-0 float-end">
+            <strong><button id="btn_imp" type="button" class="p-button-purple mt-0 " (click)="imprimir()" pButton
+                pRipple label="Imprimir" style="height: 30px; border-radius: 5px;
                 background: #1a82ce; color: aliceblue;">
               </button></strong>
           </span>
@@ -165,72 +169,61 @@
                   </span>
                 </div>
 
-                <div class="row ml-2 mr-2">
-                  <!-- Tabela Variaveis -->
-                  <div class="row">
-                    <div class="col-sm-12">
-                      <div class="mb-3 ">
-                        <div class="">
-                          <p-table #dtvariavel [value]="variaveis" [globalFilterFields]="['variavel']" [lazy]="true"
-                            (onLazyLoad)="loadVariavelLazy($event)" [showCurrentPageReport]="true"
-                            [totalRecords]="totalRegistros"
-                            styleClass="p-datatable-sm p-datatable-striped p-datatable-gridlines"
-                            [tableStyle]="{'min-width': '40rem'}"
-                            currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros"
-                            [paginator]="true" [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
+                <app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-purple  border-1">
+                  <p-table #dtvariavel [value]="variaveis"
+                    [globalFilterFields]="['nome', 'country.name', 'representative.name', 'status']" [lazy]="true"
+                    responsiveLayout="stack" (onLazyLoad)="loadVariavelLazy($event)" [showCurrentPageReport]="true"
+                    [totalRecords]="totalRegistros" showGridlines stripedRows
+                    currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
+                    [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
 
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th class="col-data-content-4"
+                          style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-left-radius: 5px;">
+                          <b>Variavel</b>
+                        </th>
+                        <th class="col-data-content-4"
+                          style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                          <b>Descrição da variável</b>
+                        </th>
+                        <th class="col-data-content-4"
+                          style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-right-radius: 5px;">
+                          <b>Local</b>
+                        </th>
 
-
-                            <ng-template pTemplate="header">
-                              <tr>
-                                <th class="col-data-content-4"
-                                  style="background: rgb(213, 215, 218); font-size: 11px ;color: rgb(11, 11, 11);">
-                                  <b>Variavel</b>
-                                </th>
-                                <th class="col-data-content-4"
-                                  style="background: rgb(213, 215, 218); font-size: 11px ;color: rgb(10, 10, 10);">
-                                  <b>Descrição da variável</b>
-                                </th>
-                                <th class="col-data-content-4"
-                                  style="background: rgb(213, 215, 218); font-size: 11px ;color: rgb(10, 10, 10);">
-                                  <b>Local</b>
-                                </th>
-
-                                <!-- <th class="col-acoes-header" style="background: rgb(77, 83, 90); font-size: 11px ;color: aliceblue;">
+                        <!-- <th class="col-acoes-header" style="background: rgb(77, 83, 90); font-size: 11px ;color: aliceblue;">
                           Ações</th> -->
 
-                              </tr>
-                            </ng-template>
+                      </tr>
+                    </ng-template>
 
-                            <ng-template pTemplate="body" let-variavel>
-                              <tr>
-                                <td class="col-data-content-3 text-c-dark" style=" font-size: 13px"><b>{{
-                                    variavel.variavel }}</b>
-                                </td>
-                                <td class="col-data-content-3 " style=" font-size: 13px">{{ variavel.nome }}
-                                <td class="col-data-content-3" style=" font-size: 13px">{{ variavel.local }}
-                                </td>
-                              </tr>
-                            </ng-template>
-                          </p-table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                    <ng-template pTemplate="body" let-variavel>
+                      <tr>
+                        <td class="col-data-content-3 text-c-dark" style=" font-size: 13px"><b>{{
+                            variavel.variavel }}</b>
+                        </td>
+                        <td class="col-data-content-3 " style=" font-size: 13px">{{ variavel.nome }}
+                        <td class="col-data-content-3" style=" font-size: 13px">{{ variavel.local }}
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </app-card>
+
 
                 <!-- Footer Modal  Variaveis  -->
-                <div class="modal-footer">
-
-                  <button data-dismiss="modal" type="button" class=" mr-4" pButton pRipple
-                    (click)="modalVariavel.hide();" label="Fechar" style="width: 6em; height: 35px;
-                    border-radius: 10px; border: 0;background: #1a82ce;" icon='pi pi-wallet'>
+                <div class="modal-footer py-1">
+                  <button data-dismiss="modal" type="button" class=" mr-4 " pButton pRipple
+                    (click)="modalVariavel.hide();" label="Fechar" style="width: 6em; height: 30px;
+                    border-radius: 6px; border: 0;background: #1a82ce;" icon='pi pi-wallet'>
                   </button>
                 </div>
                 <!-- <div class="form-group "></div>
                     <pre> {{separacaoForm.variaveis | json}} </pre> -->
               </div>
             </app-ui-modal>
+
           </div>
         </form>
 
