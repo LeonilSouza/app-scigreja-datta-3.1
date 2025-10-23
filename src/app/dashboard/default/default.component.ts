@@ -180,36 +180,6 @@ export class DefaultComponent implements OnInit {
     this.calendarOptions.initialEvents = this.calendarEvents;
   }
 
-  // checkLocalUser() {
-  //   const localToken = this.storage.getLocalToken();
-  //   const localUser = this.storage.getLocalUser();
-
-  //   if (localToken && localUser.email) {
-  //     const email = localUser.email;
-  //     this.usuarioService.getUsuarioFromEmail(email).subscribe({
-  //       next: (response) => {
-  //         this.usuario = response;
-  //         this.setorId = response['igrejas'][0].setor.id;
-  //         this.perfis0 = response['perfis'][0];
-  //         this.perfis1 = response['perfis'][1];
-
-  //         // Atualiza o signal
-  //         this.nomeIgrejaSignal.update(() => this.usuario.igrejaAtivaNome);
-  //         this.igrejaIdSignal.update(() => this.usuario.igrejaAtivaId);
-  //         this.setorIdSignal.update(() => response['igrejas'][0].setor.id);
-  //         this.nomeUsuarioSignal.update(() => this.usuario.name);
-
-  //         this.igrejaId = this.igrejaIdSignal();
-
-  //         this.carregarOnInit();
-  //       },
-  //       error: () => { },
-  //     });
-  //   } else {
-  //     this.router.navigate(['authentication/signin']);
-  //   }
-  // }
-
 
   ngOnDestroy(): void {
     this.destroy$.next();

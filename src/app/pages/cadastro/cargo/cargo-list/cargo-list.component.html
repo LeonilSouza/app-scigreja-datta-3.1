@@ -25,7 +25,7 @@
                     style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius: 0; border-top-right-radius: 0; border: 0; background: #1a82ce   ;"
                     pButton pRipple> <i class="pi pi-search"></i></button>
                 <input class="form-control" [(ngModel)]="nome" type="text" [ngModelOptions]="{standalone: true}"
-                    placeholder="Pesquisar Nome ou Sobrenome"
+                    placeholder="Pesquisar Nome "
                     (input)="dtcargo.filterGlobal($event.target?.addEventListener, 'contains')"
                     style="height: 30px; font-size: 12px; text-transform: uppercase ; border-bottom-left-radius: 0; border-top-left-radius: 0;">
             </p-inputgroup>

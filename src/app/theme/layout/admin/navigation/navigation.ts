@@ -199,6 +199,13 @@ export const NavigationItems: NavigationItem[] = [
             breadcrumbs: true,
           },
           {
+            id: 'cadastro-tipo-falta',
+            title: 'Tipo de Falta',
+            type: 'item',
+            url: '/tipofaltas',
+            breadcrumbs: true,
+          },
+          {
             id: 'cadastro-cargo',
             title: 'Cargos',
             type: 'item',

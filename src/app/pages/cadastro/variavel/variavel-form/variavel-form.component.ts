@@ -4,14 +4,15 @@ import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
 import { TranslateService } from '@ngx-translate/core';
-import { PrimeNGConfig } from 'primeng/api';
-import { GLOBALS } from 'src/app/_helpers/globals';
 import { Observable, Subscription } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
-import { VariavelDTO } from 'src/app/models/variavel.dto';
-import { VariavelService } from 'src/app/services/variavel.service';
 import { ButtonModule } from 'primeng/button';
+import { CargoService } from 'src/app/theme/shared/services/cargo.service';
+import { DepartamentoService } from 'src/app/theme/shared/services/departamento.service';
+import { VariavelService } from 'src/app/theme/shared/services/variavel.service';
+import { VariavelDTO } from 'src/app/theme/shared/models/variavel.dto';
+import { nomeIgrejaSignal } from 'src/app/theme/shared/_helpers/shared-signals';
 
 //declare const $: any;
 
@@ -26,13 +27,19 @@ import { ButtonModule } from 'primeng/button';
         FormsModule,
         ReactiveFormsModule,
     ],
+    providers: [
+        VariavelService,
+        DepartamentoService,
+        CargoService
+    ]
 })
 
 export class VariavelFormComponent implements OnInit, AfterContentChecked, OnDestroy {
 
-    subscription: Subscription;
+    nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+    nomeIgreja = nomeIgrejaSignal();
 
-    nomeIgreja: string = GLOBALS.nomeIgreja;
+    subscription: Subscription;
 
     /*  Referente a VariavelDTO */
     currentAction: string;
@@ -53,10 +60,9 @@ export class VariavelFormComponent implements OnInit, AfterContentChecked, OnDes
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
         public translate: TranslateService,
-        public primeNGConfig: PrimeNGConfig,
         private toastr: ToastrService,
 
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         this.setCurrentAction();
@@ -129,7 +135,7 @@ export class VariavelFormComponent implements OnInit, AfterContentChecked, OnDes
     }
 
     public createVariavel() {
-        
+
         // this.variavelForm.controls['nome'].setValue(this.formataNome(this.variavelForm.controls['nome'].value)); // Aqui formata o nome completo
         const variavel: VariavelDTO = this.variavelForm.value;
         this.variavelService.create(variavel)
@@ -165,26 +171,35 @@ export class VariavelFormComponent implements OnInit, AfterContentChecked, OnDes
 
     // METODOS PRIVADOS
 
-    confirmarExclusaoVariavel(variavel: VariavelDTO): void {
-        this.confirmationService.confirm({
-            message: 'Tem certeza que deseja excluir este registro?',
-            accept: () => {
-                this.excluir(variavel);
-            }
+    exclusaoVariavel(variavel: VariavelDTO) {
+        Swal.fire({
+          title: 'Exclusão',
+          text: 'Tem certeza que deseja excluir este registro?',
+          icon: 'error',
+          showCloseButton: true,
+          showCancelButton: true,
+        }).then((willDelete) => {
+          if (willDelete.dismiss) {
+            // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
+          } else {
+            this.excluir(variavel);
+            Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
+          }
         });
-    }
-
-    excluir(variavel: VariavelDTO) {
+      }
+    
+      excluir(variavel: any) {
         this.variavelService.delete(variavel.id)
-            .subscribe(() => {
-                this.router.navigate(['/variaveis'])
-                this.messageService.add({ severity: 'success', summary: 'Successo', detail: 'Registro excluido com sucesso!' });
+          .subscribe({
+            next: () => {
+              this.router.navigate(['/variaveis']);
             },
-                () => { });
-    }
+            error: () => { },
+          });
+      }
 
     private actionsForSuccess(variavel: VariavelDTO) {
-        const path: string = this.route.snapshot.parent.url[0].path;
+        const path: string = this.route.snapshot.data['path'];
 
         // redirect/reload component page  
         this.router.navigateByUrl(path, { skipLocationChange: true }).then(
@@ -198,7 +213,7 @@ export class VariavelFormComponent implements OnInit, AfterContentChecked, OnDes
         if (error.status === 422) {
             this.serverErrorMessages = JSON.parse(error._body).errors;
         } else if (error.status == 403) {
-            this.router.navigate(['login/signin'])
+            this.router.navigate(['login'])
 
         } else {
             this.serverErrorMessages = ["Falha na comunicação com o servidor. Por favor, teste mais tarde."]

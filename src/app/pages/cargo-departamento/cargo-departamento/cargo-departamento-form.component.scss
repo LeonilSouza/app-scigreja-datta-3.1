@@ -1,36 +1,29 @@
 @media screen and (max-width: 800px) {
-  .desktop-hidden {
-    display: initial;
-  }
-  .mobile-hidden {
-    display: none;
-  }
-}
-
-@media screen and (min-width: 800px) {
-  .desktop-hidden {
-    display: none;
-  }
-  .mobile-hidden {
-    display: initial;
-  }
-  .datatable-header {
-      color: black;
+    .desktop-hidden {
+      display: initial;
     }
-}
+    .mobile-hidden {
+      display: none;
+    }
+  }
 
-.danger {
-    color: red;
-    font-size: 15px;
-}
-.font-size {
-    font-size: 10px;
-}
+  @media screen and (min-width: 800px) {
+    .desktop-hidden {
+      display: none;
+    }
+    .mobile-hidden {
+      display: initial;
+    }
+    .datatable-header {
+        color: black;
+      }
+  }
 
-.nav-pills {
-  margin-bottom: 1rem;
-}
-
+   .danger {
+        color: red;
+        font-size: 15px;
+    }
+        
 /* primNG select Maravilha - Configura tudo no select
 TEM que colocar no scss do componente*/
 :host ::ng-deep.p-select {
@@ -53,5 +46,4 @@ TEM que colocar no scss do componente*/
   max-height: 30px !important;
 }
 
-// Fim select
-      
+/* Fim select */

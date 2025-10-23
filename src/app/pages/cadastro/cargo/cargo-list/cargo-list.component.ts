@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { LazyLoadEvent, SharedModule } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
 import { Router, RouterLink, RouterModule } from '@angular/router';
@@ -14,7 +14,6 @@ import { CardComponent } from 'src/app/theme/shared/components/card/card.compone
   selector: 'app-cargo-list',
   templateUrl: './cargo-list.component.html',
   styleUrls: ['./cargo-list.component.scss'],
-  encapsulation: ViewEncapsulation.None,
   standalone: true,
   imports: [
     ReactiveFormsModule,

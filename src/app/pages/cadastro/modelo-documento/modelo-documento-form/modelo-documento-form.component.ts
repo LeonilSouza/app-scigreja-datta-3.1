@@ -11,7 +11,6 @@ import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
 
 import { Table, TableModule } from 'primeng/table';
-import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonModule } from 'primeng/button';
 import { NgClass } from '@angular/common'; import { UiModalComponent } from 'src/app/theme/shared/components/modal/ui-modal/ui-modal.component';
 import { ModeloDocumentoDTO } from 'src/app/theme/shared/models/modelo-documento.dto';

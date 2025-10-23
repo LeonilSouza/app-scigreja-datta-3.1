@@ -17,7 +17,6 @@ import { InputGroup } from 'primeng/inputgroup';
     selector: 'app-setor-list',
     templateUrl: './setor-list.component.html',
     styleUrls: ['./setor-list.component.scss'],
-    encapsulation: ViewEncapsulation.None,
     standalone: true,
     imports: [
       CardComponent, 

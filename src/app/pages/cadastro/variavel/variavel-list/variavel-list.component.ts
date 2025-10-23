@@ -1,31 +1,57 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { LazyLoadEvent, SharedModule } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
-import { GLOBALS } from 'src/app/_helpers/globals';
 import { Router, RouterLink } from '@angular/router';
-import { VariavelDTO } from 'src/app/models/variavel.dto';
-import { VariavelService } from 'src/app/services/variavel.service';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { CardComponent } from '../../../../shared/components/card/card.component';
+import { CardComponent } from 'src/app/theme/shared/components/card/card.component';
+import { igrejaIdSignal, nomeIgrejaSignal, nomeUsuarioSignal, perfilSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
+import { VariavelDTO } from 'src/app/theme/shared/models/variavel.dto';
+import { VariavelService } from 'src/app/theme/shared/services/variavel.service';
+import { InputGroup } from 'primeng/inputgroup';
+import { CargoService } from 'src/app/theme/shared/services/cargo.service';
+import { DepartamentoService } from 'src/app/theme/shared/services/departamento.service';
 @Component({
-    selector: 'app-variavel-list',
-    templateUrl: './variavel-list.component.html',
-    styleUrls: ['./variavel-list.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: true,
-    imports: [CardComponent, ButtonModule, FormsModule, RouterLink, TableModule, SharedModule, NgbTooltip]
+  selector: 'app-variavel-list',
+  templateUrl: './variavel-list.component.html',
+  styleUrls: ['./variavel-list.component.scss'],
+  standalone: true,
+  imports: [
+    CardComponent,
+    ButtonModule,
+    FormsModule,
+    RouterLink,
+    TableModule,
+    SharedModule,
+    InputGroup,
+    NgbTooltip
+  ],
+  providers: [
+    VariavelService,
+    DepartamentoService,
+    CargoService
+  ]
 })
 
 export class VariavelListComponent implements OnInit {
+
+  nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+  igrejaIdSignal = igrejaIdSignal;
+  nomeUsuarioSignal = nomeUsuarioSignal;
+  perfilSignal = perfilSignal;
+  setorIdSignal = setorIdSignal;
+
+  nomeIgreja = nomeIgrejaSignal();
+  igrejaId = igrejaIdSignal();
+  nomeUsuario = nomeUsuarioSignal();
+  perfil = perfilSignal();
+  setorId = setorIdSignal();
 
   @ViewChild('dtvariavel') grid!: Table;
 
 
   totalRegistros: number = 0
-  igrejaId: number = GLOBALS.igrejaId;
-  perfil: string = GLOBALS.perfil;
   variaveis: VariavelDTO[] = [];
 
   public page = 0;
@@ -61,10 +87,10 @@ export class VariavelListComponent implements OnInit {
         },
         error: (error): void => {
           if (error.status == 403) {
-            this.router.navigate(['login/signin'])
+            this.router.navigate(['login'])
 
           } else {
-            this.router.navigate(['login/signin'])
+            this.router.navigate(['login'])
           }
         }
       })

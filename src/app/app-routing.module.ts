@@ -40,7 +40,7 @@ const routes: Routes = [
       },
       {
         path: 'ativas',
-        loadChildren: () => import('./pages/cadastro/igreja/igreja.routes').then((module) => module.IGREJA_ROUTES ),
+        loadChildren: () => import('./pages/cadastro/igreja/igreja.routes').then((module) => module.IGREJA_ROUTES),
       },
       {
         path: 'usuarios',
@@ -57,6 +57,18 @@ const routes: Routes = [
       {
         path: 'modelodocumentos',
         loadChildren: () => import('./pages/cadastro/modelo-documento/modelo-documento-routes').then((module) => module.MODELO_DOCUMENTO_ROUTES),
+      },
+      {
+        path: 'cargodeptos',
+        loadChildren: () => import('./pages/cargo-departamento/cargo-departamento.routes').then((module) => module.CARGO_DEPARTAMENTO_ROUTES),
+      },
+      {
+        path: 'variaveis',
+        loadChildren: () => import('./pages/cadastro/variavel/variavel.routes').then((module) => module.VARIAVEL_ROUTES),
+      },
+      {
+        path: 'tipofaltas',
+        loadChildren: () => import('./pages/cadastro/tipo-falta/tipo-falta.routes').then((module) => module.TIPO_FALTA_ROUTES),
       },
       // {
       //   path: 'cartas', 
