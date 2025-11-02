@@ -1,0 +1,698 @@
+<!-- Inicio Breadcamb Inicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio Breadcamb-->
+<ng-container style="height: 100;">
+  <div class="row ">
+    <div class="col-md-12">
+      <i class="fas fa-home f-26 text-dark mb-2"></i>   <span class="text-muted mb-2" style="font-size: 20px;">{{
+        nomeIgreja }}</span>
+      <div class="row ">
+        <div class="col-md-12">
+          <div class="flex">
+            <div class="row">
+              <nav aria-label="breadcrumb mb-0">
+                <ol class="breadcrumb mb-0">
+                  <li class="breadcrumb-item active"><a routerLink="/dashboard/default">Home</a></li>
+                  <li class="breadcrumb-item active"><a>Secretaria</a></li>
+                  <li class="breadcrumb-item active"><a>Carta</a></li>
+                </ol>
+                <hr class="mt-1 mb-0 text-c-blue border-2">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><br>
+</ng-container>
+<!-- fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb -->
+<!-- Inicio Botões -->
+<div class="card-header">
+  <ng-container style="height: 100;">
+    <div class="row ">
+      <div class="col-md-12">
+        <div class="row">
+
+          <!-- Botões Inicio-->
+          <div class="">
+            <span class="float-end  mb-2 ">
+              @if(currentAction !== 'new' && cartaForm.controls['modeloCarta'].value == 'Mudança' &&
+              cartaForm.controls['dataEmissao'].value == hoje ){
+              <p-button type="button" (click)="exclusaoCarta(carta)" [style]="{'height':'30px', 'margin-left':'10px'}"
+                size="small" icon='pi pi-times' variant="outlined" severity="danger" label="Excluir" class="" />
+              }
+            </span>
+
+            <span class="float-end  mb-2 ">
+              @if(currentAction !== 'new' && cartaForm.controls['modeloCarta'].value == 'Recomendação'){
+              <p-button type="button" (click)="exclusaoCarta(carta)" [style]="{'height':'30px', 'margin-left':'10px'}"
+                size="small" icon='pi pi-times' variant="outlined" severity="danger" label="Excluir" class="" />
+              }
+            </span>
+
+            <!-- Botao salvar -->
+            <span class="float-end mb-2 ml-4">
+              @if(!visualizar){
+              <p-button
+                [disabled]="(submittingForm || cartaForm.invalid || cartaForm.controls['statusMembro'].value !== 'Ativo' || 
+                  (cartaForm.controls['situacaoEspiritual'].value == 'Prova' && cartaForm.controls['tipoCarta'].value == 'Recomendação'))"
+                (click)="ctrUpdate()" (click)="submitForm()" type="button" class="mr-4"
+                [style]="{'height':'30px', 'margin-left':'10px', 'background':'#388669'}" size="small" label="Salvar"
+                icon='pi pi-print' />
+              }
+            </span>
+
+            <!-- Botao imprimir -->
+            <span class="float-end  mb-2 ">
+              @if(visualizar){
+              <p-button [disabled]="cartaForm.invalid" type="button" (click)="imprimir();"
+                [style]="{'background':'#647A8E','height':'30px', 'margin-left':'10px'}" size="small" icon='pi pi-print'
+                label="Imprimir" class="text-c-blue" />
+              }
+            </span>
+
+            <!-- Botao Visualizar -->
+            <span class="float-end  mb-2 ">
+              @if(!visualizar && carta.id > 0){
+              <p-button [disabled]="cartaForm.invalid" type="button" (click)="submitForm(); "
+                [style]="{'background':'#647A8E','height':'30px', 'margin-left':'10px'}" size="small" icon='pi pi-print'
+                label="Visualizar" class="" />
+              }
+            </span>
+
+            <!-- Botao voltar -->
+            <span class="float-end mb-2">
+              @if(visualizar){
+              <p-button (click)="voltar()" routerLink="/cartas" icon='pi pi-chevron-left'
+                [style]="{'height':'30px', 'margin-left':'10px'}" size="small" severity="info" label="voltar"
+                class=" mt-0" label="Voltar" />
+              }
+            </span>
+
+            <!-- Botao voltar -->
+            <span class="float-end mb-2">
+              @if(!visualizar){
+              <p-button routerLink="/cartas" routerLink="/cartas" icon='pi pi-chevron-left'
+                [style]="{'height':'30px', 'margin-left':'10px'}" size="small" severity="info" label="voltar"
+                class=" mt-0" label="Voltar" />
+              }
+            </span>
+
+          </div>
+          <!-- Botões Fim-->
+
+          <span class="float-left">
+            <nav aria-label="breadcrumb ">
+              <div class="card mb-3"
+                style="background-color: rgb(77, 83, 90); padding-left: 11px; border-radius: 4px; height: 30px; align-content: center;">
+                <span class="mr-8 ml-4 mb-1  mt-1 text-white f-13">
+                  <p class="f-14">{{ pageTitle }}</p>
+                </span>
+              </div>
+            </nav>
+          </span>
+          <!-- Botões Fim-->
+
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+<!-- Fim botões -->
+
+<form [formGroup]="cartaForm" autocomplete="off" (submit)="submitForm()">
+  @if(!visualizar){
+  <ng-container>
+    <div class="row">
+      <div class="col-md-12 col-xl-6 ">
+        <app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-blue border-1 shadow"
+          blockClass="pc-component">
+
+          <div class="header">
+            <h5 class="mb-2 mt-2 text">Dados do Membro</h5>
+          </div>
+          <div class="row mb-2">
+            <!-- <div class="row"> -->
+
+            <!-- membro  Nome-->
+            @if(cartaForm.controls['id'].value == null || cartaForm.controls['modeloCarta'].value !== 'Mudança'){
+            <div class="form-group col-md-9 ">
+              <label class="">Nome</label>
+
+              <p-select (onChange)="onChangePessoa($event)" formControlName="pessoaId"
+                [options]="pessoasNomeConjugeFilhos" [editable]="false" [filter]="true" filterBy="nome"
+                [showClear]="false" optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-users"
+                optionValue="id" [autofocus]="false" placeholder="Selecione um membro" />
+            </div>
+            }
+
+            @if(cartaForm.controls['id'].value !== null && cartaForm.controls['modeloCarta'].value == 'Mudança'){
+            <div class="form-group col-md-9 ">
+              <label class="">Nome</label>
+              <input readonly type="text" class="form-control" formControlName="nomeMembro" required>
+            </div>
+            }
+
+            <!-- Cartão de Membro -->
+            @if(cartaForm.controls['id'].value == null || cartaForm.controls['modeloCarta'].value !== 'Mudança'){
+            <div class="form-group col-md-3 was-validated">
+              <label class="">Cartão Membro</label>
+              <input autocomplete="off" type="text" class="form-control" formControlName="cartaoMembro" required>
+            </div>
+            }
+
+            @if(cartaForm.controls['id'].value !== null && cartaForm.controls['modeloCarta'].value == 'Mudança'){
+            <div class="form-group col-md-3 was-validated">
+              <label class="">Cartão Membro</label>
+              <input readonly type="text" class="form-control" formControlName="cartaoMembro" required>
+            </div>
+            }
+
+            <!-- </div> -->
+          </div>
+
+          <div class="row">
+
+            <!-- Membro desde -->
+            <div class="form-group col-md-3  ">
+              <label>Membro desde</label>
+              <input matInput mask="00/0000" readonly autocomplete="off" type="text" class="form-control "
+                formControlName="membroDesde">
+            </div>
+
+            <!-- Status -->
+            <div class="form-group col-md-3 ">
+              <label>Situação Cadastral</label>
+              <input [style.color]="cartaForm.controls['statusMembro'].value === 'Ativo' ? 'green' : 'red'" readonly
+                autocomplete="off" type="text" class="form-control " formControlName="statusMembro">
+            </div>
+
+
+            <!-- Situação Espiritual  -->
+            <div class="form-group col-md-3">
+              <label>Situação Espiritual</label>
+              <input [style.color]="cartaForm.controls['situacaoEspiritual'].value === 'Comunhão' ? 'green' : 'red'"
+                readonly autocomplete="off" type="text" class="form-control " formControlName="situacaoEspiritual">
+            </div>
+
+            <!-- Situação Ministerial Inserção-->
+            @if(currentAction == 'new'){
+            <div class="form-group col-md-3">
+              <label>Titulo Ministerial</label>
+              <input [style.color]="'blue'" readonly autocomplete="off" type="text" class="form-control "
+                formControlName="tituloMin2">
+            </div>
+            }
+
+            <!-- Situação Ministerial Edição-->
+            @if(currentAction == 'edit'){
+            <div class="form-group col-md-3">
+              <label>Titulo Ministerial</label>
+              <input [style.color]="'blue'" readonly autocomplete="off" type="text" class="form-control "
+                formControlName="tituloMin3">
+            </div>
+            }
+
+          </div>
+        </app-card>
+      </div>
+
+      <div class="col-md-12 col-xl-6">
+        <app-card [hidHeader]="true" cardTitle="Dados da Carta" cardClass="card-border-c-green border-1 shadow"
+          blockClass="pc-component">
+
+          <!-- codigo -->
+          <div hidden class="form-group col-md-0">
+            <label>Código</label>
+            <input readonly type="text" class="form-control" formControlName="id">
+          </div>
+
+          <div class="row mb-0">
+            <h5 class="mb-2 mt-2 text">Dados da Carta</h5>
+
+            <!-- modeloDocumentoId  // Os Tipos de Carta são Buscado nos Modelos Prontos-->
+            @if(currentAction == 'new'){
+            <div class="form-group col-md-4 mb-3">
+              <label>Tipo de Carta</label>
+              <p-select (onChange)="onChangeTipoCarta($event)" formControlName="modeloDocumentoId"
+                [options]="modeloDocumentos" [editable]="false" [filter]="true" filterBy="nome" [showClear]="false"
+                optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-envelope" optionValue="id"
+                [autofocus]="true" placeholder="Selecione um tipo de Carta" />
+            </div>
+            }
+
+            @if(cartaForm.controls['id'].value !== null && cartaForm.controls['modeloCarta'].value == 'Mudança'){
+            <div class="form-group col-md-4 mb-3">
+              <label class="">Tipo de Carta</label>
+              <input readonly type="text" class="form-control text-c-red" formControlName="tipoCarta">
+            </div>
+            }
+
+            @if(cartaForm.controls['id'].value !== null && cartaForm.controls['modeloCarta'].value == 'Recomendação'){
+            <div class="form-group col-md-4 mb-3">
+              <label class="">Tipo de Carta</label>
+              <input readonly type="text" class="form-control text-c-green" formControlName="tipoCarta">
+            </div>
+            }
+
+            <!-- CheckBox Estadual -->
+            @if(cartaForm.controls['modeloCarta'].value == 'Recomendação'){
+            <div class="col-xl-2 col-md-2 mb-0">
+              <label class="text-c-blue">Estadual</label>
+              <div class="checkbox checkbox-primary checkbox-fill" [placement]="'bottom'"
+                ngbTooltip="Abrangência Estadual">
+                <input class="" type="checkbox" name="cb-estadual" id="cb-estadual" [checked]="estadual"
+                  value="Estadual" (change)="onChangeEstadual($event)" />
+                <label for="cb-estadual" class="cr"></label>
+              </div>
+            </div>
+            }
+
+            <!-- CheckBox Territorial/Internacional  -->
+            @if(cartaForm.controls['modeloCarta'].value == 'Recomendação'){
+            <div class="col-x2- col-md-2 mb-0">
+              <label class="text-c-green ">Territorial</label>
+              <div class="checkbox checkbox-success checkbox-fill   " [placement]="'bottom'"
+                ngbTooltip="Territorial ou Internacional">
+                <input class="mb-0 mt-0" type="checkbox" name="cb-territorial" id="cb-territorial"
+                  [checked]="territorial" value="Territorial" (change)="onChangeTerritorial($event)" />
+                <label for="cb-territorial" class="cr"></label>
+              </div>
+            </div>
+            }
+
+            <!-- dataValidade -->
+            <div class="form-group col-md-4 mb-3">
+              <label>Validade</label>
+              <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true" [yearNavigator]="true"
+                yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true" inputId="icondisplay" dataType="string"
+                dateFormat="dd/mm/yy" formControlName="dataValidade" placeholder="dd/mm/aaaa" />
+            </div>
+          </div>
+
+          <div class="row  mb-1">
+
+            <!-- CheckBox Familia -->
+            @if((cartaForm.controls['statusMembro'].value !== 'Transferido')){
+            <div class="col-xl-1 col-md-2 mb-2 mt-1">
+              <label>Família</label>
+              <div class="checkbox checkbox-primary checkbox-fill " [placement]="'bottom'" ngbTooltip="Incluir Família">
+                <input type="checkbox" name="cb-familia" id="cb-familia" [checked]="familia" value="Família"
+                  (change)="onChangeFamilia($event)" />
+                <label for="cb-familia" class="cr"></label>
+              </div>
+            </div>
+            }
+
+            <!-- CheckBox Familia Desabilitado-->
+            @if(cartaForm.controls['statusMembro'].value == 'Transferido'){
+            <div class="col-xl-1 col-md-1 mb-2 mt-1">
+              <label>Família</label>
+              <div class="checkbox checkbox-primary checkbox-fill " [placement]="'bottom'" ngbTooltip="Incluir Família">
+                <input disabled type="checkbox" name="cb-familia" id="cb-familia" [checked]="familia" value="Família" />
+                <label for="cb-familia" class="cr"></label>
+              </div>
+            </div>
+            }
+
+            <!-- CheckBox Conjuge -->
+            @if((cartaForm.controls['statusMembro'].value !== 'Transferido')){
+            <div class="col-xl-2 col-md-2 mb-2 mt-1">
+              <label>Conjuge</label>
+              <div class="checkbox checkbox-success checkbox-fill " [placement]="'bottom'" ngbTooltip="Incluir Conjuge">
+                <input type="checkbox" name="cb-esposa" id="cb-esposa" [checked]="esposa" value="Esposa"
+                  (change)="onChangeEsposa($event)" />
+                <label for="cb-esposa" class="cr"></label>
+              </div>
+            </div>
+            }
+
+            <!-- CheckBox Conjuge Desabilitado-->
+            @if((cartaForm.controls['statusMembro'].value == 'Transferido')){
+            <div class="col-xl-2 col-md-2 mb-2 mt-1">
+              <label>Conjuge</label>
+              <div class="checkbox checkbox-success checkbox-fill " [placement]="'bottom'" ngbTooltip="Incluir Conjuge">
+                <input disabled type="checkbox" name="cb-esposa" id="cb-esposa" [checked]="esposa" value="Esposa" />
+                <label for="cb-esposa" class="cr"></label>
+              </div>
+            </div>
+            }
+
+            <!-- CheckBox filhos -->
+            @if(!familia && cartaForm.controls['statusMembro'].value !== 'Transferido'){
+            <div class="col-xl-1 col-md-1 mb-2 mt-1">
+              <label>Filhos    </label>
+              <div class="checkbox checkbox-gray checkbox-fill   " [placement]="'bottom'" ngbTooltip="Incluir Filhos">
+                <input type="checkbox" name="cb-filho" id="cb-filho" [checked]="filho" value="Filho"
+                  (change)="onChangeFilho($event)" />
+                <label for="cb-filho" class="cr"></label>
+              </div>
+            </div>
+            }
+
+            <!-- CheckBox filhos Desabilitado-->
+            @if(!familia && cartaForm.controls['statusMembro'].value == 'Transferido'){
+            <div class="col-xl-1 col-md-1 mb-2 mt-1">
+              <label>Filhos    </label>
+              <div class="checkbox checkbox-gray checkbox-fill   " [placement]="'bottom'" ngbTooltip="Incluir Filhos">
+                <input disabled type="checkbox" name="cb-filho" id="cb-filho" [checked]="filho" value="Filho" />
+                <label for="cb-filho" class="cr"></label>
+              </div>
+            </div>
+            }
+
+            <!-- Conjuge Normal-->
+            @if(((esposa === true || familia === true) && (cartaForm.controls['statusMembro'].value !==
+            'Transferido'))){
+            <div class="col-xl-6 col-md-6 mb-2 mt-1">
+              <label class="text-c-green mb-1">Conjuge</label>
+              <p-select (onChange)="onChangeConjuge($event)" formControlName="idConjuge"
+                [options]="pessoasNomeConjugeFilhos" [editable]="false" [filter]="true" filterBy="nome"
+                [showClear]="false" optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-user"
+                optionValue="id" [autofocus]="true" placeholder="Selecione um conjuge" />
+            </div>
+            }
+            <!-- Conjuge  Bloqueado-->
+            @if(((esposa === true || familia === true) && cartaForm.controls['statusMembro'].value == 'Transferido')){
+            <div class="col-xl-6 col-md-6 mb-2 mt-1">
+              <label class="text-c-green mb-1">Conjuge</label>
+              <input readonly type="text" class="form-control" formControlName="conjuge">
+            </div>
+            }
+
+            <!-- Conjuge desmarcado -->
+            @if((esposa === false && familia === false)){
+            <div class="col-xl-5 col-md-5 mb-2 mt-1">
+              <label class="text-muted mb-1">Conjuge</label>
+              <p-select [disabled]="true" placeholder="Selecione ou edite um conjuge"></p-select>
+            </div>
+            }
+
+            <!-- cartaoConjuge-->
+            @if(((esposa === true || familia === true) && cartaForm.controls['statusMembro'].value !== 'Transferido')){
+            <div class="col-xl-2 col-md-2 mb-2 mt-1 was-validated">
+              <label class="mb-1">Nº Cartão</label>
+              <input style="height: 30px;" autocomplete="off" type="text" class="form-control float-end"
+                formControlName="cartaoConjuge">
+            </div>
+            }
+
+            <!-- cartaoConjuge Bloqueado-->
+            @if(((esposa === true || familia === true) && cartaForm.controls['statusMembro'].value == 'Transferido')){
+            <div class="col-xl-2 col-md-2 mb-2 mt-1 was-validated">
+              <label class="mb-1">Nº Cartão</label>
+              <input readonly style="height: 30px;" autocomplete="off" type="text" class="form-control float-end"
+                formControlName="cartaoConjuge">
+            </div>
+            }
+
+          </div>
+
+          <div class="row">
+            <!-- Lista de qtde de filhos -->
+            @if((filho && cartaForm.controls['statusMembro'].value !== 'Transferido')){
+            <div class="col-xl-2 col-md-2 mb-2">
+              <label class="text-c-blue">Qtde </label>
+              <p-select (onChange)="onChangeQtde($event)" formControlName="qtde" [options]="qtdes" [editable]="true"
+                [filter]="true" filterBy="nome" [showClear]="false" optionLabel="label" resetFilterOnHide="true"
+                dropdownIcon="pi pi-user" optionValue="value" [autofocus]="true" placeholder="0" />
+            </div>
+            }
+
+            <!-- Lista de qtde de filhos Bloqueada -->
+            @if((filho && cartaForm.controls['statusMembro'].value == 'Transferido')){
+            <div class="col-xl-2 col-md-2 mb-2">
+              <label class="text-c-blue">Qtde </label>
+              <input readonly style="height: 30px;" autocomplete="off" type="text" class="form-control float-end"
+                formControlName="qtde">
+            </div>
+            }
+
+            <!-- dropdown primeNg Filho-1 -->
+            @if((filho && cartaForm.controls['qtde'].value >=1 && cartaForm.controls['statusMembro'].value !==
+            'Transferido')){
+            <div class="col-xl-5 col-md-5 mb-2 ">
+              <label class="text-c-blue">1º Filho</label>
+              <p-select (onChange)="onChangeFilho1($event)" formControlName="idFilho1"
+                [options]="pessoasNomeConjugeFilhos" [editable]="false" [filter]="true" filterBy="nome"
+                [showClear]="false" optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-user"
+                optionValue="id" [autofocus]="true" placeholder="Selecione um nome" />
+            </div>
+            }
+
+            <!-- Filho-1 Bloqueado -->
+            @if((filho && cartaForm.controls['qtde'].value >=1 && cartaForm.controls['statusMembro'].value ==
+            'Transferido')){
+            <div class="col-xl-5 col-md-5 mb-2 ">
+              <label class="text-c-blue">1º Filho</label>
+              <input readonly style="height: 30px;" autocomplete="off" type="text" class="form-control float-end"
+                formControlName="filho1">
+            </div>
+            }
+
+            <!-- dropdown primeNg Filho-2 -->
+            @if((filho && cartaForm.controls['qtde'].value >= 2 && cartaForm.controls['statusMembro'].value !==
+            'Transferido')){
+            <div class="col-xl-5 col-md-5 mb-2 ">
+              <label class="text-c-blue">2º Filho</label>
+              <p-select (onChange)="onChangeFilho2($event)" formControlName="idFilho2"
+                [options]="pessoasNomeConjugeFilhos" [editable]="false" [filter]="true" filterBy="nome"
+                [showClear]="false" optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-user"
+                optionValue="id" [autofocus]="true" placeholder="Selecione um nome" />
+            </div>
+            }
+
+            <!-- Filho-2 Bloqueado -->
+            @if((filho && cartaForm.controls['qtde'].value >= 2 && cartaForm.controls['statusMembro'].value ==
+            'Transferido')){
+            <div class="col-xl-5 col-md-5 mb-2 ">
+              <label class="text-c-blue">2º Filho</label>
+              <input readonly style="height: 30px;" autocomplete="off" type="text" class="form-control float-end"
+                formControlName="filho2">
+            </div>
+            }
+
+            <!-- dropdown primeNg Filho-3 -->
+            @if((filho && cartaForm.controls['qtde'].value >= 3 && cartaForm.controls['statusMembro'].value !==
+            'Transferido')){
+            <div class="col-xl-6 col-md-6 mb-2">
+              <label class="text-c-blue mt-1">3º Filho</label>
+              <p-select (onChange)="onChangeFilho3($event)" formControlName="idFilho3"
+                [options]="pessoasNomeConjugeFilhos" [editable]="false" [filter]="true" filterBy="nome"
+                [showClear]="false" optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-user"
+                optionValue="id" [autofocus]="true" placeholder="Selecione um nome" />
+            </div>
+            }
+
+            <!-- Filho-3 Bloqueado -->
+            @if((filho && cartaForm.controls['qtde'].value >= 3 && cartaForm.controls['statusMembro'].value ==
+            'Transferido')){
+            <div class="col-xl-5 col-md-5 mb-2 ">
+              <label class="text-c-blue">3º Filho</label>
+              <input readonly style="height: 30px;" autocomplete="off" type="text" class="form-control float-end"
+                formControlName="filho3">
+            </div>
+            }
+
+            <!-- dropdown primeNg Filho-4 -->
+            @if((filho && cartaForm.controls['qtde'].value >= 4 && cartaForm.controls['statusMembro'].value !==
+            'Transferido')){
+            <div class="col-xl-6 col-md-6 mb-2">
+              <label class="text-c-blue mt-1">4º Filho</label>
+              <p-select (onChange)="onChangeFilho4($event)" formControlName="idFilho4"
+                [options]="pessoasNomeConjugeFilhos" [editable]="false" [filter]="true" filterBy="nome"
+                [showClear]="false" optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-user"
+                optionValue="id" [autofocus]="true" placeholder="Selecione um nome" />
+            </div>
+            }
+            <!-- Filho-4 Bloqueado -->
+            @if((filho && cartaForm.controls['qtde'].value >= 4 && cartaForm.controls['statusMembro'].value ==
+            'Transferido')){
+            <div class="col-xl-5 col-md-5 mb-2 ">
+              <label class="text-c-blue">4º Filho</label>
+              <input readonly style="height: 30px;" autocomplete="off" type="text" class="form-control float-end"
+                formControlName="filho4">
+            </div>
+            }
+
+          </div>
+
+        </app-card>
+      </div>
+
+      <!-- QUANDO PAIS FOR BRASIL PARA BUSCAR CIDADES -->
+      <div class="col-md-12 col-xl-6">
+        <app-card [hidHeader]="true" cardTitle="Dados do Destino" cardClass="card-border-c-red border-1 shadow"
+          blockClass="pc-component">
+
+          <!-- <div class="row" style="padding-bottom: 5px;"> -->
+
+          <div class="header">
+            <h5 class="mb-2 mt-2 text">Dados do Destino</h5>
+          </div>
+
+          <!-- Paises qdo Brasil-->
+          <div class="row">
+
+            <!-- Pais  -->
+            <div class="form-group col-md-7 mb-5">
+              <label class="">País</label>
+
+              <p-select (onChange)="onChangePaisDestino($event)" formControlName="idPaisDestino" [options]="paises"
+                [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
+                resetFilterOnHide="true" dropdownIcon="pi pi-flag" optionValue="id" [autofocus]="false"
+                placeholder="Selecione um Pais" />
+            </div>
+
+
+            <!-- cidadeDestino -->
+            @if(cartaForm.controls['paisDestino'].value === 'Brasil' && estadual !== true && territorial !== true){
+            <div class="form-group col-md-5 mb-5">
+              <label class="">Cidade</label>
+
+              <ng-select [items]="cidadesFiltradas" bindLabel="nome" [searchable]="true" (click)="onFocus()"
+                (open)="filtrarCidades()" (search)="onSearch($event)" (change)="onChangeCidades($event)"
+                aria-disabled="true" [editableSearchTerm]="false" [clearable]="false" [multiple]="false"
+                formControlName="cidadeDestino" notFoundText="Item não encontrado" placeholder="Selecione uma Cidade">
+                <ng-template ng-header-tmp class="card flex flex-wrap justify-center gap-4">
+                  <p-iconfield>
+                    <p-inputicon styleClass="pi pi-search" />
+                    <input type="text" pInputText id="focus-input" type="text" class="form-control custom-search-input"
+                      (input)="onSearch($event)" />
+                  </p-iconfield>
+                </ng-template>
+                <ng-template ng-option-tmp let-item="item"> {{ item.nome }}/{{ item.uf }}<br /> </ng-template>
+              </ng-select>
+
+            </div>
+            }
+
+
+            <!-- cidadeId destino -->
+            @if(cartaForm.controls['paisDestino'].value !== 'Brasil' && (territorial !== true && estadual !== true)){
+            <div class="form-group col-md-5">
+              <label>Cidade</label>
+              <input type="text" style="text-transform: uppercase" class="form-control" formControlName="cidadeDestino"
+                placeholder="Nome da Cidade ">
+            </div>
+            }
+
+          </div>
+          <div class="row">
+            <!--QUANDO PAIS FOR DIFERENTE DE BRASIL -->
+
+
+            <!-- estadoDestino-->
+            @if(cartaForm.controls['paisDestino'].value == 'Brasil' && estadual == false && territorial == false){
+            <div class="form-group col-md-5 mb-4">
+              <label for="estado ">Estado</label>
+              <input type="text" style="text-transform: uppercase" class="form-control" formControlName="estadoDestino"
+                placeholder="Nome do Estado ">
+            </div>
+            }
+
+            @if(cartaForm.controls['paisDestino'].value !== 'Brasil' && estadual == true && territorial == false ){
+            <div class="form-group col-md-5 mb-4">
+              <label for="estado ">Estado</label>
+              <input type="text" style="text-transform: uppercase" class="form-control" formControlName="estadoDestino"
+                placeholder="Nome do Estado ">
+            </div>
+            }
+
+            @if(cartaForm.controls['paisDestino'].value !== 'Brasil' && estadual == false && territorial == false){
+            <div class="form-group col-md-5 mb-4">
+              <label for="estado ">Estado</label>
+              <input type="text" style="text-transform: uppercase" class="form-control" formControlName="estadoDestino"
+                placeholder="Nome do Estado ">
+            </div>
+            }
+
+
+            <!--QUANDO PAIS FOR IGUAL DE BRASIL E CARETA- RECOMENDAÇÃOPARA BUSCAR ESTADOS-->
+            @if(cartaForm.controls['paisDestino'].value == 'Brasil' && estadual == true && territorial == false){
+            <div class="form-group col-md-5 mb-4">
+              <label class="">Estado</label>
+              <p-select (onChange)="onChangeEstado($event)" formControlName="idEstadoDestino" [options]="estados"
+                [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
+                resetFilterOnHide="true" dropdownIcon="pi pi-flag" optionValue="id" [autofocus]="false"
+                placeholder="Estado de Destino" />
+
+            </div>
+            }
+
+            <!-- UF -->
+            @if((estadual == true || territorial == false)){
+            <div class="form-group col-sm-2">
+              <label>UF</label>
+              <input style="border: 1; border-color: rgb(216, 214, 214);" type="text" class="form-control"
+                formControlName="ufDestino" style="text-transform: uppercase" placeholder="UF">
+            </div>
+            }
+
+            <!-- Congregação -->
+            <div class="form-group col-sm-5 was-validated">
+              <label>Congregação</label>
+              <input type="text" style="text-transform: uppercase" class="form-control"
+                formControlName="congregacaoDestino" placeholder="Nome da Congregação ">
+            </div>
+
+          </div>
+        </app-card>
+      </div>
+
+      <div class="col-md-12 col-xl-6">
+        <app-card [hidHeader]="true" cardTitle="Assinaturas" cardClass="card-border-c-yellow border-1 shadow"
+          blockClass="pc-component">
+
+          <div class="row">
+
+            <div class="header">
+              <h5 class="mb-2 mt-2 text">Assinatura</h5>
+            </div>
+
+            <!-- Observação -->
+            <div class="form-group col-md-12">
+              <label>Observação</label>
+              <textarea class="form-control textearea" formControlName="observacao" style="resize: vertical" rows="6"
+                maxlength="220"></textarea>
+            </div>
+          </div>
+
+          <!-- Pastor/Responsável -Lista apenas Obreiros -->
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label>Assinatura</label>
+              <p-select (onChange)="onChangeResponsavel($event)" formControlName="idResponsavel" [options]="pessoas"
+                [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
+                resetFilterOnHide="true" dropdownIcon="pi pi-user" optionValue="id" [autofocus]="true"
+                placeholder="Selecione um responsável" />
+            </div>
+
+            <div class="form-group col-md-6">
+              <label>Escrevente</label>
+              <p-select (onChange)="onChangeSecretario($event)" formControlName="idSecretario" [options]="pessoas"
+                [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
+                resetFilterOnHide="true" dropdownIcon="pi pi-user" optionValue="id" [autofocus]="true"
+                placeholder="Selecione um Escrevente" />
+            </div>
+          </div>
+
+        </app-card>
+      </div>
+    </div>
+  </ng-container>
+  }
+  <ng-container>
+    <!-- CKEDITOR VISUALIZAR-->
+    <ckeditor hidden [config]="config" (change)="onChange($event)" formControlName="conteudo">
+    </ckeditor>
+    @if(visualizar){
+    <ckeditor [config]="config" (change)="onChange($event)" formControlName="conteudo">
+    </ckeditor>
+    }
+  </ng-container>
+</form>
+
+<div class="row ">
+  <!-- <div class="form-group ">
+    <pre> {{ cartaForm.value | json }} </pre><br>
+  </div> -->
+</div>

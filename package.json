@@ -69,6 +69,7 @@
     "flatpickr": "4.6.13",
     "hammerjs": "2.0.8",
     "jquery": "3.7.1",
+    "lodash": "^4.17.21",
     "lodash-es": "4.17.21",
     "mousetrap": "1.6.5",
     "ng-apexcharts": "1.16.0",

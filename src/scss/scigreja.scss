@@ -155,11 +155,15 @@
 .p-datepicker table td>span {
   height: auto !important;
   width: 100% !important;
-  font-size: 12px !important;
+  font-size: 13px !important;
 }
 
 .p-datepicker-font-size {
   font-size: 10px !important;
+}
+:host ::ng-deep .p-datepicker {
+  // font-family: sans-serif;
+  font-size: 8px; // Ajuste o tamanho da fonte do pop-up do calendário
 }
 // Fim Controle do Calendar primeNg.
 

@@ -71,10 +71,10 @@ import { igrejaIdSignal, nomeIgrejaSignal, nomeUsuarioSignal, perfilSignal, seto
     SelectModule,
     DatePicker,
     UiModalComponent,
-
-    NgbCollapse,
     NgSelectModule,
     NgSelectComponent,
+
+    NgbCollapse,
     InputIcon,
     IconField,
     InputTextModule,

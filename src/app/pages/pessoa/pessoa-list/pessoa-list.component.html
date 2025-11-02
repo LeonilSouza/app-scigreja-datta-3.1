@@ -6,8 +6,8 @@
           <div class="card-body ">
             <div class="row shadow mb-3 px-3">
 
-              <div class="form-group col-md-4 mt-2 mb-3">
-                <label class="text-dark mt-0 "> Pesquisa</label>
+              <div class="form-group col-md-4 mt-2 ">
+                <label class="text-dark mt-0  mb-1"> Pesquisa</label>
                 <p-inputgroup>
                   <button type="button" class=""
                     style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius: 0; border-top-right-radius: 0; border: 0; background: #1a82ce   ;"
@@ -19,7 +19,7 @@
                 </p-inputgroup>
               </div>
 
-              <div class="form-group col-md-2 mt-2 mb-3">
+              <div class="form-group col-md-2 mt-2 ">
                 <label class="mt-0">Situação Cadastral</label>
                 <p-select formControlName="nome" (onChange)="onChangeStatus($event)" [options]="situacaoCadastral"
                   [editable]="false" [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
@@ -60,8 +60,8 @@
 
         <ng-template #header>
           <tr>
-            <th class="col-foto" style=" background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px;
-          border-top-left-radius: 5px; ">
+            <th class="col-foto" 
+            style=" background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-left-radius: 5px; ">
               <b>Foto</b>
             </th>
 

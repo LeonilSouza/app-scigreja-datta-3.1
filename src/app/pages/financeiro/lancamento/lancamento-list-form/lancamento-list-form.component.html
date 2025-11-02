@@ -1,0 +1,833 @@
+<div class="col-md-12">
+    <app-card [hidHeader]="true" cardTitle="" cardClass="shadow" blockClass="pc-component">
+
+        <div class="row">
+            <span>
+
+                <!-- Botão reset window -->
+                <div class=" float-end ">
+                    <button (click)="resetLancamento()" class="btn btn-icon  btn-outline-primary p-0 float-rigth  ml-4"
+                        type="button"
+                        [style]="{'height':'30px', 'width':'10rem', 'font-size':'13px', 'border-radius':'6px'}">Limpar
+                        Filtro
+                    </button>
+                </div>
+
+                <!-- Menu Relatórios -->
+                <p-splitButton class="float-end ml-4 mb-1" label="   Relatórios          " icon="pi pi-print"
+                    [model]="printItems" styleClass="p-button-sm  p-button-secondary border-radius text-white"
+                    [style]="{'width':'15rem','height':'30px', 'border-radius':'6px'}"></p-splitButton>
+
+                <!-- Botão Buscar -->
+                <strong><button (click)="buscaLancamentos()" icon="pi pi-search" type="button"
+                        class="float-end mb-0 ml-0" pButton pRipple label="Buscar"
+                        style="width:8rem ; height: 30px; background:green ; font-size: small; border-radius: 5px; color: aliceblue;">
+                    </button></strong>
+
+                <!-- Lancamentos - Inicio -->
+                <div class=" form-group col-sm-8 mr-auto mb-0">
+                    <h5 class="mt-0 mb-0 f-15" style="padding-bottom: 0px; ">Lancamentos</h5>
+                </div>
+            </span>
+        </div>
+
+        <!-- Barra filtros -->
+        <nav aria-label="breadcrumb mb-0">
+            <div class="form-group row col-sm-12 ml-0 mb-0">
+                <div class="card mb-2  mt-2" style="background-color: rgb(77, 83, 90); border-radius: 5px;">
+                    <span class="mr-8 mb-1 mt-1 text-white f-16">Filtros</span>
+                </div>
+            </div>
+        </nav>
+
+        <div class="form-group row col-md mt-2">
+
+            <!-- Conta -->
+            <span class=" col-sm-3">
+                <form [formGroup]="contaForm">
+                    <label class="f-13">Conta corrente</label>
+                    <p-multiSelect
+                        [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                        [options]="contas" formControlName="selectedContas" optionLabel="nome" optionValue="id"
+                        placeholder="Todas" (onChange)="onChangeContas($event)" [showClear]="false">
+                    </p-multiSelect>
+                </form>
+            </span>
+
+
+            <!-- Periodo -->
+            <div class="col-sm-3 mb-3">
+                <label class="f-13"> Período de lançamentos</label>
+                <p-calendar (click)="periodo()" [style]="{'width':'100%','height':'30px'}" selectionMode="range"
+                    [readonlyInput]="true " [inputStyle]="{'width':'100%', 'height':'100%', 'font-size':'13px'}"
+                    [(ngModel)]="rangeDates" placeholder="dd/mm/aaaa" [monthNavigator]="true" [yearNavigator]="true"
+                    yearRange="1900:2100" inputStyleClass="form-control" dataType="string" dateFormat="dd/mm/yy"
+                    [showButtonBar]="true" [showIcon]="true" inputId="icon">
+                </p-calendar>
+            </div>
+
+            <!-- Natureza -->
+            <div class="col-sm-2 ">
+                <label class="f-13">Natureza - Débito | Crédito</label>
+                <p-dropdown (onChange)="onChangeCategoriasFiltradas($event)" [options]="tpLancamento" [editable]="false"
+                    [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="true"
+                    dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="nome" placeholder="Todas">
+                </p-dropdown>
+            </div>
+
+            <!-- Categorias -->
+            <div *ngIf="crtCategoria !== 3" class="col-sm-2 ">
+                <form [formGroup]="categoriaForm">
+                    <label *ngIf="crtCategoria == 1" class="f-13" style="color: green;">Categorias | Crédito</label>
+                    <label *ngIf="crtCategoria == 2" class="f-13" style="color: red;">Categorias | Débito</label>
+                    <label *ngIf="crtCategoria == 3" class="f-13">Categorias</label>
+                    <p-multiSelect [filter]="true"
+                        [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                        [options]="categoriasFiltradas" formControlName="selectedCategorias" optionLabel="nome"
+                        optionValue="id" placeholder="Todas" [showClear]="false" [autofocus]="false" display="chip"
+                        (onChange)="onChangeCategorias($event)">
+                    </p-multiSelect>
+                </form>
+            </div>
+
+            <!-- Forma de pagamento -->
+            <div class="col-sm-2 mb-3">
+                <form [formGroup]="formaForm">
+                    <label class="f-13">Forma de contribuição</label>
+                    <p-multiSelect
+                        [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                        [options]="formas" formControlName="selectedFormas" optionLabel="nome" optionValue="id"
+                        placeholder="Todas" (onChange)="onChangeFormas($event)" [showClear]="false">
+                    </p-multiSelect>
+                </form>
+            </div>
+
+            <span class="row">
+
+                <div class=" form-group col-sm-2 mr-auto mb-0 ">
+                    <label class="f-13">Dízimo | Oferta | Missão | ...</label>
+                    <strong><button type="button" class="mb-0 ml-0" pButton pRipple
+                            style="width:100% ; height: 30px; background:rgb(49, 170, 49) ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
+                            {{ total_creditos_sem_transferencias | currency:'BRL' || 0.00 }}</button></strong>
+                </div>
+
+                <div class=" form-group col-sm-2 mr-auto mb-0 ">
+                    <label class="f-13">Oferta</label>
+                    <strong><button type="button" class="mb-0 ml-0" pButton pRipple
+                            style="width:100% ; height: 30px; background:#0D89EC ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
+                            {{ totalOfertas | currency:'BRL' || 0.00 }}</button></strong>
+                </div>
+
+                <div class=" form-group col-sm-2 mr-auto mb-0 ">
+                    <label class="f-13">Missão</label>
+                    <strong><button type="button" class="mb-0 ml-0" pButton pRipple
+                            style="width:100% ; height: 30px; background:#e57608 ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
+                            {{ totalMissoes | currency:'BRL' || 0.00 }}</button></strong>
+                </div>
+
+                <!-- Saldo Anterior -->
+                <div class=" form-group col-sm-2 mr-auto mb-0 ">
+                    <label *ngIf="tipoLancamento != 'Livro Caixa'" class="f-13">Saldo anterior</label>
+                    <strong><button *ngIf="tipoLancamento != 'Livro Caixa'" type="button" class="mb-0 ml-0" pButton
+                            pRipple
+                            style="width:100% ; height: 30px; background:purple ; border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
+                            {{ saldoAnterior | currency:'BRL' }}</button></strong>
+                </div>
+
+                <!-- Button Dizimo -->
+                <div class=" row form-group col-sm-1  mb-0 ">
+                    <button (click)="modalLancamento.show(); setModalInclusao('Receita'); imodo=0"
+                        class="btn btn-icon  btn-outline-success p-0 float-left mt-4 m-l-10" type="button"
+                        [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Dízimo
+                    </button>
+                </div>
+
+                <!-- Button Oferta -->
+                <div class=" form-group col-sm-1 mb-0 ">
+                    <button (click)="modalLancamento.show(); setModalInclusao('Oferta'); imodo=0"
+                        class="btn btn-icon  btn-outline-primary p-0 float-left  mt-4 ml-4" type="button"
+                        [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Oferta
+                    </button>
+                </div>
+
+                <!-- Receitas -->
+                <div class=" form-group col-sm-1   mb-0 ">
+                    <button (click)="modalLancamento.show(); setModalInclusao('Receita'); imodo=0"
+                        class="btn btn-icon  btn-outline-success p-0 float-left  mt-4  ml-4" type="button"
+                        [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Receita
+                    </button>
+                </div>
+
+                <!-- Button Despesa -->
+                <div class=" form-group col-sm-1   mb-0 ">
+                    <button (click)="modalLancamento.show(); setModalInclusao('Despesa'); imodo=0"
+                        class="btn btn-icon  btn-outline-danger p-0 float-left  mt-4  ml-4 " type="button"
+                        [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Despesa
+                    </button>
+                </div>
+
+                <!-- Pesquisa -->
+                <div class="form-group col-sm-3 mb-0 mt-3 ">
+                    <div class=" form-group p-inputgroup float-end">
+                        <button type="button"
+                            style="height: 30px; cursor:default ; border-radius: 5px; border-bottom-right-radius: 0; border-top-right-radius: 0; border: 0; background: #1a82ce   ;"
+                            pButton pRipple> <i class="pi pi-search"></i></button>
+                        <input class="form-control float-end" [(ngModel)]="filtro.nome" name="nome" type="text"
+                            [ngModelOptions]="{standalone: true}" placeholder="Pesquisar Nome/Histórico"
+                            (input)="dtlancamento.filterGlobal($event.target.value, 'contains')"
+                            style="height: 30px; width: 100%; font-size: 12px; text-transform: uppercase">
+                    </div>
+
+                </div>
+
+                <!-- Espaço -->
+                <div class=" form-group col-sm-6 mb-0 "></div>
+
+                <!-- Button transferencia -->
+                <div class=" form-group col-sm-1 ml-auto mb-0 ">
+                    <button (click)="modalPermuta.show(); setModalInclusao('Permuta'); imodo=0"
+                        class="btn btn-icon  btn-outline-primary p-0 float-left ml-4  mt-3 " type="button"
+                        [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Permuta
+                    </button>
+                </div>
+
+                <!-- Button transferencia -->
+                <div class=" form-group col-sm-1 ml-auto   mb-0 ">
+                    <button (click)="modalTransferencia.show(); setModalInclusao('Transferencia'); imodo=0"
+                        class="btn btn-icon  btn-outline-secondary p-0 float-left ml-4 mt-3 " type="button"
+                        [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Transferir
+                    </button>
+                </div>
+
+
+                <!-- Button contas -->
+                <div class=" form-group col-sm-1 ml-auto mb-0 ">
+                    <button routerLink="/cadastros"
+                        class="btn btn-icon  btn-outline-secondary p-0 float-left ml-4  mt-3" type="button"
+                        [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Contas
+                    </button>
+                </div>
+
+                <!-- <div class=" form-group col-sm-4 mr-auto mb-0 ">
+
+                </div> -->
+
+
+            </span>
+
+            <!-- FILTROS -->
+            <p-accordion>
+                <p-accordionTab [style]="{'font-size':'15px', 'border-radius':'10px'}" class=""
+                    header="Contas - Saldo Final   {{ saldoFinalContas | currency:'BRL'  }}" [selected]="false">
+                    <!-- Gride Lancamentos  -->
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <!-- <div class="card-body table-border-style"> -->
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <tbody>
+                                        <tr *ngFor="let conta of contas">
+                                            <td style=" font-size: 13px">{{ conta.nome }}</td>
+                                            <td class="col-data-rigth-100 " style=" font-size: 13px;"
+                                                [style.color]="conta.totalConta >= 0  ? 'blue' : 'red'">
+                                                {{ conta.totalConta | currency: ' ' }}<br></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </p-accordionTab>
+            </p-accordion>
+            <!-- FIM FILTROS -->
+
+        </div>
+        <!-- Gride Lancamentos  -->
+        <!-- <hr class="mb-1 mt-0"> -->
+        <div class="row">
+            <span class="col-sm-10"></span>
+            <span *ngIf="length == 0 || length == 1 " class="col-sm-2 mb-1 mt-0">
+                <p-splitButton class="float-end" label="Ação Selecionados" [model]="selecaoItemsIndividual"
+                    (click)="itemsIndividual()"
+                    styleClass="p-button-sm p-button-outlined p-button-primary border-radius text-white"
+                    [style]="{'width':'15rem','height':'30px', 'border-radius':'6px'}" />
+            </span>
+            <span *ngIf="length > 1" class="col-sm-2 mb-1 mt-0">
+                <p-splitButton class="float-end" label="Ação Selecionados" [model]="selecaoItemsMultiplos"
+                    (click)="itemsMultiplos()"
+                    styleClass="p-button-sm p-button-outlined p-button-primary border-radius text-white"
+                    [style]="{'width':'15rem','height':'30px', 'border-radius':'6px'}" />
+            </span>
+            <div class="col-sm-12">
+                <div class=" mb-0 ">
+                    <p-table #dtlancamento [value]="lancamentos" [globalFilterFields]="['nome']" [lazy]="true"
+                        [rows]="filtro.linesPerPage" responsiveLayout="stack" (onLazyLoad)="aoMudarPagina($event)"
+                        [showCurrentPageReport]="true" [totalRecords]="totalRegistros"
+                        [(selection)]="selectedLancamentos" dataKey="id"
+                        styleClass="p-datatable-sm p-datatable-striped p-datatable-gridlines"
+                        [rowsPerPageOptions]="[6, 10, 20, 30, 50]" [tableStyle]="{ 'min-width': '30rem' }"
+                        currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros "
+                        [paginator]="true" [rows]="filtro.linesPerPage" emptyMessage="Nenhum registro encontrado"
+                        selectionMode="multiple" onRowSelect="true" onRowUnselect="false">
+
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th class="col-check-box"
+                                    style="width: 4rem; background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue">
+                                    <p-tableHeaderCheckbox (click)="linhasSelecionada(selectedLancamentos,$event)"
+                                        value="lancamento" />
+                                </th>
+
+                                <th class="col-data-id"
+                                    style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
+                                    <b>Código</b>
+                                </th>
+
+                                <th class="col-data-100"
+                                    style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
+                                    <b>Data</b>
+                                </th>
+
+                                <th style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue;">
+                                    <b>Nome/Fornecedor</b>
+                                </th>
+
+                                <th style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue;">
+                                    <b>Descrição</b>
+                                </th>
+
+                                <th class="col-data-content-3 "
+                                    style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
+                                    <b>Conta</b>
+                                </th>
+
+                                <th class="col-data-150"
+                                    style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
+                                    <b>Competência</b>
+                                </th>
+                                <th class="col-data-150"
+                                    style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
+                                    <b>Natureza</b>
+                                </th>
+                                <th class="col-data-100"
+                                    style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
+                                    <b>Valor R$</b>
+                                </th>
+
+                                <th class="col-acoes-header"
+                                    style="font-size: 13px; background-color: rgb(77, 83, 90); color: aliceblue;">
+                                </th>
+
+                            </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-lancamento let-columns="columns">
+                            <tr>
+                                <td class="col-check-box"><p-tableCheckbox
+                                        (click)="linhasSelecionada(selectedLancamentos,$event)" [value]="lancamento" />
+                                </td>
+
+                                <td class="col-data-id" style=" font-size: 13px">{{ lancamento.id }}
+                                </td>
+
+                                <td class="col-data-100" style=" font-size: 13px">{{ lancamento.data }}
+                                </td>
+
+                                <td style=" font-size: 13px ">{{
+                                    lancamento.nome }}</td>
+                                <td style=" font-size: 13px">{{
+                                    lancamento.historico }}</td>
+                                <td class="col-data-content-3 " style=" font-size: 13px">{{
+                                    lancamento.nomeConta }}<br>
+                                </td>
+                                <td class="col-data-150 " style=" font-size: 13px;">{{
+                                    lancamento.competencia }}<br>
+                                </td>
+                                <td class="col-data-150 " style=" font-size: 13px;">{{
+                                    lancamento.tipoLancamento }}<br>
+                                </td>
+                                <td class="col-data-rigth-100 " style=" font-size: 13px;" [style.color]="lancamento.tipoLancamento === 'Receita' ? 'green' : 
+                                    lancamento.tipoLancamento === 'Despesa' ? 'red' : 
+                                    lancamento.tipoLancamento === 'Livro Caixa' ? 'purple' : 'blue'">
+                                    {{ lancamento.valor | currency:' '}}<br></td>
+
+                                <td class="col-acoes-header ">
+                                    <button (click)="imodo=1; lancamento.nome == 'Transferencia' ? modalTransferencia.show() : 
+                                        lancamento.nome == 'Permuta' ? modalPermuta.show() : modalLancamento.show(); loadLancamento(lancamento); 
+                                        setModalEdicao(lancamento.tipoLancamento) " type="button"
+                                        class="btn btn-icon  btn-outline-success p-1 mb-0 mt-0"
+                                        [style]="{'height': '30px', 'width': '30px'} " [placement]="'top'"
+                                        ngbTooltip="Editar">
+                                        <i class="pi pi-pencil"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 float-end border border-top-0 mt-0 mb-2" style="background-color: #fafafa;">
+            <span class="row mb-0 float-end">
+                <!-- Crédito -->
+                <div class=" form-group col-sm-4 mt-0 mb-0 ">
+                    <label class="f-13 mt-1" style="width:100%; text-align:left">Crédito</label>
+                    <strong><label class="mb-0 mt-0 ml-0  text-success "
+                            style="width:100% ; height: 30px;  text-align:left; background:#fafafa ; border: 0px; font-size: 13px; border-radius: 6px;">
+                            {{ total_geral_creditos | currency:'BRL' || 0.00}}</label></strong>
+                </div>
+
+                <!-- Débito -->
+                <div class=" form-group col-sm-4  mb-0 ">
+                    <label class="f-13 mt-1 mb-0" style="width:100%;  text-align:left">Débito</label>
+                    <strong><label class="mb-0 ml-0 mt-0 text-danger"
+                            style="width:100% ; height: 30px; text-align:left; background:#fafafa ;  border: 0px; font-size: 13px; border-radius: 6px; ">
+                            {{ total_geral_debitos | currency:'BRL' || 0.00}}</label></strong>
+                </div>
+
+                <!-- Diferença -->
+                <div class=" form-group  col-sm-4  mb-0 ">
+                    <label class="f-13  mt-1" style="width:100%;  text-align:left">Saldo</label>
+                    <strong><label class="mb-0 ml-0 text-primary"
+                            style="width:100% ; height: 30px; text-align:left; background:#fafafa ; border: 0px; font-size: 13px; border-radius: 6px;">
+                            {{ total_geral_creditos - total_geral_debitos | currency:'BRL' || 0.00 }}
+                        </label></strong>
+                </div>
+            </span>
+        </div>
+        <!-- Lancamentos Fim -->
+
+    </app-card>
+</div>
+
+<!-- MODAL Lancamentos INICIO -->
+<form [formGroup]="lancamentoForm" autocomplete="off" (submit)="submitForm()">
+    <app-ui-modal #modalLancamento [dialogClass]="'modal-xl'">
+        <div class="app-modal-header ml-2 ">
+            <div class="card header mb-3" style="width: 46rem; height: 1rem; padding-bottom: 10px; padding-top: 5px">
+                <h5 class="modal-title text-dark">{{ pageTitle }}</h5>
+
+            </div>
+        </div>
+        <div class="app-modal-body ml-2 mr-2">
+            <p-tabView>
+                <p-tabPanel header="Movimentos">
+
+                    <!-- Modal Body Inicio -->
+                    <div class="row ">
+                        <!-- date -->
+                        <div class="form-group col-md-2 ">
+                            <label class="m-b-09" for="data">Data</label>
+                            <p-calendar [style]="{'width':'100%','height':'30px'}"
+                                [inputStyle]="{'width':'100%', 'height':'100%', 'font-size':'14px'}"
+                                formControlName="data" placeholder="dd/mm/aaaa" [monthNavigator]="true"
+                                [yearNavigator]="true" yearRange="1900:2100" inputStyleClass="form-control "
+                                dataType="string" dateFormat="dd/mm/yy" [showButtonBar]="true" [showIcon]="true"
+                                inputId="icon">
+                            </p-calendar>
+                        </div>
+                        <div class="form-group col-md-5">
+                            <div class="flex flex-wrap gap-3">
+                                <div class="flex align-items-center mb-1">
+                                    <label class="">Nome/Histórico                           </label>
+                                    <p-radioButton (click)="cadastradoNC()" value="nao" formControlName="cadastrado"
+                                        inputId="naocadastrado"></p-radioButton>
+                                    <label for="naocadastrado" class="ml-2">Não Cadastrado</label>
+                                </div>
+
+                                <div class="flex align-items-center mb-1">
+                                    <p-radioButton (click)="cadastradoC()" value="sim" formControlName="cadastrado"
+                                        inputId="cadastrado"></p-radioButton>
+                                    <label for="cadastrado" class="ml-2">Cadastrado</label>
+                                </div>
+                            </div>
+
+                            <p-dropdown *ngIf="(lancamentoForm.controls['cadastrado'].value == 'sim')"
+                                (onChange)="onChangeNomeHistorico($event)" formControlName="pessoaId"
+                                [options]="pessoas" [editable]="false" [filter]="true" filterBy="nome"
+                                [showClear]="false" optionLabel="nome" resetFilterOnHide="true"
+                                dropdownIcon="pi pi-users" optionValue="id" [autofocus]="false"
+                                placeholder="Selecione um provedor">
+                            </p-dropdown>
+
+                            <!-- Nome/Histórico Não Cadastrado -->
+                            <div *ngIf="(lancamentoForm.controls['cadastrado'].value == 'nao')"
+                                class="form-group col-md-12 mb-0">
+                                <input type="text" style="text-transform: uppercase" class="form-control"
+                                    formControlName="nome">
+                            </div>
+
+                        </div>
+
+                        <!-- Conta -->
+                        <div class="form-group col-md-5 mb-5">
+                            <label>Conta </label>
+                            <p-dropdown (onChange)="onChangeTPConta($event)" formControlName="contaId"
+                                [options]="contas" [editable]="false" [filter]="true" filterBy="nome"
+                                [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
+                                dropdownIcon="fas fa-dollar-sign" [autofocus]="false" optionValue="id"
+                                placeholder="Selecione uma categoria">
+                            </p-dropdown>
+                        </div>
+
+
+                        <!-- Documento -->
+                        <!-- <div class="form-group col-md-3">
+                            <label>Competencia</label>
+                            <input type="text" class="form-control" formControlName="competencia">
+                        </div> -->
+
+                        <!-- Histórico -->
+                        <div class="form-group col-md-4">
+                            <label>Histórico</label>
+                            <input type="text" class="form-control" formControlName="historico">
+                        </div>
+
+                        <!-- Forma de Pagamento -->
+                        <div class="form-group col-md-3 ">
+                            <label class="m-b-9">Forma de Contribuição</label>
+                            <p-dropdown formControlName="formaId" [options]="formas" [editable]="false" [filter]="false"
+                                filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
+                                dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id"
+                                placeholder="Selecione...">
+                            </p-dropdown>
+                        </div>
+
+                        <!-- Valor Principal -->
+                        <div class="form-group col-md-3 p-fluid ">
+                            <label>Valor R$</label>
+                            <p-inputNumber formControlName="valor" inputId="valor" mode="decimal" locale="pt-BR"
+                                class="ml-auto" [minFractionDigits]="2"
+                                [style]="{'width':'100%','height':'30px', 'border-radius':'10px'}">
+                            </p-inputNumber>
+                            <p class="danger" [style]="{'font-size':'12px' }"
+                                *ngIf="lancamentoForm.controls['valor'].errors" margin-left>
+                                Informe um valor.</p>
+                        </div>
+
+                        <!-- Competencia -->
+                        <div class="form-group col-md-2">
+                            <label>Competência</label>
+                            <p-inputMask
+                                [style]="{'width':'100%','height':'30px', 'border-radius':'6px', 'font-size':'13px' }"
+                                ariaRequired="false" mask="99/9999" formControlName="competencia"
+                                placeholder="MM/AAAA"></p-inputMask>
+                            <p class="danger" [style]="{'font-size':'10px' }"
+                                *ngIf="lancamentoForm.controls['competencia'].errors" margin-left>
+                                Informe mês e ano.</p>
+                        </div>
+
+                        <!-- Categoria -->
+                        <div class="form-group col-md-4 mb-5">
+                            <label>Categoria </label>
+                            <p-dropdown (onChange)="onChangeTPCategorias($event)" formControlName="categoriaId"
+                                [options]="categoriasFiltradas" [editable]="false" [filter]="true" filterBy="nome"
+                                [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
+                                dropdownIcon="pi pi-slack" [autofocus]="false" optionValue="id"
+                                placeholder="Selecione uma categoria">
+                            </p-dropdown>
+                        </div>
+
+                        <!-- Centro de Custo -->
+                        <div class="form-group col-md-4 mb-5">
+                            <label>Centro de Custo </label>
+                            <p-dropdown formControlName="centroCustoId" [options]="centroCustos" [editable]="false"
+                                [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
+                                resetFilterOnHide="false" dropdownIcon="pi pi-check" [autofocus]="false"
+                                optionValue="id" placeholder="Selecione uma categoria">
+                            </p-dropdown>
+                        </div>
+
+                        <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
+                        <div class="modal-footer" style="height: 38px;">
+
+                            <!-- Imprimir Recibo -->
+                            <!-- <button *ngIf="lancamentoForm.controls['tipoLancamento'].value == 'Despesa'"
+                                data-dismiss="modal" type="button" class="mb-0" pButton pRipple
+                                (click)="imprimirRecibo(); modalLancamento.hide();" label="Visualizar Recibo" style="width: 12em; height: 30px; font-size: small;
+                            border-radius: 6px; border: 0;background:   #3F4D67;" icon='pi pi-print'>
+                            </button> -->
+
+                            <!-- Excluir -->
+                            <!-- <button *ngIf="lancamentoForm.controls['id'].value > 0" type="button" pButton pRipple
+                                (click)="confirmarExclusaoLancamento(lancamento); modalLancamento.hide(); resetModal()"
+                                styleClass="p-button-sm" icon='pi pi-times'
+                                style="width: 7em; height: 30px; border-radius: 6px;" pButton pRipple label="Excluir"
+                                class="ml-4 p-button-danger  p-button-outlined mr-auto  mb-0">
+                            </button> -->
+
+                            <!-- Fechar -->
+                            <button data-dismiss="modal" type="button" class=" ml-4 mb-0" pButton pRipple (click)="modalLancamento.hide();
+                                      resetModal()" label="Fechar" style="width: 7em; height: 30px; font-size: small;
+                                      border-radius: 6px; border: 0;background: #1a82ce;" icon='pi pi-wallet'>
+                            </button>
+
+                            <!-- Salvar -->
+                            <strong><button (click)="modalLancamento.hide()" [disabled]="lancamentoForm.invalid"
+                                    type="submit" class="ml-4 float-end mb-0" pButton pRipple label="Salvar"
+                                    style="width: 7em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
+                                    icon='pi pi-check'>
+                                </button></strong>
+
+                            <!-- Salvar e Novo Receita -->
+                            <strong><button
+                                    *ngIf="imodo == 0 && lancamentoForm.controls['tipoLancamento'].value == 'Receita'"
+                                    (click)="modalLancamento.show()" [disabled]="lancamentoForm.invalid" type="submit"
+                                    class="ml-4 float-end mb-0" pButton pRipple label="Salvar e Novo"
+                                    style="width: 11em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
+                                    icon='pi pi-check'>
+                                </button></strong>
+
+                            <!-- Salvar e Novo Despesa -->
+                            <strong><button
+                                    *ngIf="imodo == 0 && lancamentoForm.controls['tipoLancamento'].value == 'Despesa'"
+                                    (click)="modalLancamento.show()" [disabled]="lancamentoForm.invalid" type="submit"
+                                    class="ml-4 float-end mb-0" pButton pRipple label="Salvar e Novo"
+                                    style="width: 11em;  background:#fd0505; height: 30px; border-radius: 6px; font-size: small; "
+                                    icon='pi pi-check'>
+                                </button></strong>
+
+                        </div>
+                    </div>
+
+                </p-tabPanel>
+                <p-tabPanel header="Recibo">
+                    Recibo
+                </p-tabPanel>
+                <!-- <div class="form-group "></div>
+                <pre> {{ lancamentoForm.value | json}} </pre> -->
+            </p-tabView>
+        </div>
+    </app-ui-modal>
+
+    <!-- MODAL INICIO Transferencia -->
+
+    <div class="col-md-12 col-xl-12">
+
+        <div class="col-sm-12">
+            <app-ui-modal #modalTransferencia id="modalTransferencia" [dialogClass]="'modal-lg'">
+                <div class="app-modal-body">
+                    <div class="app-modal-header ml-2 ">
+                        <div class="card header mb-3"
+                            style="width: 46rem; height: 1rem; padding-bottom: 10px; padding-top: 5px">
+                            <h5 class="modal-title text-dark">{{ pageTitle }}</h5>
+                        </div>
+                    </div>
+
+                    <!-- Modal Body Inicio -->
+
+                    <div class="row col-12">
+
+                        <!-- Data da Transferencia -->
+                        <div class="form-group col-md-4 ">
+                            <label class="m-b-09" for="data">Data</label>
+                            <p-calendar [style]="{'width':'100%','height':'30px'}"
+                                [inputStyle]="{'width':'100%', 'height':'100%', 'font-size':'14px'}"
+                                formControlName="data" placeholder="dd/mm/aaaa" [monthNavigator]="true"
+                                [yearNavigator]="true" yearRange="1900:2100" inputStyleClass="form-control "
+                                dataType="string" dateFormat="dd/mm/yy" [showButtonBar]="true" [showIcon]="true"
+                                inputId="icon">
+                            </p-calendar>
+                        </div>
+
+                        <!--  Origem da Transferencia-->
+                        <div *ngIf="lancamentoForm.controls['id'].value == null" class="form-group col-md-4 ">
+                            <label class="m-b-9 text-danger">Transferir da conta </label>
+                            <p-dropdown (onChange)="onChangeTransferenciaOrigem($event)" formControlName="contaId"
+                                [options]="contas" [editable]="false" [filter]="false" filterBy="nome"
+                                [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
+                                dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id"
+                                placeholder="Selecione...">
+                            </p-dropdown>
+                        </div>
+
+
+
+                        <!-- Destino -->
+                        <div *ngIf="lancamentoForm.controls['id'].value == null" class="form-group col-md-4 ">
+                            <label class="m-b-9 text-success">Para</label>
+                            <p-dropdown (onChange)="onChangeTransferenciaDestino($event)"
+                                formControlName="contaIdTransferencia" [options]="contasTransferencia"
+                                [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
+                                optionLabel="nome" resetFilterOnHide="false" dropdownIcon="pi pi-dollar"
+                                [autofocus]="false" optionValue="id" placeholder="Selecione...">
+                            </p-dropdown>
+                            <p class="danger" [style]="{'font-size':'12px' }"
+                                *ngIf="lancamentoForm.controls['contaId'].value == lancamentoForm.controls['contaIdTransferencia'].value"
+                                margin-left>
+                                Impossível para a mesma conta.</p>
+                        </div>
+
+                        <!-- Historico -->
+                        <div class="form-group col-md-8 mb-5">
+                            <label>Historico</label>
+                            <input readonly type="text" class="form-control" formControlName="historico">
+                        </div>
+
+                        <!-- Valor Principal -->
+                        <div class="form-group col-md-4 p-fluid ">
+                            <label>Valor R$</label>
+                            <p-inputNumber formControlName="valor" inputId="valor" mode="decimal" locale="pt-BR"
+                                class="ml-auto" [minFractionDigits]="2"
+                                [style]="{'width':'100%','height':'30px', 'border-radius':'10px'}">
+                            </p-inputNumber>
+                            <p class="danger" [style]="{'font-size':'12px' }"
+                                *ngIf="lancamentoForm.controls['valor'].errors || this.lancamentoForm.controls['valor'].value <= 0"
+                                margin-left>
+                                Informe um valor válido.</p>
+                        </div>
+
+                    </div>
+
+                    <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
+                    <div class="modal-footer" style="height: 38px;">
+
+                        <!-- Excluir -->
+                        <button *ngIf="lancamentoForm.controls['id'].value > 0" type="button" pButton pRipple
+                            (click)="confirmarExclusaoLancamentoTransferencia(lancamento); modalTransferencia.hide(); resetModal()"
+                            styleClass="p-button-sm" icon='pi pi-times'
+                            style="width: 7em; height: 30px; border-radius: 6px;" pButton pRipple label="Excluir"
+                            class="ml-4 p-button-danger  p-button-outlined   mb-0">
+                        </button>
+
+                        <!-- Fechar -->
+                        <button data-dismiss="modal" type="button" class=" ml-4 mb-0" pButton pRipple (click)="modalTransferencia.hide();
+                                      resetModal()" label="Fechar" style="width: 7em; height: 30px; font-size: small;
+                                      border-radius: 6px; border: 0;background: #1a82ce;" icon='pi pi-wallet'>
+                        </button>
+
+                        <!-- Salvar -->
+                        <strong><button *ngIf="lancamentoForm.controls['id'].value == null"
+                                (click)="modalTransferencia.hide(); submitFormTransferencia()"
+                                [disabled]="lancamentoForm.invalid 
+                                || this.lancamentoForm.controls['valor'].value <= 0 || this.lancamentoForm.controls['contaIdTransferencia'].value == null 
+                                || (lancamentoForm.controls['contaId'].value == lancamentoForm.controls['contaIdTransferencia'].value)" type="button" class="ml-4 float-end mb-0"
+                                pButton pRipple label="Salvar"
+                                style="width: 7em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
+                                icon='pi pi-check'>
+                            </button></strong>
+                    </div>
+                    <!-- <div class="form-group ">
+                        <pre> {{ lancamentoForm.value | json}} </pre>
+                    </div> -->
+                </div>
+            </app-ui-modal>
+        </div>
+    </div>
+    <!-- FIM MODAL Transferencia -->
+
+
+    <!-- MODAL INICIO Permuta -->
+    <div class="col-md-12 col-xl-12">
+
+        <div class="col-sm-12">
+            <app-ui-modal #modalPermuta id="modalPermuta" [dialogClass]="'modal-lg'">
+                <div class="app-modal-body">
+                    <div class="app-modal-header ml-2 ">
+                        <div class="card header mb-3"
+                            style="width: 46rem; height: 1rem; padding-bottom: 10px; padding-top: 5px">
+                            <h5 class="modal-title text-dark">{{ pageTitle }}</h5>
+                        </div>
+                    </div>
+
+                    <!-- Modal Body Inicio -->
+
+                    <div class="row col-12">
+
+                        <!-- Data da Permuta -->
+                        <div class="form-group col-md-4 ">
+                            <label class="m-b-09" for="data">Data</label>
+                            <p-calendar [style]="{'width':'100%','height':'30px'}"
+                                [inputStyle]="{'width':'100%', 'height':'100%', 'font-size':'14px'}"
+                                formControlName="data" placeholder="dd/mm/aaaa" [monthNavigator]="true"
+                                [yearNavigator]="true" yearRange="1900:2100" inputStyleClass="form-control "
+                                dataType="string" dateFormat="dd/mm/yy" [showButtonBar]="true" [showIcon]="true"
+                                inputId="icon">
+                            </p-calendar>
+                        </div>
+
+                        <!--  Origem da Permuta-->
+                        <div *ngIf="lancamentoForm.controls['id'].value == null" class="form-group col-md-4 ">
+                            <label class="m-b-9 text-primary">Trocar </label>
+                            <p-dropdown (onChange)="onChangePermutaDestino($event)"
+                                formControlName="formaIdTransferencia" [options]="formasPermuta" [editable]="false"
+                                [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
+                                resetFilterOnHide="false" dropdownIcon="pi pi-dollar" [autofocus]="false"
+                                optionValue="formaIdTransferencia" placeholder="Selecione...">
+                            </p-dropdown>
+                            <p class="danger" [style]="{'font-size':'12px' }"
+                                *ngIf="lancamentoForm.controls['formaId'].value == lancamentoForm.controls['formaIdTransferencia'].value"
+                                margin-left>
+                                Impossível para a mesma conta.</p>
+                        </div>
+
+                        <!-- Destino -->
+                        <div *ngIf="lancamentoForm.controls['id'].value == null" class="form-group col-md-4 ">
+                            <label class="m-b-9 text-success">Por</label>
+                            <p-dropdown (onChange)="onChangePermutaOrigem($event)" formControlName="formaId"
+                                [options]="formas" [editable]="false" [filter]="false" filterBy="nome"
+                                [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
+                                dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id" readonly="true"
+                                placeholder="Selecione...">
+                            </p-dropdown>
+                        </div>
+
+                        <!-- Historico -->
+                        <div class="form-group col-md-8 mb-5">
+                            <label>Historico</label>
+                            <input readonly type="text" class="form-control" formControlName="historico">
+                        </div>
+
+                        <!-- Valor Principal -->
+                        <div class="form-group col-md-4 p-fluid ">
+                            <label>Valor R$</label>
+                            <p-inputNumber formControlName="valor" inputId="valor" mode="decimal" locale="pt-BR"
+                                class="ml-auto" [minFractionDigits]="2"
+                                [style]="{'width':'100%','height':'30px', 'border-radius':'10px'}">
+                            </p-inputNumber>
+                            <p class="danger" [style]="{'font-size':'12px' }"
+                                *ngIf="lancamentoForm.controls['valor'].errors || this.lancamentoForm.controls['valor'].value <= 0"
+                                margin-left>
+                                Informe um valor válido.</p>
+                        </div>
+
+                    </div>
+
+                    <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
+                    <div class="modal-footer" style="height: 38px;">
+
+                        <!-- Excluir -->
+                        <button *ngIf="lancamentoForm.controls['id'].value > 0" type="button" pButton pRipple
+                            (click)="confirmarExclusaoLancamentoPermuta(lancamento); modalPermuta.hide(); resetModal()"
+                            styleClass="p-button-sm" icon='pi pi-times'
+                            style="width: 7em; height: 30px; border-radius: 6px;" pButton pRipple label="Excluir"
+                            class="ml-4 p-button-danger  p-button-outlined   mb-0">
+                        </button>
+
+                        <!-- Fechar -->
+                        <button data-dismiss="modal" type="button" class=" ml-4 mb-0" pButton pRipple (click)="modalPermuta.hide();
+                                      resetModal()" label="Fechar" style="width: 7em; height: 30px; font-size: small;
+                                      border-radius: 6px; border: 0;background: #1a82ce;" icon='pi pi-wallet'>
+                        </button>
+
+                        <!-- Salvar -->
+                        <strong><button *ngIf="lancamentoForm.controls['id'].value == null"
+                                (click)="modalPermuta.hide(); submitFormPermuta()"
+                                [disabled]="lancamentoForm.invalid 
+                                || this.lancamentoForm.controls['valor'].value <= 0 
+                                || (lancamentoForm.controls['formaId'].value == lancamentoForm.controls['formaIdTransferencia'].value)" type="button"
+                                class="ml-4 float-end mb-0" pButton pRipple label="Salvar"
+                                style="width: 7em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
+                                icon='pi pi-check'>
+                            </button></strong>
+                    </div>
+                    <!-- <div class="form-group ">
+                        <pre> {{ lancamentoForm.value | json}} </pre>
+                    </div> -->
+                </div>
+            </app-ui-modal>
+        </div>
+    </div>
+    <!-- FIM MODAL Permuta -->
+</form>

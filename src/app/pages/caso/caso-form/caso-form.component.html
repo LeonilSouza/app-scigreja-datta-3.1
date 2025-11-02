@@ -1,0 +1,451 @@
+<!-- Inicio Breadcamb Inicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio BreadcambInicio Breadcamb-->
+<ng-container style="height: 100;">
+  <div class="row ">
+    <div class="col-md-12">
+      <i class="fas fa-home f-18 text-dark"></i>   <span class="text-muted f-16">{{
+        nomeIgreja }}</span>
+      <hr class="mt-0 mb-2">
+      <div class="row ">
+        <div class="col-md-12">
+          <div class="flex">
+            <div class="row">
+              <nav aria-label="breadcrumb mb-0">
+                <ol class="breadcrumb mb-0 f-12">
+                  <li class="breadcrumb-item active"><a>Home</a></li>
+
+                  <li class="breadcrumb-item active"><a>Secretaria</a></li>
+                  
+                  <li class="breadcrumb-item active"><a>Casos</a></li>
+                </ol>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><br>
+</ng-container>
+<!-- fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb fim Breadcamb -->
+
+<!-- Inicio Botões-->
+<div class="card-header">
+  <ng-container style="height: 100;">
+    <div class="row ">
+      <div class="col-md-12">
+        <div class="row">
+          <!-- Botões Inicio-->
+          <div class="">
+            <span class="float-end  ml-0 mr-5   mb-3">
+              <button *ngIf="currentAction !== 'new'" type="button" (click)="confirmarExclusaoCaso(caso)"
+                styleClass="p-button-sm" icon='pi pi-times' style="width: 7em;font-size: small;
+                    height: 26px; border-radius: 5px;" pButton pRipple label="Excluir" class="p-button-danger ml-2
+                    p-button-outlined ">
+              </button>
+            </span>
+
+            <span class="float-end  ml-2 mb-3">
+              <strong><button (click)="submitForm()" [disabled]="submittingForm || casoForm.invalid" type="button"
+                  class=" mr-3 ml-2" pButton pRipple label="Salvar"
+                  style="width: 7em;  background:#388669; height: 26px; border-radius: 5px; font-size: small;" icon='pi pi-check'>
+                </button></strong>
+            </span>
+            <span class="float-end  ml-2   mb-3">
+              <strong><button routerLink="/casos" styleClass="p-button-sm" icon='pi pi-chevron-left' type="button"
+                  label="voltar" class="p-button-purple mt-0" pButton pRipple label="Voltar" style="width: 7em; height: 26px; border-radius: 5px; font-size: small;
+                          background: #1a82ce; color: aliceblue;">
+                </button></strong>
+            </span>
+
+          </div>
+          <!-- Botões Fim-->
+
+          <nav aria-label="breadcrumb ">
+            <div class="form-group row col-sm-12 ml-0 mb-3">
+              <div class="card mb-0" style="background-color: rgb(77, 83, 90); border-radius: 5px;">
+                <span class="mr-8 mb-1 mt-1 text-white f-15">{{ pageTitle
+                  }}</span>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+<!-- Fim botões -->
+
+
+
+<!-- CABEÇALHO DAS ABAS  -->
+
+<ul class="nav nav-tabs profile-tabs nav-fills" id="myTab" role="tablist">
+
+  <!-- Tratamento Caso-->
+  <li class="nav-item mt-0 mb-0">
+    <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab === 'home' }" (click)="this.activeTab= 'home'"
+      id="home-tab" data-toggle="tab" href="javascript:" role="tab" aria-controls="home" aria-selected="true"> <i
+        class="fas fa-cogs mr-2 text-c-blue"></i>Caso </a>
+  </li>
+
+  <li class="nav-item mt-0 mb-0">
+    <a class="nav-link text-c-reset" [ngClass]="{ active: this.activeTab ===
+        'acompanhamento' }" (click)="this.activeTab= 'acompanhamento'" id="acompanhamento-tab" data-toggle="tab"
+      href="javascript:" role="tab" aria-controls="acompanhamento" aria-selected="false"><i
+        class="fas fa-user-injured mr-2 text-c-red"></i>Acompanhamento </a>
+  </li>
+
+</ul>
+<!-- FIM CABEÇALHO DAS ABAS  -->
+
+<div class="page-header shadow ">
+  <form [formGroup]="casoForm" autocomplete="off" (submit)="submitForm()">
+
+    <!-- CONTROLE GERAL DAS ABAS -->
+    <div class="tab-content  mb-2" id="myTabContent">
+
+      <!-- ABA 1  -->
+      <div class="tab-pane fade" [ngClass]="{ 'show active': this.activeTab
+            === 'home' }" id="home" role="tabpanel" aria-labelledby="home-tab">
+
+        <div class="row">
+
+          <!-- Dados do Membro -->
+          <div class="col-md-12 col-xl-6">
+
+            <!-- Lista preta Dado do Membro  -->
+            <nav aria-label="breadcrumb mb-0">
+              <div class="form-group row col-sm-12 ml-0 mb-0">
+                <div class="card mb-2" style="background-color: rgb(77, 83, 90); border-radius: 5px;">
+                  <span class="mr-8 mb-0 mt-0 text-white f-16">Dados do Membro</span>
+                </div>
+              </div>
+            </nav>
+
+            <div class="form-group row">
+              <!-- Foto Quando tem foto-->
+              <ng-container>
+                <div class="mb-1 col-md-2  form-group col-md-1" *ngIf="foto" style="min-width: 90px;">
+                  <div class="text-center">
+                    <div class="mb-0">
+                      <img class="img-radius wid-90" src="data:image/jpg;base64,{{ foto }}" />
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+
+              <!-- Foto - Quando não tem foto-->
+              <ng-container>
+                <div class="mb-1 col-md-2  form-group col-md-1" *ngIf="(!foto )" style="min-width: 90px;">
+                  <div class="text-center">
+                    <div class="mb-0">
+                      <img class="img-radius wid-90" src="assets/images/foto/Sem_Foto1.png" />
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+
+              <!-- name INCLUSÃO-->
+              <div *ngIf="currentAction == 'new'" class="form-group col-md-10 mt-3">
+                <label>Nome</label>
+                <ngx-select formControlName="pessoaId" [allowClear]="false" [multiple]="false" [items]="pessoas"
+                  [autoClearSearch]="true" [noAutoComplete]="false" optionValueField="id" optionTextField="nome"
+                  placeholder="Selecione um membro " (selectionChanges)="doSelectOptionsPessoa($event)">
+                </ngx-select>
+              </div>
+
+              <!-- nome EDIÇÃO -->
+              <div *ngIf="currentAction !== 'new'" class="form-group col-md-10 mt-3">
+                <label>Nome </label>
+                <input readonly style="border: 1; border-color: rgb(216, 214, 214);" type="text" class="form-control"
+                  formControlName="nome">
+              </div>
+
+              <!-- Relato -->
+              <div class="form-group col-md-12">
+                <label>Relato</label>
+                <textarea class="form-control " style="height: 50px;" formControlName="relato" rows="3"
+                  placeholder="Descrever os fatos relatado pelo membro."></textarea>
+                <p class="danger" *ngIf="casoForm.controls['relato'].dirty && casoForm.controls['relato'].errors"
+                  style="font-size: 11px;" margin-left>
+                  O relato é obrigatorio!</p>
+              </div>
+            </div>
+          </div>
+          <!-- Fim dados do Membro -->
+
+          <!--Dados da ATA  -->
+          <div class="col-md-12 col-xl-6">
+            <nav aria-label="breadcrumb mb-0">
+              <div class="form-group row col-sm-12 ml-0 mb-0">
+                <div class="card mb-2" style="background-color: rgb(77, 83, 90); border-radius: 5px;">
+                  <span class="mr-8 mb-0 mt-0 text-white f-16">Dados da ATA</span>
+                </div>
+              </div>
+            </nav>
+
+            <div class="form-group row">
+
+              <!-- Local - Cidade/UF -->
+              <div class="form-group col-md-8 mt-3">
+                <label>Local </label>
+                <input style="border: 1; border-color: rgb(216, 214, 214);" type="text" class="form-control"
+                  formControlName="local" placeholder="Cidade/UF">
+              </div>
+
+              <!-- data da Caso-->
+              <div class="form-group col-md-4 mt-3">
+                <label>Data</label>
+                <p-calendar [style]="{'width':'100%','height':'25px'}"
+                  [inputStyle]="{'width':'100%','height':'100%','font-size':'14px'}" formControlName="dataCaso"
+                  placeholder="dd/mm/aaaa" [monthNavigator]="true" [yearNavigator]="true" yearRange="1900:2100"
+                  inputStyleClass="form-control" dataType="string" dateFormat="dd/mm/yy" [showButtonBar]="true"
+                  [showIcon]="true" inputId="icon">
+                </p-calendar>
+              </div>
+
+              <!-- Pauta -->
+              <div class="form-group col-md-6">
+                <label>Pauta </label>
+                <input style="border: 1; border-color: rgb(216, 214, 214);" type="text" class="form-control"
+                  formControlName="pauta" placeholder="hh:mm">
+                <p class="danger" *ngIf="casoForm.controls['pauta'].dirty && casoForm.controls['pauta'].errors"
+                  style="font-size: 11px;" margin-left>
+                  Pauta inválida</p>
+              </div>
+
+              <!-- Hora Início -->
+              <div class="form-group col-md-3">
+                <label>Início </label>
+                <input style="border: 1; border-color: rgb(216, 214, 214);" type="time" id="date" class="form-control"
+                  formControlName="horaInicio" placeholder="Date" atp-time-picker value="20:00" onlyHour="true"
+                  onlyAM="true" />
+              </div>
+
+              <!-- Hora Término -->
+              <div class="form-group col-md-3 ">
+                <label>Término </label>
+                <input style="border: 1; border-color: rgb(216, 214, 214);" type="time" id="date" class="form-control"
+                  formControlName="horaTermino" placeholder="Date" atp-time-picker value="21:00" onlyHour="true"
+                  onlyAM="true" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Dados do Caso -->
+          <div class="col-md-12 col-xl-6">
+
+            <!-- Lista preta Dados do Caso  -->
+            <nav aria-label="breadcrumb mb-0">
+              <div class="form-group row col-sm-12 ml-0 mb-0">
+                <div class="card mb-2" style="background-color: rgb(77, 83, 90); border-radius: 5px;">
+                  <span class="mr-8 mb-0 mt-0 text-white f-16">Dados do Caso</span>
+                </div>
+              </div>
+            </nav>
+
+            <div class="form-group row">
+
+              <!-- Infração Tipo de Falta -->
+              <div class="form-group col-md-6">
+                <label>Tipo de Falta</label>
+                <ngx-select formControlName="tipoFaltaId" [allowClear]="false" [multiple]="false" [items]="tipoFaltas"
+                  [autoClearSearch]="true" [noAutoComplete]="false" optionValueField="id" optionTextField="nome"
+                  placeholder="Selecione... " (selectionChanges)="doSelectOptionsTipoFalta($event)">
+                </ngx-select>
+              </div>
+
+              <!-- disciplina -->
+              <div class="form-group col-md-6">
+                <label>Disciplina</label>
+                <ngx-select formControlName="disciplinaId" [allowClear]="false" [multiple]="false" [items]="disciplinas"
+                  [autoClearSearch]="true" [noAutoComplete]="false" optionValueField="id" optionTextField="nome"
+                  placeholder="Selecione..." (selectionChanges)="doSelectOptionsDisciplina($event)"
+                  (click)="crtDisciplina()" #Tive que colocar este controle por que todo esses comando nesta seleção são
+                  executados no carregamento loadCaso. Assim as datas apresentavam diferentes.>
+                </ngx-select>
+              </div>
+            </div>
+
+            <div class="row mb-4">
+              <!-- inicioProva -->
+              <div class="form-group col-md-6">
+                <label>Início da prova</label>
+                <p-calendar [style]="{'width':'100%','height':'25px'}"
+                  [inputStyle]="{'width':'100%','height':'100%','font-size':'14px'}" formControlName="inicioProva"
+                  placeholder="dd/mm/aaaa" [monthNavigator]="true" [yearNavigator]="true" yearRange="1900:2100"
+                  inputStyleClass="form-control" dataType="string" dateFormat="dd/mm/yy" [showButtonBar]="true"
+                  [showIcon]="true" inputId="icon">
+                </p-calendar>
+              </div>
+
+              <!-- finalProva -->
+              <div class="form-group col-md-6">
+                <label>Final da prova</label>
+                <p-calendar [style]="{'width':'100%','height':'25px'}"
+                  [inputStyle]="{'width':'100%','height':'100%','font-size':'14px'}" formControlName="finalProva"
+                  placeholder="dd/mm/aaaa" [monthNavigator]="true" [yearNavigator]="true" yearRange="1900:2100"
+                  inputStyleClass="form-control" dataType="string" dateFormat="dd/mm/yy" [showButtonBar]="true"
+                  [showIcon]="true" inputId="icon">
+                </p-calendar>
+              </div>
+            </div>
+          </div>
+          <!-- Fim dados do Membro -->
+
+          <!-- Dados da Mesa -->
+          <div class="col-md-12 col-xl-6">
+
+            <!-- Lista preta Dados da Mesa  -->
+            <nav aria-label="breadcrumb mb-0">
+              <div class="form-group row col-sm-12 ml-0 mb-0">
+                <div class="card mb-2" style="background-color: rgb(77, 83, 90); border-radius: 5px;">
+                  <span class="mr-8 mb-0 mt-0 text-white f-16">Dados da Mesa</span>
+                </div>
+              </div>
+            </nav>
+
+            <div class="form-group row">
+
+              <!-- Lista apenas Obreiros -->
+              <div class="form-group col-md-6">
+                <label>Presidente</label>
+                <ngx-select formControlName="presidenteId" [allowClear]="false" [multiple]="false" [items]="obreiros"
+                  [autoClearSearch]="true" [noAutoComplete]="false" optionValueField="id" optionTextField="nome"
+                  placeholder="Selecione..." (selectionChanges)="doSelectOptionsPresidente($event)">
+                </ngx-select>
+              </div>
+
+              <!-- Lista apenas Membros -->
+              <div class="form-group col-md-6">
+                <label>Secretário</label>
+                <ngx-select formControlName="escrivaoId" [allowClear]="false" [multiple]="false" [items]="obreiros"
+                  [autoClearSearch]="true" [noAutoComplete]="false" optionValueField="id" optionTextField="nome"
+                  placeholder="Selecione.... " (selectionChanges)="doSelectOptionsSecretario($event)">
+                </ngx-select>
+              </div>
+
+              <!-- Observação -->
+              <div class="form-group col-md-12">
+                <label>Observação</label>
+                <textarea class="form-control" style="height: 50px;" formControlName="observacao" rows="5"
+                  placeholder="Observações da mesa."></textarea>
+              </div>
+            </div>
+          </div>
+          <!-- Fim dados da Mesa -->
+        </div>
+
+
+      </div>
+      <div class="tab-pane fade" [ngClass]="{ 'show active': this.activeTab === 'acompanhamento' } " id="acompanhamento"
+        role="tabpanel" aria-labelledby="acompanhamento-tab">
+
+        <div class="row">
+          <!-- Dados da Encerramento  -->
+          <div class="col-md-12 col-xl-6">
+
+            <!-- Lista preta Dados do encerramento do caso  -->
+            <nav aria-label="breadcrumb mb-0">
+              <div class="form-group row col-sm-12 ml-0 mb-0">
+                <div class="card mb-2" style="background-color: rgb(77, 83, 90); border-radius: 5px;">
+                  <span class="mr-8 mb-0 mt-0 text-white f-16">Fechamento/Encerramento</span>
+                </div>
+              </div>
+            </nav>
+            <div class="form-group row">
+
+
+              <!-- name -->
+              <div readonly class="form-group col-md-12 ">
+                <label>Nome</label>
+                <input readonly autocomplete="off" type="text" style="height: 35px;" class="form-control"
+                  formControlName="nome">
+              </div>
+
+
+              <!-- tipoFaltaCaso -->
+              <div readonly class="form-group col-md-6 ">
+                <label>Tipo de Falta</label>
+                <input readonly autocomplete="off" type="text" style="height: 35px; " class="form-control"
+                  formControlName="tipoFaltaCaso">
+              </div>
+
+              <!-- disciplina -->
+              <div class="form-group col-md-6">
+                <label>Disciplina</label>
+                <input readonly autocomplete="off" type="text" style="height: 35px" class="form-control"
+                  formControlName="disciplinaAplicada">
+              </div>
+
+            </div>
+          </div>
+          <!-- Fim dados do Encerramento -->
+
+          <!-- Dados da Encerramento  -->
+          <div class="col-md-12 col-xl-6">
+
+            <!-- Lista preta Dados do Arquivamento do caso  -->
+            <nav aria-label="breadcrumb mb-0">
+              <div class="form-group row col-sm-12 ml-0 mb-0">
+                <div class="card mb-2" style="background-color: rgb(77, 83, 90); border-radius: 5px;">
+                  <span class="mr-8 mb-0 mt-0 text-white f-16" >Arquivamento</span>
+                </div>
+              </div>
+            </nav>
+
+            <div class="form-group row">
+
+              <!-- inicioProva  -->
+              <div class="form-group col-md-6">
+                <label class="text-c-red">Início da prova</label>
+                <input readonly style="border: 1; border-color: rgb(216, 214, 214);" type="text" class="form-control"
+                  formControlName="inicioProva">
+              </div>
+
+              <!-- finalProva  -->
+              <div class="form-group col-md-6">
+                <label class="text-c-green">Final da prova</label>
+                <input readonly style="border: 1; border-color: rgb(216, 214, 214);" type="text" class="form-control"
+                  formControlName="finalProva">
+              </div>
+
+              <div class=" form-group col-md-6">
+                <label><b><i class="fas fa-diagnoses text-dark" style="font-size: 16px;">
+                      Resultado/Arquivamento</i></b></label>
+                <ngx-select formControlName="resultado" autocomplete="off" [allowClear]="false" [multiple]="false"
+                  [items]="resultado" [autoClearSearch]="true" [noAutoComplete]="false" optionValueField="nome"
+                  optionTextField="nome" placeholder="Selecione..."
+                  (selectionChanges)="doSelectOptionsResultado($event)">
+                </ngx-select>
+              </div>
+
+              <!-- Data do Arquivamento do caso -->
+              <div *ngIf="casoForm.controls['resultado'].value !== 'Aguardando'" class="form-group col-md-6">
+                <label>Data Arquivamento</label>
+                <p-calendar [style]="{'width':'100%','height':'25px'}"
+                  [inputStyle]="{'width':'100%','height':'100%','font-size':'14px'}" formControlName="dataArquivamento"
+                  placeholder="dd/mm/aaaa" [monthNavigator]="true" [yearNavigator]="true" yearRange="1900:2100"
+                  dateFormat="dd/mm/yyyy" inputStyleClass="form-control" dataType="string" dateFormat="dd/mm/yy"
+                  [showButtonBar]="true" [showIcon]="true" inputId="icon">
+                </p-calendar>
+              </div>
+
+              <!-- Motivo do encerramento -->
+              <div *ngIf="casoForm.controls['resultado'].value !== 'Aguardando'" class="form-group col-md-12">
+                <label>Motivo do arquivamento </label>
+                <textarea class="form-control" style="height: 100px;" formControlName="motivoEncerramento" rows="5"
+                  placeholder="Descrever brevemente o motivo do encerramento, Ex: 'Desviou-se'"></textarea>
+              </div>
+            </div>
+          </div>
+          <!-- Fim dados do Arquivamento -->
+        </div>
+      </div>
+    </div>
+  </form>
+  <!-- <div class="row ">
+  <div class="form-group ">
+    <pre> {{ casoForm.value | json }} </pre><br>
+  </div>
+</div> -->
+</div>

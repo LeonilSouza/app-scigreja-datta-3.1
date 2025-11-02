@@ -1,24 +1,24 @@
 @for (breadcrumb of navigationList; track breadcrumb; let last = $last) {
   @if (last && breadcrumb.breadcrumbs !== false) {
-    <div class="page-header m-b-0">
+    <div class="page-header">
       <div class="page-block">
         <div class="row align-items-center">
           <div class="col-md-12">
-            <div class="page-header-title">
+            <div class="page-header-title ">
               @for (breadcrumb of navigationList; track breadcrumb; let last = $last) {
                 @if (last) {
-                  <!-- <h5 class="m-b-10">
+                  <h5 class="m-b-5">
                     {{ breadcrumb.title | translate }}
-                  </h5> -->
+                  </h5>
                 }
               }
             </div>
-            <ul class="breadcrumb">
+            <ul class="breadcrumb mb-2">
               <li class="breadcrumb-item">
-                @if (type === 'theme1') {
+                @if (type === 'theme2') {
                   <a [routerLink]="['/dashboard/default/']"><i class="feather icon-home"></i></a>
                 }
-                @if (type === 'theme2') {
+                @if (type === 'theme1') {
                   <a [routerLink]="['/dashboard/default/']">{{ 'Home' | translate }}</a>
                 }
               </li>
@@ -35,6 +35,7 @@
                 }
               }
             </ul>
+             <!-- <hr class="mt-0 mb-3 text-dark border-1"> -->
           </div>
         </div>
       </div>

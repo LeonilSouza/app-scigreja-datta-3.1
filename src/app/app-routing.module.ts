@@ -70,6 +70,10 @@ const routes: Routes = [
         path: 'tipofaltas',
         loadChildren: () => import('./pages/cadastro/tipo-falta/tipo-falta.routes').then((module) => module.TIPO_FALTA_ROUTES),
       },
+      {
+        path: 'cartas',
+        loadChildren: () => import('./pages/carta/carta.routes').then((module) => module.CARTA_ROUTES),
+      },
       // {
       //   path: 'cartas', 
       //   loadChildren: () => import('./pages/carta/carta.module').then((module) => module.CartaModule),
