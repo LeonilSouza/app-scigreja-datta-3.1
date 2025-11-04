@@ -74,10 +74,10 @@ const routes: Routes = [
         path: 'cartas',
         loadChildren: () => import('./pages/carta/carta.routes').then((module) => module.CARTA_ROUTES),
       },
-      // {
-      //   path: 'cartas', 
-      //   loadChildren: () => import('./pages/carta/carta.module').then((module) => module.CartaModule),
-      // },
+     {
+        path: 'casos',
+        loadChildren: () => import('./pages/caso/caso.routes').then((module) => module.CASO_ROUTES),
+      },
       // {
       //   path: 'casos',
       //   loadChildren: () =>

@@ -1,55 +1,59 @@
-<div class="row">
+<hr class="mt-0">
+<div class="row px-0">
   <span>
     <!-- Menu Relatórios -->
-    <p-splitButton class="float-end ml-3 mb-1 mt-0" label="   Relatórios          " icon="pi pi-print"
-      [model]="printItems" styleClass="p-button-sm  p-button-secondary border-radius text-white"
-      [style]="{'width':'100%','height':'26px'}"></p-splitButton>
+    <p-splitButton class="float-end mb-2 " label="   Relatórios   " icon="pi pi-print" [model]="printItems"
+      severity="contrast" outlined size="small"
+      [style]="{'height':'30px',  'border-radius':'6px', 'margin-left':'10px'}" />
 
     <!--Botão Imprimir ATA -->
-    <strong><button (click)="modalAta.show(); setData();" type="button"
-        class="p-button-secondary ml-4 mb-1 mt-0 float-end" pButton pRipple label="Imprimir ATA "
-        style="width: 12em; height: 26px; border-radius: 5px; font-size: small; color: aliceblue; " icon="pi pi-print">
-      </button></strong>
+    <p-button (click)="modalAta.show(); setData();" label="Imprimir ATA " icon="pi pi-print" size="small"
+      severity="secondary"
+      [style]="{'height':'30px',  'border-radius':'6px', 'margin-right':'0px', 'margin-left':'10px'}"
+      class="float-end" />
 
     <!-- Botão Novo -->
-    <strong><button routerLink="new" type="button" class="float-end mb-1 mt-0" pButton pRipple label="   Novo Caso   "
-        style="height: 26px; background:#388669 ; font-size: small; border-radius: 4px; color: aliceblue;"
-        icon="pi pi-user">
-      </button></strong>
+    <p-button routerLink="new" label="Novo" icon="pi pi-user" size="small" severity="success"
+      [style]="{'background':'#388669', 'height':'30px',  'border-radius':'6px', 'margin-right':'0px'}"
+      class="float-end" />
 
   </span>
 </div>
-
-<nav aria-label="breadcrumb mb-0">
-  <div class="form-group row col-sm-12 ml-0 mb-0">
-    <div class="card mb-0" style="background-color: rgb(77, 83, 90); border-radius: 4px; height: 30px;">
-      <span class="mb-1 mt-1 ml-2 text-white f-15">Filtro de Pesquisa</span>
+<span class="float-left">
+  <nav aria-label="breadcrumb ">
+    <div class="card mb-3 mt-1"
+      style="background-color: rgb(77, 83, 90); padding-left: 11px; border-radius: 4px; height: 30px; align-content: center;">
+      <span class="mr-8 ml-4 mb-1  mt-1 text-white f-13">
+        <p class="f-14">Filtro de Pesquisa</p>
+      </span>
     </div>
-  </div>
-</nav>
+  </nav>
+</span>
 
 <div class="col-md-12">
-  <div class="page-header shadow mb-3">
+  <div class="page-header shadow mb-3 px-3">
     <!-- <div class="col-sm-12"> -->
     <div class="row  mb-0 mt-0">
 
       <!-- Nome = pesquisar Casos-->
-      <div class="form-group col-md-6 ml-0 mb-0">
-        <label class="text-dark ">                 Nome</label>
-        <div class="p-inputgroup">
-          <button type="button"
-            style="height: 26px; min-width: 50px; cursor:default ; border-radius: 5px; border-bottom-right-radius: 0; border-top-right-radius: 0; border: 0; background: #1a82ce   ;"
+
+      <div class="form-group col-md-6 ml-0 mb-2  ">
+        <label class="text-dark mt-0  mb-1"> Pesquisa</label>
+        <p-inputgroup>
+          <button type="button" class=""
+            style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius: 0; border-top-right-radius: 0; border: 0; background: #1a82ce   ;"
             pButton pRipple> <i class="pi pi-search"></i></button>
-          <input class="form-control" type="text" (input)="dtcaso.filterGlobal($event.target.value, 'contains')"
-            (blur)="limpaPesaquisa()" placeholder="Pesquisar Nome ou Sobrenome"
-            style="height: 26px;  font-size: 12px;text-transform: uppercase">
-        </div>
+          <input (blur)="limpaPesaquisa()" class="form-control" [(ngModel)]="nome" type="text"
+            [ngModelOptions]="{standalone: true}" placeholder="Pesquisar Nome ou Sobrenome"
+            (input)="dtcaso.filterGlobal($event.target?.addEventListener, 'contains')"
+            style="height: 30px; font-size: 12px; text-transform: uppercase ; border-bottom-left-radius: 0; border-top-left-radius: 0;">
+        </p-inputgroup>
       </div>
 
       <!-- CheckBox Casos -->
-      <div class="form-group col-md-2 d-inline mb-0">
-        <label class="text-c-red mb-0">           Ativas: {{ totalCasosAtivo }}</label>
-        <div class="checkbox checkbox-danger mt-0  ml-5">
+      <div class="form-group col-md-2 d-inline mb-2 ">
+        <label class="text-c-red mb-0">Ativas: {{ totalCasosAtivo }}</label>
+        <div class="checkbox checkbox-danger mt-0  ml-5 ">
           <input type="checkbox" name="cb-caso" id="cb-caso" [checked]="casosAtivos" value="caso"
             (change)="onChangeCasos($event)" />
           <label for="cb-caso" class="cr"></label>
@@ -57,8 +61,8 @@
       </div>
 
       <!-- CheckBox Vencidas -->
-      <div class="form-group col-md-2 d-inline mb-0">
-        <label class="text-c-green mb-0">       Vencidas: {{ totalProvasVencida }}</label>
+      <div class="form-group col-md-2 d-inline mb-2">
+        <label class="text-c-green mb-0">Vencidas: {{ totalProvasVencida }}</label>
         <div class="checkbox  checkbox-success   ml-5">
           <input type="checkbox" name="cb-vencida" id="cb-vencida" [checked]="vencidas" value="vencida"
             (change)="onChangeVencidas($event)" />
@@ -67,8 +71,8 @@
       </div>
 
       <!-- CheckBox Arquivados -->
-      <div class="form-group col-md-2  d-inline  mb-0 ">
-        <label class="text-dark mb-0">      Arquivadas</label>
+      <div class="form-group col-md-2  d-inline  mb-2 ">
+        <label class="text-dark mb-0">Arquivadas</label>
         <div class="checkbox checkbox-primary   ml-5">
           <input type="checkbox" name="cb-arquivados" id="cb-arquivados" [checked]="arquivados" value="arquivados"
             (change)="onChangeArquivados($event)" />
@@ -100,11 +104,9 @@
             <!-- Data da ATA -->
             <div class="form-group col-md-12 ">
               <label>Data</label>
-              <p-calendar [style]="{'width':'100%', 'height':'2rem'}" [inputStyle]="{'width':'100%', 'height':'100%'}"
-                placeholder="dd/mm/aaaa" [monthNavigator]="true" [yearNavigator]="true" formControlName="dtCaso"
-                yearRange="1900:2100" inputStyleClass="form-control" dataType="string" dateFormat="dd/mm/yy"
-                [showButtonBar]="true" [showIcon]="true" inputId="icon">
-              </p-calendar>
+              <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true" [yearNavigator]="true"
+                yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true" inputId="icondisplay" dataType="string"
+                dateFormat="dd/mm/yy" formControlName="dtCaso" placeholder="dd/mm/aaaa" />
             </div>
 
           </div>
@@ -129,96 +131,94 @@
 <!-- FIM SESSAO IMPRIMIR ATA - MODAL -->
 
 <!-- Provas -->
-<app-card [hidHeader]="true" cardTitle="Casos" cardClass="card-border-c-red shadow border-1" blockClass="pc-component">
-  <p-table #dtcaso [value]="casos" [globalFilterFields]="['nome']" [lazy]="true" (onLazyLoad)="loadCasosLazy($event)"
-    responsiveLayout="stack" [showCurrentPageReport]="true" [totalRecords]="totalRegistros"
-    styleClass="p-datatable-sm p-datatable-striped  p-datatable-gridlines"
-    currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [rows]="linesPerPage"
-    emptyMessage="Nenhum registro encontrado">
+<app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-green shadow  border-1">
+  <div class="p-0">
+    <p-table #dtcaso [value]="casos" responsiveLayout="stack" [globalFilterFields]="['nome']" [lazy]="true"
+      (onLazyLoad)="loadCasosLazy($event)" [showCurrentPageReport]="true" [totalRecords]="totalRegistros" showGridlines
+      stripedRows [rowsPerPageOptions]="[6, 15, 30]"
+      currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
+      [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
 
-    <ng-template pTemplate="header">
-      <tr>
-        <th class="col-foto" style="background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px;
-                               border-top-left-radius: 5px; border-bottom-left-radius: 5px;">
-          <b>Foto</b>
-        </th>
-        <th
-          style="background: rgb(77, 83, 90);  font-size: 12px ;color: aliceblue;  padding-top: 0px; padding-bottom: 0px;">
-          <b>Nome</b>
-        </th>
+      <ng-template #header>
+        <tr>
+          <th class="col-foto"
+            style=" background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-left-radius: 5px; ">
+            <b>Foto</b>
+          </th>
+          <th
+            style="background: rgb(77, 83, 90);  font-size: 12px ;color: aliceblue;  padding-top: 0px; padding-bottom: 0px;">
+            <b>Nome</b>
+          </th>
 
-        <th style="background: rgb(77, 83, 90); color: aliceblue; font-size: 12px; padding-top: 6px; padding-bottom: 6px;" class="col-data-150">
-          Situação</th>
+          <th
+            style="background: rgb(77, 83, 90); color: aliceblue; font-size: 12px; padding-top: 6px; padding-bottom: 6px;"
+            class="col-data-150">
+            Situação</th>
 
-        <th style="background: rgb(77, 83, 90); color: aliceblue; font-size: 12px; padding-top: 6px; padding-bottom: 6px;" class="col-data-content-4">
-          Tipo Falta
-        </th>
+          <th
+            style="background: rgb(77, 83, 90); color: aliceblue; font-size: 12px; padding-top: 6px; padding-bottom: 6px;"
+            class="col-date">Inicio
+            prova</th>
+          <th
+            style="background: rgb(77, 83, 90); color: aliceblue; font-size: 12px; padding-top: 6px; padding-bottom: 6px;"
+            class="col-date">Final
+            prova
+          </th>
+          <th class="col-acoes" style="min-width:7rem; background: rgb(77, 83, 90);  font-size: 12px ;color: aliceblue;  padding-top: 6px; padding-bottom: 6px;
+           border-top-right-radius: 5px">
+            Ações</th>
 
-        <th style="background: rgb(77, 83, 90); color: aliceblue; font-size: 12px; padding-top: 6px; padding-bottom: 6px;" class="col-date">Inicio
-          prova</th>
-        <th style="background: rgb(77, 83, 90); color: aliceblue; font-size: 12px; padding-top: 6px; padding-bottom: 6px;" class="col-date">Final
-          prova
-        </th>
-        <th style="background: rgb(77, 83, 90); color: aliceblue; font-size: 12px; padding-top: 6px; padding-bottom: 6px;" class="col-acoes-header">Ações</th>
 
+        </tr>
+      </ng-template>
 
-      </tr>
-    </ng-template>
+      <ng-template pTemplate="body" let-caso>
+        <tr>
 
-    <ng-template pTemplate="body" let-caso>
-      <tr>
+          <td>
+            <!-- Quando tem foto -->
+            @if(caso?.fotoPessoa){
+            <div class="col-foto d-inline-block align-center">
+              <img src="data:image/jpg;base64,{{ caso?.fotoPessoa }}" [routerLink]="[caso.id, 'edit']"
+                class=" img-radius align-center m-r-15" style=" cursor: pointer;" alt="user image" />
+            </div>
+            }
 
-        <td>
-          <!-- Quando tem foto -->
-          <div *ngIf="caso?.fotoPessoa" class="col-foto d-inline-block align-center">
-            <img src="data:image/jpg;base64,{{ caso?.fotoPessoa }}" [routerLink]="[caso.id, 'edit']"
-              class=" img-radius align-center m-r-15" style="width: 40px; cursor: pointer;" alt="user image" />
-          </div>
+            <!-- Quando não tem foto -->
+            @if(!caso?.fotoPessoa){
+            <div class="col-foto d-inline-block align-center">
+              <img src="assets/images/foto/Sem_Foto1.png" [routerLink]="[caso.id, 'edit']"
+                class="img-radius align-top m-r-15" style=" cursor: pointer;" alt="user image" />
+            </div>
+            }
+          </td>
 
-          <!-- Quando não tem foto -->
-          <div *ngIf="!caso?.fotoPessoa" class="col-foto d-inline-block align-center">
-            <img src="assets/images/foto/Sem_Foto1.png" [routerLink]="[caso.id, 'edit']"
-              class="img-radius align-top m-r-15" style="width: 40px; cursor: pointer;" alt="user image" />
-          </div>
-        </td>
+          <td [routerLink]="[caso.id, 'edit']" class="m-r-15" style=" cursor: pointer; font-size: 12px;">{{
+            caso.nome }}
+          </td>
 
-        <td [routerLink]="[caso.id, 'edit']" class="m-r-15" style=" cursor: pointer; font-size: 12px;">{{
-          caso.nome }}
-        </td>
+          <td class="col-data-header col-data-150">
+            <span [routerLink]="[caso.id, 'edit']" style=" cursor: pointer; font-size: 12px;"
+              [style.color]="caso.situacao === 'Comunhão' ? 'green' : caso.situacao === 'Prova' ? 'red' : 'blue'">{{
+              caso.situacao
+              }}</span>
+          </td>
 
-        <td class="col-data-header col-data-150">
-          <span [routerLink]="[caso.id, 'edit']" style=" cursor: pointer; font-size: 12px;"
-            [style.color]="caso.situacao === 'Comunhão' ? 'green' : caso.situacao === 'Prova' ? 'red' : 'blue'">{{
-            caso.situacao
-            }}</span>
-        </td>
+          <td [routerLink]="[caso.id, 'edit']" style=" cursor: pointer; font-size: 12px;" class="col-date">{{
+            caso.inicioProva }}</td>
 
-        <td class="col-data-header col-data-content-4">
-          <span [routerLink]="[caso.id, 'edit']" style=" cursor: pointer; font-size: 12px;">{{
-            caso.tipoFaltaCaso }}</span>
-        </td>
+          <td [routerLink]="[caso.id, 'edit']" style="font-size: 12px;" class="col-date">{{ caso.finalProva }}
+          </td>
 
-        <td [routerLink]="[caso.id, 'edit']" style=" cursor: pointer; font-size: 12px;" class="col-date">{{
-          caso.inicioProva }}</td>
+          <td class="col-acoes-header py-2">
+            <button [routerLink]="[caso.id, 'edit']" type="button" class="btn btn-icon btn-outline-info p-1 mt-0 mb-0"
+              [style]="{'height': '30px', 'width': '30px'} ">
+              <i class="pi pi-pencil"></i>
+            </button>
+          </td>
 
-        <td [routerLink]="[caso.id, 'edit']" style="font-size: 12px;" class="col-date">{{ caso.finalProva }}
-        </td>
-
-        <td class="col-acoes">
-          <button [routerLink]="[caso.id, 'edit']" type="button" class="btn btn-icon btn-outline-success p-1"
-            [style]="{'height': '2rem', 'width': '2rem'} " [placement]="'top'" ngbTooltip="Editar">
-            <i class="pi pi-pencil"></i>
-          </button>
-        </td>
-
-      </tr>
-    </ng-template>
-  </p-table>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
 </app-card>
-<!-- </div>
-          </div>
-        </div>
-      </div> -->
-<!-- Fim Provas -->
-<!-- </div>
-  </div> -->

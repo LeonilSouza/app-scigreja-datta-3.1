@@ -1,29 +1,34 @@
-import { TipoFaltaDTO } from './../../../models/tipo-falta.dto';
-import { GLOBALS } from 'src/app/_helpers/globals';
-import { IgrejaService } from './../../../services/igreja.service';
 import { AfterContentChecked, Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { StorageService } from '../../../services/storage.service';
-import { PessoaDTO } from 'src/app/models/pessoa.dto';
-import { DisciplinaDTO } from 'src/app/models/disciplina.dto';
-import { DisciplinaService } from 'src/app/services/disciplina.service';
-import { CasoDTO } from 'src/app/models/caso.dto ';
-import { CasoService } from 'src/app/services/caso.service';
-import { INgxSelectOption } from 'ngx-select-ex';
-import { PessoaService } from 'src/app/services/pessoa.service';
-import { TipoFaltaService } from 'src/app/services/tipo-falta.service';
-import { CargoDTO } from 'src/app/models/cargo.dto';
-import { TranslateService } from '@ngx-translate/core';
-import { ConfirmationService, MessageService, PrimeNGConfig } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 import moment from 'moment';
 
 import Swal from 'sweetalert2';
-import { IgrejaDTO } from 'src/app/models/igreja.dto';
+import { igrejaIdSignal, nomeIgrejaSignal, nomeUsuarioSignal, perfilSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
+import { CasoDTO } from 'src/app/theme/shared/models/caso.dto ';
+import { DisciplinaDTO } from 'src/app/theme/shared/models/disciplina.dto';
+import { TipoFaltaDTO } from 'src/app/theme/shared/models/tipo-falta.dto';
+import { CargoDTO } from 'src/app/theme/shared/models/cargo.dto';
+import { PessoaDTO } from 'src/app/theme/shared/models/pessoa.dto';
+import { IgrejaDTO } from 'src/app/theme/shared/models/igreja.dto';
+import { CasoService } from 'src/app/theme/shared/services/caso.service';
+import { StorageService } from 'src/app/theme/shared/services/storage.service';
+import { IgrejaService } from 'src/app/theme/shared/services/igreja.service';
+import { DisciplinaService } from 'src/app/theme/shared/services/disciplina.service';
+import { PessoaService } from 'src/app/theme/shared/services/pessoa.service';
+import { TipoFaltaService } from 'src/app/theme/shared/services/tipo-falta.service';
+import { SharedModule } from 'src/app/theme/shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { DatePicker } from 'primeng/datepicker';
+import { SelectModule } from 'primeng/select';
+import { SplitButtonModule } from 'primeng/splitbutton';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
 
 //declare const $: any;
 
@@ -31,10 +36,42 @@ import { IgrejaDTO } from 'src/app/models/igreja.dto';
   selector: 'app-caso-form',
   templateUrl: './caso-form.component.html',
   styleUrls: ['./caso-form.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    SplitButtonModule,
+    SharedModule,
+    SelectModule,
+    DatePicker,
+    TableModule,
+    RouterLink,
+    ButtonModule
+  ],
+
+  providers: [
+    CasoService,
+    IgrejaService,
+    DisciplinaService,
+    PessoaService,
+    TipoFaltaService
+
+  ]
 })
 
 export class CasoFormComponent implements OnInit, AfterContentChecked {
+
+  nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+  igrejaIdSignal = igrejaIdSignal;
+  nomeUsuarioSignal = nomeUsuarioSignal;
+  perfilSignal = perfilSignal;
+  setorIdSignal = setorIdSignal;
+
+  nomeIgreja = nomeIgrejaSignal();
+  igrejaId = igrejaIdSignal();
+  nomeUsuario = nomeUsuarioSignal();
+  perfil = perfilSignal();
 
   public ngxControl = new FormControl();
 
@@ -43,8 +80,6 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
   controle: boolean = false;
 
   subscription: Subscription;
-
-  nomeIgreja: string = GLOBALS.nomeIgreja;
 
   disciplinaCaso: string;
 
@@ -61,14 +96,12 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
   activePills = 4;
   activeVetical = 'top';
 
-  sexo = ['Masculino', 'Feminino'];
-  tipoMembro = ['Membro', 'Obreiro', 'Congregado', 'InfantoJuvenil'];
-  estadoCivil = ['Casado', 'Solteiro', 'Viúvo', 'Divorciado', 'União Estável'];
-  situacao = ['Ativo', 'Inativo'];
-  tipoAdemissao = ['Batismo', 'Conversão', 'Reconciliação', 'Transferência', 'União Estável'];
-  resultado = ['Aguardando', 'Passou pela prova', 'Arquivado', 'Desligado'];
-  escolaridade = ['Ensino Básico', 'Ensino Médio', 'Ensino Superior', 'Pós-Graduação', 'Mestrado', 'Doutorado'];
-  igrejaBatismo = ['Assembléia de Deus', 'Presbiteriana', 'Casa da benção', 'Brasil para Cristo', 'Universal', 'Congragação cristã ', 'Igraja da graça', 'Batista', 'Adventista do sétimo dia', 'Outras'];
+  resultado = [
+    { nome: 'Aguardando', value: 0 },
+    { nome: 'Passou pela prova', value: 1 },
+    { nome: 'Arquivado', value: 2 },
+    { nome: 'Desligado', value: 3 }
+  ];
 
   /*  Referente a CasoDTO */
   currentAction: string;
@@ -87,13 +120,11 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
   disciplina: DisciplinaDTO[];
   tipoFalta: TipoFaltaDTO[] = [];
   cargo: CargoDTO[];
-  tipoFaltas: TipoFaltaDTO;
-  disciplinas: DisciplinaDTO;
+  tipoFaltas: TipoFaltaDTO[] = [];
+  disciplinas: DisciplinaDTO[] = [];
 
   caso: CasoDTO = new CasoDTO();
   id: number;
-
-  igrejaId: number = GLOBALS.igrejaId;
 
   PageTitleModal: string
 
@@ -115,25 +146,16 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
     public disciplinaService: DisciplinaService,
     public pessoaService: PessoaService,
     public tipoFaltaService: TipoFaltaService,
-    public translate: TranslateService,
-    public primeNGConfig: PrimeNGConfig,
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
 
   ) {
 
     this.activeTab = 'home';
-
-    //Calendar PrimeNG
-    translate.setDefaultLang('pt-br');
-
-    this.subscription = this.translate.stream('primeng').subscribe(data => {
-      this.primeNGConfig.setTranslation(data);
-    });
   }
 
   ngOnInit(): void {
-    this.igrejaId = GLOBALS.igrejaId;
+    this.igrejaId = this.igrejaId;
     this.setCurrentAction();
     this.buildCasoForm();
     this.loadPessoas();
@@ -230,8 +252,8 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
 
   // EVENTOS DO NGX-SELECT-EX
 
-  public doSelectOptionsResultado = (options: INgxSelectOption[]) => { // PEGA O NOME DO SELECT
-    let resultado = options[0].value;
+  public selectResultado(event: any) {
+    let resultado = event.value;
 
     if (this.caso.resultado === 'Aguardando' || resultado === 'Aguardando') {
       this.casoForm.controls['dataArquivamento'].setValue(null);
@@ -243,19 +265,22 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
     }
   }
 
-  public doSelectOptionsPessoa = (options: INgxSelectOption[]) => { // PEGA O NOME DO SELECT
-    this.casoForm.controls['pessoaId'].setValue(options[0].data.id)
-    this.casoForm.controls['nome'].setValue(options[0].data.nome)
-    this.casoForm.controls['tituloMin'].setValue(options[0].data.tituloMin)
+  public selectPessoa(event: any) {
+    this.pessoa = this.pessoas.filter(pessoa => pessoa.id == event.value);
+    this.casoForm.controls['pessoaId'].setValue(this.pessoa[0].id)
+    this.casoForm.controls['nome'].setValue(this.pessoa[0].nome)
+    this.casoForm.controls['tituloMin'].setValue(this.pessoa[0].tituloMin)
   }
 
-  public doSelectOptionsDisciplina = (options: INgxSelectOption[]) => { // PEGA O NOME DO SELECT
-    this.casoForm.controls['disciplinaId'].setValue(options[0].data.id)
-    this.casoForm.controls['disciplinaAplicada'].setValue(options[0].data.nome)
+  public selectDisciplina(event: any) {
+    this.disciplina = this.disciplinas.filter(disciplina => disciplina.id == event.value);
+    this.casoForm.controls['disciplinaId'].setValue(this.disciplina[0].id)
+    this.casoForm.controls['disciplinaAplicada'].setValue(this.disciplina[0].nome)
 
     if (this.controle) { /* jogada para evitar essas execuções durante o builForm
-                         Tive que colocar este controle por que todo esses comando nesta seleção são executados no carregamento loadCaso. Assim as datas apresentavam  diferentes.*/
-      this.disciplinaCaso = options[0].data.nome;
+                           Tive que colocar este controle por que todo esses comando nesta seleção 
+                           são executados no carregamento loadCaso. Assim as datas apresentavam  diferentes.*/
+      this.disciplinaCaso = this.disciplina[0].nome;
       this.inicioProva = this.casoForm.controls['inicioProva'].value;
       if (this.disciplinaCaso == "Prova de 60 dias" || "Observação de 60 dias") {
         this.casoForm.controls['finalProva'].setValue(this.dataAddMes(this.inicioProva, 2));
@@ -282,23 +307,27 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
     this.controle = true;
   }
 
-  public doSelectOptionsTipoFalta = (options: INgxSelectOption[]) => { // PEGA O NOME DO SELECT
-    this.casoForm.controls['tipoFaltaId'].setValue(options[0].data.id)
-    this.casoForm.controls['tipoFaltaCaso'].setValue(options[0].data.nome)
+  public selectTipoFalta(event: any) {
+    this.tipoFalta = this.tipoFaltas.filter(tipo => tipo.id == event.value);
+    this.casoForm.controls['tipoFaltaId'].setValue(this.tipoFalta[0].id)
+    this.casoForm.controls['tipoFaltaCaso'].setValue(this.tipoFalta[0].nome)
   }
 
-  public doSelectOptionsPresidente = (options: INgxSelectOption[]) => { // PEGA O NOME DO SELECT
-    this.casoForm.controls['presidenteId'].setValue(options[0].data.id)
-    this.casoForm.controls['nomePresidente'].setValue(options[0].data.nome)
-    this.casoForm.controls['cargoPresidente'].setValue(options[0].data.cargoAssinatura)
-    this.casoForm.controls['siglaTituloMinPresidente'].setValue(options[0].data.abreviaturaMin)
+  public selectPresidente(event: any) {
+    this.pessoa = this.pessoas.filter(pessoa => pessoa.id == event.value);
+    this.casoForm.controls['presidenteId'].setValue(this.pessoa[0].id)
+    this.casoForm.controls['nomePresidente'].setValue(this.pessoa[0].nome)
+    this.casoForm.controls['cargoPresidente'].setValue(this.pessoa[0].cargoPrincipal)
+    this.casoForm.controls['siglaTituloMinPresidente'].setValue(this.pessoa[0].abreviaturaMin)
   }
 
-  public doSelectOptionsSecretario = (options: INgxSelectOption[]) => { // PEGA O NOME DO SELECT
-    this.casoForm.controls['escrivaoId'].setValue(options[0].data.id)
-    this.casoForm.controls['nomeEscrivao'].setValue(options[0].data.nome)
-    this.casoForm.controls['cargoEscrivao'].setValue(options[0].data.cargoAssinatura)
-    this.casoForm.controls['siglaTituloMinEscrivao'].setValue(options[0].data.abreviaturaMin)
+
+  public selectSecretario(event: any) {
+    this.pessoa = this.pessoas.filter(pessoa => pessoa.id == event.value);
+    this.casoForm.controls['escrivaoId'].setValue(this.pessoa[0].id)
+    this.casoForm.controls['nomeEscrivao'].setValue(this.pessoa[0].nome)
+    this.casoForm.controls['cargoEscrivao'].setValue(this.pessoa[0].cargoPrincipal)
+    this.casoForm.controls['siglaTituloMinEscrivao'].setValue(this.pessoa[0].abreviaturaMin)
   }
 
 
@@ -315,7 +344,7 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
               this.casoForm.controls['igrejaId'].setValue(this.igrejaId);
               this.casoForm.controls['tipoMembro'].setValue(this.caso['pessoa'].tipoMembro); //Esta campo o build não carrega.  
 
-              this.foto = this.caso['pessoa'].foto; 
+              this.foto = this.caso['pessoa'].foto;
 
               this.pessoa = (this.caso['pessoa']); // binds loaded pais
               this.casoForm.controls['pessoaId'].setValue(this.caso['pessoa'].id)
@@ -386,7 +415,7 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
         this.pageTitleAcao = 'Cadastro'
     else {
       const casoName = this.caso.nome || ""
-      this.pageTitle = "Editando: " + casoName;
+      this.pageTitle = "Editando Caso: " + casoName;
       this.pageTitleAcao = 'Alteração'
     }
   }
@@ -425,22 +454,31 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
 
   // Metodos privados
 
-  confirmarExclusaoCaso(Caso: CasoDTO): void {
-    this.confirmationService.confirm({
-      message: 'Tem certeza que deseja excluir este registro?',
-      accept: () => {
-        this.excluir(Caso);
+  exclusaoCaso(caso: CasoDTO) {
+    Swal.fire({
+      title: 'Exclusão',
+      text: 'Tem certeza que deseja excluir este registro?',
+      icon: 'error',
+      showCloseButton: true,
+      showCancelButton: true,
+    }).then((willDelete) => {
+      if (willDelete.dismiss) {
+        // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
+      } else {
+        this.excluir(caso);
+        Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
       }
     });
   }
 
-  excluir(Caso: CasoDTO) {
-    this.casoService.delete(Caso.id)
-      .subscribe(() => {
-        this.router.navigate(['/casos'])
-        this.messageService.add({ severity: 'success', summary: 'Successo', detail: 'Registro excluido com sucesso!' });
-      },
-        error => { });
+  excluir(caso: any) {
+    this.casoService.delete(caso.id)
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/casos']);
+        },
+        error: () => { },
+      });
   }
 
 
@@ -473,17 +511,16 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
       this.casoForm.controls['motivoEncerramento'].setValue('Passou pela prova');
 
     }
-   
+
     if (resultado == "Arquivado") {
       this.casoForm.controls['dataArquivamento'].setValue(this.dataAtualFormatada());
       this.casoForm.controls['situacao'].setValue('Arquivado');
     }
 
-     if (resultado == "Desligado") {
+    if (resultado == "Desligado") {
       this.casoForm.controls['dataArquivamento'].setValue(this.dataAtualFormatada());
       this.casoForm.controls['situacao'].setValue('Desligado');
     }
-    console.log(this.casoForm.controls['situacao'].value)
   }
 
 
@@ -515,14 +552,14 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
   }
 
   private actionsForSuccess(caso: CasoDTO) {
-    const path: string = this.route.snapshot.parent.url[0].path;
+    const path: string = this.route.snapshot.data['path'];
 
     // redirect/reload component page
     this.router.navigateByUrl(path, { skipLocationChange: true }).then(
       () => this.router.navigate([path, caso.id, 'edit']))
   }
 
-  
+
 
   private actionsForError(error) {
     this.showError();

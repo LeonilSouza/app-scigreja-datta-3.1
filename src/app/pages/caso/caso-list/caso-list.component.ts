@@ -1,27 +1,68 @@
-import { StorageService } from 'src/app/services/storage.service';
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { GLOBALS } from 'src/app/_helpers/globals';
-import { CasoService } from '../../../services/caso.service';
-import { IgrejaDTO } from 'src/app/models/igreja.dto';
-import { Router } from '@angular/router';
-import { Table } from 'primeng/table';
-import { LazyLoadEvent, MenuItem, PrimeNGConfig } from 'primeng/api';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { Table, TableModule } from 'primeng/table';
 import { Subscription } from 'rxjs';
 
 import moment from 'moment';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { IgrejaService } from 'src/app/services/igreja.service';
-import { TranslateService } from '@ngx-translate/core';
-import { API_CONFIG } from 'src/app/config/api-config';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { StorageService } from 'src/app/theme/shared/services/storage.service';
+import { CasoService } from 'src/app/theme/shared/services/caso.service';
+import { IgrejaService } from 'src/app/theme/shared/services/igreja.service';
+import { LazyLoadEvent, MenuItem } from 'primeng/api';
+import { IgrejaDTO } from 'src/app/theme/shared/models/igreja.dto';
+import { API_CONFIG } from 'src/app/app-config';
+import { nomeIgrejaSignal, igrejaIdSignal, nomeUsuarioSignal, perfilSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
+import { DisciplinaService } from 'src/app/theme/shared/services/disciplina.service';
+import { PessoaService } from 'src/app/theme/shared/services/pessoa.service';
+import { TipoFaltaService } from 'src/app/theme/shared/services/tipo-falta.service';
+import { SharedModule } from 'src/app/theme/shared/shared.module';
+import { SplitButtonModule } from 'primeng/splitbutton';
+import { CommonModule } from '@angular/common';
+import { SelectModule } from 'primeng/select';
+import { DatePicker } from 'primeng/datepicker';
+import { InputGroup } from "primeng/inputgroup";
+import { ButtonModule } from 'primeng/button';
 
 
 @Component({
   selector: 'app-casos-tratado-list',
   templateUrl: './caso-list.component.html',
   styleUrls: ['./caso-list.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    SplitButtonModule,
+    SharedModule,
+    SelectModule,
+    ButtonModule,
+    DatePicker,
+    TableModule,
+    RouterLink,
+    InputGroup
+],
+  providers: [
+    CasoService,
+    IgrejaService,
+    DisciplinaService,
+    PessoaService,
+    TipoFaltaService
+
+  ]
 })
 export class CasoListComponent implements OnInit {
+
+  nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+  igrejaIdSignal = igrejaIdSignal;
+  nomeUsuarioSignal = nomeUsuarioSignal;
+  perfilSignal = perfilSignal;
+  setorIdSignal = setorIdSignal;
+
+  nomeIgreja = nomeIgrejaSignal();
+  igrejaId = igrejaIdSignal();
+  nomeUsuario = nomeUsuarioSignal();
+  perfil = perfilSignal();
 
   @ViewChild('dtcaso') grid!: Table;
 
@@ -41,19 +82,11 @@ export class CasoListComponent implements OnInit {
 
   situacao: string = 'Prova';
 
-  igreja: IgrejaDTO;
-
-  perfil: string = GLOBALS.perfil;
-
-  igrejaId: number = GLOBALS.igrejaId;
 
   totalRegistros: number = 0
 
   casos: IgrejaDTO[] = [];
 
-  public activeTab: string;
-
-  public titleCard: 'Casos';
 
   public page = 0;
   public linesPerPage = 6;
@@ -69,20 +102,10 @@ export class CasoListComponent implements OnInit {
   constructor(
     public storage: StorageService,
     private casoService: CasoService,
-    public igrejaService: IgrejaService,
     private router: Router,
-    public translate: TranslateService,
-    public primeNGConfig: PrimeNGConfig, 
     private formBuilder: FormBuilder
   ) {
-    this.activeTab = 'prova';
 
-    //Calendar PrimeNG
-    translate.setDefaultLang('pt-br');
-
-    this.subscription = this.translate.stream('primeng').subscribe(data => {
-      this.primeNGConfig.setTranslation(data);
-    });
   }
 
   ngOnInit(): void {
@@ -95,12 +118,15 @@ export class CasoListComponent implements OnInit {
   loadCasosLazy(event: LazyLoadEvent) {
     if (this.vencidas) {
       const page = event!.first! / event!.rows!; // divisão para encontrar a paginações
+      this.linesPerPage = event.rows;
       this.loadProvasVencidas(this.nome.toLocaleLowerCase(), this.situacao, page, this.linesPerPage);
     } else if (this.arquivados) {
       const page = event!.first! / event!.rows!; // divisão para encontrar a paginações
+      this.linesPerPage = event.rows;
       this.loadTodasProvas(this.nome.toLocaleLowerCase(), page, this.linesPerPage);
     } else {
       const page = event!.first! / event!.rows!; // divisão para encontrar a paginações
+      this.linesPerPage = event.rows;
       this.loadCasos(this.nome.toLocaleLowerCase(), this.situacao, page, this.linesPerPage);
     }
   }
@@ -130,7 +156,7 @@ export class CasoListComponent implements OnInit {
 
     let url = (`${API_CONFIG.baseUrl}/relatorios/atas/?nome=ata-casos-tratados&igreja=${this.igrejaId}&data_caso=${data_brasileira}`)
     window.open(url, "_blank");
-  
+
   }
 
   loadCasos(nome, situacao, page, linesPerPage): void {
@@ -218,7 +244,7 @@ export class CasoListComponent implements OnInit {
 
   countTotalCasosAtivo() {
     const situacao = 'Prova';
-    this.casoService.countCasoAtivoFromIgreja(GLOBALS.igrejaId, situacao)
+    this.casoService.countCasoAtivoFromIgreja(this.igrejaId, situacao)
       .subscribe(
         response => {
           this.totalCasosAtivo = response;
@@ -228,7 +254,7 @@ export class CasoListComponent implements OnInit {
 
   countTotalProvasVencida() {
     const situacao = 'Prova';
-    this.casoService.countProvaVencidaFromIgreja(GLOBALS.igrejaId, situacao)
+    this.casoService.countProvaVencidaFromIgreja(this.igrejaId, situacao)
       .subscribe(
         response => {
           this.totalProvasVencida = response;
@@ -268,7 +294,7 @@ export class CasoListComponent implements OnInit {
       url: (`${API_CONFIG.baseUrl}/relatorios/list/?nome=posicao-tratamento-caso&igreja=${this.igrejaId}`)
     }
   ];
-  
+
 
   limpaPesaquisa() {
     this.nome = '';

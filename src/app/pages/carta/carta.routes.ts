@@ -12,7 +12,7 @@ export const CARTA_ROUTES: Routes = [
         path: '',
         component: CartaListComponent,
         data: {
-          title: '',
+          title: 'Cartas',
           path: 'cartas',
         },
       },

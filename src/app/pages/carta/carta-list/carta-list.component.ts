@@ -23,8 +23,8 @@ import { ButtonModule } from 'primeng/button';
     ReactiveFormsModule,
     SharedModule,
     TableModule,
-    SplitButtonModule,
     RouterLink,
+    SplitButtonModule,
     InputGroup,
     ButtonModule
 ],

@@ -81,7 +81,7 @@ export class PessoaListComponent implements OnInit {
   printItems!: MenuItem[];
 
   public page = 0;
-  public linesPerPage: any = 10;
+  public linesPerPage: any = 8;
   public nomeSemAcento = ''; // Coluna alternativa para gravar dados sem acento
   public cpfOuCnpj = ''
   pessoaList!: FormGroup;

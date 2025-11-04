@@ -3,8 +3,8 @@ import { HttpClient } from "@angular/common/http";
 import { Observable, throwError } from "rxjs";
 import { StorageService } from "./storage.service";
 import { catchError, map } from 'rxjs/operators';
-import { API_CONFIG } from "../config/api-config";
 import { CasoDTO } from "../models/caso.dto ";
+import { API_CONFIG } from "src/app/app-config";
 
 
 

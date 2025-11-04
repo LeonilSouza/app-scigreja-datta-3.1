@@ -54,7 +54,7 @@
       <p-table #dtpessoa [value]="pessoas" responsiveLayout="stack"
         [globalFilterFields]="['nomeSemAcento','cpfOuCnpj','tipoMembro','situacaoCadastral']" [lazy]="true"
         (onLazyLoad)="loadPessoasLazy($event)" [showCurrentPageReport]="true" [totalRecords]="totalRegistros"
-        showGridlines stripedRows [rowsPerPageOptions]="[10, 20, 30, 50]"
+        showGridlines stripedRows [rowsPerPageOptions]="[8, 20, 30, 50]"
         currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
         [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
 

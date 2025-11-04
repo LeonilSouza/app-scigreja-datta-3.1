@@ -337,7 +337,7 @@
                   <div class="tab-pane fade" [ngClass]="{ 'show active': this.activeTab
                    === 'home' }" id="home" role="tabpanel" aria-labelledby="home-tab">
 
-                    <div class="col-12 card card-secondary pt-1 pb-1   f-17 text-white"
+                    <div class="col-12 card card-secondary pt-1 pb-1 f-17 text-white"
                       (click)="isCollapsed = !isCollapsed"
                       style="padding-left: 10px; background-color: rgb(77, 83, 90); cursor: pointer; border-radius: 5px;"
                       [attr.aria-expanded]="!isCollapsed" aria-controls="collapseExample">
@@ -356,7 +356,7 @@
                                 <div class="text-left">
                                   <div class="mb-0">
                                     <img [class]="'flag flag-'" [placement]="'right'" ngbTooltip="Remover"
-                                      src="data:image/jpg;base64,{{ pessoa!.foto }}" style="cursor: pointer; width:90px"
+                                      src="data:image/jpg;base64,{{ pessoa!.foto }}" style="cursor: pointer; width:90px ;border-radius: 10px;"
                                       (click)="removerFoto(pessoa)" />
                                   </div>
                                 </div>
