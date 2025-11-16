@@ -76,10 +76,6 @@ export class CasoListComponent implements OnInit {
   totalCasosAtivo: number;
   totalProvasVencida: number;
 
-  active = 1;
-  activePills = 4;
-  activeVetical = 'top';
-
   situacao: string = 'Prova';
 
 
@@ -168,10 +164,10 @@ export class CasoListComponent implements OnInit {
         },
         error => {
           if (error.status == 403) {
-            this.router.navigate(['login/signin'])
+            this.router.navigate(['login'])
 
           } else {
-            this.router.navigate(['login/signin'])
+            this.router.navigate(['login'])
           }
         });
   }
@@ -185,10 +181,10 @@ export class CasoListComponent implements OnInit {
         },
         error => {
           if (error.status == 403) {
-            this.router.navigate(['login/signin'])
+            this.router.navigate(['login'])
 
           } else {
-            this.router.navigate(['login/signin'])
+            this.router.navigate(['login'])
           }
         });
   }
@@ -203,10 +199,10 @@ export class CasoListComponent implements OnInit {
         },
         error => {
           if (error.status == 403) {
-            this.router.navigate(['login/signin'])
+            this.router.navigate(['login'])
 
           } else {
-            this.router.navigate(['login/signin'])
+            this.router.navigate(['login'])
           }
         });
   }
@@ -240,7 +236,25 @@ export class CasoListComponent implements OnInit {
         this.loadCasos(this.nome, this.situacao, this.page, this.linesPerPage)
       }
     }
+    console.log(this.vencidas)
   }
+
+  // Para buscar todo os casos arquivados ou encerrados
+  onChangeArquivados($event: { target: { checked: boolean; }; }) {
+    const isChecked = $event.target.checked;
+    if (isChecked) {
+      this.arquivados = true;
+      this.vencidas = false;
+      this.casosAtivos = false;
+      this.loadTodasProvas(this.nome, this.page, this.linesPerPage)
+    } else if (!isChecked) {
+      if (this.casosAtivos === false && this.vencidas === false) {
+        this.casosAtivos = true;
+        this.loadCasos(this.nome, this.situacao, this.page, this.linesPerPage)
+      }
+    }
+  }
+
 
   countTotalCasosAtivo() {
     const situacao = 'Prova';
@@ -260,23 +274,6 @@ export class CasoListComponent implements OnInit {
           this.totalProvasVencida = response;
         },
         error => { });
-  }
-
-
-  // Para buscar todo os casos arquivados ou encerrados
-  onChangeArquivados($event: { target: { checked: boolean; }; }) {
-    const isChecked = $event.target.checked;
-    if (isChecked) {
-      this.arquivados = true;
-      this.vencidas = false;
-      this.casosAtivos = false;
-      this.loadTodasProvas(this.nome, this.page, this.linesPerPage)
-    } else if (!isChecked) {
-      if (this.casosAtivos === false && this.vencidas === false) {
-        this.casosAtivos = true;
-        this.loadCasos(this.nome, this.situacao, this.page, this.linesPerPage)
-      }
-    }
   }
 
   getPrintItems = [

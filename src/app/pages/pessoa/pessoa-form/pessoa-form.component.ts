@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Params, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 import { Observable, Subject, Subscription, takeUntil } from 'rxjs';
 
 import { ToastrService } from 'ngx-toastr';
@@ -19,7 +19,6 @@ import { InputMaskModule } from 'primeng/inputmask';
 import { ButtonModule } from 'primeng/button';
 import { NgClass } from '@angular/common';
 import { SelectModule } from 'primeng/select';
-import { DatePicker } from 'primeng/datepicker';
 import { NgSelectComponent, NgSelectModule } from '@ng-select/ng-select';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
@@ -46,7 +45,8 @@ import { IgrejaService } from 'src/app/theme/shared/services/igreja.service';
 import { FilhoService } from 'src/app/theme/shared/services/filho.service';
 import { HistoricoService } from 'src/app/theme/shared/services/historico.service';
 import { PaisService } from 'src/app/theme/shared/services/pais.service';
-import { igrejaIdSignal, nomeIgrejaSignal, nomeUsuarioSignal, perfilSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
+import { igrejaIdSignal, nomeIgrejaSignal, nomeUsuarioSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
+import { DatePicker } from 'primeng/datepicker';
 
 
 //declare const $: any;
@@ -63,7 +63,6 @@ import { igrejaIdSignal, nomeIgrejaSignal, nomeUsuarioSignal, perfilSignal, seto
     FormsModule,
     ReactiveFormsModule,
     InputMaskModule,
-    RouterLinkActive,
     NgbTooltip,
     InputTextModule,
     ImageCropperModule,
@@ -73,13 +72,11 @@ import { igrejaIdSignal, nomeIgrejaSignal, nomeUsuarioSignal, perfilSignal, seto
     UiModalComponent,
     NgSelectModule,
     NgSelectComponent,
-
     NgbCollapse,
     InputIcon,
     IconField,
-    InputTextModule,
-    // JsonPipe,
-  ],
+    InputTextModule
+],
   providers: [
     MessageService,
     SharedService,

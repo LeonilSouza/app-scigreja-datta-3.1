@@ -21,7 +21,7 @@
 </div>
 <span class="float-left">
   <nav aria-label="breadcrumb ">
-    <div class="card mb-3 mt-1"
+    <div class="card mb-0 mt-1"
       style="background-color: rgb(77, 83, 90); padding-left: 11px; border-radius: 4px; height: 30px; align-content: center;">
       <span class="mr-8 ml-4 mb-1  mt-1 text-white f-13">
         <p class="f-14">Filtro de Pesquisa</p>
@@ -31,13 +31,11 @@
 </span>
 
 <div class="col-md-12">
-  <div class="page-header shadow mb-3 px-3">
-    <!-- <div class="col-sm-12"> -->
+  <div class="page-header shadow mb-3 px-3 py-0">
     <div class="row  mb-0 mt-0">
 
       <!-- Nome = pesquisar Casos-->
-
-      <div class="form-group col-md-6 ml-0 mb-2  ">
+      <div class="form-group col-md-6 ml-0 mb-1  ">
         <label class="text-dark mt-0  mb-1"> Pesquisa</label>
         <p-inputgroup>
           <button type="button" class=""
@@ -51,7 +49,7 @@
       </div>
 
       <!-- CheckBox Casos -->
-      <div class="form-group col-md-2 d-inline mb-2 ">
+      <div class="form-group col-md-2 d-inline mb-1  ">
         <label class="text-c-red mb-0">Ativas: {{ totalCasosAtivo }}</label>
         <div class="checkbox checkbox-danger mt-0  ml-5 ">
           <input type="checkbox" name="cb-caso" id="cb-caso" [checked]="casosAtivos" value="caso"
@@ -61,7 +59,7 @@
       </div>
 
       <!-- CheckBox Vencidas -->
-      <div class="form-group col-md-2 d-inline mb-2">
+      <div class="form-group col-md-2 d-inline mb-1">
         <label class="text-c-green mb-0">Vencidas: {{ totalProvasVencida }}</label>
         <div class="checkbox  checkbox-success   ml-5">
           <input type="checkbox" name="cb-vencida" id="cb-vencida" [checked]="vencidas" value="vencida"
@@ -71,7 +69,7 @@
       </div>
 
       <!-- CheckBox Arquivados -->
-      <div class="form-group col-md-2  d-inline  mb-2 ">
+      <div class="form-group col-md-2  d-inline  mb-1 ">
         <label class="text-dark mb-0">Arquivadas</label>
         <div class="checkbox checkbox-primary   ml-5">
           <input type="checkbox" name="cb-arquivados" id="cb-arquivados" [checked]="arquivados" value="arquivados"
@@ -102,7 +100,7 @@
           <div class="row col-12">
 
             <!-- Data da ATA -->
-            <div class="form-group col-md-12 ">
+            <div class="form-group col-md-7 ">
               <label>Data</label>
               <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true" [yearNavigator]="true"
                 yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true" inputId="icondisplay" dataType="string"
@@ -113,15 +111,18 @@
         </form>
 
         <!-- Footer Modal  -->
+        <div class="modal-footer" style="height: 38px;">
 
-        <div class="modal-footer">
-
-          <button data-dismiss="modal" type="button" class=" ml-4 mt-4" pButton pRipple (click)="modalAta.hide()"
-            label="Cancelar" style="width: 6em; height: 35px; border-radius: 10px; border: 0;background: #1a82ce;">
+          <!-- Cancelar -->
+          <button (click)="modalAta.hide()" styleClass="p-button-sm" icon='pi pi-wallet'
+            style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton pRipple type="button"
+            label="Cancelar" class="p-button-danger ml-2 p-button-outlined mt-1 ">
           </button>
 
-          <strong><button id="btn" (click)="modalAta.hide(); dataUS()" type="button" class=" mr-5 ml-4 mt-4" pButton
-              pRipple label="Ok" style="width: 6em;  background:#388669; height: 35px; border-radius: 10px; ">
+          <!-- OK -->
+          <strong><button (click)="modalAta.hide(); dataUS()" type="button" class="msl-3 float-end mt-0" pButton pRipple
+              label="OK" style="width: 7em;  background:#388669; height: 30px; border-radius: 5px; font-size: small; "
+              icon='pi pi-check'>
             </button></strong>
         </div>
       </div>

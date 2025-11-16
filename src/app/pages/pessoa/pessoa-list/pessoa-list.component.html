@@ -1,13 +1,48 @@
 <section class="main-content">
-  <form [formGroup]="pessoaList">
+  <form [formGroup]="pessoaListForm">
     <div class="section-body" style="background: #f6f7f8;">
+
+      <hr class="mt-0 mb-1">
+      <div class="row px-0">
+        <span>
+          <p-splitButton class="float-end mb-1  mt-1" label="Relatórios" icon="pi pi-print" [model]="printItems"
+            severity="contrast" outlined size="small"
+            [style]="{'height':'30px',  'border-radius':'6px', 'margin-left':'10px'}" />
+
+          <!--Botão  CHAMADA DE -->
+          <p-button (click)="modalChamada.show(); setData();" label="Chamada  " icon="pi pi-book" size="small"
+            severity="contrast" class="float-end mt-1 mb-1" variant="outlined" [placement]="'top'"
+            ngbTooltip="Chamada de obreiros"
+            [style]="{'height':'30px',  'border-radius':'6px', 'margin-right':'0px', 'margin-left':'10px'}" />
+
+
+          <p-button routerLink="new" label="Novo" icon="pi pi-user" size="small" severity="success"
+            [style]="{'background':'#388669', 'height':'30px',  'border-radius':'6px', 'margin-right':'0px'}"
+            class="float-end mt-1 mb-1" [placement]="'top'" ngbTooltip="Novo Membro" />
+
+
+        </span>
+      </div>
+
+      <span class="float-left">
+        <nav aria-label="breadcrumb ">
+          <div class="card mb-0 mt-1"
+            style="background-color: rgb(77, 83, 90); padding-left: 11px; border-radius: 4px; height: 30px; align-content: center;">
+            <span class="mr-8 ml-4 mb-1  mt-1 text-white f-13">
+              <p class="f-14">Filtro de Pesquisa</p>
+            </span>
+          </div>
+        </nav>
+      </span>
       <div class="row " style="margin-left: 0px; margin-right: 0px;">
+
+
+
         <div class="col-12 col-md-12 col-lg-12 card-border-c-green border-1">
           <div class="card-body ">
-            <div class="row shadow mb-3 px-3">
+            <div class="row shadow mb-3 px-2">
 
-              <div class="form-group col-md-4 mt-2 ">
-                <label class="text-dark mt-0  mb-1"> Pesquisa</label>
+              <div class="form-group col-md-6 mt-2 mb-3">
                 <p-inputgroup>
                   <button type="button" class=""
                     style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius: 0; border-top-right-radius: 0; border: 0; background: #1a82ce   ;"
@@ -19,8 +54,9 @@
                 </p-inputgroup>
               </div>
 
-              <div class="form-group col-md-2 mt-2 ">
-                <label class="mt-0">Situação Cadastral</label>
+              <div class="form-group col-md-4 mt-2 mb-3"></div>
+
+              <div class="form-group col-md-2 mt-2 mb-3">
                 <p-select formControlName="nome" (onChange)="onChangeStatus($event)" [options]="situacaoCadastral"
                   [editable]="false" [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
                   resetFilterOnHide="true" dropdownIcon="pi pi-user" [autofocus]="false" optionValue="nome"
@@ -28,40 +64,96 @@
                 </p-select>
 
               </div>
-
-              <span class="form-group col-md-6 mt-4 mb-3">
-
-                <p-splitButton class="float-end mb-2 " label="            Relatórios      " icon="pi pi-print"
-                  [model]="printItems" severity="contrast" outlined size="small"
-                  [style]="{'height':'30px',  'border-radius':'6px', 'margin-left':'10px'}" />
-
-                <p-button routerLink="new" label="Novo Membro" icon="pi pi-user" size="small" severity="success"
-                  [style]="{'background':'#388669', 'height':'30px',  'border-radius':'6px', 'margin-right':'0px'}"
-                  class="float-end" />
-
-              </span>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+
+    <!-- Fim ToolBar -->
+
+    <!-- SESSAO IMPRIMIR CHAMADA - MODAL -->
+
+    <div class="col-md-12 col-xl-12" data-backdrop="static">
+      <app-ui-modal #modalChamada id="modalChamada" [dialogClass]="'modal-lg'">
+        <div class="app-modal-body">
+          <h5 class="align-center"><strong>Chamada de obreiros culto oficial</strong></h5>
+          <hr class="mt-0 mb-2">
+
+          <!-- Modal Body Inicio -->
+
+          <div class="row col-12">
+            <!-- CheckBox DomTerQui -->
+            <div class="form-group col-md-4 d-inline mb-1  ">
+              <label class="text-dark">Dom | Ter | Qui</label>
+              <div class="checkbox checkbox-success mt-0  ml-5 ">
+                <input (change)="onChangeDomTerQui($event)" type="checkbox" name="cb-dom_ter_qui" id="cb-dom_ter_qui"
+                  [checked]="dom_ter_qui" value="dom_ter_qui" />
+                <label for="cb-dom_ter_qui" class="cr"></label>
+              </div>
+            </div>
+
+            <!-- CheckBox dom_qua_sex -->
+            <div class="form-group col-md-4 d-inline mb-1">
+              <label class="text-dark">Dom | Qua | Sex</label>
+              <div class="checkbox  checkbox-primary   ml-5">
+                <input (change)="onChangeDomQuaSex($event)" type="checkbox" name="cb-dom_qua_sex" id="cb-dom_qua_sex"
+                  [checked]="dom_qua_sex" value="dom_qua_sex" />
+                <label for="cb-dom_qua_sex" class="cr"></label>
+              </div>
+            </div>
+
+            <!-- Fim CheckBox  -->
+
+            <!-- Data da Mes de referencia -->
+            <div class="form-group col-md-4 ">
+              <label>Data</label>
+              <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true" [yearNavigator]="true"
+                yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true" inputId="icondisplay" dataType="string"
+                dateFormat="dd/mm/yy" formControlName="dtChamada" placeholder="dd/mm/aaaa" 
+                [placement]="'left'" ngbTooltip="Selecione qualquer dia no mês de referência"/>
+            </div>
+          </div>
+
+          <hr class="mb-0">
+
+          <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
+          <div class="modal-footer" style="height: 38px;">
+
+            <!-- Cancelar -->
+            <button (click)="modalChamada.hide();" styleClass="p-button-sm" icon='pi pi-wallet'
+              style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton pRipple type="button"
+              label="Cancelar" class="p-button-danger ml-2 p-button-outlined mt-1 ">
+            </button>
+
+            <!-- OK -->
+            <strong><button (click)="modalChamada.hide(); dataUS()" type="button" class="msl-3 float-end mt-0" pButton
+                pRipple label="OK"
+                style="width: 7em;  background:#388669; height: 30px; border-radius: 5px; font-size: small; "
+                icon='pi pi-check'>
+              </button></strong>
+          </div>
+          <!-- <hr class="mt-4"> -->
+        </div>
+      </app-ui-modal>
+    </div>
   </form>
+  <!-- FIM MODAL IMPRIMIR CHAMADA -->
 
-  <!-- Fim ToolBar -->
-
-  <app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-green shadow  border-1">
+  <app-card [hidHeader]="true" cardClass="card-border-c-green shadow  border-1">
     <div class="p-0">
       <p-table #dtpessoa [value]="pessoas" responsiveLayout="stack"
         [globalFilterFields]="['nomeSemAcento','cpfOuCnpj','tipoMembro','situacaoCadastral']" [lazy]="true"
         (onLazyLoad)="loadPessoasLazy($event)" [showCurrentPageReport]="true" [totalRecords]="totalRegistros"
-        showGridlines stripedRows [rowsPerPageOptions]="[8, 20, 30, 50]"
+        showGridlines stripedRows [rowsPerPageOptions]="[6, 20, 30, 50]"
         currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
         [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
 
         <ng-template #header>
           <tr>
-            <th class="col-foto" 
-            style=" background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-left-radius: 5px; ">
+            <th class="col-foto"
+              style=" background:  rgb(77, 83, 90); font-size: 12px ;color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-left-radius: 5px; ">
               <b>Foto</b>
             </th>
 
@@ -185,6 +277,9 @@
           </tr>
         </ng-template>
       </p-table>
+      <!-- <div class="form-group ">
+        <pre> {{ dataForm.value | json }} </pre>
+      </div> -->
     </div>
   </app-card>
 </section>

@@ -60,7 +60,7 @@ export class CartaListComponent implements OnInit {
   printItems: MenuItem[];
 
   public page = 0;
-  public linesPerPage = 8;
+  public linesPerPage = 6;
   public nome = '';
 
   constructor(

@@ -128,10 +128,10 @@
 
             @if(currentAction == 'new'){
             <li class="nav-item mt-0">
-              <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab === 'novo' }"
+              <a class="nav-link text-reset f-16" [ngClass]="{ active: this.activeTab === 'novo' }"
                 (click)="this.activeTab='novo'; this.ativaTab('$event');" id="novo-tab" data-toggle="tab"
                 href="javascript:" role="tab" aria-controls="novo" aria-selected="true"> <i
-                  class="fas fa-user mr-2 text-success font-17"></i> Dados Iniciais </a>
+                  class="fas fa-user mr-2 text-success f-18"></i>  Dados Iniciais </a>
             </li>
             }
 
@@ -315,15 +315,6 @@
                                 name="gridRadios" id="gridRadios1" value="home" checked />
                               <label class="cr" style="font-size: 14px;" for="gridRadios1"> Salvar
                                 e finalizar</label>
-                            </div>
-                          </div>
-                          <div class="form-group mb-0">
-                            <div class="radio radio-success d-inline  ml-3">
-                              <input (click)="ativaTab('novo')" routerLinkActive="router-link-active"
-                                class="form-check-input ml-1 font-18" type="radio" name="gridRadios" id="gridRadios2"
-                                value="novo" />
-                              <label class="cr" style="font-size: 14px;" for="gridRadios2"> Salvar e incluir
-                                novo</label>
                             </div>
                           </div>
                         </fieldset>

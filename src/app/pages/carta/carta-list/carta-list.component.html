@@ -1,10 +1,36 @@
 <div class="section-body" style="background: #f6f7f8;">
+
+  <hr class="mt-0 mb-2">
+  <div class="row px-0 mb-1">
+    <span>
+       <p-splitButton class="float-end mb-1" label="Relatórios" icon="pi pi-print" [model]="printItems"
+            severity="contrast" outlined size="small"
+            [style]="{'height':'30px',  'border-radius':'6px', 'margin-left':'10px'}" />
+
+      <p-button routerLink="new" type="button" severity="success" class="float-end mb-1" label="Nova Carta"
+        [style]="{'height':'30px', 'background':'#388669'}" size="small" icon="pi pi-envelope" />
+    </span>
+  </div>
+
+  <span class="float-left">
+    <nav aria-label="breadcrumb ">
+      <div class="card mb-0 mt-1"
+        style="background-color: rgb(77, 83, 90); padding-left: 11px; border-radius: 4px; height: 30px; align-content: center;">
+        <span class="mr-8 ml-4 mb-1  mt-1 text-white f-13">
+          <p class="f-14">Filtro de Pesquisa</p>
+        </span>
+      </div>
+    </nav>
+  </span>
   <div class="row " style="margin-left: 0px; margin-right: 0px;">
+
+
+
     <div class="col-12 col-md-12 col-lg-12 card-border-c-green border-1">
       <div class="card-body ">
-        <div class="row shadow mb-3 px-3">
-          <div class="form-group col-md-4 mt-2">
-            <label class="text-dark m-t-0 mb-1"> Pesquisa</label>
+        <div class="row shadow mb-3 px-2">
+
+          <div class="form-group col-md-6 mt-2 mb-3">
             <p-inputgroup>
               <button type="button" class=""
                 style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius: 0; border-top-right-radius: 0; border: 0; background: #1a82ce   ;"
@@ -15,12 +41,6 @@
                 style="height: 30px; font-size: 12px; text-transform: uppercase ; border-bottom-left-radius: 0; border-top-left-radius: 0;">
             </p-inputgroup>
           </div>
-
-          <span class="form-group col-md-8 mt-4">
-            <p-button routerLink="new" type="button" severity="success" class="float-end" label="Nova Carta"
-              [style]="{'height':'30px', 'background':'#388669'}" size="small" icon="pi pi-envelope" />
-
-          </span>
         </div>
       </div>
     </div>
@@ -34,7 +54,7 @@
     <p-table #dtcarta [value]="cartas" responsiveLayout="stack"
       [globalFilterFields]="['nomeSemAcento','cpfOuCnpj','tipoMembro','situacaoCadastral']" [lazy]="true"
       (onLazyLoad)="loadCartasLazy($event)" [showCurrentPageReport]="true" [totalRecords]="totalRegistros" showGridlines
-      stripedRows [rowsPerPageOptions]="[8, 15, 30]"
+      stripedRows [rowsPerPageOptions]="[6, 15, 30]"
       currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
       [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
 
