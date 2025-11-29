@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { DepartamentoDTO } from "../models/departamento.dto";
 import { Observable, throwError } from "rxjs";
 import { catchError, map } from 'rxjs/operators';
+import { DepartamentoDTO } from "../models/departamento.dto";
 import { API_CONFIG } from "src/app/app-config";
 
 @Injectable()
@@ -19,14 +19,6 @@ export class DepartamentoService {
           catchError(this.handleError));
       }
 
-      getByPageDepartamentoFromIgreja(igrejaId, nome, page, linesPerPage) {
-
-        return this.http.get(`${API_CONFIG.baseUrl}/departamentos/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
-          .pipe(
-            catchError(this.handleError)
-        );
-      }
-
     findById(id: number): Observable<DepartamentoDTO> {
 
         const url = `${this.apiPath}/${id}`;
@@ -36,6 +28,31 @@ export class DepartamentoService {
           map(this.jsonDataToDepartamento)
         )
       }
+
+      getByPageDepartamentoFromIgreja(igrejaId, nome, page, linesPerPage) {
+
+        return this.http.get(`${API_CONFIG.baseUrl}/departamentos/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
+          .pipe(
+            catchError(this.handleError)
+        );
+      }
+
+      getByPageDepartamentoFromTipo(igrejaId, nome, page, linesPerPage) {
+
+        return this.http.get(`${API_CONFIG.baseUrl}/departamentos/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
+          .pipe(
+            catchError(this.handleError)
+        );
+      }
+
+      getListDepartamentoFromIgreja(igrejaId) {
+
+        return this.http.get(`${API_CONFIG.baseUrl}/departamentos/list/?igreja=${igrejaId}`)
+          .pipe(
+            catchError(this.handleError)
+        );
+      }
+
 
      create(departamento : DepartamentoDTO) {
       return this.http.post(this.apiPath,

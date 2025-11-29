@@ -163,8 +163,7 @@ export class DefaultComponent implements OnInit {
             this.igrejaId = igrejaIdSignal();
 
             this.carregarOnInit();
-            console.log(this.igrejaId)
-          }
+     }
         });
     }
   }

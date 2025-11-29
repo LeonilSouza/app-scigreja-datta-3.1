@@ -162,6 +162,26 @@ export const NavigationItems: NavigationItem[] = [
 
       // Ebd fim
 
+       // Inicio Lançamentos departamentais
+      {
+        id: 'cargos-dpto',
+        title: 'Cargos departamentais',
+        type: 'collapse',
+        icon: 'feather icon-book',
+
+        children: [
+           {
+            id: 'lancamento-cargo-departamento',
+            title: 'Lançamentos',
+            type: 'item',
+            url: '/lancamentocargodeptos',
+            breadcrumbs: true,
+          }
+        ],
+      },
+
+      // Lançamentos departamentais fim
+
       // Cadastro-Inicio
       {
         id: 'cadastro',
@@ -213,10 +233,10 @@ export const NavigationItems: NavigationItem[] = [
             breadcrumbs: true,
           },
           {
-            id: 'cargo-departamento',
-            title: 'Cargos depto',
+            id: 'departamento',
+            title: 'Departamentos',
             type: 'item',
-            url: '/cargodeptos',
+            url: '/departamentos',
             breadcrumbs: true,
           },
           {

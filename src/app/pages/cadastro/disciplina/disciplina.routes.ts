@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { DisciplinaListComponent } from './disciplina-list/disciplina-list.component';
-import { DisciplinaFormComponent } from '../disciplina/disciplina-form/disciplina-form.component';
-import path from 'path';
+import { DisciplinaFormComponent } from './disciplina-form/disciplina-form.component';
 
 export const DISCIPLINA_ROUTES: Routes = [
   {

@@ -59,8 +59,8 @@ const routes: Routes = [
         loadChildren: () => import('./pages/cadastro/modelo-documento/modelo-documento-routes').then((module) => module.MODELO_DOCUMENTO_ROUTES),
       },
       {
-        path: 'cargodeptos',
-        loadChildren: () => import('./pages/cargo-departamento/cargo-departamento.routes').then((module) => module.CARGO_DEPARTAMENTO_ROUTES),
+        path: 'lancamentocargodeptos',
+        loadChildren: () => import('./pages/lancamento-cargo-depto/lancamento-cargo-depto.routes').then((module) => module.LANCAMENTO_CARGO_DEPTO_ROUTES),
       },
       {
         path: 'variaveis',
@@ -71,12 +71,20 @@ const routes: Routes = [
         loadChildren: () => import('./pages/cadastro/tipo-falta/tipo-falta.routes').then((module) => module.TIPO_FALTA_ROUTES),
       },
       {
+        path: 'departamentos',
+        loadChildren: () => import('./pages/cadastro/departamento/departamento.routes').then((module) => module.DEPARTAMENTO_ROUTES),
+      },
+      {
         path: 'cartas',
         loadChildren: () => import('./pages/carta/carta.routes').then((module) => module.CARTA_ROUTES),
       },
-     {
+      {
         path: 'casos',
         loadChildren: () => import('./pages/caso/caso.routes').then((module) => module.CASO_ROUTES),
+      },
+      {
+        path: 'classes',
+        loadChildren: () => import('./pages/escola-biblica-dominical/classe/classe.routes').then((module) => module.CLASSE_ROUTES),
       },
       // {
       //   path: 'casos',

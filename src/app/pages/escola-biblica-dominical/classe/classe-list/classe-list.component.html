@@ -1,0 +1,241 @@
+<!-- Cards Estaticticas -->
+<section class="main-content">
+    <div class="row mb-0 ">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card card-border-c-red border-1  ">
+                <div class="row align-items-center m-l-0">
+                    <div class="col-auto">
+                        <i class="fas fa-book-reader f-28 text-danger"></i>
+                    </div>
+                    <div class="col-auto">
+                        <h6 class="text-dark mt-2">Total de classes</h6>
+                        <h4 class="f-16"> {{ totalRegistros }} </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fim Cards Estaticticas -->
+
+    <!-- Pesquisa Classes -->
+    <div class="row mb-2">
+        <span class=" col-sm-4 mt-0 mb-2">
+            <p-inputgroup>
+                <button type="button" style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius:0;
+               border-top-right-radius: 0; border: 0; background:#1a82ce;" pButton pRipple class=""> <i
+                        class="pi pi-search"></i></button>
+                <input pInputText class="form-control " placeholder="Pesquisar " [(ngModel)]="nome" type="text"
+                    [ngModelOptions]="{standalone: true}"
+                    (input)="dtclasse.filterGlobal($event.target?.addEventListener, 'contains')" style="height: 30px; min-width: 180px; border-radius: 6px; border-bottom-left-radius: 0; 
+              border-top-left-radius: 0; font-size: 14px; text-transform: lowercase">
+            </p-inputgroup>
+        </span>
+
+        <!--Fim pesquisa classes  -->
+
+        <span class="col-sm-8 ">
+            <p-button (click)="imodo=0; modalClasse.show(); loadClasse(classe)" type="button" severity="success"
+                class="float-end" label="Novo" [style]="{'height':'30px', 'background':'#388669'}" size="small"
+                icon="pi pi-check" />
+        </span>
+
+    </div>
+    <app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-purple shadow  border-1">
+        <div class="p-0">
+            <p-table #dtclasse [value]="classes"
+                [globalFilterFields]="['nome', 'country.name', 'representative.name', 'status']" [lazy]="true"
+                responsiveLayout="stack" (onLazyLoad)="loadClassesLazy($event)" [showCurrentPageReport]="true"
+                [totalRecords]="totalRegistros" showGridlines stripedRows
+                currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
+                [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
+
+
+                <ng-template #header>
+                    <tr>
+                        <th class="col-data-100"
+                            style="background: rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-left-radius: 5px;">
+                            <b>Código</b>
+                        </th>
+                        <th class="col-data-content-4"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                            <b>Nome</b>
+                        </th>
+                        <th class="f-12 col-data-content-4"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                            <b>Classificação</b>
+                        </th>
+                        <th class="col-data-content-2"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                            <b>Faixa Etária</b>
+                        </th>
+                        <th class="col-acoes-header"
+                            style="font-size: 13px; background-color: rgb(77, 83, 90); color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-right-radius: 5px;">
+                            Ações</th>
+
+                    </tr>
+                </ng-template>
+
+                <ng-template #body let-classe>
+
+                    @if(perfil !== 'ADMIN' && (classe.igrejaId == igrejaId ||
+                    classe.igrejaId == null)){
+                    <tr>
+                        <td class="col-data-100 py-2" style=" font-size: 13px">{{ classe.id }}
+                        </td>
+                        <td class="col-data-content-4 py-2" style=" font-size: 13px">{{ classe.nome }}</td>
+                        <td class="col-data-content-4 py-2" style=" font-size: 13px">{{ classe.classificacao }}</td>
+                        <td class="col-data-content-4 py-2" style=" font-size: 13px">{{ classe.faixaEtaria }}</td>
+                        <td class="col-acoes-header py-2">
+
+                            @if(perfil !== 'ADMIN' && (classe.igrejaId == igrejaId )){
+                            <button (click)="imodo=1; modalClasse.show(); loadClasse(classe) ; " type="button"
+                                class="btn btn-icon btn-outline-success p-1"
+                                [style]="{'height': '30px', 'width': '30px'} ">
+                                <i class="pi pi-pencil"></i>
+                            </button>
+                            }
+                        </td>
+                    </tr>
+                    }
+
+                    @if(perfil == 'ADMIN'){
+                    <tr>
+                        <td class="col-data-100 py-2" style=" font-size: 13px">{{ classe.id }}
+                        </td>
+                        <td class="col-data-content-4 py-2" style=" font-size: 13px">{{ classe.nome }}</td>
+                        <td class="col-data-content-4 py-2" style=" font-size: 13px">{{ classe.classificacao }}</td>
+                        <td class="col-data-content-4 py-2" style=" font-size: 13px">{{ classe.faixaEtaria }}</td>
+                        <td class="col-acoes-header py-2">
+
+                            <button (click)=" imodo=1; modalClasse.show(); loadClasse(classe) " type="button"
+                                class="btn btn-icon btn-outline-info p-1 mt-0 mb-0"
+                                [style]="{'height': '30px', 'width': '30px'} ">
+                                <i class="pi pi-chevron-up"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    }
+                </ng-template>
+            </p-table>
+        </div>
+    </app-card>
+
+    <!-- MODAL CLASSES INICIO -->
+    <form [formGroup]="classeForm" autocomplete="off" (submit)="submitForm()">
+        <div class="col-sm-12">
+            <app-ui-modal #modalClasse [dialogClass]="'modal-lg'">
+                <div class="app-modal-header ">
+                    <div class="card px-3 "
+                        style="width: 46rem; height: 1rem; background: #fcfdfd; padding-bottom: 10px; padding-top: 5px">
+                        <nav aria-label="breadcrumb" class=" mb-4 ">
+                            <div class="card mb-0 px-3  py-2 "
+                                style="background-color: rgb(77, 83, 90); border-radius: 5px">
+                                <span class=" text-white py-0  " style="font-size: 18px; ">{{ pageTitle
+                                    }}</span>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="app-modal-body">
+
+                    <!-- Modal Body Inicio -->
+                    <div class="row ml-2 mr-2">
+                        <!-- Id -->
+                        <div class="form-group col-md-2">
+                            <label for="dataSeparacao">Código</label>
+                            <input readonly type="text" class="form-control" formControlName="id">
+                        </div>
+
+                        <!-- Nome -->
+                        <div class="form-group col-md-6">
+                            <label>Nome</label>
+                            <input type="text" class="form-control" formControlName="nome">
+                            <!-- style="text-transform: uppercase" -->
+                        </div>
+
+                        <!-- Tipo Admin do sistema -->
+                        @if(perfil == 'ADMIN'){
+                        <div class="form-group col-md-4">
+                            <label>Tipo</label>
+                            <p-select class="w-full md  mb-2" formControlName="tipo" [options]="tipos"
+                                [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
+                                optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
+                                [autofocus]="false" optionValue="nome" placeholder=""
+                                (onChange)="onChangeTipoPadraoIgreja($event)">
+                            </p-select>
+                            <span class="text-mutted">Igreja: Visivel a Igreja
+                                especifica</span><br>
+                            <span class="text-mutted">Padrao: Visivel a todas as Igrejas
+                            </span>
+                        </div>
+                        }
+
+                        <!-- Classificação -->
+                        <div class="form-group col-md-4">
+                            <label>Classificação</label>
+                            <p-select class="w-full md  mb-2" formControlName="classificacao" [options]="classificacao"
+                                [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
+                                optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
+                                [autofocus]="false" optionValue="nome" placeholder="Selecione uma Classificação"
+                                (onChange)="onChangeTipoPadraoIgreja($event)">
+                            </p-select>
+                        </div>
+
+                        <!-- Faixa Etaria -->
+                        <div class="form-group col-md-4">
+                            <label>Faixa Etaria</label>
+                            <input type="text" formControlName="faixaEtaria" class="form-control"
+                                placeholder="Faixa Etaria" />
+                        </div>
+
+                        <!-- Status -->
+                        <div class="form-group col-md-4">
+                            <label>Status</label>
+                            <p-select class="w-full md  mb-2" formControlName="status" [options]="status"
+                                [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
+                                optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
+                                [autofocus]="false" optionValue="nome" placeholder="Selecione um status">
+                            </p-select>
+                        </div>
+
+                    </div>
+
+                    <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
+                    <div class="modal-footer" style="padding-top: 10px;">
+
+                        <!-- Botões Inicio-->
+
+                        <span class="float-end ">
+                            <p-button (click)="modalClasse.hide(); resetModal()" routerLink="/classes"
+                                icon='pi pi-chevron-left' [style]="{'height':'30px', 'margin-left':'10px'}" size="small"
+                                severity="info" label="voltar" class=" " label="Voltar" />
+                        </span>
+
+                        <span class="float-end ml-4">
+                            <p-button (click)="modalClasse.hide()" severity="success" [disabled]="classeForm.invalid"
+                                type="submit" class="mr-4"
+                                [style]="{'height':'30px', 'margin-left':'10px', 'background':'#388669'}" size="small"
+                                label="Salvar" icon='pi pi-check' />
+                        </span>
+
+                        <span class="float-end">
+                            @if(imodo !== 0){
+                            <p-button type="button" (click)="exclusaoClasse(classe); modalClasse.hide(); resetModal()"
+                                [style]="{'height':'30px', 'margin-left':'10px'}" size="small" icon='pi pi-times'
+                                variant="outlined" severity="danger" label="Excluir" class="mb-0" />
+                            }
+                        </span>
+                        <!-- Botões Fim-->
+
+                    </div>
+                    <!-- <div class="form-group "></div>
+                    <pre> {{classeForm.value | json}} </pre> -->
+                </div>
+            </app-ui-modal>
+        </div>
+    </form>
+    <!-- MODAL CLASSES FIM -->
+
+</section>
+<!--  ativo e inativo body end -->

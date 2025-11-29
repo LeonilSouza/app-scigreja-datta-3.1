@@ -531,7 +531,7 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
   }
 
   onSelectNacionalidade() {
-    console.log(this.pessoaForm.controls['nacionalidade'].value)
+    // console.log(this.pessoaForm.controls['nacionalidade'].value)
     if (this.pessoaForm.controls['nacionalidade'].value !== 'Brasil/BR') {
       this.pessoaForm.controls['naturalidade'].setValue(" ");
       this.pessoaForm.controls['ufNatal'].setValue('');
@@ -701,13 +701,6 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           this.cidades = response['content'];
-
-          // this.cidades = response['content'].map((c: { nome: any; uf: any; }) => {
-          //   return {
-          //     value: c.uf,
-          //     label: c.nome
-          //   };
-          // });
         },
         error: () => { }
       });
@@ -747,11 +740,6 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
       this.pessoaForm.controls['tipoMembro'].setValue(this.tipo_membro)
     };
   }
-
-
-  // doSelectOptionsConjuge = (options: INgxSelectOption[]) => { // PEGA O NOME DO SELECT
-  //   this.pessoaForm.controls['conjugeId'].setValue(options[0].data.id) // Escolhe os combo para gravar em banco
-  // }
 
   public doSelectFilhos(id: any) {
     let filho = this.pessoas.filter(f => f.id == id.value);

@@ -13,8 +13,8 @@
                   <nav aria-label="breadcrumb mb-0">
                     <ol class="breadcrumb mb-0">
                       <li class="breadcrumb-item active"><a>Home</a></li>
-                      <li class="breadcrumb-item active"><a>Cadastro</a></li>
-                      <li class="breadcrumb-item active"><a>Cargo Departamento</a></li>
+                      <li class="breadcrumb-item active"><a>Cargos Departamentais</a></li>
+                      <li class="breadcrumb-item active"><a>Lançamentos</a></li>
                     </ol>
                     <hr class="mt-1 mb-0">
                   </nav>
@@ -36,7 +36,7 @@
               <div class="">
                 <span class="float-end  mb-2 ">
                   @if(currentAction !== 'new'){
-                  <p-button type="button" (click)="exclusaoCargoDpto(cargoDepto)"
+                  <p-button type="button" (click)="exclusaoLancamentoCargoDepto(cargoDepto)"
                     [style]="{'height':'30px', 'margin-left':'10px'}" size="small" icon='pi pi-times' variant="outlined"
                     severity="danger" label="Excluir" class="" />
                   }
@@ -44,13 +44,13 @@
 
                 <span class="float-end mb-2 ml-4">
                   <p-button (click)="submitForm()" severity="success"
-                    [disabled]="submittingForm || cargoDeptoForm.invalid" type="submit" class="mr-4"
+                    [disabled]="submittingForm || lancamentoCargoDeptoForm.invalid" type="submit" class="mr-4"
                     [style]="{'height':'30px', 'margin-left':'10px', 'background':'#388669'}" size="small"
                     label="Salvar" icon='pi pi-check' />
                 </span>
 
                 <span class="float-end mb-2">
-                  <p-button routerLink="/cargodeptos" icon='pi pi-chevron-left'
+                  <p-button routerLink="/lancamentocargodeptos" icon='pi pi-chevron-left'
                     [style]="{'height':'30px', 'margin-left':'10px'}" size="small" severity="info" label="voltar"
                     class=" mt-0" label="Voltar" />
                 </span>
@@ -63,7 +63,7 @@
     <!-- Fim botões -->
 
 
-    <form [formGroup]="cargoDeptoForm" autocomplete="off" (submit)="submitForm()">
+    <form [formGroup]="lancamentoCargoDeptoForm" autocomplete="off" (submit)="submitForm()">
       <div class="col-sm-12">
         <div class=" py-3 pt-0 px-0 ">
           <div class="col-sm-12">

@@ -7,7 +7,7 @@
           <i class="fas fa-cog f-24 text-dark"></i>
         </div>
         <div class="col-auto ">
-          <h6 class="text-dark  mt-2">Cargo dos departamentos
+          <h6 class="text-dark  mt-2">Lançamentos - cargos departamentais
           </h6>
           <h4 class="f-16">{{ totalRegistros }}</h4>
         </div>
@@ -26,7 +26,7 @@
                     class="pi pi-search"></i></button>
             <input pInputText class="form-control " placeholder="Pesquisar " [(ngModel)]="nome" type="text"
                 [ngModelOptions]="{standalone: true}"
-                (input)="cargodepto.filterGlobal($event.target?.addEventListener, 'contains')" style="height: 30px; min-width: 180px; border-radius: 6px; border-bottom-left-radius: 0; 
+                (input)="dtlancamentocargodepto.filterGlobal($event.target?.addEventListener, 'contains')" style="height: 30px; min-width: 180px; border-radius: 6px; border-bottom-left-radius: 0; 
               border-top-left-radius: 0; font-size: 14px; text-transform: lowercase">
         </p-inputgroup>
     </span>
@@ -41,9 +41,9 @@
 
 
 <app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-blue shadow  border-1">
-    <p-table #cargodepto [value]="cargoDeptos"
+    <p-table #dtlancamentocargodepto [value]="lancamentoCargoDeptos"
         [globalFilterFields]="['nome', 'country.name', 'representative.name', 'status']" [lazy]="true"
-        responsiveLayout="stack" (onLazyLoad)="loadCargoDeptoLazy($event)" [showCurrentPageReport]="true"
+        responsiveLayout="stack" (onLazyLoad)="loadLancamentoCargoDeptoLazy($event)" [showCurrentPageReport]="true"
         [totalRecords]="totalRegistros" showGridlines stripedRows
         currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
         [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
@@ -78,15 +78,15 @@
             </tr>
         </ng-template>
 
-        <ng-template pTemplate="body" let-cargodepto>
+        <ng-template pTemplate="body" let-lancamentocargodepto>
             <tr>
-                <td class="col-data-100" style=" font-size: 13px">{{ cargodepto.id }}</td>
-                <td style=" font-size: 13px">{{ cargodepto.nomePessoa }}</td>
-                <td style=" font-size: 13px">{{ cargodepto.nomeDepartamento }}</td>
-                <td style=" font-size: 13px">{{ cargodepto.nomeConjunto }}</td>
-                <td style=" font-size: 13px">{{ cargodepto.nomeCargo }}</td>
+                <td class="col-data-100" style=" font-size: 13px">{{ lancamentocargodepto.id }}</td>
+                <td style=" font-size: 13px">{{ lancamentocargodepto.nomePessoa }}</td>
+                <td style=" font-size: 13px">{{ lancamentocargodepto.nomeDepartamento }}</td>
+                <td style=" font-size: 13px">{{ lancamentocargodepto.nomeConjunto }}</td>
+                <td style=" font-size: 13px">{{ lancamentocargodepto.nomeCargo }}</td>
                 <td class="col-acoes-header">
-                    <p-button [routerLink]="[cargodepto.id, 'edit']" type="button" icon="pi pi-pencil"
+                    <p-button [routerLink]="[lancamentocargodepto.id, 'edit']" type="button" icon="pi pi-pencil"
                         styleClass="p-button-sm  p-button-outlined" [style]="{'height': '30px', 'width': '30px'} "
                         ngbTooltip="Editar">
                     </p-button>
