@@ -149,7 +149,7 @@ export const NavigationItems: NavigationItem[] = [
             id: 'ebd-matricula-professor',
             title: 'Matrícula professores',
             type: 'item',
-            url: '/professores',
+            url: '/matriculaprofessores',
           },
           {
             id: 'ebd-matricula-classe',

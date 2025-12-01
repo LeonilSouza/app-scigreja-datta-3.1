@@ -1,0 +1,289 @@
+<!-- Cards Estaticticas -->
+<section class="main-content">
+    <div class="row mb-0 ">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card card-border-c-red border-1  ">
+                <div class="row align-items-center m-l-0">
+                    <div class="col-auto">
+                        <i class="fas fa-book-reader f-28 text-primary"></i>
+                    </div>
+                    <div class="col-auto">
+                        <h6 class="text-dark mt-2">Total por Classe</h6>
+                        <h4 class="f-16"> {{ totalRegistros }} </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fim Cards Estaticticas -->
+
+
+    <div class="row mb-2">
+        <!-- Nome Classe-->
+         <span class="col-sm-4 ">
+        <p-floatlabel variant="on">
+            <span class=" col-sm-4 mt-0 mb-2">
+                <p-select style="min-height: 35px;" inputId=" on_label" (onChange)="onChangeSelecaoClasses($event)" [options]="classes"
+                [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
+                    resetFilterOnHide="true"class="" dropdownIcon="pi pi-users" optionValue="id" [autofocus]="false"/>
+                <label class="" for="on_label">Classes</label>
+            </span>
+        </p-floatlabel>
+         </span>
+
+        <!--Label  -->
+        <span class="col-sm-3 "><strong>
+                <label class="text-c-purple f-18" [style]="{'height':'35px'}" size="small" icon="pi pi-check">{{
+                    nomeClasse }}</label>
+            </strong></span>
+
+        <!-- Pesquisa MatriculaProfessors -->
+        <span class=" col-sm-3 mt-0 mb-2">
+            <p-inputgroup>
+                <button type="button" style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius:0;
+               border-top-right-radius: 0; border: 0; background:#1a82ce;" pButton pRipple class=""> <i
+                        class="pi pi-search"></i></button>
+                <input pInputText class="form-control " placeholder="Pesquisar " [(ngModel)]="nome" type="text"
+                    [ngModelOptions]="{standalone: true}"
+                    (input)="dtmatriculaProfessor.filterGlobal($event.target?.addEventListener, 'contains')" style="height: 30px; min-width: 180px; border-radius: 6px; border-bottom-left-radius: 0; 
+              border-top-left-radius: 0; font-size: 14px; text-transform: lowercase">
+            </p-inputgroup>
+        </span>
+
+        <!--Novo  -->
+        <span class="col-sm-2 ">
+            <p-button (click)="imodo=0; modalMatriculaProfessor.show(); loadMatriculaProfessor(matriculaProfessor)"
+                type="button" severity="success" class="float-end" label="Novo"
+                [style]="{'height':'30px', 'background':'#388669'}" size="small" icon="pi pi-check" />
+        </span>
+
+    </div>
+    <app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-purple shadow  border-1">
+        <div class="p-0">
+            <p-table #dtmatriculaProfessor [value]="matriculaProfessores"
+                [globalFilterFields]="['nome', 'country.name', 'representative.name', 'status']" [lazy]="true"
+                responsiveLayout="stack" (onLazyLoad)="loadMatriculaProfessorsLazy($event)"
+                [showCurrentPageReport]="true" [totalRecords]="totalRegistros" showGridlines stripedRows
+                currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
+                [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
+
+
+                <ng-template #header>
+                    <tr>
+                        <th class="col-data-100"
+                            style="background: rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-left-radius: 5px;">
+                            <b>Código</b>
+                        </th>
+                        <th class="col-data-content-5"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                            <b>Nome Professor</b>
+                        </th>
+                        <th class="f-12 col-data-content-4"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                            <b>Classe</b>
+                        </th>
+                        <th class="col-data-content"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                            <b>Faixa Etária</b>
+                        </th>
+
+                        <th class="col-data-content"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                            <b>Classificação</b>
+                        </th>
+                        <th class="col-acoes-header"
+                            style="font-size: 13px; background-color: rgb(77, 83, 90); color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-right-radius: 5px;">
+                            Ações</th>
+
+                    </tr>
+                </ng-template>
+
+                <ng-template #body let-matriculaProfessor>
+
+                    @if(perfil !== 'ADMIN' && (matriculaProfessor.igrejaId == igrejaId ||
+                    matriculaProfessor.igrejaId == null)){
+                    <tr>
+                        <td class="col-data-100 py-2" style=" font-size: 13px">{{ matriculaProfessor.id }}
+                        </td>
+                        <td class="col-data-content-5 py-2" style=" font-size: 13px">{{ matriculaProfessor.nomeProfessor
+                            }}</td>
+                        <td class="col-data-content-4 py-2" style=" font-size: 13px">{{ matriculaProfessor.nomeClasse }}
+                        </td>
+                        <td class="col-data-content py-2" style=" font-size: 13px">{{ matriculaProfessor.faixaEtaria
+                            }}
+                        </td>
+                        <td class="col-data-content py-2" style=" font-size: 13px">{{ matriculaProfessor.classificacao
+                            }}
+                        </td>
+                        <td class="col-acoes-header py-2">
+
+                            @if(perfil !== 'ADMIN' && (matriculaProfessor.igrejaId == igrejaId )){
+                            <button
+                                (click)="imodo=1; modalMatriculaProfessor.show(); loadMatriculaProfessor(matriculaProfessor) ; "
+                                type="button" class="btn btn-icon btn-outline-success p-1"
+                                [style]="{'height': '30px', 'width': '30px'} ">
+                                <i class="pi pi-pencil"></i>
+                            </button>
+                            }
+                        </td>
+                    </tr>
+                    }
+
+                    @if(perfil == 'ADMIN'){
+                    <tr>
+                        <td class="col-data-100 py-2" style=" font-size: 13px">{{ matriculaProfessor.id }}
+                        </td>
+                        <td class="col-data-content-5 py-2" style=" font-size: 13px">{{ matriculaProfessor.nomeProfessor
+                            }}</td>
+                        <td class="col-data-content-4 py-2" style=" font-size: 13px">{{ matriculaProfessor.nomeClasse }}
+                        </td>
+                        <td class="col-data-content py-2" style=" font-size: 13px">{{ matriculaProfessor.faixaEtaria
+                            }}
+                        </td>
+                        <td class="col-data-content py-2" style=" font-size: 13px">{{ matriculaProfessor.classificacao
+                            }}
+                        </td>
+                        <td class="col-acoes-header py-2">
+
+                            <button
+                                (click)=" imodo=1; modalMatriculaProfessor.show(); loadMatriculaProfessor(matriculaProfessor) "
+                                type="button" class="btn btn-icon btn-outline-info p-1 mt-0 mb-0"
+                                [style]="{'height': '30px', 'width': '30px'} ">
+                                <i class="pi pi-chevron-up"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    }
+                </ng-template>
+            </p-table>
+        </div>
+    </app-card>
+
+    <!-- MODAL CLASSES INICIO -->
+    <form [formGroup]="matriculaProfessorForm" autocomplete="off" (submit)="submitForm()">
+        <div class="col-sm-12">
+            <app-ui-modal #modalMatriculaProfessor [dialogClass]="'modal-lg'">
+                <div class="app-modal-header ">
+                    <div class="card px-3 "
+                        style="width: 46rem; height: 1rem; background: #fcfdfd; padding-bottom: 10px; padding-top: 5px">
+                        <nav aria-label="breadcrumb" class=" mb-4 ">
+                            <div class="card mb-0 px-3  py-1 "
+                                style="background-color: rgb(77, 83, 90); border-radius: 5px">
+                                <span class=" text-white py-0  " style="font-size: 18px; ">{{ pageTitle
+                                    }}</span>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="app-modal-body">
+
+                    <!-- Modal Body Inicio -->
+                    <div class="row ml-2 mr-2">
+                        <!-- Id -->
+                        <div class="form-group col-md-1">
+                            <label for="dataSeparacao">Código</label>
+                            <input readonly type="text" class="form-control" formControlName="id">
+                        </div>
+
+                        <!-- Nome Professor-->
+                        <div class="form-group col-md-6 ">
+                            <label class="">Nome Professor</label>
+                            <p-select (onChange)="onChangeProfessor($event)" formControlName="pessoaId"
+                                [options]="pessoas" [editable]="false" [filter]="true" filterBy="nome"
+                                [showClear]="false" optionLabel="nome" resetFilterOnHide="true"
+                                dropdownIcon="pi pi-users" optionValue="id" [autofocus]="false"
+                                placeholder="Selecione um professor" />
+                        </div>
+
+                        <!-- Nome Classe-->
+                        <div class="form-group col-md-5 ">
+                            <label class="">Nome Classe</label>
+                            <p-select (onChange)="onChangeClasse($event)" formControlName="classeId" [options]="classes"
+                                [editable]="false" [filter]="true" filterBy="nome" [showClear]="false"
+                                optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-users" optionValue="id"
+                                [autofocus]="false" placeholder="Selecione uma classe" />
+                        </div>
+
+                        <!-- Telefone -->
+                        <div class="form-group col-md-4">
+                            <label>Telefone</label>
+                            <p-inputMask [style]="{'width':'100%','height':'30px'}" formControlName="telefone"
+                                mask="(99) 9 9999-9999" placeholder="(  )       -    "></p-inputMask>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="form-group col-md-4">
+                            <label>Status</label>
+                            <p-select class="w-full md  mb-2" formControlName="status" [options]="status"
+                                [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
+                                optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
+                                [autofocus]="false" optionValue="nome" placeholder="Selecione um status">
+                            </p-select>
+                        </div>
+
+                        <!-- Faixa Etária -->
+                        <div class="form-group col-md-4">
+                            <label for="dataSeparacao">Faixa Etária</label>
+                            <input type="text" class="form-control" formControlName="faixaEtaria">
+                        </div>
+
+                        <!-- dataNascimento -->
+                        @if (imodo === 1) {
+                        <div class="form-group col-md-4 ">
+                            <label for="dtNascimento">Nascimento</label>
+                            <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                                [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
+                                inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy"
+                                formControlName="dtNascimento" placeholder="dd/mm/aaaa" />
+                        </div>
+                        }
+                        <!-- idade -->
+                        <div class="form-group col-md-2 ">
+                            <label for="rg">Classificação</label>
+                            <input readonly type="text" class=" form-control " style="background: rgb(238, 236, 236);"
+                                formControlName="classificacao">
+                        </div>
+
+                    </div>
+
+                    <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
+                    <div class="modal-footer" style="padding-top: 10px;">
+
+                        <!-- Botões Inicio-->
+
+                        <span class="float-end ">
+                            <p-button (click)="modalMatriculaProfessor.hide(); resetModal()"
+                                routerLink="/matriculaprofessores" icon='pi pi-chevron-left'
+                                [style]="{'height':'30px', 'margin-left':'10px'}" size="small" severity="info"
+                                label="voltar" class=" " label="Voltar" />
+                        </span>
+
+                        <span class="float-end ml-4">
+                            <p-button (click)="modalMatriculaProfessor.hide()" severity="success"
+                                [disabled]="matriculaProfessorForm.invalid" type="submit" class="mr-4"
+                                [style]="{'height':'30px', 'margin-left':'10px', 'background':'#388669'}" size="small"
+                                label="Salvar" icon='pi pi-check' />
+                        </span>
+
+                        <span class="float-end">
+                            @if(imodo !== 0){
+                            <p-button type="button"
+                                (click)="exclusaoMatriculaProfessor(matriculaProfessor); modalMatriculaProfessor.hide(); resetModal()"
+                                [style]="{'height':'30px', 'margin-left':'10px'}" size="small" icon='pi pi-times'
+                                variant="outlined" severity="danger" label="Excluir" class="mb-0" />
+                            }
+                        </span>
+                        <!-- Botões Fim-->
+
+                    </div>
+                    <!-- <div class="form-group "></div>
+                    <pre> {{matriculaProfessorForm.value | json}} </pre> -->
+                </div>
+            </app-ui-modal>
+        </div>
+    </form>
+    <!-- MODAL CLASSES FIM -->
+
+</section>
+<!--  ativo e inativo body end -->

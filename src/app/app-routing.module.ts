@@ -86,6 +86,10 @@ const routes: Routes = [
         path: 'classes',
         loadChildren: () => import('./pages/escola-biblica-dominical/classe/classe.routes').then((module) => module.CLASSE_ROUTES),
       },
+       {
+        path: 'matriculaprofessores',
+        loadChildren: () => import('./pages/escola-biblica-dominical/matricula-professor/matricula-professor.routes').then((module) => module.MATRICULA_PROFESSOR_ROUTES),
+      },
       // {
       //   path: 'casos',
       //   loadChildren: () =>

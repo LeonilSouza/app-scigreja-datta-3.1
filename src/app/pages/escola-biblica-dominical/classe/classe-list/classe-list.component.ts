@@ -1,6 +1,6 @@
 // angular import
 import { AfterContentChecked, Component, inject, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Params, Router, RouterLink, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { Table, TableModule } from 'primeng/table';
 import { InputGroup } from 'primeng/inputgroup';
@@ -12,7 +12,7 @@ import { ClasseService } from 'src/app/theme/shared/services/classe.service';
 import { ClasseDTO } from 'src/app/theme/shared/models/classe.dto';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 
 
