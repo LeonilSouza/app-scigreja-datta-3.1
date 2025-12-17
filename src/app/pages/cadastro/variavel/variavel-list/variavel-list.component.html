@@ -74,15 +74,15 @@
 
       <ng-template pTemplate="body" let-variavel>
         <tr>
-          <td class="col-data-content-3" style=" cursor: pointer; font-size: 13px; min-width: 200px;">{{ variavel.variavel }}
-          <td class="col-data-content-3" style=" cursor: pointer; font-size: 13px; min-width: 200px;">{{ variavel.nome
+          <td class="col-data-content-3 py-1" style=" cursor: pointer; font-size: 13px; min-width: 200px;">{{ variavel.variavel }}
+          <td class="col-data-content-3 py-1" style=" cursor: pointer; font-size: 13px; min-width: 200px;">{{ variavel.nome
             }}
-          <td class="col-data-content-3" style=" cursor: pointer; font-size: 13px; min-width: 200px;">{{ variavel.local
+          <td class="col-data-content-3 py-1" style=" cursor: pointer; font-size: 13px; min-width: 200px;">{{ variavel.local
             }}
           </td>
-          <td class="col-acoes-header">
+          <td class="col-acoes-header py-1">
             <p-button [routerLink]="[variavel.id, 'edit']" type="button" icon="pi pi-pencil"
-              styleClass="p-button-sm  p-button-outlined" [style]="{'height': '30px', 'width': '30px'} "
+              styleClass="p-button-sm  p-button-outlined" [style]="{'height': '26px', 'width': '26px'} "
               ngbTooltip="Editar">
             </p-button>
           </td>

@@ -103,7 +103,6 @@ export class PessoaListComponent implements OnInit {
     private pessoaService: PessoaService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
     private datasService: DatasService
   ) {
 

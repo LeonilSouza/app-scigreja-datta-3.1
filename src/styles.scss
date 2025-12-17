@@ -57,3 +57,18 @@
 @import 'primeicons/primeicons.css';
 @import 'scss/scigreja.scss';
 @import 'scss/calendar.scss';
+
+// INPUT NUMBER     
+
+input[type="number"] {
+  /* Para Firefox */
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  /* Para Chrome, Safari, Edge, Opera */
+  -webkit-appearance: none;
+  margin: 0;
+}

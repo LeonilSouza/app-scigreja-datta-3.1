@@ -85,29 +85,29 @@
       <ng-template #body let-carta>
         <tr>
 
-          <td [routerLink]="[carta.id, 'edit']" style="cursor: pointer; font-size: 12px; color: rgb(6, 6, 6);">{{
+          <td [routerLink]="[carta.id, 'edit']" class="py-1" style="cursor: pointer; font-size: 12px; color: rgb(6, 6, 6);">{{
             carta.nomeMembro }}</td>
 
-          <td class="col-data-content-4" [routerLink]="[carta.id, 'edit']" class="col-data-150"
+          <td class="col-data-content-4" [routerLink]="[carta.id, 'edit']" class="col-data-150 py-1"
             style="cursor: pointer; font-size: 12px; color: rgb(6, 6, 6);">{{ carta.congregacaoDestino }}</td>
 
-          <td [routerLink]="[carta.id, 'edit']" class="col-data-150"
+          <td [routerLink]="[carta.id, 'edit']" class="col-data-150 py-1"
             style="cursor: pointer; font-size: 12px; color: rgb(6, 6, 6);"
             [style.color]="(carta.tipoCarta === 'Mudança') ? 'red' : (carta.tipoCarta === 'Recomendação') ? 'green' : (carta.tipoCarta === 'Mudança Fora de Comunhão') ? 'orange': 'black'">
             {{ carta.tipoCarta }}</td>
 
-          <td [routerLink]="[carta.id, 'edit']" style="font-size: 12px; color: rgb(6, 6, 6);" class="col-date">{{
+          <td [routerLink]="[carta.id, 'edit']" style="font-size: 12px; color: rgb(6, 6, 6);" class="col-date py-1">{{
             carta.dataEmissao }}
           </td>
 
-          <td [routerLink]="[carta.id, 'edit']" style="font-size: 12px; color: rgb(6, 6, 6);" class="col-date">{{
+          <td [routerLink]="[carta.id, 'edit']" style="font-size: 12px; color: rgb(6, 6, 6);" class="col-date py-1">{{
             carta.dataValidade
             }}</td>
 
-          <td class="col-acoes">
+          <td class="col-acoes py-1">
             <button [routerLink]="[carta.id, 'edit']" type="button"
               class="btn btn-icon btn-outline-success p-1 mb-0 mt-0"
-              [style]="{'height': '30px', 'width': '30px', 'margin-left': '10px'} " [placement]="'top'"
+              [style]="{'height': '25px', 'width': '25px', 'margin-left': '10px'} " [placement]="'top'"
               ngbTooltip="Editar">
               <i class="pi pi-pencil "></i>
             </button>

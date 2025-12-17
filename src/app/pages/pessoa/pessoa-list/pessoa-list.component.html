@@ -180,7 +180,7 @@
 
         <ng-template #body let-pessoa>
           <tr>
-            <td class="py-2">
+            <td class="py-1">
               <!-- Quando tem foto -->
               @if (pessoa?.foto) {
               <div class="flex items-center gap-2 ">
@@ -200,7 +200,7 @@
               }
             </td>
 
-            <td [routerLink]="[pessoa.id, 'edit']" class="py-2 m-l-0 float-left "
+            <td [routerLink]="[pessoa.id, 'edit']" class="py-1 m-l-0 float-left "
               style="min-width:16rem; cursor: pointer; font-size: 12px; color: rgb(6, 6, 6);">{{ pessoa.nome
               }}<br>
               <small class="text-secondary"><i class="fas fa-envelope f-12 text-dark"></i> {{ pessoa.tipoMembro }}
@@ -240,7 +240,7 @@
             </td>
 
             <!-- Igreja/Setor -->
-            <td [routerLink]="[pessoa.id, 'edit']" class="py-2 col-data-content-3 float-left"
+            <td [routerLink]="[pessoa.id, 'edit']" class="py-1 col-data-content-3 float-left"
               style="font-size: 12px; cursor: pointer">
               <i class="fas fa-home f-12 text-dark"></i>  {{ pessoa.nomeIgreja }}<br>
               <small class="text-secondary"> <i class="fab fa-microsoft f-12 text-primary"></i>   {{
@@ -248,7 +248,7 @@
             </td>
 
             <!-- Bairro/Contatos -->
-            <td [routerLink]="[pessoa.id, 'edit']" class="py-2 col-data-content-3"
+            <td [routerLink]="[pessoa.id, 'edit']" class="py-1 col-data-content-3"
               style="font-size: 12px; cursor: pointer">
 
               @if(pessoa?.bairro){
@@ -262,14 +262,14 @@
 
             </td>
 
-            <td class="py-2 col-acoes" style="min-width:7rem;">
+            <td class="py-1 col-acoes" style="min-width:7rem;">
 
               <button [routerLink]="[pessoa.id, 'edit']" type="button" class="btn btn-icon btn-outline-info p-1"
-                [style]="{'height': '30px', 'width': '30px'} " [placement]="'top'" ngbTooltip="Alterar Cadastro">
+                [style]="{'height': '25px', 'width': '25px'} " [placement]="'top'" ngbTooltip="Alterar Cadastro">
                 <i class="pi pi-pencil"></i>
               </button>
               <button type="button" class="btn btn-icon btn-outline-secondary p-1 ml-2"
-                [style]="{'height': '30px', 'width': '30px', 'margin-left': '10px'} " [placement]="'top'"
+                [style]="{'height': '25px', 'width': '25px', 'margin-left': '10px'} " [placement]="'top'"
                 ngbTooltip="Ficha de Membro">
                 <i class="pi pi-book"></i>
               </button>

@@ -124,7 +124,6 @@ export class DefaultComponent implements OnInit {
     private pessoaService: PessoaService,
     private fb: UntypedFormBuilder,
     public calendarService: CalendarService,
-    private router: Router,
     private toastr: ToastrService,
     private modalService: NgbModal
   ) {

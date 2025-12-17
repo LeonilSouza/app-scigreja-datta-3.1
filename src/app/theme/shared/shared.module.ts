@@ -1,6 +1,6 @@
 // Angular Import
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { LOCALE_ID, NgModule } from '@angular/core';
+import { CommonModule, registerLocaleData } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BidiModule } from '@angular/cdk/bidi';
 
@@ -36,6 +36,10 @@ import { MyPreset } from './_helpers/styles';
 import { ConfirmationService, FilterMatchMode, MessageService } from 'primeng/api';
 import { IgrejaService } from './services/igreja.service';
 import { SelectModule } from 'primeng/select';
+
+import localePt from '@angular/common/locales/pt';
+
+registerLocaleData(localePt);
 
 @NgModule({
   declarations: [],
@@ -88,10 +92,10 @@ import { SelectModule } from 'primeng/select';
     SharedService,
     AuthenticationService,
     StorageService,
-    MessageService ,
+    MessageService,
     IgrejaService,
     ConfirmationService,
-
+    { provide: LOCALE_ID, useValue: 'pt' },
     // Configuração PrimeNg
     providePrimeNG({
       ripple: true,
@@ -218,4 +222,4 @@ import { SelectModule } from 'primeng/select';
     }),
   ],
 })
-export class SharedModule {}
+export class SharedModule { }

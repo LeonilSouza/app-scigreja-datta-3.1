@@ -136,14 +136,14 @@ export const NavigationItems: NavigationItem[] = [
             id: 'ebd-lancamento',
             title: 'Lançamentos',
             type: 'item',
-            url: '/lancamentosssss',
+            url: '/lancamentoebds',
           },
 
           {
             id: 'ebd-matricula-aluno',
             title: 'Matrícula alunos',
             type: 'item',
-            url: '/alunos',
+            url: '/matriculaalunos',
           },
           {
             id: 'ebd-matricula-professor',

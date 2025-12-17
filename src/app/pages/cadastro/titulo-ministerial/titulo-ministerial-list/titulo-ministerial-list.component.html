@@ -76,16 +76,16 @@
                 @if((perfil !== 'ADMIN' && (tituloMinisterial.igrejaId == igrejaId || tituloMinisterial.igrejaId ==
                 null))){
                 <tr>
-                    <td class="col-data-100 py-2" style=" font-size: 13px">{{ tituloMinisterial.id }}</td>
-                    <td class="py-2" style=" font-size: 13px; color: rgb(48, 48, 138);">{{ tituloMinisterial.nome }}
+                    <td class="col-data-100 py-1" style=" font-size: 13px">{{ tituloMinisterial.id }}</td>
+                    <td class="py-1" style=" font-size: 13px; color: rgb(48, 48, 138);">{{ tituloMinisterial.nome }}
                     </td>
-                    <td class="col-data-content-3 py-2" style=" font-size: 13px; color: rgb(48, 48, 138);">{{
+                    <td class="col-data-content-3 py-1" style=" font-size: 13px; color: rgb(48, 48, 138);">{{
                         tituloMinisterial.abreviacao }}</td>
 
-                    <td class="col-acoes-header py-2">
+                    <td class="col-acoes-header py-1">
                         @if(perfil !== 'ADMIN' && (tituloMinisterial.igrejaId == igrejaId )){
                         <button [routerLink]="[tituloMinisterial.id, 'edit']" type="button"
-                            class="btn btn-icon btn-outline-success p-1" [style]="{'height': '30px', 'width': '30px'} "
+                            class="btn btn-icon btn-outline-success p-1" [style]="{'height': '25px', 'width': '25px'} "
                             [placement]="'top'" ngbTooltip="Editar">
                             <i class="pi pi-chevron-up"></i>
                         </button>
@@ -96,15 +96,15 @@
 
                 @if(perfil == 'ADMIN'){
                 <tr>
-                    <td class="col-data-100 py-2">{{ tituloMinisterial.id }}
+                    <td class="col-data-100 py-1">{{ tituloMinisterial.id }}
                     </td>
-                    <td class="py-2" style=" font-size: 13px; color: rgb(48, 48, 138);">{{ tituloMinisterial.nome }}
+                    <td class="py-1" style=" font-size: 13px; color: rgb(48, 48, 138);">{{ tituloMinisterial.nome }}
                     </td>
-                    <td class="col-data-content-3 py-2" style=" font-size: 13px; color: rgb(48, 48, 138);">{{
+                    <td class="col-data-content-3 py-1" style=" font-size: 13px; color: rgb(48, 48, 138);">{{
                         tituloMinisterial.abreviacao }}</td>
-                    <td class="col-acoes-header py-2">
+                    <td class="col-acoes-header py-1">
                         <button [routerLink]="[tituloMinisterial.id, 'edit']" type="button"
-                            class="btn btn-icon btn-outline-success p-1" [style]="{'height': '30px', 'width': '30px'} "
+                            class="btn btn-icon btn-outline-success p-1" [style]="{'height': '25px', 'width': '25px'} "
                             [placement]="'top'" ngbTooltip="Editar">
                             <i class="pi pi-chevron-up"></i>
                         </button>

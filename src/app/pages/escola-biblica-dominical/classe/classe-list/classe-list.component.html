@@ -76,45 +76,21 @@
                 </ng-template>
 
                 <ng-template #body let-classe>
-
-                    @if(perfil !== 'ADMIN' && (classe.igrejaId == igrejaId ||
-                    classe.igrejaId == null)){
                     <tr>
-                        <td class="col-data-100 py-2" style=" font-size: 13px">{{ classe.id }}
+                        <td class="col-data-100 py-1" style=" font-size: 13px">{{ classe.id }}
                         </td>
-                        <td class="col-data-content-4 py-2" style=" font-size: 13px">{{ classe.nome }}</td>
-                        <td class="col-data-content-4 py-2" style=" font-size: 13px">{{ classe.classificacao }}</td>
-                        <td class="col-data-content-4 py-2" style=" font-size: 13px">{{ classe.faixaEtaria }}</td>
-                        <td class="col-acoes-header py-2">
-
-                            @if(perfil !== 'ADMIN' && (classe.igrejaId == igrejaId )){
-                            <button (click)="imodo=1; modalClasse.show(); loadClasse(classe) ; " type="button"
-                                class="btn btn-icon btn-outline-success p-1"
-                                [style]="{'height': '30px', 'width': '30px'} ">
-                                <i class="pi pi-pencil"></i>
-                            </button>
-                            }
-                        </td>
-                    </tr>
-                    }
-
-                    @if(perfil == 'ADMIN'){
-                    <tr>
-                        <td class="col-data-100 py-2" style=" font-size: 13px">{{ classe.id }}
-                        </td>
-                        <td class="col-data-content-4 py-2" style=" font-size: 13px">{{ classe.nome }}</td>
-                        <td class="col-data-content-4 py-2" style=" font-size: 13px">{{ classe.classificacao }}</td>
-                        <td class="col-data-content-4 py-2" style=" font-size: 13px">{{ classe.faixaEtaria }}</td>
-                        <td class="col-acoes-header py-2">
+                        <td class="col-data-content-4 py-1" style=" font-size: 13px">{{ classe.nome }}</td>
+                        <td class="col-data-content-4 py-1" style=" font-size: 13px">{{ classe.classificacao }}</td>
+                        <td class="col-data-content-4 py-1" style=" font-size: 13px">{{ classe.faixaEtaria }}</td>
+                        <td class="col-acoes-header py-1">
 
                             <button (click)=" imodo=1; modalClasse.show(); loadClasse(classe) " type="button"
                                 class="btn btn-icon btn-outline-info p-1 mt-0 mb-0"
-                                [style]="{'height': '30px', 'width': '30px'} ">
+                                [style]="{'height': '25px', 'width': '25px'} ">
                                 <i class="pi pi-chevron-up"></i>
                             </button>
                         </td>
                     </tr>
-                    }
                 </ng-template>
             </p-table>
         </div>
@@ -128,7 +104,7 @@
                     <div class="card px-3 "
                         style="width: 46rem; height: 1rem; background: #fcfdfd; padding-bottom: 10px; padding-top: 5px">
                         <nav aria-label="breadcrumb" class=" mb-4 ">
-                            <div class="card mb-0 px-3  py-2 "
+                            <div class="card mb-0 px-3  py-1 "
                                 style="background-color: rgb(77, 83, 90); border-radius: 5px">
                                 <span class=" text-white py-0  " style="font-size: 18px; ">{{ pageTitle
                                     }}</span>
@@ -154,31 +130,13 @@
                             <!-- style="text-transform: uppercase" -->
                         </div>
 
-                        <!-- Tipo Admin do sistema -->
-                        @if(perfil == 'ADMIN'){
-                        <div class="form-group col-md-4">
-                            <label>Tipo</label>
-                            <p-select class="w-full md  mb-2" formControlName="tipo" [options]="tipos"
-                                [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
-                                optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
-                                [autofocus]="false" optionValue="nome" placeholder=""
-                                (onChange)="onChangeTipoPadraoIgreja($event)">
-                            </p-select>
-                            <span class="text-mutted">Igreja: Visivel a Igreja
-                                especifica</span><br>
-                            <span class="text-mutted">Padrao: Visivel a todas as Igrejas
-                            </span>
-                        </div>
-                        }
-
                         <!-- Classificação -->
                         <div class="form-group col-md-4">
                             <label>Classificação</label>
                             <p-select class="w-full md  mb-2" formControlName="classificacao" [options]="classificacao"
                                 [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
                                 optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
-                                [autofocus]="false" optionValue="nome" placeholder="Selecione uma Classificação"
-                                (onChange)="onChangeTipoPadraoIgreja($event)">
+                                [autofocus]="false" optionValue="nome" placeholder="Selecione uma Classificação">
                             </p-select>
                         </div>
 

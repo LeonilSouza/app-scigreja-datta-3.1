@@ -176,13 +176,14 @@
       <ng-template pTemplate="body" let-caso>
         <tr>
 
-          <td>
+          <td class="py-1">
             <!-- Quando tem foto -->
             @if(caso?.fotoPessoa){
-            <div class="col-foto d-inline-block align-center">
-              <img src="data:image/jpg;base64,{{ caso?.fotoPessoa }}" [routerLink]="[caso.id, 'edit']"
-                class=" img-radius align-center m-r-15" style=" cursor: pointer;" alt="user image" />
-            </div>
+              <div class="flex items-center gap-2 ">
+                <img src="data:image/jpg;base64,{{ caso?.fotoPessoa }}" [class]="'flag flag-' "
+                  class=" img-radius align-center " [routerLink]="[caso.id, 'edit']" [style]="{'cursor':'pointer'}"
+                  alt="user image" />
+              </div>
             }
 
             <!-- Quando não tem foto -->
@@ -194,26 +195,26 @@
             }
           </td>
 
-          <td [routerLink]="[caso.id, 'edit']" class="m-r-15" style=" cursor: pointer; font-size: 12px;">{{
+          <td [routerLink]="[caso.id, 'edit']" class="m-r-15 py-1" style=" cursor: pointer; font-size: 12px;">{{
             caso.nome }}
           </td>
 
-          <td class="col-data-header col-data-150">
+          <td class="col-data-header col-data-150 py-1">
             <span [routerLink]="[caso.id, 'edit']" style=" cursor: pointer; font-size: 12px;"
               [style.color]="caso.situacao === 'Comunhão' ? 'green' : caso.situacao === 'Prova' ? 'red' : 'blue'">{{
               caso.situacao
               }}</span>
           </td>
 
-          <td [routerLink]="[caso.id, 'edit']" style=" cursor: pointer; font-size: 12px;" class="col-date">{{
+          <td [routerLink]="[caso.id, 'edit']" style=" cursor: pointer; font-size: 12px;" class="col-date py-1">{{
             caso.inicioProva }}</td>
 
-          <td [routerLink]="[caso.id, 'edit']" style="font-size: 12px;" class="col-date">{{ caso.finalProva }}
+          <td [routerLink]="[caso.id, 'edit']" style="font-size: 12px;" class="col-date py-1">{{ caso.finalProva }}
           </td>
 
-          <td class="col-acoes-header py-2">
+          <td class="col-acoes-header py-1">
             <button [routerLink]="[caso.id, 'edit']" type="button" class="btn btn-icon btn-outline-info p-1 mt-0 mb-0"
-              [style]="{'height': '30px', 'width': '30px'} ">
+              [style]="{'height': '25px', 'width': '25px'} ">
               <i class="pi pi-pencil"></i>
             </button>
           </td>

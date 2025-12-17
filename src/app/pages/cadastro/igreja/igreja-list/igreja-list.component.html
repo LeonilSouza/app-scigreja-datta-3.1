@@ -87,7 +87,7 @@
             @if(perfil == 'USUARIO' && igreja.id == igrejaId ){
             <td class="col-acoes-header  py-1">
               <button [routerLink]="[igreja.id, 'edit']" type="button" class="btn btn-icon btn-outline-info p-1"
-                [style]="{'height': '30px', 'width': '30px'} " [placement]="'top'" ngbTooltip="Editar">
+                [style]="{'height': '25px', 'width': '25px'} " [placement]="'top'" ngbTooltip="Editar">
                 <i class="pi pi-pencil"></i>
               </button>
             </td>
@@ -97,7 +97,7 @@
 
           <tr>
             @if(perfil == 'ADMIN'){
-            <td class="col-data-100  py-3">{{ igreja.id }} </td>
+            <td class="col-data-100  py-1">{{ igreja.id }} </td>
             <td class=" py-1" [routerLink]="[igreja.id, 'edit']" style=" cursor: pointer; font-size: 13px ;">{{
               igreja.nome
               }} </td>
@@ -110,7 +110,7 @@
             </td>
             <td class="col-acoes-header  py-1">
               <button [routerLink]="[igreja.id, 'edit']" type="button" class="btn btn-icon btn-outline-success p-1"
-                [style]="{'height': '30px', 'width': '30px'} " [placement]="'top'" ngbTooltip="Editar">
+                [style]="{'height': '25px', 'width': '25px'} " [placement]="'top'" ngbTooltip="Editar">
                 <i class="pi pi-chevron-up"></i>
               </button>
             </td>

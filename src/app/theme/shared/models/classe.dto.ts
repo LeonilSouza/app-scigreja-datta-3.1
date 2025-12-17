@@ -6,7 +6,6 @@ export class ClasseDTO {
         public status?: string,
         public classificacao?: string,
         public faixaEtaria?: string,
-        public tipo?: string,
         public igrejaId?: number
     ) {}
 }

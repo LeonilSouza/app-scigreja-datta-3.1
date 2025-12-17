@@ -90,6 +90,14 @@ const routes: Routes = [
         path: 'matriculaprofessores',
         loadChildren: () => import('./pages/escola-biblica-dominical/matricula-professor/matricula-professor.routes').then((module) => module.MATRICULA_PROFESSOR_ROUTES),
       },
+      {
+        path: 'matriculaalunos',
+        loadChildren: () => import('./pages/escola-biblica-dominical/matricula-aluno/matricula-aluno.routes').then((module) => module.MATRICULA_ALUNO_ROUTES),
+      },
+      {
+        path: 'lancamentoebds',
+        loadChildren: () => import('./pages/escola-biblica-dominical/lancamentoEBD/lancamento-ebd.routes').then((module) => module.LANCAMENTO_EBD_ROUTES),
+      },
       // {
       //   path: 'casos',
       //   loadChildren: () =>

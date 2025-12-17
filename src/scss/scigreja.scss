@@ -12,6 +12,12 @@
     width: 200px;
   }
 
+  .col-data-100 {
+    //Alinha centro
+    text-align: center !important;
+    width: 100px;
+  }
+
   .col-date {
     // Para datas
     text-align: center !important;
@@ -71,12 +77,6 @@
   .col-check-box {
     text-align: center !important;
     width: 50px;
-  }
-
-  .col-data-100 {
-    //Alinha centro
-    text-align: center !important;
-    width: 100px;
   }
 
   .col-data-180 {
@@ -141,6 +141,11 @@
     text-align: center !important;
   }
 
+  .col-80 {
+    width: 80px;
+    text-align: center !important;
+  }
+
 }
 
 .bg-light {
@@ -160,7 +165,7 @@
 .p-datepicker table td>span {
   height: auto !important;
   width: 100% !important;
-  font-size: 13px !important;
+  font-size: 12px !important;
 }
 
 .p-datepicker-font-size {

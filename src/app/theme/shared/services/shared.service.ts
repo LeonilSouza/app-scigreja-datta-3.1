@@ -22,7 +22,7 @@ export class SharedService {
 
   constructor(
   ) {
-    
+
   }
 
 
@@ -131,8 +131,94 @@ export class SharedService {
       mes = (data.getMonth() + 1).toString().padStart(2, '0'),
       ano = data.getFullYear();
     return `${mes}/${ano}`;
+  }
+
+  anoLetivo() {// 0000
+    let data = new Date(),
+      dia = data.getDate().toString().padStart(2, '0'),
+      mes = (data.getMonth() + 1).toString().padStart(2, '0'),
+      ano = data.getFullYear();
+    return `${ano}`;
 
   }
+
+  // Função auxiliar para formatar a data como YYYY-MM-DD
+  formatarDataUSString(dataBR) { // Recebe dd/mm/yyyy (Brasileira) e retorna yyyy-mm-dd (Americana)
+    const partes = dataBR.split('/'); // ["15", "08", "2024"]
+
+    // Reorganiza para YYYY/MM/DD/
+    const dataUSString = `${partes[2]}-${partes[1]}-${partes[0]}`;
+
+    return dataUSString;
+  }
+
+
+  retornaTrimestre(dataString) { // Retorna trimestre do ano passado
+    const dataBRString = dataString;
+    const partes = dataBRString.split('/'); // ["15", "08", "2024"]
+
+    // Reorganiza para YYYY/MM/DD/
+    const dataUSString = `${partes[2]}-${partes[1]}-${partes[0]}`;
+    // console.log(dataUSString); // Saída: 2024-12-25
+
+    // const dia = `${partes[0]}`;
+    const mes = +(`${partes[1]}`); //Mes 
+    // const ano = `${partes[2]}`;
+
+    let trimestre = '';
+    mes >= 1 && mes <= 3 ? trimestre = '1º Trimestre' :
+      mes >= 4 && mes <= 6 ? trimestre = '2º Trimestre' :
+        mes >= 7 && mes <= 9 ? trimestre = '3º Trimestre' :
+          mes >= 10 && mes <= 12 ? trimestre = '4º Trimestre' : ''
+    return trimestre;
+  }
+
+  retornaMes(dataString) { // Retorna Mes da data passada
+    const dataBRString = dataString;
+    const partes = dataBRString.split('/'); // ["15", "08", "2024"]
+
+    // Reorganiza para YYYY/MM/DD/
+    const dataUSString = `${partes[2]}-${partes[1]}-${partes[0]}`;
+    // console.log(dataUSString); // Saída: 2024-12-25
+
+    // const dia = `${partes[0]}`;
+    const mes = +(`${partes[1]}`);
+    // const ano = `${partes[2]}`;
+
+    return mes;
+  }
+
+  retornaAno(dataString) { // Retorna o Ano da data passada
+    const dataBRString = dataString;
+    const partes = dataBRString.split('/'); // ["15", "08", "2024"]
+
+    // Reorganiza para YYYY/MM/DD/
+    const dataUSString = `${partes[2]}-${partes[1]}-${partes[0]}`;
+    // console.log(dataUSString); // Saída: 2024-12-25
+
+    // const dia = `${partes[0]}`;
+    // const mes = +(`${partes[1]}`);
+    const ano = `${partes[2]}`;
+
+    return ano;
+  }
+
+  retornaDia(dataString) { // Retorna Dia da data passada
+    const dataBRString = dataString;
+    const partes = dataBRString.split('/'); // ["15", "08", "2024"]
+
+    // Reorganiza para YYYY/MM/DD/
+    const dataUSString = `${partes[2]}-${partes[1]}-${partes[0]}`;
+    // console.log(dataUSString); // Saída: 2024-12-25
+
+    const dia = `${partes[0]}`;
+    // const mes = +(`${partes[1]}`);
+    // const ano = `${partes[2]}`;
+
+    return dia;
+  }
+
+
 
   mesAnoExtenso() {
     moment.locale('pt-BR');
@@ -233,13 +319,6 @@ export class SharedService {
       .then(this.handleErrors);
   }
 
-  // Pesquisa Países
-  getDataPaises(): any {
-    let url: string = `https://servicodados.ibge.gov.br/api/v1/localidades/paises?orderBy=nome`;
-    return fetch(url)
-      .then(this.handleErrors);
-  }
-
   // Pesquisa Estados
   getDataEstados(): any {
     let url: string = `https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome`;
@@ -247,27 +326,8 @@ export class SharedService {
       .then(this.handleErrors);
   }
 
-  // Pesquisa Cidades
-  getDataCidades(): any {
-    let url: string = `https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome`;
-    return fetch(url)
-      .then(this.handleErrors);
-
-  }
-  getDataCidade(id): any {
-    let url: string = `https://servicodados.ibge.gov.br/api/v1/localidades/municipios/${id}`;
-    return fetch(url)
-      .then(this.handleErrors);
-  }
-
   getDataEstado(id): any {
     let url: string = `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${id}`;
-    return fetch(url)
-      .then(this.handleErrors);
-  }
-
-  getDataPaisesById(id): any {
-    let url: string = `https://servicodados.ibge.gov.br/api/v1/localidades/paises/${id}`;
     return fetch(url)
       .then(this.handleErrors);
   }
