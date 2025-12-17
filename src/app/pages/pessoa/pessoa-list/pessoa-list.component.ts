@@ -95,7 +95,7 @@ export class PessoaListComponent implements OnInit {
   datas: DatasDTO = new DatasDTO();
 
   public page = 0;
-  public linesPerPage: any = 6;
+  public linesPerPage: any = 8;
   public nomeSemAcento = ''; // Coluna alternativa para gravar dados sem acento
   public cpfOuCnpj = ''
 

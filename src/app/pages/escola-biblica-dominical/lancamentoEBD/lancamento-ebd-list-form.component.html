@@ -89,7 +89,7 @@
             <p-table #dtlancamentoEbd [value]="lancamentoEbds"
                 [globalFilterFields]="['nome', 'country.name', 'representative.name', 'status']" [lazy]="true"
                 responsiveLayout="stack" (onLazyLoad)="loadLancamentoEbdLazy($event)" [showCurrentPageReport]="true"
-                [totalRecords]="totalRegistros" showGridlines stripedRows [rowsPerPageOptions]="[9, 30, 50, 100]"
+                [totalRecords]="totalRegistros" showGridlines stripedRows [rowsPerPageOptions]="[10, 30, 50, 100]"
                 currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
                 [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
 

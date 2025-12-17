@@ -76,6 +76,29 @@
                 </ng-template>
 
                 <ng-template #body let-classe>
+
+                    @if(perfil !== 'ADMIN' && (classe.igrejaId == igrejaId ||
+                    classe.igrejaId == null)){
+                    <tr>
+                        <td class="col-data-100 py-1" style=" font-size: 13px">{{ classe.id }}
+                        </td>
+                        <td class="col-data-content-4 py-1" style=" font-size: 13px">{{ classe.nome }}</td>
+                        <td class="col-data-content-4 py-1" style=" font-size: 13px">{{ classe.classificacao }}</td>
+                        <td class="col-data-content-4 py-1" style=" font-size: 13px">{{ classe.faixaEtaria }}</td>
+                        <td class="col-acoes-header py-1">
+
+                            @if(perfil !== 'ADMIN' && (classe.igrejaId == igrejaId )){
+                            <button (click)=" imodo=1; modalClasse.show(); loadClasse(classe) " type="button"
+                                class="btn btn-icon btn-outline-info p-1 mt-0 mb-0"
+                                [style]="{'height': '25px', 'width': '25px'} ">
+                                <i class="pi pi-chevron-up"></i>
+                            </button>
+                            }
+                        </td>
+                    </tr>
+                    }
+
+                    @if(perfil == 'ADMIN'){
                     <tr>
                         <td class="col-data-100 py-1" style=" font-size: 13px">{{ classe.id }}
                         </td>
@@ -86,11 +109,13 @@
 
                             <button (click)=" imodo=1; modalClasse.show(); loadClasse(classe) " type="button"
                                 class="btn btn-icon btn-outline-info p-1 mt-0 mb-0"
-                                [style]="{'height': '25px', 'width': '25px'} ">
+                                [style]="{'height': '26px', 'width': '26px'} ">
                                 <i class="pi pi-chevron-up"></i>
                             </button>
                         </td>
                     </tr>
+                    }
+
                 </ng-template>
             </p-table>
         </div>
@@ -156,6 +181,24 @@
                                 [autofocus]="false" optionValue="nome" placeholder="Selecione um status">
                             </p-select>
                         </div>
+
+                        <!-- Tipo Admin do sistema -->
+                        @if(perfil == 'ADMIN'){
+                        <div class="form-group col-md-4">
+                            <label>Tipo:</label>
+                            <p-select [style]="{'width':'100%','height':'35px'}" class="w-full md  mb-2"
+                                formControlName="tipo" [options]="tipos" [editable]="false" [filter]="false"
+                                filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="true"
+                                dropdownIcon="pi pi-chevron-down" [autofocus]="false" optionValue="nome" placeholder=""
+                                (onChange)="onChangeTipoPadraoIgreja($event)">
+                            </p-select>
+                            <span class="text-mutted">Igreja: Visivel a Igreja
+                                especifica</span><br>
+                            <span class="text-mutted">Padrao: Visivel a todas as Igrejas </span>
+
+
+                        </div>
+                        }
 
                     </div>
 

@@ -42,6 +42,8 @@ import Swal from 'sweetalert2';
 })
 export class ClasseListComponent implements OnInit, AfterContentChecked {
 
+  tipos = [{ nome: 'Padrao' }, { nome: 'Igreja' }]; // Tipo padrão é o tipo que grava null no igrejaId do Banco, tadas a Igreja podem ver. Igreja grava o id da igreja do usuario, outras igreja não pode ver.
+
   nomeIgrejaSignal = nomeIgrejaSignal;
   igrejaIdSignal = igrejaIdSignal;
   perfilSignal = perfilSignal;
@@ -93,7 +95,7 @@ export class ClasseListComponent implements OnInit, AfterContentChecked {
   error = '';
 
   public page = 0;
-  public linesPerPage = 8;
+  public linesPerPage = 10;
   public nome = '';
 
   constructor(
@@ -132,9 +134,19 @@ export class ClasseListComponent implements OnInit, AfterContentChecked {
       classificacao: [null, [Validators.required]],
       faixaEtaria: [null, [Validators.required]],
       nome: [null, [Validators.required]], // As vezes tem que deixar vazio "" ao invés de null p/ não dá BO
-      igrejaId: [this.igrejaId],
+      tipo: ['Padrao'], // Campo inexistente no banco. Utilizados apenas para Admin para setar null em igrejaId
+      igrejaId: [this.perfil == 'ADMIN' ? null : this.igrejaId],
 
     });
+  }
+
+  ///////////////////////////// Tipo   ///////////////////////////
+  onChangeTipoPadraoIgreja(event: { value: string }) {
+    if (event.value === 'Padrao') {
+      this.classeForm.controls['igrejaId'].setValue(null);
+    } else {
+      this.classeForm.controls['igrejaId'].setValue(this.igrejaId);
+    }
   }
 
   loadClassesLazy(event: any) {
@@ -157,9 +169,9 @@ export class ClasseListComponent implements OnInit, AfterContentChecked {
   }
 
   resetModal() {
-      this.classeForm.reset();
-      this.classeForm.controls['igrejaId'].setValue(this.igrejaId)
-      this.classeForm.controls['status'].setValue("Ativo")
+    this.classeForm.reset();
+    this.classeForm.controls['igrejaId'].setValue(this.igrejaId)
+    this.classeForm.controls['status'].setValue("Ativo")
   }
 
   exclusaoClasse(classe: ClasseDTO) {
@@ -198,10 +210,13 @@ export class ClasseListComponent implements OnInit, AfterContentChecked {
         (response) => {
           this.classe = response;
           this.classeForm.patchValue(this.classe); // binds loaded classe data to classeForm
+          this.classeForm.controls['tipo'].setValue(
+            this.classe.igrejaId ? 'Igreja' : 'Padrao'
+          );
         },
         (_error) => { }
       );
-    }else{
+    } else {
       this.resetModal()
     }
   }
@@ -237,7 +252,7 @@ export class ClasseListComponent implements OnInit, AfterContentChecked {
       .subscribe(() => {
         this.resetModal();
         this.actionsForSuccess();
-         this.grid.reset();
+        this.grid.reset();
       }),
       (error: any) => this.actionsForError(error);
   }

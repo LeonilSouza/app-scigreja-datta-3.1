@@ -147,7 +147,7 @@ export class DisciplinaFormComponent implements OnInit, AfterContentChecked {
             this.disciplina = response;
             this.disciplinaForm.patchValue(this.disciplina); // binds loaded disciplina data to disciplinaForm
             this.disciplinaForm.controls['tipo'].setValue(
-              this.disciplina.igrejaId ? 'Igreja' : 'Padrao'
+            this.disciplina.igrejaId ? 'Igreja' : 'Padrao'
             );
           },
           (_error) => this.showError()
