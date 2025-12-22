@@ -16,9 +16,17 @@ import { igrejaIdSignal, perfilSignal } from 'src/app/theme/shared/_helpers/shar
 
 @Component({
   selector: 'app-disciplina-list',
-  imports: [RouterModule, TableModule, InputGroup, ButtonModule, RouterLink, SharedModule],
   templateUrl: './disciplina-list.component.html',
   styleUrl: './disciplina-list.component.scss',
+  standalone:true,
+  imports: [
+    RouterModule,
+    TableModule,
+    InputGroup,
+    ButtonModule,
+    RouterLink,
+    SharedModule
+  ],
   providers: [DisciplinaService, DecimalPipe, MessageService]
 })
 export class DisciplinaListComponent implements OnInit {

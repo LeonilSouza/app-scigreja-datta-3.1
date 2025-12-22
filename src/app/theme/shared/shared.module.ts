@@ -37,6 +37,20 @@ import { ConfirmationService, FilterMatchMode, MessageService } from 'primeng/ap
 import { IgrejaService } from './services/igreja.service';
 import { SelectModule } from 'primeng/select';
 
+import { InputNumberModule } from 'primeng/inputnumber';
+import { TabViewModule } from 'primeng/tabview';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { InputMaskModule } from 'primeng/inputmask';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { ToolbarModule } from 'primeng/toolbar';
+import { AccordionModule } from 'primeng/accordion';
+import { SplitButtonModule } from 'primeng/splitbutton';
+import { ToastModule } from 'primeng/toast';
+import { InputIconModule } from 'primeng/inputicon';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputTextModule } from 'primeng/inputtext';
+import { TableModule } from 'primeng/table';
+
 import localePt from '@angular/common/locales/pt';
 
 registerLocaleData(localePt);
@@ -58,8 +72,21 @@ registerLocaleData(localePt);
     NgbProgressbarModule,
     AnimationModalComponent,
     UiModalComponent,
+    InputIconModule,
     GalleryModule,
     BidiModule,
+    InputNumberModule,
+    MultiSelectModule,
+    InputTextModule,
+    IconFieldModule,
+    InputMaskModule,
+    RadioButtonModule,
+    ToastModule,
+    TabViewModule,
+    ToolbarModule,
+    TableModule,
+    AccordionModule,
+    SplitButtonModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -80,11 +107,24 @@ registerLocaleData(localePt);
     NgScrollbarModule,
     NgbProgressbar,
     NgbProgressbarModule,
+    InputIconModule,
     AnimationModalComponent,
+    InputTextModule,
     UiModalComponent,
     GalleryModule,
     TranslateModule,
     BidiModule,
+    IconFieldModule,
+    ToastModule,
+    InputNumberModule,
+    MultiSelectModule,
+    InputMaskModule,
+    RadioButtonModule,
+    TableModule,
+    TabViewModule,
+    ToolbarModule,
+    AccordionModule,
+    SplitButtonModule,
     SelectModule,
   ],
   providers: [

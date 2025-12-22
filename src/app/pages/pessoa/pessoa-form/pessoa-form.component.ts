@@ -1478,9 +1478,11 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
     this.croppedImage = newImageData; // Retorna da imagem convertida para Jpeg/Jpg 10 vezes menor que PNG
 
   }
+  
 
   // Consulta CEP
   consultaCep(value: any) {
+    console.log(value)
     if (value.length == 8) {
       this.sharedService.getDataCep(value)
         .then(async (dadosCep: any) => {

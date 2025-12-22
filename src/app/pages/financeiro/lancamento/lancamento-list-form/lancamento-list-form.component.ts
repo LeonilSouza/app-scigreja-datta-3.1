@@ -1,31 +1,38 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-import { ConfirmationService, LazyLoadEvent, MenuItem, MessageService, PrimeNGConfig } from 'primeng/api';
+import { ConfirmationService, LazyLoadEvent, MenuItem, MessageService } from 'primeng/api';
 import { Subject, Subscription, takeUntil } from 'rxjs';
-import { GLOBALS } from 'src/app/_helpers/globals';
-import { CategoriaDTO } from 'src/app/models/categoria.dto';
-import { CentroCustoDTO } from 'src/app/models/centro-custo.dto';
-import { ContaDTO } from 'src/app/models/conta.dto';
-import { LancamentoDTO } from 'src/app/models/lancamento.dto';
-import { CategoriaService } from 'src/app/services/categoria.service';
-import { CentroCustoService } from 'src/app/services/centro-custo.service';
-import { ContaService } from 'src/app/services/conta.service';
-import { SharedService } from 'src/app/services/shared.service';
 import moment from 'moment';
 import Swal from 'sweetalert2';
-import { PessoaDTO } from 'src/app/models/pessoa.dto';
-import { PessoaService } from 'src/app/services/pessoa.service';
-import { FormaService } from 'src/app/services/forma.service';
-import { FormaDTO } from 'src/app/models/forma.dto';
+import { ButtonModule } from 'primeng/button';
+import { RouterLink, RouterModule } from '@angular/router';
+import { SharedModule } from 'src/app/theme/shared/shared.module';
+import { LancamentoDTO } from 'src/app/theme/shared/models/lancamento.dto';
+import { API_CONFIG } from 'src/app/app-config';
+import { ContaDTO } from 'src/app/theme/shared/models/conta.dto';
+import { FormaDTO } from 'src/app/theme/shared/models/forma.dto';
+import { CategoriaDTO } from 'src/app/theme/shared/models/categoria.dto';
+import { PessoaService } from 'src/app/theme/shared/services/pessoa.service';
+import { SharedService } from 'src/app/theme/shared/services/shared.service';
+import { CategoriaService } from 'src/app/theme/shared/services/categoria.service';
+import { ContaService } from 'src/app/theme/shared/services/conta.service';
+import { CentroCustoService } from 'src/app/theme/shared/services/centro-custo.service';
+import { FormaService } from 'src/app/theme/shared/services/forma.service';
+import { CentroCustoDTO } from 'src/app/theme/shared/models/centro-custo.dto';
+import { PessoaDTO } from 'src/app/theme/shared/models/pessoa.dto';
+import { LancamentoService } from 'src/app/theme/shared/services/lancamento.service';
+import { igrejaIdSignal, nomeIgrejaSignal, nomeUsuarioSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
+import { DatePicker } from 'primeng/datepicker';
+import { InputGroup } from "primeng/inputgroup";
+import { InputNumberModule } from 'primeng/inputnumber';
 import { Table } from 'primeng/table';
-import { API_CONFIG } from 'src/app/config/api-config';
-import { LancamentoService } from 'src/app/services/lancamento.service';
+
 
 export class LancamentoFiltro {
-  igrejaId?: number = GLOBALS.igrejaId;
-  setorId?: number = GLOBALS.setorId;
+  igrejaId?: number = igrejaIdSignal();
+  setorId?: number = setorIdSignal();
   nome?: string = ''.toLowerCase();
   dtInicio?: string = '';
   dtFim?: string = '';
@@ -41,11 +48,40 @@ export class LancamentoFiltro {
   selector: 'app-lancamento-list-form',
   templateUrl: './lancamento-list-form.component.html',
   styleUrls: ['./lancamento-list-form.component.scss'],
-  // encapsulation: ViewEncapsulation.None // Atrapalha Dropdown na Modal 
+  standalone: true,
+  imports: [
+    RouterModule,
+    DatePicker,
+    // InputGroup,
+    ButtonModule,
+    RouterLink,
+    SharedModule,
+    InputNumberModule,
+    InputGroup,
+    // ConfirmDialog,
+    // Dialog
+  ],
+  providers: [
+    LancamentoService,
+    CategoriaService,
+    ContaService,
+    CentroCustoService,
+    PessoaService,
+    FormaService
 
+  ]
 })
 export class LancamentoListFormComponent implements OnInit {
 
+  nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+  igrejaIdSignal = igrejaIdSignal;
+  nomeUsuarioSignal = nomeUsuarioSignal;
+  setorIdSignal = setorIdSignal;
+
+  nomeIgreja = nomeIgrejaSignal();
+  igrejaId = igrejaIdSignal();
+  nomeUsuario = nomeUsuarioSignal();
+  setorId = setorIdSignal();
 
   private destroy$: Subject<void> = new Subject<void>();
 
@@ -58,7 +94,7 @@ export class LancamentoListFormComponent implements OnInit {
   indexId: number;
   indexIdTransferencia: number;
 
-  length: number = 0;
+  length = signal(0);
 
   transf: number;
 
@@ -118,8 +154,6 @@ export class LancamentoListFormComponent implements OnInit {
   totalRegistros: number = 0
   totalRegistrosConta: number = 0
 
-  igrejaId: number = GLOBALS.igrejaId;
-  setorId: number = GLOBALS.setorId;
   contaId: number;
   contaIdTransferencia: number;
   formaIdTransferencia: number;
@@ -138,9 +172,8 @@ export class LancamentoListFormComponent implements OnInit {
   crtCategoria: number = 3; //Para controlar: Todas, Receita e Despesa em categorias
 
   lancamentos!: LancamentoDTO[];
-  selectedLancamentos!: LancamentoDTO;
+  selectedLancamentos!: LancamentoDTO[];
 
-  perfil: string = GLOBALS.perfil;
   contas: ContaDTO[] = [];
   contasTransferencia: ContaDTO[] = [];
   formasPermuta: FormaDTO[] = [];
@@ -194,7 +227,6 @@ export class LancamentoListFormComponent implements OnInit {
     public pessoaService: PessoaService,
     private messageService: MessageService,
     public translate: TranslateService,
-    public primeNGConfig: PrimeNGConfig,
     private sharedService: SharedService,
     private categoriaService: CategoriaService,
     private contaService: ContaService,
@@ -202,17 +234,6 @@ export class LancamentoListFormComponent implements OnInit {
     private formaService: FormaService
   ) {
     this.activeTab = 'home';
-
-    translate.setDefaultLang('pt-br');
-
-    this.subscription = this.translate.stream('primeng')
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(data => {
-        this.primeNGConfig.setTranslation(data);
-      });
-
-    this.selecaoIndividual();
-    this.selecaoMultipla();
   }
 
   ngOnInit() {
@@ -264,53 +285,29 @@ export class LancamentoListFormComponent implements OnInit {
     }
   }
 
-  linhasSelecionada(event) {
-    this.length = event.length;
+  linhasSelecionada(event): void {
+    console.log(event)
+    this.length.set(event.length);
     if (event.length >= 1) {
       this.indexId = event[0].id;
       this.indexIdTransferencia = event[0].lancamentoIdTransferencia;
     }
-    this.selecaoMultipla();
-    this.selecaoIndividual();
-  }
-  selecaoIndividual() {
-    this.selecaoItemsIndividual = [
-      {
-        label: 'Exclusão',
-        command: () => {
-          this.confirmarExclusaoLancamento(this.indexId, this.indexIdTransferencia);
-        }
-      },
-      { separator: true },
-      {
-        label: 'Imprimir Recibo',
-        command: () => {
-          this.imprimirRecibo();
-        }
-      },
-      // { label: 'Imprimir Recibo', url: (`${API_CONFIG.baseUrl}/relatorios/recibos/?nome=recibo-lancamento&igreja=${this.igrejaId}&lancamento_id=${this.indexId}`) },
-      // { label: 'Upload', routerLink: ['/fileupload'] }
-    ];
-  }
-
-  selecaoMultipla() {
-    this.selecaoItemsMultiplos = [
-      {
-        label: 'Exclusão',
-        command: () => {
-          this.confirmarExclusaoLancamento(this.indexId, this.indexIdTransferencia);
-        }
-      }
-    ];
-  }
-
-  itemsIndividual() {
 
   }
 
-  itemsMultiplos() {
-
+  aoDesmarcar(event: any) {
+    // Pega o evento de desmaracar o checkbox
+    this.length.set(0);
   }
+
+  deleteIndividual() {
+    this.exclusaoLancamento(this.indexId, this.indexIdTransferencia);
+  }
+
+  deleteMultiplos() {
+    this.exclusaoLancamento(this.indexId, this.indexIdTransferencia);
+  }
+
 
   loadFormas() {
     this.formaService.getListFormaFromIgreja(this.igrejaId)
@@ -420,6 +417,11 @@ export class LancamentoListFormComponent implements OnInit {
       this.updateLancamento();
   }
 
+  limpaCheckbox() {
+    this.selectedLancamentos ? this.selectedLancamentos = [] : this.selectedLancamentos = [];
+    this.length.set(0);
+  }
+
   submitFormTransferencia() {
     this.submittingForm = true;
     if (this.imodo === 0) {
@@ -455,7 +457,7 @@ export class LancamentoListFormComponent implements OnInit {
       pessoaId: [0, [Validators.required]],
       cadastrado: ['sim'],
       contaId: [null, [Validators.required]],
-      setorId: [GLOBALS.setorId],
+      setorId: [this.setorId],
       formaId: [this.formaId, [Validators.required]],
       centroCustoId: [null],
       contaIdTransferencia: [null],
@@ -502,13 +504,11 @@ export class LancamentoListFormComponent implements OnInit {
         }
       });
   }
-  imprimirRecibo() {
-    if (this.selectedLancamentos == null || this.length == 0 || undefined) {
-      Swal.fire('Lançamento | Seleção', 'Nenhum registro selecionado', 'info');
-    } else if (this.selectedLancamentos[0].tipoLancamento == 'Receita') {
-      Swal.fire('Lançamento | Natureza', 'Receita selecionado', 'info');
+  imprimirRecibo(id) {
+    if (!id) {
+      Swal.fire('Exclusão', 'Nenhum registro encontrado', 'info');
     } else {
-      let url = (`${API_CONFIG.baseUrl}/relatorios/recibos/?nome=recibo-lancamento&igreja=${this.igrejaId}&lancamento_id=${this.indexId}`)
+      let url = (`${API_CONFIG.baseUrl}/relatorios/recibos/?nome=recibo-lancamento&igreja=${this.igrejaId}&lancamento_id=${id}`)
       window.open(url, "_blank");
     }
   }
@@ -997,7 +997,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   loadPessoas() {
     let situacaoCadastral = 'Ativo'
-    this.pessoaService.getPessoasAtivasFromIgreja(GLOBALS.igrejaId, situacaoCadastral)
+    this.pessoaService.getPessoasAtivasFromIgreja(this.igrejaId, situacaoCadastral)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
@@ -1266,8 +1266,6 @@ export class LancamentoListFormComponent implements OnInit {
     this.lancamentoIdTransferencia = event.value;
   }
 
-
-
   private getCategoria(value) {
     this.categoriaService.findById(value)
       .pipe(takeUntil(this.destroy$))
@@ -1326,31 +1324,38 @@ export class LancamentoListFormComponent implements OnInit {
     if (value === 'Padrao') {
       this.lancamentoForm.controls['igrejaId'].setValue(null);
     } else {
-      this.lancamentoForm.controls['igrejaId'].setValue(GLOBALS.igrejaId);
+      this.lancamentoForm.controls['igrejaId'].setValue(this.igrejaId);
     }
 
   }
 
-  //EXCLUIR LANÇAMENTOS 
-  confirmarExclusaoLancamento(indexId, indexIdTransferencia) {
-    console.log(this.indexId)
-    console.log(this.indexIdTransferencia)
 
-    if (this.selectedLancamentos == null || this.length == 0 || undefined) {
+  //EXCLUIR LANÇAMENTOS 
+  exclusaoLancamento(indexId, indexIdTransferencia) {
+
+    if (this.selectedLancamentos == null || this.length() == 0 || undefined) {
       Swal.fire('Lançamento | Seleção', 'Nenhum registro selecionado', 'info');
     } else {
-      this.confirmationService.confirm({
-        message: 'Tem certeza que deseja excluir ' + this.length + ' registro?',
-        accept: () => {
-
-          if (this.length <= 1) {
+      Swal.fire({
+        title: 'Exclusão',
+        text: 'Tem certeza que deseja excluir ' + this.length() + ' registro?',
+        icon: 'error',
+        showCloseButton: true,
+        showCancelButton: true,
+      }).then((willDelete) => {
+        if (willDelete.dismiss) {
+          this.selectedLancamentos = [];
+          this.length.set(0);
+          // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
+        } else {
+          if (this.length() <= 1) {
             if (this.indexId) { this.excluirLancamento(indexId); }
             if (this.indexIdTransferencia) { this.excluirSelectedLancamento(indexIdTransferencia); }
             this.toastr.success('Exclusão', 'Registro excluido com sucesso!');
           }
 
-          if (this.length > 1) {
-            for (let index = 0; index < this.length; index++) {
+          if (this.length() > 1) {
+            for (let index = 0; index < this.length(); index++) {
               indexIdTransferencia = this.selectedLancamentos[index].lancamentoIdTransferencia;
               if (indexIdTransferencia) {
                 this.excluirSelectedLancamento(indexIdTransferencia);
@@ -1360,7 +1365,7 @@ export class LancamentoListFormComponent implements OnInit {
             this.toastr.success('Exclusão', 'Registros excluidos com sucesso!');
           }
           this.loadContas();
-          this.selectedLancamentos = null;
+
           this.grid.first = 0;
         }
       });
@@ -1369,23 +1374,25 @@ export class LancamentoListFormComponent implements OnInit {
   }
 
   excluirLancamento(indexId) {
-
     this.lancamentoService.delete(indexId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
           this.loadContas();
+          this.grid.reset();
           this.selectedLancamentos = null;
         },
         error: () => { }
       })
   }
 
+
   excluirSelectedLancamento(indexIdTransferencia) {
-      this.lancamentoService.delete(indexIdTransferencia)
+    this.lancamentoService.delete(indexIdTransferencia)
       .subscribe({
         next: () => {
+          this.grid.reset();
           // this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
           // this.toastr.success('Exclusão', 'Registro excluido com sucesso!');
           // this.messageService.add({ severity: 'success', summary: 'Successo', detail: 'Registro excluido com sucesso!' });
@@ -1487,7 +1494,7 @@ export class LancamentoListFormComponent implements OnInit {
         this.lancamentoForm.controls['categoriaId'].setValue(1);
         this.lancamentoForm.controls['documento'].setValue(this.sharedService.mesAno());
         this.lancamentoForm.controls['historico'].setValue('Dízimo');
-        this.lancamentoForm.controls['setorId'].setValue(GLOBALS.setorId);
+        this.lancamentoForm.controls['setorId'].setValue(this.setorId);
         this.lancamentoForm.controls['pessoaId'].setValue(0);
         this.lancamentoForm.controls['nome'].setValue("");
         break;
@@ -1506,7 +1513,7 @@ export class LancamentoListFormComponent implements OnInit {
         this.lancamentoForm.controls['formaId'].setValue(1);
         this.lancamentoForm.controls['categoriaId'].setValue(2);
         this.lancamentoForm.controls['historico'].setValue('Oferta');
-        this.lancamentoForm.controls['setorId'].setValue(GLOBALS.setorId);
+        this.lancamentoForm.controls['setorId'].setValue(this.setorId);
         this.lancamentoForm.controls['pessoaId'].setValue(0);
         this.lancamentoForm.controls['nome'].setValue("");
         break;
@@ -1525,7 +1532,7 @@ export class LancamentoListFormComponent implements OnInit {
         this.lancamentoForm.controls['formaId'].setValue(1);
         this.lancamentoForm.controls['categoriaId'].setValue(19);
         this.lancamentoForm.controls['historico'].setValue('Despesa');
-        this.lancamentoForm.controls['setorId'].setValue(GLOBALS.setorId);
+        this.lancamentoForm.controls['setorId'].setValue(this.setorId);
         this.lancamentoForm.controls['pessoaId'].setValue(0);
         this.lancamentoForm.controls['nome'].setValue("");
         break;
@@ -1545,7 +1552,7 @@ export class LancamentoListFormComponent implements OnInit {
         this.lancamentoForm.controls['formaId'].setValue(1);
         this.lancamentoForm.controls['documento'].setValue(this.sharedService.mesAno());
         this.lancamentoForm.controls['historico'].setValue('Transferencia entre contas');
-        this.lancamentoForm.controls['setorId'].setValue(GLOBALS.setorId);
+        this.lancamentoForm.controls['setorId'].setValue(this.setorId);
         this.lancamentoForm.controls['pessoaId'].setValue(0);
         this.lancamentoForm.controls['nome'].setValue('Transferencia');
         this.lancamentoForm.controls['tituloMin'].setValue("Membro");
@@ -1566,7 +1573,7 @@ export class LancamentoListFormComponent implements OnInit {
         this.lancamentoForm.controls['formaId'].setValue(1);
         this.lancamentoForm.controls['documento'].setValue(this.sharedService.mesAno());
         this.lancamentoForm.controls['historico'].setValue('Troca | Permuta');
-        this.lancamentoForm.controls['setorId'].setValue(GLOBALS.setorId);
+        this.lancamentoForm.controls['setorId'].setValue(this.setorId);
         this.lancamentoForm.controls['pessoaId'].setValue(0);
         this.lancamentoForm.controls['nome'].setValue('Permuta');
         this.lancamentoForm.controls['contaId'].setValue(this.contas[0].id);// Conta de Origem

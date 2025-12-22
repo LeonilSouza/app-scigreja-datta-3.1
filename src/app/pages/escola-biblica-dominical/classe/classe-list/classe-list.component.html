@@ -45,7 +45,7 @@
             <p-table #dtclasse [value]="classes"
                 [globalFilterFields]="['nome', 'country.name', 'representative.name', 'status']" [lazy]="true"
                 responsiveLayout="stack" (onLazyLoad)="loadClassesLazy($event)" [showCurrentPageReport]="true"
-                [totalRecords]="totalRegistros" showGridlines stripedRows
+                [totalRecords]="totalRegistros" showGridlines stripedRows [rowsPerPageOptions]="[10, 30, 50]"
                 currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
                 [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
 

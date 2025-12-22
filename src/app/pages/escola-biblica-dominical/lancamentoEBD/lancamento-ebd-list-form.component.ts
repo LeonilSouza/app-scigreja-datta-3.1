@@ -609,13 +609,14 @@ export class LancamentoEbdListFormComponent implements OnInit, AfterContentCheck
 
               // Adiciona todos os elementos do novo array ao final do array existente
               this.lancamentoEbds.push(...novosRegistrosDeAlunos);
-
-
+            
+          
               // GRAVAÇAO DE LANCAMENTOS NO BANCO
 
               this.lancamentoEbdService.salvarLancamentos(this.lancamentoEbds)
                 .subscribe({
-                  next: () => {
+                  next: (response) => {
+                    console.log(response)
                     this.grid.reset();//atualiza a tabela do primeng
                     this.actionsForSuccess();
                   },

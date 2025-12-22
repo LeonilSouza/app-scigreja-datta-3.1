@@ -1,10 +1,10 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
-import { API_CONFIG } from "../config/api-config";
 import { Observable, throwError } from "rxjs";
 import { catchError, map } from 'rxjs/operators';
 import { LancamentoDTO } from "../models/lancamento.dto";
-import { LancamentoFiltro } from "../pages/financeiro/lancamento/lancamento-list-form/lancamento-list-form.component";
+import { API_CONFIG } from "src/app/app-config";
+import { LancamentoFiltro } from "src/app/pages/financeiro/lancamento/lancamento-list-form/lancamento-list-form.component";
 
 @Injectable({
   providedIn: 'root'

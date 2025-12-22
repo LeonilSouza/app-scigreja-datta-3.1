@@ -21,6 +21,7 @@ import { SharedService } from 'src/app/theme/shared/services/shared.service';
 import { FloatLabel } from "primeng/floatlabel"
 import { MatriculaAlunoDTO } from 'src/app/theme/shared/models/matricula-aluno.dto';
 import { MatriculaAlunoService } from 'src/app/theme/shared/services/matricula-aluno.service';
+import { ToastrService } from 'ngx-toastr';
 
 
 // project import
@@ -68,6 +69,7 @@ export class MatriculaAlunoListComponent implements OnInit, AfterContentChecked 
   private sharedService = inject(SharedService);
   private formBuilder = inject(FormBuilder);
   private matriculaAlunoService = inject(MatriculaAlunoService);
+  private toastr = inject(ToastrService);
 
   tipos = [{ nome: 'Padrao' }, { nome: 'Igreja' }]; // Tipo padrão é o tipo que grava null no igrejaId do Banco, tadas a Igreja podem ver. Igreja grava o id da igreja do usuario, outras igreja não pode ver.
 
@@ -351,9 +353,11 @@ export class MatriculaAlunoListComponent implements OnInit, AfterContentChecked 
       .then(
         () => this.router.navigate([path]));
     if (this.imodo === 0) {
-      Swal.fire('Cadastro', 'Registro inserido com sucesso!', 'success');
+      // Swal.fire('Cadastro', 'Registro inserido com sucesso!', 'success');
+       this.toastr.success('Registro Inserido com sucesso');
     } else {
-      Swal.fire('Atualização', 'Registro atualizado com sucesso!', 'success');
+      // Swal.fire('Atualização', 'Registro atualizado com sucesso!', 'success');
+       this.toastr.success('Registro Atualizado com sucesso');
     }
   }
 

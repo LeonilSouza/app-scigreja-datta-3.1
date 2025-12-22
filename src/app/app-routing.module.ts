@@ -86,7 +86,7 @@ const routes: Routes = [
         path: 'classes',
         loadChildren: () => import('./pages/escola-biblica-dominical/classe/classe.routes').then((module) => module.CLASSE_ROUTES),
       },
-       {
+      {
         path: 'matriculaprofessores',
         loadChildren: () => import('./pages/escola-biblica-dominical/matricula-professor/matricula-professor.routes').then((module) => module.MATRICULA_PROFESSOR_ROUTES),
       },
@@ -97,6 +97,15 @@ const routes: Routes = [
       {
         path: 'lancamentoebds',
         loadChildren: () => import('./pages/escola-biblica-dominical/lancamentoEBD/lancamento-ebd.routes').then((module) => module.LANCAMENTO_EBD_ROUTES),
+      },
+
+      {
+        path: 'cadastros',
+        loadChildren: () => import('./pages/financeiro/cadastro/cadastro.routes').then((module) => module.CADASTRO_ROUTES),
+      },
+      {
+        path: 'lancamentos',
+        loadChildren: () => import('./pages/financeiro/lancamento/lancamento.routes').then((module) => module.LANCAMENTO_ROUTES),
       },
       // {
       //   path: 'casos',

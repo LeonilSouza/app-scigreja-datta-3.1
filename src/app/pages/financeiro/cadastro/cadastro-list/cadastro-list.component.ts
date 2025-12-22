@@ -1,17 +1,25 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { ConfirmationService, LazyLoadEvent, MessageService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+import { InputGroup } from 'primeng/inputgroup';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { SelectModule } from 'primeng/select';
+import { SplitButtonModule } from 'primeng/splitbutton';
+import { Table, TableModule } from 'primeng/table';
 import { Subject, takeUntil } from 'rxjs';
-import { GLOBALS } from 'src/app/_helpers/globals';
-import { CategoriaDTO } from 'src/app/models/categoria.dto';
-import { CentroCustoDTO } from 'src/app/models/centro-custo.dto';
-import { ContaDTO } from 'src/app/models/conta.dto';
-import { FormaDTO } from 'src/app/models/forma.dto';
-import { CategoriaService } from 'src/app/services/categoria.service';
-import { CentroCustoService } from 'src/app/services/centro-custo.service';
-import { ContaService } from 'src/app/services/conta.service';
-import { FormaService } from 'src/app/services/forma.service';
+import { igrejaIdSignal, nomeIgrejaSignal, nomeUsuarioSignal, perfilSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
+import { CategoriaDTO } from 'src/app/theme/shared/models/categoria.dto';
+import { CentroCustoDTO } from 'src/app/theme/shared/models/centro-custo.dto';
+import { ContaDTO } from 'src/app/theme/shared/models/conta.dto';
+import { FormaDTO } from 'src/app/theme/shared/models/forma.dto';
+import { CategoriaService } from 'src/app/theme/shared/services/categoria.service';
+import { CentroCustoService } from 'src/app/theme/shared/services/centro-custo.service';
+import { ContaService } from 'src/app/theme/shared/services/conta.service';
+import { FormaService } from 'src/app/theme/shared/services/forma.service';
+import { SharedModule } from 'src/app/theme/shared/shared.module';
 import Swal from 'sweetalert2';
 
 
@@ -19,11 +27,49 @@ import Swal from 'sweetalert2';
   selector: 'app-cadastro-list',
   templateUrl: './cadastro-list.component.html',
   styleUrls: ['./cadastro-list.component.scss'],
-  // encapsulation: ViewEncapsulation.None
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    SplitButtonModule,
+    InputNumberModule,
+    SharedModule,
+    SelectModule,
+    ButtonModule,
+    // DatePicker,
+    TableModule,
+    // RouterLink,
+    InputGroup
+  ],
+  providers: [
+    ContaService,
+    CategoriaService,
+    CentroCustoService,
+    FormaService
+
+  ]
 
 })
 export class CadastroListComponent implements OnInit {
+
   private destroy$: Subject<void> = new Subject<void>();
+
+  nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+  igrejaIdSignal = igrejaIdSignal;
+  nomeUsuarioSignal = nomeUsuarioSignal;
+  perfilSignal = perfilSignal;
+  setorIdSignal = setorIdSignal;
+
+  nomeIgreja = nomeIgrejaSignal();
+  igrejaId = igrejaIdSignal();
+  nomeUsuario = nomeUsuarioSignal();
+  perfil = perfilSignal();
+
+  @ViewChild('dtconta') gridConta!: Table;
+  @ViewChild('dtcategoria') gridCategoria!: Table;
+  @ViewChild('dtcentrocusto') gridCentro!: Table;
+  @ViewChild('dtforma') gridForma!: Table;
 
   tipoPadraoIgreja = [
     { nome: 'Igreja', id: 0 },
@@ -48,10 +94,7 @@ export class CadastroListComponent implements OnInit {
   totalCadastrosSistema: number;
   totalCadastrosIgreja: number;
 
-  // totalRegistros: number = 0
-  igrejaId: number = GLOBALS.igrejaId;
 
-  perfil: string = GLOBALS.perfil;
 
   contas: ContaDTO[] = [];
   categorias: CategoriaDTO[] = [];
@@ -223,7 +266,7 @@ export class CadastroListComponent implements OnInit {
 
   loadContas(igrejaId, nomeConta, pageConta, linesPerPageConta) {
     this.contaService.getByPageContaFromIgreja(igrejaId, nomeConta, pageConta, linesPerPageConta)
-     .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           this.contas = response['content'].sort((a, b) => a.id - b.id);
@@ -238,7 +281,7 @@ export class CadastroListComponent implements OnInit {
 
   loadCategorias(igrejaId, nomeCategoria, pageCategoria, linesPerPageCategoria) {
     this.categoriaService.getByPageCategoriaFromIgreja(igrejaId, nomeCategoria, pageCategoria, linesPerPageCategoria)
-    .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           this.categorias = response['content'].sort((a, b) => a.id - b.id);
@@ -253,7 +296,7 @@ export class CadastroListComponent implements OnInit {
 
   loadCentroCustos(igrejaId, nomeCentroCusto, pageCentroCusto, linesPerPageCentroCusto) {
     this.centroCustoService.getByPageCentroCustoFromIgreja(igrejaId, nomeCentroCusto, pageCentroCusto, linesPerPageCentroCusto)
-    .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           this.centroCustos = response['content'].sort((a, b) => a.id - b.id);
@@ -268,7 +311,7 @@ export class CadastroListComponent implements OnInit {
 
   loadFormas(igrejaId, nomeForma, pageForma, linesPerPageForma) {
     this.formaService.getByPageFormaFromIgreja(igrejaId, nomeForma, pageForma, linesPerPageForma)
-    .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           this.formas = response['content'].sort((a, b) => a.id - b.id);
@@ -285,7 +328,7 @@ export class CadastroListComponent implements OnInit {
   public createConta() {
     const conta: ContaDTO = this.contaForm.value;
     this.contaService.create(conta)
-    .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$))
       .subscribe(
         conta => {
           this.conta.id = parseInt(this.extractId(conta.headers.get('location'))); // Extrai o Id da URI retornada do banco
@@ -302,7 +345,7 @@ export class CadastroListComponent implements OnInit {
     const conta: ContaDTO = Object.assign(new ContaDTO(), this.contaForm.value);
     conta.saldoInicial == "" ? this.contaForm.controls['saldoInicial'].setValue(0.00) : this.contaForm.controls['saldoInicial'].setValue(conta.saldoInicial);
     this.contaService.update(conta)
-    .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$))
       .subscribe(
         () => {
           this.loadContas(this.igrejaId, this.nomeConta, this.pageConta, this.linesPerPageConta)
@@ -317,7 +360,7 @@ export class CadastroListComponent implements OnInit {
   loadConta(conta: ContaDTO) {
     this.contaId = conta.id;
     this.contaService.findById(this.contaId)
-    .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$))
       .subscribe(
         (response) => {
           this.conta = response;
@@ -330,7 +373,7 @@ export class CadastroListComponent implements OnInit {
   loadCategoria(categoria: CategoriaDTO) {
     this.categoriaId = categoria.id;
     this.categoriaService.findById(this.categoriaId)
-    .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$))
       .subscribe(
         (response) => {
           this.categoria = response;
@@ -343,7 +386,7 @@ export class CadastroListComponent implements OnInit {
   loadCentroCusto(centroCusto: CentroCustoDTO) {
     this.centroCustoId = centroCusto.id;
     this.centroCustoService.findById(this.centroCustoId)
-    .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$))
       .subscribe(
         (response) => {
           this.centroCusto = response;
@@ -356,7 +399,7 @@ export class CadastroListComponent implements OnInit {
   loadForma(forma: FormaDTO) {
     this.formaId = forma.id;
     this.formaService.findById(this.formaId)
-    .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$))
       .subscribe(
         (response) => {
           this.forma = response;
@@ -370,7 +413,7 @@ export class CadastroListComponent implements OnInit {
   public createCategoria() {
     const categoria: CategoriaDTO = this.categoriaForm.value;
     this.categoriaService.create(categoria)
-    .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$))
       .subscribe(
         categoria => {
           this.categoriaId = parseInt(this.extractId(categoria.headers.get('location'))); // Extrai o Id da URI retornada do banco
@@ -387,7 +430,7 @@ export class CadastroListComponent implements OnInit {
     const categoria: CategoriaDTO = Object.assign(new CategoriaDTO(), this.categoriaForm.value)
 
     this.categoriaService.update(categoria)
-    .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$))
       .subscribe(
         () => {
           this.loadCategorias(this.igrejaId, this.nomeCategoria, this.pageCategoria, this.linesPerPageCategoria)
@@ -403,7 +446,7 @@ export class CadastroListComponent implements OnInit {
   public createCentroCusto() {
     const centroCusto: CentroCustoDTO = this.centroCustoForm.value;
     this.centroCustoService.create(centroCusto)
-    .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$))
       .subscribe(
         centroCusto => {
           this.centroCustoId = parseInt(this.extractId(centroCusto.headers.get('location'))); // Extrai o Id da URI retornada do banco
@@ -419,7 +462,7 @@ export class CadastroListComponent implements OnInit {
   public updateCentroCusto() {
     const centroCusto: CentroCustoDTO = Object.assign(new CentroCustoDTO(), this.centroCustoForm.value);
     this.centroCustoService.update(centroCusto)
-    .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$))
       .subscribe(
         () => {
           this.loadCentroCustos(this.igrejaId, this.nomeCentroCusto, this.pageCentroCusto, this.linesPerPageCentroCusto)
@@ -435,7 +478,7 @@ export class CadastroListComponent implements OnInit {
   public createForma() {
     const forma: FormaDTO = this.formaForm.value;
     this.formaService.create(forma)
-    .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$))
       .subscribe(
         forma => {
           this.formaId = parseInt(this.extractId(forma.headers.get('location'))); // Extrai o Id da URI retornada do banco
@@ -452,7 +495,7 @@ export class CadastroListComponent implements OnInit {
   public updateForma() {
     const forma: FormaDTO = Object.assign(new FormaDTO(), this.formaForm.value);
     this.formaService.update(forma)
-    .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$))
       .subscribe(
         () => {
           this.loadFormas(this.igrejaId, this.nomeForma, this.pageForma, this.linesPerPageForma)
@@ -468,14 +511,14 @@ export class CadastroListComponent implements OnInit {
 
   ///////////////////////////// Tipo   ///////////////////////////
   onChangeTipoConta(value) {
-    this.contaForm.controls['igrejaId'].setValue(GLOBALS.igrejaId)
+    this.contaForm.controls['igrejaId'].setValue(this.igrejaId)
   }
 
   onChangeTipoCategoria(value) {
     if (value.value === 'Padrao') {
       this.categoriaForm.controls['igrejaId'].setValue(null);
     } else {
-      this.categoriaForm.controls['igrejaId'].setValue(GLOBALS.igrejaId);
+      this.categoriaForm.controls['igrejaId'].setValue(this.igrejaId);
     }
   }
 
@@ -483,7 +526,7 @@ export class CadastroListComponent implements OnInit {
     if (value.value === 'Padrao') {
       this.centroCustoForm.controls['igrejaId'].setValue(null);
     } else {
-      this.centroCustoForm.controls['igrejaId'].setValue(GLOBALS.igrejaId);
+      this.centroCustoForm.controls['igrejaId'].setValue(this.igrejaId);
     }
 
   }
@@ -492,99 +535,131 @@ export class CadastroListComponent implements OnInit {
     if (value.value === 'Padrao') {
       this.formaForm.controls['igrejaId'].setValue(null);
     } else {
-      this.formaForm.controls['igrejaId'].setValue(GLOBALS.igrejaId);
+      this.formaForm.controls['igrejaId'].setValue(this.igrejaId);
     }
 
   }
 
-
   //EXCLUIR CONTA 
-  confirmarExclusaoConta(conta: ContaDTO): void {
-    this.confirmationService.confirm({
-      message: 'Tem certeza que deseja excluir este registro?',
-      accept: () => {
+  exclusaoConta(conta: ContaDTO) {
+    Swal.fire({
+      title: 'Exclusão',
+      text: 'Tem certeza que deseja excluir este registro?',
+      icon: 'error',
+      showCloseButton: true,
+      showCancelButton: true,
+    }).then((willDelete) => {
+      if (willDelete.dismiss) {
+        // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
+      } else {
         this.excluirConta(conta);
+        Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
       }
     });
   }
 
-  excluirConta(conta: ContaDTO) {
+  excluirConta(conta: any) {
     this.contaService.delete(conta.id)
-    .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.loadContas(this.igrejaId, this.nomeConta, this.pageConta, this.linesPerPageConta)
-        // Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
-        this.toastr.success('Exclusão', 'Registro excluido com sucesso!');
-        this.messageService.add({ severity: 'success', summary: 'Successo', detail: 'Registro excluido com sucesso!' });
-      },
-        (error) => this.showError(error))
+      .subscribe({
+        next: () => {
+          this.contas = this.contas.filter(element => element != this.conta.id)
+          this.gridConta.reset();//atualiza a tabela do primeng
+        },
+        error: () => { },
+      });
   }
+
+
+
 
   // EXCLUIR CATEGORIA
-  confirmarExclusaoCategoria(categoria: CategoriaDTO): void {
-    this.confirmationService.confirm({
-      message: 'Tem certeza que deseja excluir este registro?',
-      accept: () => {
+  exclusaoCategoria(categoria: CategoriaDTO) {
+    Swal.fire({
+      title: 'Exclusão',
+      text: 'Tem certeza que deseja excluir este registro?',
+      icon: 'error',
+      showCloseButton: true,
+      showCancelButton: true,
+    }).then((willDelete) => {
+      if (willDelete.dismiss) {
+        // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
+      } else {
         this.excluirCategoria(categoria);
+        Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
       }
     });
   }
 
-  excluirCategoria(categoria: CategoriaDTO) {
+  excluirCategoria(categoria: any) {
     this.categoriaService.delete(categoria.id)
-    .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.loadCategorias(this.igrejaId, this.nomeCategoria, this.pageCategoria, this.linesPerPageCategoria)
-        // Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
-        this.toastr.success('Exclusão', 'Registro excluido com sucesso!');
-        this.messageService.add({ severity: 'success', summary: 'Successo', detail: 'Registro excluido com sucesso!' });
-      },
-        (error) => this.showError(error))
+      .subscribe({
+        next: () => {
+          this.categorias = this.categorias;
+          this.gridCategoria.reset();//atualiza a tabela do primeng
+        },
+        error: () => { },
+      });
   }
 
   // EXCLUIR CENTROCUSTO
-  confirmarExclusaoCentroCusto(centroCusto: CentroCustoDTO): void {
-    this.confirmationService.confirm({
-      message: 'Tem certeza que deseja excluir este registro?',
-      accept: () => {
-        this.excluirCentroCusto(centroCusto);
+  exclusaoCentroCusto(centroCusto: CentroCustoDTO) {
+    Swal.fire({
+      title: 'Exclusão',
+      text: 'Tem certeza que deseja excluir este registro?',
+      icon: 'error',
+      showCloseButton: true,
+      showCancelButton: true,
+    }).then((willDelete) => {
+      if (willDelete.dismiss) {
+        // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
+      } else {
+        this.excluirCentro(centroCusto);
+        Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
       }
     });
   }
 
-  excluirCentroCusto(centroCusto: CentroCustoDTO) {
+  excluirCentro(centroCusto: any) {
     this.centroCustoService.delete(centroCusto.id)
-    .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.loadCentroCustos(this.igrejaId, this.nomeCentroCusto, this.pageCentroCusto, this.linesPerPageCentroCusto)
-        // Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
-        this.toastr.success('Exclusão', 'Registro excluido com sucesso!');
-        this.messageService.add({ severity: 'success', summary: 'Successo', detail: 'Registro excluido com sucesso!' });
-      },
-        (error) => this.showError(error))
+      .subscribe({
+        next: () => {
+          this.centroCustos = this.centroCustos;
+          this.gridCentro.reset();//atualiza a tabela do primeng
+        },
+        error: () => { },
+      });
   }
+
 
   // EXCLUIR FORMA
-  confirmarExclusaoForma(forma: FormaDTO): void { 
-    this.confirmationService.confirm({
-      message: 'Tem certeza que deseja excluir este registro?',
-      accept: () => {
+ exclusaoForma(forma: FormaDTO) {
+    Swal.fire({
+      title: 'Exclusão',
+      text: 'Tem certeza que deseja excluir este registro?',
+      icon: 'error',
+      showCloseButton: true,
+      showCancelButton: true,
+    }).then((willDelete) => {
+      if (willDelete.dismiss) {
+        // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
+      } else {
         this.excluirForma(forma);
+        Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
       }
     });
   }
 
-  excluirForma(forma: FormaDTO) {
+  excluirForma(forma: any) {
     this.formaService.delete(forma.id)
-    .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.loadFormas(this.igrejaId, this.nomeForma, this.pageForma, this.linesPerPageForma)
-        // Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
-        this.toastr.success('Exclusão', 'Registro excluido com sucesso!');
-        this.messageService.add({ severity: 'success', summary: 'Successo', detail: 'Registro excluido com sucesso!' });
-      },
-        (error) => this.showError(error))
+      .subscribe({
+        next: () => {
+          this.formas = this.formas;
+          this.gridForma.reset();//atualiza a tabela do primeng
+        },
+        error: () => { },
+      });
   }
+
 
 
   resetModalConta() {

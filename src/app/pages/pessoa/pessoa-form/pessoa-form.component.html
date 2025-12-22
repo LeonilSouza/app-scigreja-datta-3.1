@@ -716,9 +716,8 @@
                             <!-- Cep -->
                             <div class="form-group col-md-3 ">
                               <label>Cep</label>
-                              <input placeholder="____-___" type="text" class="form-control  uppercase" maxlength="9"
-                                (blur)="consultaCep($event.target?.addEventListener)" placeholder="Digite um Cep"
-                                formControlName="cep">
+                              <input class="form-control " maxlength="9" type="text" formControlName="cep" #cepInput
+                                placeholder="Digite o CEP" (blur)="consultaCep(cepInput.value)">
                             </div>
 
                             <!-- logradouro -->

@@ -151,6 +151,7 @@ export class ClasseListComponent implements OnInit, AfterContentChecked {
 
   loadClassesLazy(event: any) {
     const page = event!.first! / event!.rows!; // divisão para encontrar a paginações
+    this.linesPerPage = event.rows;
     this.loadClasses(this.igrejaId, this.nome.toLowerCase(), page, this.linesPerPage);
   }
 

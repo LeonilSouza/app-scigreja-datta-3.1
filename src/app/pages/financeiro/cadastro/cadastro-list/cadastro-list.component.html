@@ -8,23 +8,23 @@
 
             <!-- Pesquisa Contas -->
             <div class="row mb-2">
-                <span class=" col-sm-6">
-                    <div class="p-inputgroup">
-                        <button type="button" style="height: 30px; cursor:default ; border-radius: 10px; border-bottom-right-radius:0;
-               border-top-right-radius: 0; border: 1; background:rgb(237, 237, 237); border-color: rgb(216, 215, 215)"
-                            pButton pRipple class=""> <i class="pi pi-search text-dark"></i></button>
-                        <input class="form-control" [(ngModel)]="nomeConta" type="text" placeholder="Pesquisar "
-                            (input)="dtconta.filterGlobal($event.target.value, 'contains')" style="height: 30px; min-width: 180px; border-radius: 10px; border-bottom-left-radius: 0; 
+                <span class=" col-sm-6 mt-0 mb-2">
+                    <p-inputgroup>
+                        <button type="button" style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius:0;
+               border-top-right-radius: 0; border: 0; background:rgb(237, 237, 237);" pButton pRipple class=""> <i
+                                class="pi pi-search text-dark"></i></button>
+                        <input pInputText class="form-control " placeholder="Pesquisar " [(ngModel)]="nomeConta"
+                            type="text" [ngModelOptions]="{standalone: true}"
+                            (input)="dtconta.filterGlobal($event.target?.addEventListener, 'contains')" style="height: 30px; min-width: 180px; border-radius: 6px; border-bottom-left-radius: 0; 
               border-top-left-radius: 0; font-size: 14px; text-transform: lowercase">
-                    </div>
+                    </p-inputgroup>
                 </span>
-                <!--Fim pesquisa Contas  -->
 
                 <!-- Botão Nova Conta -->
                 <span class="col-sm-6">
                     <button (click)="modalConta.show(); setModalInclusaoConta(); imodo=0"
                         class="btn btn-icon  btn-outline-success p-0 float-end" type="button"
-                        [style]="{'height':'30px', 'width':'8rem', 'font-size':'13px', 'border-radius':'6px'}">Nova
+                        [style]="{'height':'30px', 'width':'8rem', 'font-size':'13px', 'border-radius':'5px'}">Nova
                         conta</button>
                 </span>
             </div>
@@ -45,20 +45,24 @@
 
                                     <ng-template pTemplate="header">
                                         <tr>
-                                            <th class="col-data-50"
-                                                style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
-                                                <b></b></th>
-                                            <th class="col-data-150"
+                                            <th class="col-data-50 py-1"
+                                                style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; ; border-top-left-radius: 5px">
+                                                <b></b>
+                                            </th>
+                                            <th class="col-data-150 py-1"
                                                 style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue;">
-                                                <b>Nome</b></th>
-                                            <th class="col-data-150"
+                                                <b>Nome</b>
+                                            </th>
+                                            <th class="col-data-150 py-1"
                                                 style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
-                                                <b>Número</b></th>
-                                            <th class="col-data-150"
+                                                <b>Número</b>
+                                            </th>
+                                            <th class="col-data-150 py-1"
                                                 style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
-                                                <b>Banco</b></th>
-                                            <th class="col-acoes-header"
-                                                style="font-size: 13px; background-color: rgb(77, 83, 90); color: aliceblue;">
+                                                <b>Banco</b>
+                                            </th>
+                                            <th class="col-acoes-heade py-1"
+                                                style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-right-radius: 5px">
                                             </th>
 
                                         </tr>
@@ -66,18 +70,20 @@
 
                                     <ng-template pTemplate="body" let-conta let-columns="columns">
                                         <tr>
-                                            <td class="col-data-50" style=" font-size: 13px">{{ conta.id }}</td>
-                                            <td class="col-data-150" style=" font-size: 13px">{{ conta.nome }}</td>
-                                            <td class="col-data-150 " style=" font-size: 13px;">{{ conta.numero }}<br>
+                                            <td class="col-data-50 py-1" style=" font-size: 13px">{{ conta.id }}</td>
+                                            <td class="col-data-150 py-1" style=" font-size: 13px">{{ conta.nome }}</td>
+                                            <td class="col-data-150 py-1" style=" font-size: 13px;">{{ conta.numero
+                                                }}<br>
                                             </td>
-                                            <td class="col-data-150 " style=" font-size: 13px;">{{ conta.banco }}<br>
+                                            <td class="col-data-150 py-1" style=" font-size: 13px;">{{ conta.banco
+                                                }}<br>
                                             </td>
-                                            
-                                            <td class="col-acoes-header ">
+
+                                            <td class="col-acoes-header py-1">
                                                 <button (click)="modalConta.show(); loadConta(conta); 
                                                     setModalEdicao(); imodo=1" type="button"
                                                     class="btn btn-icon  btn-outline-success p-1 mb-0 mt-0"
-                                                    [style]="{'height': '30px', 'width': '30px'} " [placement]="'top'"
+                                                    [style]="{'height': '26px', 'width': '26px'} " [placement]="'top'"
                                                     ngbTooltip="Editar">
                                                     <i class="pi pi-pencil"></i>
                                                 </button>
@@ -94,6 +100,123 @@
         </app-card>
     </div>
 
+
+    <!-- CENTRO CUSTO  CENTRO CUSTO CENTRO CUSTO CENTRO CUSTO CENTRO CUSTO CENTRO CUSTO -->
+
+    <div class="col-md-12 col-xl-6">
+        <app-card [hidHeader]="true" cardTitle="" cardClass="shadow">
+            <!-- CentroCustos - Inicio -->
+            <h5 class="mt-0 mb-2 f-15" style="padding-bottom: 4px; ">Centro de Custos</h5>
+            <hr class="mb-3">
+
+            <!-- Pesquisa CentroCusto -->
+            <div class="row mb-2">
+                 <span class=" col-sm-6 mt-0 mb-2">
+                    <p-inputgroup>
+                        <button type="button" style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius:0;
+               border-top-right-radius: 0; border: 0; background:rgb(237, 237, 237);" pButton pRipple class=""> <i
+                                class="pi pi-search text-dark"></i></button>
+                        <input pInputText class="form-control " placeholder="Pesquisar " [(ngModel)]="nomeCentroCusto"
+                            type="text" [ngModelOptions]="{standalone: true}"
+                            (input)="dtcentrocusto.filterGlobal($event.target?.addEventListener, 'contains')" style="height: 30px; min-width: 180px; border-radius: 6px; border-bottom-left-radius: 0; 
+              border-top-left-radius: 0; font-size: 14px; text-transform: lowercase">
+                    </p-inputgroup>
+                </span>
+
+                <!--Fim pesquisa CentroCusto  -->
+
+                <!-- Botão Novo CentroCusto -->
+                <span class="col-sm-6">
+                    <button (click)="modalCentroCusto.show(); setModalInclusaoCentroCusto(); imodo=0"
+                        class="btn btn-icon  btn-outline-success p-0 float-end" type="button"
+                        [style]="{'height':'30px', 'width':'12rem', 'font-size':'13px', 'border-radius':'5px'}">Novo
+                        Centro de Custo
+                    </button>
+                </span>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="">
+                        <div class="mb-3 ">
+                            <div class="">
+                                <p-table #dtcentrocusto [value]="centroCustos" responsiveLayout="scroll"
+                                    [globalFilterFields]="['nome', 'tipo', 'centroCusto.igrejaId']" [lazy]="true"
+                                    (onLazyLoad)="loadCentroCustosLazy($event)" [showCurrentPageReport]="true"
+                                    [totalRecords]="totalRegistrosCentroCusto"
+                                    styleClass="p-datatable-sm p-datatable-striped p-datatable-gridlines"
+                                    currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros"
+                                    [paginator]="true" [rows]="linesPerPageCentroCusto"
+                                    emptyMessage="Nenhum registro encontrado">
+
+                                    <ng-template pTemplate="header" let-columns>
+                                        <tr>
+                                            <th class="col-data-50 py-1"
+                                                style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; ; border-top-left-radius: 5px">
+                                                <b></b>
+                                            </th>
+                                            <th class="py-1"
+                                                style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue;">
+                                                <b>Nome</b>
+                                            </th>
+                                            <th class="col-acoes-header py-1"
+                                                style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-right-radius: 5px">
+                                            </th>
+
+                                        </tr>
+                                    </ng-template>
+
+                                    <ng-template pTemplate="body" let-centroCusto let-columns="columns">
+                                        @if(perfil !== 'ADMIN' && (centroCusto.igrejaId == igrejaId ||
+                                        centroCusto.igrejaId == null)){
+                                        <tr>
+                                            <td class="col-data-50 py-1" style=" font-size: 13px">{{ centroCusto.id }}
+                                            </td>
+                                            <td class="py-1" style=" font-size: 13px">{{ centroCusto.nome }}</td>
+                                            <td class="col-acoes-header py-1">
+
+                                                @if(perfil !== 'ADMIN' && (centroCusto.igrejaId == igrejaId )) {
+                                                <button (click)="modalCentroCusto.show(); loadCentroCusto(centroCusto); 
+                                                    setModalEdicao(); imodo=1" type="button"
+                                                    class="btn btn-icon  btn-outline-success p-1 mb-0 mt-0"
+                                                    [style]="{'height': '26px', 'width': '26px'} " [placement]="'top'"
+                                                    ngbTooltip="Editar">
+                                                    <i class="pi pi-pencil"></i>
+                                                </button>
+                                                }
+                                            </td>
+                                        </tr>
+                                        }
+
+                                        @if(perfil == 'ADMIN'){
+                                        <tr>
+                                            <td class="col-data-50 py-1" style=" font-size: 13px">{{ centroCusto.id }}
+                                            </td>
+                                            <td class="py-1" style=" font-size: 13px;">{{ centroCusto.nome }}<br></td>
+
+                                            <td class="col-acoes-header py-1">
+                                                <button (click)="modalCentroCusto.show(); loadCentroCusto(centroCusto); 
+                                                    setModalEdicao(); imodo=1" type="button"
+                                                    class="btn btn-icon btn-outline-success p-1 mb-0 mt-0"
+                                                    [style]="{'height': '26px', 'width': '26px'} " [placement]="'top'"
+                                                    ngbTooltip="Editar">
+                                                    <i class="pi pi-pencil"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        }
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- centroCusto Fim -->
+        </app-card>
+    </div>
+    
+
     <!-- CATEGORIAS  CATEGORIAS CATEGORIAS CATEGORIAS CATEGORIAS CATEGORIAS -->
 
     <div class="col-md-12 col-xl-6">
@@ -104,23 +227,26 @@
 
             <!-- Pesquisa Categorias -->
             <div class="row mb-2">
-                <span class=" col-sm-6">
-                    <div class="p-inputgroup">
-                        <button type="button" style="height: 30px; cursor:default ; border-radius: 10px; border-bottom-right-radius:0;
-               border-top-right-radius: 0; border: 1; background:rgb(237, 237, 237); border-color: rgb(216, 215, 215)"
-                            pButton pRipple class=""> <i class="pi pi-search text-dark"></i></button>
-                        <input class="form-control" [(ngModel)]="nomeCategoria" type="text" placeholder="Pesquisar "
-                            (input)="dtcategoria.filterGlobal($event.target.value, 'contains')" style="height: 30px; min-width: 180px; border-radius: 10px; border-bottom-left-radius: 0; 
+                    <span class=" col-sm-6 mt-0 mb-2">
+                    <p-inputgroup>
+                        <button type="button" style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius:0;
+               border-top-right-radius: 0; border: 0; background:rgb(237, 237, 237);" pButton pRipple class=""> <i
+                                class="pi pi-search text-dark"></i></button>
+                        <input pInputText class="form-control " placeholder="Pesquisar " [(ngModel)]="nomeCategoria"
+                            type="text" [ngModelOptions]="{standalone: true}"
+                            (input)="dtcategoria.filterGlobal($event.target?.addEventListener, 'contains')" style="height: 30px; min-width: 180px; border-radius: 6px; border-bottom-left-radius: 0; 
               border-top-left-radius: 0; font-size: 14px; text-transform: lowercase">
-                    </div>
+                    </p-inputgroup>
                 </span>
+
+
                 <!--Fim pesquisa Categorias  -->
 
                 <!-- Botão Nova Categoria -->
                 <span class="col-sm-6">
                     <button (click)="modalCategoria.show(); setModalInclusaoCategoria(); imodo=0"
                         class="btn btn-icon  btn-outline-success p-0 float-end" type="button"
-                        [style]="{'height':'30px', 'width':'8rem', 'font-size':'13px', 'border-radius':'6px'}">Nova
+                        [style]="{'height':'30px', 'width':'8rem', 'font-size':'13px', 'border-radius':'5px'}">Nova
                         categoria</button>
                 </span>
             </div>
@@ -141,58 +267,70 @@
 
                                     <ng-template pTemplate="header" let-columns>
                                         <tr>
-                                            <th class="col-data-50"
-                                                style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
-                                                <b></b></th>
-                                            <th
+                                            <th class="col-data-50 py-1"
+                                                style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; ; border-top-left-radius: 5px">
+                                                <b></b>
+                                            </th>
+                                            <th class="py-1"
                                                 style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue;">
-                                                <b>Nome</b></th>
-                                            <th class="col-data-100"
+                                                <b>Nome</b>
+                                            </th>
+                                            <th class="col-data-100 py-1"
                                                 style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
-                                                <b>Tipo</b></th>
-                                            <th class="col-acoes-header"
-                                                style="font-size: 13px; background-color: rgb(77, 83, 90); color: aliceblue;">
+                                                <b>Tipo</b>
+                                            </th>
+                                            <th class="col-acoes-header py-1"
+                                                style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-right-radius: 5px">
                                             </th>
 
                                         </tr>
                                     </ng-template>
 
                                     <ng-template pTemplate="body" let-categoria let-columns="columns">
-                                        <tr
-                                            *ngIf="(perfil !== 'ADMIN' && (categoria.igrejaId == igrejaId || categoria.igrejaId == null))">
-                                            <td class="col-data-50" style=" font-size: 13px">{{ categoria.id }}
+
+                                        @if(perfil !== 'ADMIN' && (categoria.igrejaId == igrejaId || categoria.igrejaId
+                                        == null)){
+                                        <tr>
+                                            <td class="col-data-50 py-1" style=" font-size: 13px">{{ categoria.id }}
                                             </td>
-                                            <td style=" font-size: 13px">{{ categoria.nome }}</td>
-                                            <td class="col-data-100 " style=" font-size: 13px;">{{ categoria.tipo }}<br>
+                                            <td class="py-1" style=" font-size: 13px">{{ categoria.nome }}</td>
+                                            <td class="col-data-100 py-1" style=" font-size: 13px;">{{ categoria.tipo
+                                                }}<br>
                                             </td>
-                                            <td class="col-acoes-header ">
-                                                <button
-                                                    *ngIf="(perfil !== 'ADMIN' && (categoria.igrejaId == igrejaId ))"
-                                                    (click)="modalCategoria.show(); loadCategoria(categoria); 
+                                            <td class="col-acoes-header py-1">
+
+                                                @if(perfil !== 'ADMIN' && (categoria.igrejaId == igrejaId )){
+                                                <button (click)="modalCategoria.show(); loadCategoria(categoria); 
                                                     setModalEdicao(); imodo=1" type="button"
                                                     class="btn btn-icon  btn-outline-success p-1 mb-0 mt-0"
-                                                    [style]="{'height': '30px', 'width': '30px'} " [placement]="'top'"
+                                                    [style]="{'height': '26px', 'width': '26px'} " [placement]="'top'"
                                                     ngbTooltip="Editar">
                                                     <i class="pi pi-pencil"></i>
                                                 </button>
+                                                }
                                             </td>
                                         </tr>
+                                        }
 
-                                        <tr *ngIf="(perfil == 'ADMIN')">
-                                            <td class="col-data-50" style=" font-size: 13px">{{ categoria.id }} </td>
-                                            <td style=" font-size: 13px;">{{ categoria.nome }}<br></td>
-                                            <td class="col-data-100" style=" font-size: 13px;">{{ categoria.tipo }}<br>
+                                        @if(perfil == 'ADMIN'){
+                                        <tr>
+                                            <td class="col-data-50 py-1" style=" font-size: 13px">{{ categoria.id }}
                                             </td>
-                                            <td class="col-acoes-header">
+                                            <td class="py-1" style=" font-size: 13px;">{{ categoria.nome }}<br></td>
+                                            <td class="col-data-100 py-1" style=" font-size: 13px;">{{ categoria.tipo
+                                                }}<br>
+                                            </td>
+                                            <td class="col-acoes-header py-1">
                                                 <button (click)="modalCategoria.show(); loadCategoria(categoria); 
                                                     setModalEdicao(); imodo=1" type="button"
                                                     class="btn btn-icon btn-outline-success p-1 mb-0 mt-0"
-                                                    [style]="{'height': '30px', 'width': '30px'} " [placement]="'top'"
+                                                    [style]="{'height': '26px', 'width': '26px'} " [placement]="'top'"
                                                     ngbTooltip="Editar">
                                                     <i class="pi pi-pencil"></i>
                                                 </button>
                                             </td>
                                         </tr>
+                                        }
                                     </ng-template>
                                 </p-table>
                             </div>
@@ -204,110 +342,6 @@
         </app-card>
     </div>
 
-    <!-- CENTRO CUSTO  CENTRO CUSTO CENTRO CUSTO CENTRO CUSTO CENTRO CUSTO CENTRO CUSTO -->
-
-    <div class="col-md-12 col-xl-6">
-        <app-card [hidHeader]="true" cardTitle="" cardClass="shadow">
-            <!-- CentroCustos - Inicio -->
-            <h5 class="mt-0 mb-2 f-15" style="padding-bottom: 4px; ">Centro de Custos</h5>
-            <hr class="mb-3">
-
-            <!-- Pesquisa CentroCusto -->
-            <div class="row mb-2">
-                <span class=" col-sm-6">
-                    <div class="p-inputgroup">
-                        <button type="button" style="height: 30px; cursor:default ; border-radius: 10px; border-bottom-right-radius:0;
-               border-top-right-radius: 0; border: 1; background:rgb(237, 237, 237); border-color: rgb(216, 215, 215)"
-                            pButton pRipple class=""> <i class="pi pi-search text-dark"></i></button>
-                        <input class="form-control" [(ngModel)]="nomeCentroCusto" type="text" placeholder="Pesquisar "
-                            (input)="dtcentroCusto.filterGlobal($event.target.value, 'contains')" style="height: 30px; min-width: 180px; border-radius: 10px; border-bottom-left-radius: 0; 
-              border-top-left-radius: 0; font-size: 14px; text-transform: lowercase">
-                    </div>
-                </span>
-                <!--Fim pesquisa CentroCusto  -->
-
-                <!-- Botão Novo CentroCusto -->
-                <span class="col-sm-6">
-                    <button (click)="modalCentroCusto.show(); setModalInclusaoCentroCusto(); imodo=0"
-                        class="btn btn-icon  btn-outline-success p-0 float-end" type="button"
-                        [style]="{'height':'30px', 'width':'12rem', 'font-size':'13px', 'border-radius':'6px'}">Novo
-                        Centro de Custo
-                    </button>
-                </span>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="">
-                        <div class="mb-3 ">
-                            <div class="">
-                                <p-table #dtcentroCusto [value]="centroCustos" responsiveLayout="scroll"
-                                    [globalFilterFields]="['nome', 'tipo', 'centroCusto.igrejaId']" [lazy]="true"
-                                    (onLazyLoad)="loadCentroCustosLazy($event)" [showCurrentPageReport]="true"
-                                    [totalRecords]="totalRegistrosCentroCusto"
-                                    styleClass="p-datatable-sm p-datatable-striped p-datatable-gridlines"
-                                    currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros"
-                                    [paginator]="true" [rows]="linesPerPageCentroCusto"
-                                    emptyMessage="Nenhum registro encontrado">
-
-                                    <ng-template pTemplate="header" let-columns>
-                                        <tr>
-                                            <th class="col-data-50"
-                                                style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
-                                                <b></b></th>
-                                            <th
-                                                style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue;">
-                                                <b>Nome</b></th>
-                                            <th class="col-acoes-header"
-                                                style="font-size: 13px; background-color: rgb(77, 83, 90); color: aliceblue;">
-                                            </th>
-
-                                        </tr>
-                                    </ng-template>
-
-                                    <ng-template pTemplate="body" let-centroCusto let-columns="columns">
-                                        <tr
-                                            *ngIf="(perfil !== 'ADMIN' && (centroCusto.igrejaId == igrejaId || centroCusto.igrejaId == null))">
-                                            <td class="col-data-50" style=" font-size: 13px">{{ centroCusto.id }}
-                                            </td>
-                                            <td style=" font-size: 13px">{{ centroCusto.nome }}</td>
-                                            <td class="col-acoes-header ">
-                                                <button
-                                                    *ngIf="(perfil !== 'ADMIN' && (centroCusto.igrejaId == igrejaId ))"
-                                                    (click)="modalCentroCusto.show(); loadCentroCusto(centroCusto); 
-                                                    setModalEdicao(); imodo=1" type="button"
-                                                    class="btn btn-icon  btn-outline-success p-1 mb-0 mt-0"
-                                                    [style]="{'height': '30px', 'width': '30px'} " [placement]="'top'"
-                                                    ngbTooltip="Editar">
-                                                    <i class="pi pi-pencil"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-
-                                        <tr *ngIf="(perfil == 'ADMIN')">
-                                            <td class="col-data-50" style=" font-size: 13px">{{ centroCusto.id }} </td>
-                                            <td style=" font-size: 13px;">{{ centroCusto.nome }}<br></td>
-
-                                            <td class="col-acoes-header">
-                                                <button (click)="modalCentroCusto.show(); loadCentroCusto(centroCusto); 
-                                                    setModalEdicao(); imodo=1" type="button"
-                                                    class="btn btn-icon btn-outline-success p-1 mb-0 mt-0"
-                                                    [style]="{'height': '30px', 'width': '30px'} " [placement]="'top'"
-                                                    ngbTooltip="Editar">
-                                                    <i class="pi pi-pencil"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </ng-template>
-                                </p-table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- centroCusto Fim -->
-        </app-card>
-    </div>
 
     <!-- FORMA  FORMA FORMA FORMA FORMA FORMA FORMA FORMA FORMA FORMA FORMA -->
 
@@ -319,24 +353,25 @@
 
             <!-- Pesquisa Formas -->
             <div class="row mb-2">
-                <span class=" col-sm-6">
-                    <div class="p-inputgroup">
-                        <button type="button"
-                            style="height: 30px; cursor:default ; border-radius: 10px; border-bottom-right-radius:0;
-                   border-top-right-radius: 0; border: 1; background:rgb(237, 237, 237); border-color: rgb(216, 215, 215)" pButton
-                            pRipple class=""> <i class="pi pi-search text-dark"></i></button>
-                        <input class="form-control" [(ngModel)]="nomeForma" type="text" placeholder="Pesquisar "
-                            (input)="dtforma.filterGlobal($event.target.value, 'contains')" style="height: 30px; min-width: 180px; border-radius: 10px; border-bottom-left-radius: 0; 
-                  border-top-left-radius: 0; font-size: 14px; text-transform: lowercase">
-                    </div>
+                   <span class=" col-sm-6 mt-0 mb-2">
+                    <p-inputgroup>
+                        <button type="button" style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius:0;
+               border-top-right-radius: 0; border: 0; background:rgb(237, 237, 237);" pButton pRipple class=""> <i
+                                class="pi pi-search text-dark"></i></button>
+                        <input pInputText class="form-control " placeholder="Pesquisar " [(ngModel)]="nomeForma"
+                            type="text" [ngModelOptions]="{standalone: true}"
+                            (input)="dtforma.filterGlobal($event.target?.addEventListener, 'contains')" style="height: 30px; min-width: 180px; border-radius: 6px; border-bottom-left-radius: 0; 
+              border-top-left-radius: 0; font-size: 14px; text-transform: lowercase">
+                    </p-inputgroup>
                 </span>
+
                 <!--Fim pesquisa forma  -->
 
                 <!-- Botão Nova forma -->
                 <span class="col-sm-6">
                     <button (click)="modalForma.show(); setModalInclusaoForma(); imodo=0"
                         class="btn btn-icon  btn-outline-success p-0 float-end" type="button"
-                        [style]="{'height':'30px', 'width':'12rem', 'font-size':'13px', 'border-radius':'6px'}">Nova
+                        [style]="{'height':'30px', 'width':'12rem', 'font-size':'13px', 'border-radius':'5px'}">Nova
                         forma
                     </button>
                 </span>
@@ -358,51 +393,59 @@
 
                                     <ng-template pTemplate="header" let-columns>
                                         <tr>
-                                            <th class="col-data-50"
-                                                style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
-                                                <b></b></th>
-                                            <th
+                                            <th class="col-data-50 py-1"
+                                                style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; ; border-top-left-radius: 5px">
+                                                <b></b>
+                                            </th>
+                                            <th class="py-1"
                                                 style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue;">
-                                                <b>Nome</b></th>
-                                            <th class="col-acoes-header"
-                                                style="font-size: 13px; background-color: rgb(77, 83, 90); color: aliceblue;">
+                                                <b>Nome</b>
+                                            </th>
+                                            <th class="col-acoes-header py-1"
+                                                style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-right-radius: 5px">
                                             </th>
 
                                         </tr>
                                     </ng-template>
 
                                     <ng-template pTemplate="body" let-forma let-columns="columns">
-                                        <tr
-                                            *ngIf="(perfil !== 'ADMIN' && (forma.igrejaId == igrejaId || forma.igrejaId == null))">
-                                            <td class="col-data-50" style=" font-size: 13px">{{ forma.id }}
+                                        @if(perfil !== 'ADMIN' && (forma.igrejaId == igrejaId || forma.igrejaId ==
+                                        null)){
+                                        <tr>
+                                            <td class="col-data-50 py-1" style=" font-size: 13px">{{ forma.id }}
                                             </td>
-                                            <td style=" font-size: 13px">{{ forma.nome }}</td>
-                                            <td class="col-acoes-header ">
-                                                <button *ngIf="(perfil !== 'ADMIN' && (forma.igrejaId == igrejaId ))"
-                                                    (click)="modalForma.show(); loadForma(forma); 
+                                            <td class="py-1" style=" font-size: 13px">{{ forma.nome }}</td>
+                                            <td class="col-acoes-header py-1">
+
+                                                @if(perfil !== 'ADMIN' && (forma.igrejaId == igrejaId )){
+                                                <button (click)="modalForma.show(); loadForma(forma); 
                                                         setModalEdicao(); imodo=1" type="button"
                                                     class="btn btn-icon  btn-outline-success p-1 mb-0 mt-0"
-                                                    [style]="{'height': '30px', 'width': '30px'} " [placement]="'top'"
+                                                    [style]="{'height': '26px', 'width': '26px'} " [placement]="'top'"
                                                     ngbTooltip="Editar">
                                                     <i class="pi pi-pencil"></i>
                                                 </button>
+                                                }
                                             </td>
                                         </tr>
+                                        }
 
-                                        <tr *ngIf="(perfil == 'ADMIN')">
-                                            <td class="col-data-50" style=" font-size: 13px">{{ forma.id }} </td>
-                                            <td style=" font-size: 13px;">{{ forma.nome }}<br></td>
+                                        @if(perfil == 'ADMIN'){
+                                        <tr>
+                                            <td class="col-data-50 py-1" style=" font-size: 13px">{{ forma.id }} </td>
+                                            <td class="py-1" style=" font-size: 13px;">{{ forma.nome }}<br></td>
 
-                                            <td class="col-acoes-header">
+                                            <td class="col-acoes-header py-1">
                                                 <button (click)="modalForma.show(); loadForma(forma); 
                                                         setModalEdicao(); imodo=1" type="button"
                                                     class="btn btn-icon btn-outline-success p-1 mb-0 mt-0"
-                                                    [style]="{'height': '30px', 'width': '30px'} " [placement]="'top'"
+                                                    [style]="{'height': '26px', 'width': '26px'} " [placement]="'top'"
                                                     ngbTooltip="Editar">
                                                     <i class="pi pi-pencil"></i>
                                                 </button>
                                             </td>
                                         </tr>
+                                        }
                                     </ng-template>
                                 </p-table>
                             </div>
@@ -456,11 +499,11 @@
                         <!-- Tipo Conta -->
                         <div class="form-group col-md-4">
                             <label>Tipo de Conta</label>
-                            <p-dropdown formControlName="tipo" [options]="tipoConta" [editable]="false" [filter]="false"
-                                filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
-                                dropdownIcon="fas fa-codepen" [autofocus]="true" optionValue="nome"
-                                placeholder="Selecione...">
-                            </p-dropdown>
+                            <p-select class="w-full md  mb-2" formControlName="tipo" [options]="tipoConta"
+                                [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
+                                optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
+                                [autofocus]="false" optionValue="nome" placeholder="Selecione...">
+                            </p-select>
                         </div>
 
                         <!-- Banco -->
@@ -488,20 +531,22 @@
                                 locale="pt-BR" [minFractionDigits]="2"
                                 [style]="{'width':'100%','height':'30px', 'border-radius':'10px'}"> </p-inputNumber>
                         </div>
-                        <p class="danger" [style]="{'font-size':'12px' }"
-                        *ngIf="contaForm.controls['saldoInicial'].errors" margin-left>
-                        Informe um valor.</p>
+                        @if(contaForm.controls['saldoInicial'].errors){
+                        <p class="danger" [style]="{'font-size':'12px' }" margin-left>Informe um valor.</p>
+                        }
                     </div>
 
                     <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
                     <div class="modal-footer">
 
-                        <button *ngIf="contaForm.controls['id'].value > 0" type="button" pButton pRipple
-                            (click)="confirmarExclusaoConta(conta); modalConta.hide(); resetModalConta()"
+                        @if(contaForm.controls['id'].value > 0){
+                        <button type="button" pButton pRipple
+                            (click)="exclusaoConta(conta); modalConta.hide(); resetModalConta()"
                             styleClass="p-button-sm" icon='pi pi-times'
                             style="width: 7em; height: 30px; border-radius: 6px;" pButton pRipple label="Excluir"
                             class="p-button-danger ml-2 p-button-outlined ">
                         </button>
+                        }
 
                         <button data-dismiss="modal" type="button" class=" ml-4" pButton pRipple (click)="modalConta.hide();
                         resetModalConta()" label="Fechar" style="width: 7em; height: 30px; font-size: small;
@@ -556,34 +601,41 @@
                         <!-- Tipo Categoria -->
                         <div class="form-group col-md-4">
                             <label>Tipo de Categoria</label>
-                            <ngx-select autocomplete="off" [allowClear]="false" [multiple]="false"
-                                [items]="tipoCategoria" [autoClearSearch]="true" [noAutoComplete]="false"
-                                optionValueField="nome" optionTextField="nome" formControlName="tipo"
-                                placeholder="Selecione um tipo de Categoria">
-                            </ngx-select>
+                            <p-select class="w-full md  mb-2" formControlName="tipo" [options]="tipoCategoria"
+                                [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
+                                optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
+                                [autofocus]="false" optionValue="nome" placeholder="Selecione um tipo de Categoria">
+                            </p-select>
+
                         </div>
 
                         <!--  TipoPadrãoIgreja -->
-                        <div *ngIf="(perfil == 'ADMIN')" class="form-group col-md-6">
+                        @if(perfil == 'ADMIN'){
+                        <div class="form-group col-md-6">
                             <label>Tipo - Padrão | Normal</label>
-                            <p-dropdown (onChange)="onChangeTipoCategoria($event)" formControlName="tipoPadraoIgreja"
-                                [options]="tipoPadraoIgreja"
+                            <p-select (onChange)="onChangeTipoCategoria($event)" class="w-full md  mb-2"
+                                formControlName="tipoPadraoIgreja" [options]="tipoPadraoIgreja" [editable]="false"
+                                [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
+                                resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
                                 ngbTooltip="TIPO: Padrão= Visível para todo sistema | Igreja= Visível apenas para Igreja"
-                                [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
-                                optionLabel="nome" resetFilterOnHide="false" dropdownIcon="fas fa-codepen"
-                                [autofocus]="true" optionValue="nome" placeholder="Selecione...">
-                            </p-dropdown>
+                                [autofocus]="false" optionValue="nome" placeholder="Selecione...">
+                            </p-select>
+
                         </div>
+                        }
                     </div>
+
 
                     <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
                     <div class="modal-footer">
-                        <button *ngIf="categoriaForm.controls['id'].value > 0" type="button" pButton pRipple
-                            (click)="confirmarExclusaoCategoria(categoria); modalCategoria.hide(); resetModalCategoria()"
+                        @if(categoriaForm.controls['id'].value > 0){
+                        <button type="button" pButton pRipple
+                            (click)="exclusaoCategoria(categoria); modalCategoria.hide(); resetModalCategoria()"
                             styleClass="p-button-sm" icon='pi pi-times'
                             style="width: 7em; height: 30px; border-radius: 6px;" pButton pRipple label="Excluir"
                             class="p-button-danger ml-2 p-button-outlined ">
                         </button>
+                        }
 
                         <button data-dismiss="modal" type="button" class=" ml-4" pButton pRipple (click)="modalCategoria.hide();
                           resetModalCategoria()" label="Fechar" style="width: 7em; height: 30px; font-size: small;
@@ -636,26 +688,31 @@
                         </div>
 
                         <!--  TipoPadrãoIgreja -->
-                        <div *ngIf="(perfil == 'ADMIN')" class="form-group col-md-5">
+                        @if(perfil == 'ADMIN'){
+                        <div class="form-group col-md-5">
                             <label>Tipo - Padrão | Normal</label>
-                            <p-dropdown (onChange)="onChangeTipoCentroCusto($event)" formControlName="tipoPadraoIgreja"
-                                [options]="tipoPadraoIgreja"
+                            <p-select (onChange)="onChangeTipoCentroCusto($event)" class="w-full md  mb-2"
+                                formControlName="tipoPadraoIgreja" [options]="tipoPadraoIgreja" [editable]="false"
+                                [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
+                                resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
                                 ngbTooltip="TIPO: Padrão= Visível para todo sistema | Igreja= Visível apenas para Igreja"
-                                [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
-                                optionLabel="nome" resetFilterOnHide="false" dropdownIcon="fas fa-codepen"
-                                [autofocus]="true" optionValue="nome" placeholder="Selecione...">
-                            </p-dropdown>
+                                [autofocus]="false" optionValue="nome" placeholder="Selecione...">
+                            </p-select>
+
                         </div>
+                        }
                     </div>
 
                     <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
                     <div class="modal-footer">
-                        <button *ngIf="centroCustoForm.controls['id'].value > 0" type="button" pButton pRipple
-                            (click)="confirmarExclusaoCentroCusto(centroCusto); modalCentroCusto.hide(); resetModalCentroCusto()"
+                        @if(centroCustoForm.controls['id'].value > 0){
+                        <button type="button" pButton pRipple
+                            (click)="exclusaoCentroCusto(centroCusto); modalCentroCusto.hide(); resetModalCentroCusto()"
                             styleClass="p-button-sm" icon='pi pi-times'
                             style="width: 7em; height: 30px; border-radius: 6px;" pButton pRipple label="Excluir"
                             class="p-button-danger ml-2 p-button-outlined ">
                         </button>
+                        }
 
                         <button data-dismiss="modal" type="button" class=" ml-4" pButton pRipple (click)="modalCentroCusto.hide();
                           resetModalCentroCusto()" label="Fechar" style="width: 7em; height: 30px; font-size: small;
@@ -676,7 +733,7 @@
         </div>
     </form>
 
-    <!-- MODAL CATEGORIA FIM -->
+    <!-- MODAL CENTRO FIM -->
 
     <!-- MODAL FORMA INICIO -->
     <form [formGroup]="formaForm" autocomplete="off" (submit)="submitFormForma()">
@@ -708,26 +765,30 @@
                         </div>
 
                         <!--  TipoPadrãoIgreja -->
-                        <div *ngIf="(perfil == 'ADMIN')" class="form-group col-md-5">
+                        @if(perfil == 'ADMIN'){
+                        <div class="form-group col-md-5">
                             <label>Tipo - Padrão | Normal</label>
-                            <p-dropdown (onChange)="onChangeTipoForma($event)" formControlName="tipoPadraoIgreja"
-                                [options]="tipoPadraoIgreja"
+                            <p-select (onChange)="onChangeTipoForma($event)" class="w-full md  mb-2"
+                                formControlName="tipoPadraoIgreja" [options]="tipoPadraoIgreja" [editable]="false"
+                                [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
+                                resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
                                 ngbTooltip="TIPO: Padrão= Visível para todo sistema | Igreja= Visível apenas para Igreja"
-                                [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
-                                optionLabel="nome" resetFilterOnHide="false" dropdownIcon="fas fa-codepen"
-                                [autofocus]="true" optionValue="nome" placeholder="Selecione...">
-                            </p-dropdown>
+                                [autofocus]="false" optionValue="nome" placeholder="Selecione...">
+                            </p-select>
                         </div>
+                        }
                     </div>
 
                     <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
                     <div class="modal-footer">
-                        <button *ngIf="formaForm.controls['id'].value > 0" type="button" pButton pRipple
-                            (click)="confirmarExclusaoForma(forma); modalForma.hide(); resetModalForma()"
+                        @if(formaForm.controls['id'].value > 0){
+                        <button type="button" pButton pRipple
+                            (click)="exclusaoForma(forma); modalForma.hide(); resetModalForma()"
                             styleClass="p-button-sm" icon='pi pi-times'
                             style="width: 7em; height: 30px; border-radius: 6px;" pButton pRipple label="Excluir"
                             class="p-button-danger ml-2 p-button-outlined ">
                         </button>
+                        }
 
                         <button data-dismiss="modal" type="button" class=" ml-4" pButton pRipple (click)="modalForma.hide();
                           resetModalForma()" label="Fechar" style="width: 7em; height: 30px; font-size: small;
@@ -741,8 +802,8 @@
                             </button></strong>
 
                     </div>
-                    <div class="form-group "></div>
-                      <pre> {{formaForm.value | json}} </pre>
+                    <!-- <div class="form-group "></div>
+                    <pre> {{formaForm.value | json}} </pre> -->
                 </div>
             </app-ui-modal>
         </div>
