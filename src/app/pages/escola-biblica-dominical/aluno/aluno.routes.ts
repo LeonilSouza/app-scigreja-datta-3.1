@@ -10,7 +10,7 @@ export const ALUNO_ROUTES: Routes = [
         component: AlunoListComponent,
         data: {
           title: 'Matricula Alunos',
-          path: 'matriculaalunos'
+          path: 'alunos'
         },
       },
       {
@@ -18,7 +18,7 @@ export const ALUNO_ROUTES: Routes = [
         component: AlunoListComponent,
         data: {
           title: 'Matricula Alunos',
-          path: 'matriculaalunos'
+          path: 'alunos'
         },
       },
       {
@@ -26,7 +26,7 @@ export const ALUNO_ROUTES: Routes = [
         component: AlunoListComponent,
         data: {
           title: 'Matricula Alunos',
-          path: 'matriculaalunos'
+          path: 'alunos'
         },
       },
     ],
