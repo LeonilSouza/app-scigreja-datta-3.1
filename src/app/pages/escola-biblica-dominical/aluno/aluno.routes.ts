@@ -1,14 +1,13 @@
 import { Routes } from '@angular/router';
-import { MatriculaAlunoListComponent } from './matricula-aluno-list-form/matricula-aluno-list-form.component';
+import { AlunoListComponent } from './aluno-list-form/aluno-list-form.component';
 
-
-export const MATRICULA_ALUNO_ROUTES: Routes = [
+export const ALUNO_ROUTES: Routes = [
   {
     path: '',
     children: [
       {
         path: '',
-        component: MatriculaAlunoListComponent,
+        component: AlunoListComponent,
         data: {
           title: 'Matricula Alunos',
           path: 'matriculaalunos'
@@ -16,7 +15,7 @@ export const MATRICULA_ALUNO_ROUTES: Routes = [
       },
       {
         path: 'new',
-        component: MatriculaAlunoListComponent,
+        component: AlunoListComponent,
         data: {
           title: 'Matricula Alunos',
           path: 'matriculaalunos'
@@ -24,7 +23,7 @@ export const MATRICULA_ALUNO_ROUTES: Routes = [
       },
       {
         path: ':id/edit',
-        component: MatriculaAlunoListComponent,
+        component: AlunoListComponent,
         data: {
           title: 'Matricula Alunos',
           path: 'matriculaalunos'

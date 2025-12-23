@@ -57,7 +57,7 @@ export class LancamentoFiltro {
     RouterLink,
     SharedModule,
     InputNumberModule,
-    InputGroup,
+    // InputGroup,
     // ConfirmDialog,
     // Dialog
   ],

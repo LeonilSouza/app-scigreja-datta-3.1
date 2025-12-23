@@ -87,12 +87,12 @@ const routes: Routes = [
         loadChildren: () => import('./pages/escola-biblica-dominical/classe/classe.routes').then((module) => module.CLASSE_ROUTES),
       },
       {
-        path: 'matriculaprofessores',
-        loadChildren: () => import('./pages/escola-biblica-dominical/matricula-professor/matricula-professor.routes').then((module) => module.MATRICULA_PROFESSOR_ROUTES),
+        path: 'professores',
+        loadChildren: () => import('./pages/escola-biblica-dominical/professor/professor.routes').then((module) => module.PROFESSOR_ROUTES),
       },
       {
-        path: 'matriculaalunos',
-        loadChildren: () => import('./pages/escola-biblica-dominical/matricula-aluno/matricula-aluno.routes').then((module) => module.MATRICULA_ALUNO_ROUTES),
+        path: 'alunos',
+        loadChildren: () => import('./pages/escola-biblica-dominical/aluno/aluno.routes').then((module) => module.ALUNO_ROUTES),
       },
       {
         path: 'lancamentoebds',

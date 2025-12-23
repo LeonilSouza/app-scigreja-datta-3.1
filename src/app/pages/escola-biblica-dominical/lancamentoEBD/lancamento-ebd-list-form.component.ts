@@ -22,8 +22,6 @@ import { TableModule, Table } from 'primeng/table';
 import { SplitButton } from "primeng/splitbutton";
 import { API_CONFIG } from 'src/app/app-config';
 import { MenuItem } from 'primeng/api';
-import { MatriculaAlunoDTO } from 'src/app/theme/shared/models/matricula-aluno.dto';
-import { MatriculaAlunoService } from 'src/app/theme/shared/services/matricula-aluno.service';
 import { MessageService } from 'primeng/api';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { DiarioClasseDTO } from 'src/app/theme/shared/models/diario-classe.dto';
@@ -32,6 +30,8 @@ import { ToastrService } from 'ngx-toastr';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { Fluid } from 'primeng/fluid';
 import { UiModalComponent } from 'src/app/theme/shared/components/modal/ui-modal/ui-modal.component';
+import { AlunoService } from 'src/app/theme/shared/services/aluno.service';
+import { AlunoDTO } from 'src/app/theme/shared/models/aluno.dto';
 
 // project import
 
@@ -63,7 +63,7 @@ import { UiModalComponent } from 'src/app/theme/shared/components/modal/ui-modal
     LancamentoEbdService,
     DecimalPipe,
     ClasseService,
-    MatriculaAlunoService,
+    AlunoService,
     MessageService,
     DiarioClasseService
   ]
@@ -99,7 +99,7 @@ export class LancamentoEbdListFormComponent implements OnInit, AfterContentCheck
   private sharedService = inject(SharedService);
   private formBuilder = inject(FormBuilder);
   private lancamentoEbdService = inject(LancamentoEbdService);
-  private matriculaAlunoService = inject(MatriculaAlunoService);
+  private alunoService = inject(AlunoService);
   private diarioClasseService = inject(DiarioClasseService);
   private toastr = inject(ToastrService);
 
@@ -144,7 +144,7 @@ export class LancamentoEbdListFormComponent implements OnInit, AfterContentCheck
   classes: ClasseDTO[] = [];
   classesModal: ClasseDTO[] = []; //Separado para Modal de Lancamentos
 
-  alunos: MatriculaAlunoDTO[] = [];
+  alunos: AlunoDTO[] = [];
 
   classe: ClasseDTO = new ClasseDTO();
   classeId: number = 0;
@@ -233,7 +233,7 @@ export class LancamentoEbdListFormComponent implements OnInit, AfterContentCheck
       f: [null],
       classeId: [null],
       pessoaId: [null],
-      matriculaAlunoId: [null],
+      alunoId: [null],
       igrejaId: [this.igrejaId, [Validators.required]]
     });
   }
@@ -518,7 +518,7 @@ export class LancamentoEbdListFormComponent implements OnInit, AfterContentCheck
   }
 
   loadAlunos() {
-    this.matriculaAlunoService.getListMatriculaAlunoFromIgreja(this.igrejaId)
+    this.alunoService.getListAlunoFromIgreja(this.igrejaId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
@@ -574,12 +574,13 @@ export class LancamentoEbdListFormComponent implements OnInit, AfterContentCheck
                 const alunosComInfoClasse = alunosDestaClasse.map(aluno => {
                   return {
                     ...aluno, // Copia todas as propriedades do aluno (spread syntax)
-                    nomeClasse: aluno.nomeClasse, // Adiciona o nome da classe diretamente
+                    nomeClasse: aluno.classe, // Adiciona o nome da classe diretamente
                     data: this.lancamentoEbdForm.controls['data'].value, // Adiciona o data  diretamente ...
                     licao: this.lancamentoEbdForm.controls['licao'].value,
                     tema: this.lancamentoEbdForm.controls['tema'].value.toUpperCase(),
                     frequencia: 'Aguardando',
-                    matriculaAlunoId: aluno.id,
+                    nomeAluno: aluno.nome,
+                    alunoId: aluno.id,
                     anoLetivo: this.sharedService.retornaAno(this.data),
                     trimestre: this.sharedService.retornaTrimestre(this.data)
                   };
@@ -609,8 +610,8 @@ export class LancamentoEbdListFormComponent implements OnInit, AfterContentCheck
 
               // Adiciona todos os elementos do novo array ao final do array existente
               this.lancamentoEbds.push(...novosRegistrosDeAlunos);
+
             
-          
               // GRAVAÇAO DE LANCAMENTOS NO BANCO
 
               this.lancamentoEbdService.salvarLancamentos(this.lancamentoEbds)

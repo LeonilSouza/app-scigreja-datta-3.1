@@ -16,6 +16,6 @@ export class LancamentoEbdDTO {
         public igrejaId?: number,
         public classeId?: number,
         public pessoaId?: number,
-        public matriculaAlunoId?: number
+        public alunoId?: number
     ) { }
 }

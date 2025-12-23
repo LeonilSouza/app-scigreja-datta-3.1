@@ -11,8 +11,6 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { SelectModule } from 'primeng/select';
 import { Subject, Subscription, takeUntil } from 'rxjs';
 import Swal from 'sweetalert2';
-import { MatriculaProfessorService } from 'src/app/theme/shared/services/matricula-professor.service';
-import { MatriculaProfessorDTO } from 'src/app/theme/shared/models/matricula-professor.dto';
 import { PessoaService } from 'src/app/theme/shared/services/pessoa.service';
 import { PessoaDTO } from 'src/app/theme/shared/models/pessoa.dto';
 import { ClasseDTO } from 'src/app/theme/shared/models/classe.dto';
@@ -21,13 +19,15 @@ import { InputMaskModule } from 'primeng/inputmask';
 import { DatePicker } from 'primeng/datepicker';
 import { SharedService } from 'src/app/theme/shared/services/shared.service';
 import { FloatLabel } from "primeng/floatlabel"
+import { AlunoService } from 'src/app/theme/shared/services/aluno.service';
 import { ToastrService } from 'ngx-toastr';
+import { AlunoDTO } from 'src/app/theme/shared/models/aluno.dto';
 
 
 // project import
 
 @Component({
-  selector: 'app-matricula-professor-list-form',
+  selector: 'app-matricula-aluno-list-form',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -43,15 +43,15 @@ import { ToastrService } from 'ngx-toastr';
     FloatLabel
     // JsonPipe
   ],
-  templateUrl: './matricula-professor-list-form.component.html',
-  styleUrl: './matricula-professor-list-form.component.scss',
+  templateUrl: './aluno-list-form.component.html',
+  styleUrl: './aluno-list-form.component.scss',
   providers: [
-    MatriculaProfessorService,
+    AlunoService,
     DecimalPipe,
     ClasseService
   ]
 })
-export class MatriculaProfessorListComponent implements OnInit, AfterContentChecked {
+export class AlunoListComponent implements OnInit, AfterContentChecked {
 
   nomeIgrejaSignal = nomeIgrejaSignal;
   igrejaIdSignal = igrejaIdSignal;
@@ -68,7 +68,7 @@ export class MatriculaProfessorListComponent implements OnInit, AfterContentChec
   private router = inject(Router);
   private sharedService = inject(SharedService);
   private formBuilder = inject(FormBuilder);
-  private matriculaProfessorService = inject(MatriculaProfessorService);
+  private alunoService = inject(AlunoService);
   private toastr = inject(ToastrService);
 
   tipos = [{ nome: 'Padrao' }, { nome: 'Igreja' }]; // Tipo padrão é o tipo que grava null no igrejaId do Banco, tadas a Igreja podem ver. Igreja grava o id da igreja do usuario, outras igreja não pode ver.
@@ -86,27 +86,27 @@ export class MatriculaProfessorListComponent implements OnInit, AfterContentChec
   ];
 
   currentAction!: string;
-  matriculaProfessorForm!: FormGroup;
+  alunoForm!: FormGroup;
   submittingForm: boolean = false;
   pageTitle!: string;
-  matriculaProfessor: MatriculaProfessorDTO = new MatriculaProfessorDTO();
+  aluno: AlunoDTO = new AlunoDTO();
   id!: number;
 
   imodo: number = 0;
 
-  matriculaProfessorId!: number;
+  alunoId!: number;
 
   subscription!: Subscription;
 
 
-  @ViewChild('dtmatriculaProfessor') grid!: Table;
+  @ViewChild('dtaluno') grid!: Table;
 
-  totalMatriculaProfessorSistema!: number;
-  totalMatriculaProfessorIgreja!: number;
+  totalAlunoSistema!: number;
+  totalAlunoIgreja!: number;
 
   totalRegistros: number = 0
 
-  matriculaProfessores: MatriculaProfessorDTO[] = [];
+  alunos: AlunoDTO[] = [];
   pessoas: PessoaDTO[] = [];
   pessoa: PessoaDTO = new PessoaDTO();
   pessoaId: number;
@@ -127,7 +127,7 @@ export class MatriculaProfessorListComponent implements OnInit, AfterContentChec
 
   ngOnInit(): void {
     this.setCurrentAction();
-    this.buildMatriculaProfessorForm();
+    this.buildAlunoForm();
     this.loadPessoas();
     this.loadClasses();
     // this.grid.reset();//atualiza a tabela do primeng
@@ -147,37 +147,38 @@ export class MatriculaProfessorListComponent implements OnInit, AfterContentChec
     this.submittingForm = true;
 
     if (this.imodo === 0)
-      this.createMatriculaProfessor();
-    else this.updateMatriculaProfessor();
+      this.createAluno();
+    else this.updateAluno();
   }
 
-  private buildMatriculaProfessorForm() {
-    this.matriculaProfessorForm = this.formBuilder.group({
+  private buildAlunoForm() {
+    this.alunoForm = this.formBuilder.group({
       id: [null],
-      nomeProfessor: [null, [Validators.required]],
-      nomeClasse: [null, [Validators.required]],
+      nome: [null, [Validators.required]],
+      classe: [null, [Validators.required]],
+      anoLetivo: [null],
       status: ['Ativo'],
+      classificacao: [null],
       telefone: [null],
       faixaEtaria: [null],
       dtNascimento: [null],
-      classificacao: [null],
       classeId: [null, [Validators.required]],
       pessoaId: [null],
       igrejaId: [this.igrejaId, [Validators.required]]
     });
   }
 
-  loadMatriculaProfessorsLazy(event: any) {
+  loadAlunosLazy(event: any) {
     const page = event!.first! / event!.rows!; // divisão para encontrar a paginações
-    this.loadMatriculaProfessores(this.igrejaId, this.classeId, this.nome.toLowerCase(), page, this.linesPerPage);
+    this.loadAlunos(this.igrejaId, this.classeId, this.nome.toLowerCase(), page, this.linesPerPage);
   }
 
 
-  loadMatriculaProfessores(igrejaId: number, classeId: number, nome: string, page: number, linesPerPage: number) {
-    this.matriculaProfessorService.getByPageMatriculaProfessorFromIgreja(igrejaId, classeId, nome, page, linesPerPage)
+  loadAlunos(igrejaId: number, classeId: number, nome: string, page: number, linesPerPage: number) {
+    this.alunoService.getByPageAlunoFromIgreja(igrejaId, classeId, nome, page, linesPerPage)
       .subscribe({
         next: (response) => {
-          this.matriculaProfessores = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
+          this.alunos = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
           this.totalRegistros = response.totalElements;
 
         },
@@ -188,10 +189,10 @@ export class MatriculaProfessorListComponent implements OnInit, AfterContentChec
   }
 
   resetModal() {
-    this.matriculaProfessorForm.reset();
+    this.alunoForm.reset();
   }
 
-  exclusaoMatriculaProfessor(matriculaProfessor: MatriculaProfessorDTO) {
+  exclusaoAluno(aluno: AlunoDTO) {
     Swal.fire({
       title: 'Exclusão',
       text: 'Tem certeza que deseja excluir este registro?',
@@ -202,17 +203,17 @@ export class MatriculaProfessorListComponent implements OnInit, AfterContentChec
       if (willDelete.dismiss) {
         // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
       } else {
-        this.excluir(matriculaProfessor);
+        this.excluir(aluno);
         Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
       }
     });
   }
 
-  excluir(matriculaProfessor: any) {
-    this.matriculaProfessorService.delete(matriculaProfessor.id)
+  excluir(aluno: any) {
+    this.alunoService.delete(aluno.id)
       .subscribe({
         next: () => {
-          this.matriculaProfessores = this.matriculaProfessores.filter(element => element != this.matriculaProfessor.id)
+          this.alunos = this.alunos.filter(element => element != this.aluno.id)
           this.grid.reset();//atualiza a tabela do primeng
         },
         error: () => { },
@@ -220,14 +221,14 @@ export class MatriculaProfessorListComponent implements OnInit, AfterContentChec
   }
 
 
-  loadMatriculaProfessor(matriculaProfessor: MatriculaProfessorDTO) {
+  loadAluno(aluno: AlunoDTO) {
     if (this.imodo === 1) {
-      this.matriculaProfessor = matriculaProfessor;
-      this.matriculaProfessorForm.patchValue(matriculaProfessor);
+      this.aluno = aluno;
+      this.alunoForm.patchValue(aluno);
     } else {
       this.resetModal()
-      this.matriculaProfessorForm.controls['igrejaId'].setValue(this.igrejaId);
-      this.matriculaProfessorForm.controls['status'].setValue('Ativo');
+      this.alunoForm.controls['igrejaId'].setValue(this.igrejaId);
+      this.alunoForm.controls['status'].setValue('Ativo');
 
     }
   }
@@ -235,20 +236,20 @@ export class MatriculaProfessorListComponent implements OnInit, AfterContentChec
 
   private setPageTitle() {
     if (this.imodo === 0)
-      this.pageTitle = 'Matriculando: Novo Professor';
+      this.pageTitle = 'Matriculando: Novo Aluno';
     else {
-      const matriculaProfessorName = 'Alterando: ' + this.matriculaProfessor.nomeProfessor || '';
-      this.pageTitle = matriculaProfessorName;
+      const alunoName = 'Alterando: ' + this.aluno.nome || '';
+      this.pageTitle = alunoName;
     }
   }
 
   onChangeSelecaoClasses(id) {
     this.classeId = id.value;
-    this.loadMatriculaProfessores(this.igrejaId, this.classeId, this.nome, this.page, this.linesPerPage);
+    this.loadAlunos(this.igrejaId, this.classeId, this.nome, this.page, this.linesPerPage);
     this.loadClasse(id.value)
   }
 
-  onChangeProfessor(id) {
+  onChangeAluno(id) {
     this.loadPessoa(id.value)
   }
 
@@ -262,9 +263,9 @@ export class MatriculaProfessorListComponent implements OnInit, AfterContentChec
       .subscribe({
         next: (response) => {
           this.pessoa = response;
-          this.matriculaProfessorForm.controls['nomeProfessor'].setValue(this.sharedService.formataNome(this.pessoa.nome)); // Aqui formata o nome em Camel Case completo 
-          this.matriculaProfessorForm.controls['dtNascimento'].setValue(this.pessoa.dataNascimento);
-          this.matriculaProfessorForm.controls['telefone'].setValue(this.pessoa.celular1);
+          this.alunoForm.controls['nome'].setValue(this.sharedService.formataNome(this.pessoa.nome)); // Aqui formata o nome em Camel Case completo 
+          this.alunoForm.controls['dtNascimento'].setValue(this.pessoa.dataNascimento);
+          this.alunoForm.controls['telefone'].setValue(this.pessoa.celular1);
         },
         error: () => { }
       });
@@ -276,9 +277,9 @@ export class MatriculaProfessorListComponent implements OnInit, AfterContentChec
       .subscribe({
         next: (response) => {
           this.classe = response;
-          this.matriculaProfessorForm.controls['nomeClasse'].setValue(this.classe.nome);
-          this.matriculaProfessorForm.controls['faixaEtaria'].setValue(this.classe.faixaEtaria);
-           this.matriculaProfessorForm.controls['classificacao'].setValue(this.classe.classificacao);
+          this.alunoForm.controls['classe'].setValue(this.classe.nome);
+          this.alunoForm.controls['faixaEtaria'].setValue(this.classe.faixaEtaria);
+          this.alunoForm.controls['classificacao'].setValue(this.classe.classificacao);
           this.nomeClasse = this.classe.nome;
         },
         error: () => { }
@@ -305,19 +306,19 @@ export class MatriculaProfessorListComponent implements OnInit, AfterContentChec
           this.classes = response;
           this.classeId = this.classes[0].id;
           this.nomeClasse = this.classes[0].nome;
-          this.loadMatriculaProfessores(this.igrejaId, this.classeId, this.nome, this.page, this.linesPerPage);
+          this.loadAlunos(this.igrejaId, this.classeId, this.nome, this.page, this.linesPerPage);
         },
         error: () => { }
       });
   }
 
 
-  public createMatriculaProfessor() {
-    const matriculaProfessor: MatriculaProfessorDTO = this.matriculaProfessorForm.value;
-    this.matriculaProfessorService.create(matriculaProfessor).subscribe(
+  public createAluno() {
+    const aluno: AlunoDTO = this.alunoForm.value;
+    this.alunoService.create(aluno).subscribe(
       (response: any): void => {
         this.id = parseInt(this.extractId(response.headers.get('location'))); // Extrai o Id da URI retornada do banco
-        this.matriculaProfessor.id = this.id;
+        this.aluno.id = this.id;
         this.grid.reset();//atualiza a tabela do primeng
         this.actionsForSuccess();
       },
@@ -325,12 +326,12 @@ export class MatriculaProfessorListComponent implements OnInit, AfterContentChec
     );
   }
 
-  public updateMatriculaProfessor() {
-    const matriculaProfessor: MatriculaProfessorDTO = Object.assign(
-      new MatriculaProfessorDTO(),
-      this.matriculaProfessorForm.value
+  public updateAluno() {
+    const aluno: AlunoDTO = Object.assign(
+      new AlunoDTO(),
+      this.alunoForm.value
     );
-    this.matriculaProfessorService.update(matriculaProfessor)
+    this.alunoService.update(aluno)
       .subscribe(() => {
         this.resetModal();
         this.actionsForSuccess();

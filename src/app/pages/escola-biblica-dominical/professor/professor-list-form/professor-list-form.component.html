@@ -37,7 +37,7 @@
                     nomeClasse }}</label>
             </strong></span>
 
-        <!-- Pesquisa MatriculaProfessors -->
+        <!-- Pesquisa Professores -->
         <span class=" col-sm-3 mt-0 mb-2">
             <p-inputgroup>
                 <button type="button" style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius:0;
@@ -45,14 +45,14 @@
                         class="pi pi-search"></i></button>
                 <input pInputText class="form-control " placeholder="Pesquisar " [(ngModel)]="nome" type="text"
                     [ngModelOptions]="{standalone: true}"
-                    (input)="dtmatriculaProfessor.filterGlobal($event.target?.addEventListener, 'contains')" style="height: 30px; min-width: 180px; border-radius: 6px; border-bottom-left-radius: 0; 
+                    (input)="dtprofessor.filterGlobal($event.target?.addEventListener, 'contains')" style="height: 30px; min-width: 180px; border-radius: 6px; border-bottom-left-radius: 0; 
               border-top-left-radius: 0; font-size: 14px; text-transform: lowercase">
             </p-inputgroup>
         </span>
 
         <!--Novo  -->
         <span class="col-sm-2 ">
-            <p-button (click)="imodo=0; modalMatriculaProfessor.show(); loadMatriculaProfessor(matriculaProfessor)"
+            <p-button (click)="imodo=0; modalProfessor.show(); loadProfessor(professor)"
                 type="button" severity="success" class="float-end" label="Novo"
                 [style]="{'height':'30px', 'background':'#388669'}" size="small" icon="pi pi-check" />
         </span>
@@ -60,9 +60,9 @@
     </div>
     <app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-purple shadow  border-1">
         <div class="p-0">
-            <p-table #dtmatriculaProfessor [value]="matriculaProfessores"
+            <p-table #dtprofessor [value]="professores"
                 [globalFilterFields]="['nome', 'country.name', 'representative.name', 'status']" [lazy]="true"
-                responsiveLayout="stack" (onLazyLoad)="loadMatriculaProfessorsLazy($event)"
+                responsiveLayout="stack" (onLazyLoad)="loadProfessorLazy($event)"
                 [showCurrentPageReport]="true" [totalRecords]="totalRegistros" showGridlines stripedRows
                 currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
                 [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
@@ -76,7 +76,7 @@
                         </th>
                         <th class="col-data-content-5"
                             style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
-                            <b>Nome Professor</b>
+                            <b>Nome</b>
                         </th>
                         <th class="f-12 col-data-content-4"
                             style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
@@ -98,24 +98,24 @@
                     </tr>
                 </ng-template>
 
-                <ng-template #body let-matriculaProfessor>
+                <ng-template #body let-professor>
                     <tr>
-                        <td class="col-data-100 py-1" style=" font-size: 13px">{{ matriculaProfessor.id }}
+                        <td class="col-data-100 py-1" style=" font-size: 13px">{{ professor.id }}
                         </td>
-                        <td class="col-data-content-5 py-1" style=" font-size: 13px">{{ matriculaProfessor.nomeProfessor
+                        <td class="col-data-content-5 py-1" style=" font-size: 13px">{{ professor.nome
                             }}</td>
-                        <td class="col-data-content-4 py-1" style=" font-size: 13px">{{ matriculaProfessor.nomeClasse }}
+                        <td class="col-data-content-4 py-1" style=" font-size: 13px">{{ professor.nomeClasse }}
                         </td>
-                        <td class="col-data-content py-1" style=" font-size: 13px">{{ matriculaProfessor.faixaEtaria
+                        <td class="col-data-content py-1" style=" font-size: 13px">{{ professor.faixaEtaria
                             }}
                         </td>
-                        <td class="col-data-content py-1" style=" font-size: 13px">{{ matriculaProfessor.classificacao
+                        <td class="col-data-content py-1" style=" font-size: 13px">{{ professor.classificacao
                             }}
                         </td>
                         <td class="col-acoes-header py-1">
 
                             <button
-                                (click)=" imodo=1; modalMatriculaProfessor.show(); loadMatriculaProfessor(matriculaProfessor) "
+                                (click)=" imodo=1; modalProfessor.show(); loadProfessor(professor) "
                                 type="button" class="btn btn-icon btn-outline-info p-1 mt-0 mb-0"
                                 [style]="{'height': '25px', 'width': '25px'} ">
                                 <i class="pi pi-chevron-up"></i>
@@ -128,9 +128,9 @@
     </app-card>
 
     <!-- MODAL CLASSES INICIO -->
-    <form [formGroup]="matriculaProfessorForm" autocomplete="off" (submit)="submitForm()">
+    <form [formGroup]="professorForm" autocomplete="off" (submit)="submitForm()">
         <div class="col-sm-12">
-            <app-ui-modal #modalMatriculaProfessor [dialogClass]="'modal-lg'">
+            <app-ui-modal #modalProfessor [dialogClass]="'modal-lg'">
                 <div class="app-modal-header ">
                     <div class="card px-3 "
                         style="width: 46rem; height: 1rem; background: #fcfdfd; padding-bottom: 10px; padding-top: 5px">
@@ -154,16 +154,6 @@
                             <input readonly type="text" class="form-control" formControlName="id">
                         </div>
 
-                        <!-- Nome Professor-->
-                        <div class="form-group col-md-6 ">
-                            <label class="">Nome Professor</label>
-                            <p-select (onChange)="onChangeProfessor($event)" formControlName="pessoaId"
-                                [options]="pessoas" [editable]="false" [filter]="true" filterBy="nome"
-                                [showClear]="false" optionLabel="nome" resetFilterOnHide="true"
-                                dropdownIcon="pi pi-users" optionValue="id" [autofocus]="false"
-                                placeholder="Selecione um professor" />
-                        </div>
-
                         <!-- Nome Classe-->
                         <div class="form-group col-md-5 ">
                             <label class="">Nome Classe</label>
@@ -171,6 +161,16 @@
                                 [editable]="false" [filter]="true" filterBy="nome" [showClear]="false"
                                 optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-users" optionValue="id"
                                 [autofocus]="false" placeholder="Selecione uma classe" />
+                        </div>
+
+                         <!-- Nome Professor-->
+                        <div class="form-group col-md-6 ">
+                            <label class="">Nome Professor</label>
+                            <p-select (onChange)="onChangeProfessor($event)" formControlName="pessoaId"
+                                [options]="pessoas" [editable]="false" [filter]="true" filterBy="nome"
+                                [showClear]="false" optionLabel="nome" resetFilterOnHide="true"
+                                dropdownIcon="pi pi-users" optionValue="id" [autofocus]="false"
+                                placeholder="Selecione um professor" />
                         </div>
 
                         <!-- Telefone -->
@@ -221,15 +221,15 @@
                         <!-- Botões Inicio-->
 
                         <span class="float-end ">
-                            <p-button (click)="modalMatriculaProfessor.hide(); resetModal()"
-                                routerLink="/matriculaprofessores" icon='pi pi-chevron-left'
+                            <p-button (click)="modalProfessor.hide(); resetModal()"
+                                routerLink="/professores" icon='pi pi-chevron-left'
                                 [style]="{'height':'30px', 'margin-left':'10px'}" size="small" severity="info"
                                 label="voltar" class=" " label="Voltar" />
                         </span>
 
                         <span class="float-end ml-4">
-                            <p-button (click)="modalMatriculaProfessor.hide()" severity="success"
-                                [disabled]="matriculaProfessorForm.invalid" type="submit" class="mr-4"
+                            <p-button (click)="modalProfessor.hide()" severity="success"
+                                [disabled]="professorForm.invalid" type="submit" class="mr-4"
                                 [style]="{'height':'30px', 'margin-left':'10px', 'background':'#388669'}" size="small"
                                 label="Salvar" icon='pi pi-check' />
                         </span>
@@ -237,7 +237,7 @@
                         <span class="float-end">
                             @if(imodo !== 0){
                             <p-button type="button"
-                                (click)="exclusaoMatriculaProfessor(matriculaProfessor); modalMatriculaProfessor.hide(); resetModal()"
+                                (click)="exclusaoProfessor(professor); modalProfessor.hide(); resetModal()"
                                 [style]="{'height':'30px', 'margin-left':'10px'}" size="small" icon='pi pi-times'
                                 variant="outlined" severity="danger" label="Excluir" class="mb-0" />
                             }
@@ -246,7 +246,7 @@
 
                     </div>
                     <!-- <div class="form-group "></div>
-                    <pre> {{matriculaProfessorForm.value | json}} </pre> -->
+                    <pre> {{professorForm.value | json}} </pre> -->
                 </div>
             </app-ui-modal>
         </div>

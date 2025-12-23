@@ -1,14 +1,15 @@
-export class MatriculaProfessorDTO {
+export class AlunoDTO {
     constructor(
         public id?: number,
-        public nomeProfessor?: string,
-        public nomeClasse?: string,
+        public nome?: string,
+        public classe?: string,
+        public anoLetivo?: string,
         public status?: string,
+        public classificacao?: string,
         public telefone?: string,
         public faixaEtaria?: string,
         public dtNascimento?: string,
         public igrejaId?: number,
-        public classificacao?: string,
         public classeId?: number,
         public pessoaId?: number,
     ) { }
