@@ -1,15 +1,8 @@
 <!-- Cards Estaticticas -->
 <section class="main-content">
 
-    <div class="card-border-c-blue row col-12 mb-3 border-2 shadow py-3 pb-0 m-l-0">
+    <!-- <div class="card-border-c-blue row col-12 mb-3 border-2 shadow py-3 pb-0 m-l-0">
         <div class="form-group  align-items-center">
-
-            <i class="fas fa-plus f-28 text-success " style="margin-bottom: 10px;">      </i>
-
-
-            <p-button (click)="imodo=0; setData(); modalLancamento.show(); setPageTitleLancamentos()" class=" mx-3 f-22"
-                label="Lançamento" severity="info" size="small" icon='fas fa-plus' />
-
             <p-button (click)="marcaPresenteAusente('Presente')" class=" m-b-2 float-left" size="small"
                 icon='pi pi-thumbs-up' label="Marca Presente" severity="success" />
 
@@ -26,72 +19,78 @@
 
             <p-button (click)="marcaPresenteAusente('Ausentes')" class=" mx-3" size="small" icon='pi pi-times'
                 label="Ausentes" severity="danger" />
-
-            <span class="">
-                <p-splitButton class="float-end " label="  Relatórios  " icon="pi pi-print" [model]="printItems"
-                    severity="contrast" size="small"
-                    [style]="{'height':'32px',  'border-radius':'6px', 'margin-left':'10px'}" />
-            </span>
         </div>
-    </div>
+    </div> -->
 
     <!-- Fim Cards Estaticticas -->
 
-    <div class="card-border-c-blue row col-12 mb-3 border-1 shadow py-2 m-l-0">
-        <span class=" col-sm-1 mb-1 mt-2">
-            <i class="fas fa-book-reader f-28 text-primary"></i>
+    <div class="card-border-c-blue row col-12 mb-3 border-2 shadow py-2 m-l-0">
+
+        <span class="col-sm-2 mt-2 mb-2">
+            <i class="fas fa-plus f-28 text-success"></i>    <p-button (click)="imodo=0; setData(); 
+             setPageTitleFrequencias(); visibleLancamento = true;" severity="info" label="Lançamento" size="small" />
         </span>
+
         <!-- data -->
-        <span class=" col-sm-3 mb-2 mt-2">
-            <p-datepicker (ngModelChange)="onCloseData($event)" [style]="{'width':'100%','height':'35px'}"
-                [monthNavigator]="true" [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true"
-                [showIcon]="true" inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" [(ngModel)]="data"
-                placeholder="dd/mm/aaaa" />
+        <span class=" col-sm-2 mb-2 mt-2">
+            <p-floatlabel variant="on">
+                <p-datepicker (ngModelChange)="onCloseData($event)" [style]="{'width':'100%','height':'35px'}"
+                    [monthNavigator]="true" [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true"
+                    inputId="on_label" [showIcon]="true" dataType="string" dateFormat="dd/mm/yy" [(ngModel)]="data"
+                    placeholder="dd/mm/aaaa" [ngModelOptions]="{standalone: true}" />
+                <label for="on_label">Filtrar datas</label>
+            </p-floatlabel>
         </span>
 
         <!-- Classe-->
-        <span class="col-sm-4 mb-0 mt-2">
+        <span class="col-sm-4 mb-0 mt-2 mb-2 ">
             <p-floatlabel variant="on">
-                <span class=" col-sm-4 mt-0 mb-2">
-                    <p-select style="min-height: 32px; width: 100%;" inputId=" on_label"
-                        (onChange)="onChangeLancamentoEbd($event)" [options]="classes" [editable]="false"
-                        [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="true"
-                        class="" dropdownIcon="pi pi-users" optionValue="id" [autofocus]="false"
-                        [(ngModel)]="selectedClasse" />
+                <span class=" col-sm-3 mt-0 ">
+                    <p-select style="min-height: 35px; width: 100%;" inputId=" on_label"
+                        (onChange)="onChangeFrequencia($event)" [options]="classes" [editable]="false" [filter]="true"
+                        filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="true" class=""
+                        dropdownIcon="pi pi-users" optionValue="id" [autofocus]="false"
+                        [(ngModel)]="classeSelecionada" />
                     <label class="" for="on_label">Filtrar classes</label>
                 </span>
             </p-floatlabel>
         </span>
 
-        <span class="col-sm-1"> </span>
+        <!-- <span class="col-sm-1"> </span> -->
 
         @if(totalRegistros){
-        <span class="col-sm-3 mb-0 mt-0 ">
+        <span class="col-sm-2 mb-0 mt-2 ">
             <p-button
-                (click)="loadDiarioClasses(); modalModalDiario.show(); setPageTitleDiarioClasse() ; resetModalDiario()"
-                [style]="{'height':'45px',  'border-radius':'6px', 'margin-left':'10px'}" size="small" class="float-end"
-                label="Diário de Classe" icon="fas fa-book-reader" severity="info" />
+                (click)="loadDiarioClasses(); visibleDiario = true ; setPageTitleDiarioClasse() ; resetModalDiario()"
+                [style]="{'height':'35px', 'width':'100%', 'border-radius':'6px', 'margin-left':'5px'}" size="small"
+                class="float-end" label="Diário de Classe" icon="fas fa-book-reader" severity="info" />
         </span>
         }
 
         @if(!totalRegistros){
-        <span class="col-sm-3 mb-0 mt-0 ">
-            <p-button (click)="loadDiarioClasses()"
-                [style]="{'height':'45px',  'border-radius':'6px', 'margin-left':'10px'}" size="small" class="float-end"
-                label="Diário de Classe" icon="fas fa-book-reader" severity="info" />
+        <span class="col-sm-2 mb-0 mt-2 ">
+            <p-button (click)="loadDiarioClasses(); visibleDiario = true"
+                [style]="{'height':'35px', 'width':'100%', 'border-radius':'6px', 'margin-left':'10px'}" size="small"
+                class="float-end" label="Diário de Classe" severity="info" />
         </span>
         }
+
+        <span class=" col-sm-2 mb-2 mt-2">
+            <p-splitButton class="float-end " label="Relatórios" icon="pi pi-print" [model]="printItems"
+                severity="contrast" size="small"
+                [style]="{'height':'35px',  'border-radius':'6px', 'margin-left':'10px'}" />
+        </span>
 
     </div>
 
     <app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-blue shadow  border-1">
         <div class="p-0">
-            <p-table #dtlancamentoEbd [value]="lancamentoEbds"
+            <p-table #dtfrequencia [value]="frequencias"
                 [globalFilterFields]="['nome', 'country.name', 'representative.name', 'status']" [lazy]="true"
-                responsiveLayout="stack" (onLazyLoad)="loadLancamentoEbdLazy($event)" [showCurrentPageReport]="true"
+                responsiveLayout="stack" (onLazyLoad)="loadFrequenciaLazy($event)" [showCurrentPageReport]="true"
                 [totalRecords]="totalRegistros" showGridlines stripedRows [rowsPerPageOptions]="[10, 30, 50, 100]"
                 currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
-                [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
+                [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado" [loading]="loading()">
 
 
                 <ng-template #header>
@@ -100,81 +99,63 @@
                             style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; ; border-top-left-radius: 5px">
                             <b>Data</b>
                         </th>
-                        <th class="col-data-content-5"
-                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
-                            <b>Nome Aluno</b>
-                        </th>
-
-                        <th class="f-12 col-data-content-4"
-                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
-                            <b>Classe</b>
-                        </th>
-
-                        <th class="col-data-content"
+                        <th class="col-date"
                             style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
                             <b>Frequência</b>
                         </th>
 
-                        <th class="col-data-content"
+                        <th class="f-12 col-data-content-4"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                            <b>Aluno</b>
+                        </th>
+
+                        <th class="col-data-content-4"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                            <b>Classe</b>
+                        </th>
+
+                        <th class="col-date"
                             style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
                             <b>Ano Letivo</b>
                         </th>
 
-                        <th class="col-data-content"
-                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                        <th class="col-date"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; ; border-top-right-radius: 5px">
                             <b>Trimestre</b>
-                        </th>
-                        <th class="col-data-content"
-                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-right-radius: 5px">
-                            <b>Classificação</b>
-                        </th>
 
                     </tr>
                 </ng-template>
 
-                <ng-template #body let-lancamentoEbd>
-                    <tr (click)="linhaClicadaLancamento(lancamentoEbd)"
-                        [ngClass]="{'linha-destaque': lancamentoEbd.id}">
-                        <td (click)="linhaClicadaLancamento(lancamentoEbd)" class="col-date py-2"
-                            style=" font-size: 13px; cursor: pointer;">{{ lancamentoEbd.data
+                <ng-template #body let-frequencia>
+                    <tr (click)="linhaClicadaFrequencia(frequencia)" [ngClass]="{'linha-destaque': frequencia.id}">
+                        <td (click)="linhaClicadaFrequencia(frequencia)" class="col-date py-2"
+                            style=" font-size: 13px; cursor: pointer;">{{ frequencia.data
                             }}
                         </td>
 
-                        @if(linhaSelecionada == lancamentoEbd.id ){
-                        <td (click)="linhaClicadaLancamento(lancamentoEbd)" class="col-data-content-5 py-2 text-white"
-                            style="font-size: 13px; cursor: pointer; background-color: rgb(77, 83, 90); ">{{
-                            lancamentoEbd.nomeAluno
+                        <!-- @if(linhaSelecionada == frequencia.id ){ -->
+                        <td (click)="linhaClicadaFrequencia(frequencia)" class="col-date py-2"
+                            style="font-size: 13px; cursor: pointer ">{{
+                            frequencia.presente ? '✅ Presente' : '❌ Ausente'
                             }}</td>
-                        }
+                        <!-- } -->
 
-                        @if(linhaSelecionada !== lancamentoEbd.id ){
-                        <td (click)="linhaClicadaLancamento(lancamentoEbd)" class="col-data-content-5 py-2"
+                        <td (click)="linhaClicadaFrequencia(frequencia)" class="col-data-content-4 py-2"
                             style="font-size: 13px; cursor: pointer; ">{{
-                            lancamentoEbd.nomeAluno
+                            frequencia.nomeAluno
                             }}</td>
-                        }
 
-                        <td (click)="linhaClicadaLancamento(lancamentoEbd)" class="col-data-content-4 py-2"
-                            style=" font-size: 13px ; cursor: pointer;">{{ lancamentoEbd.nomeClasse }}
+                        <td (click)="linhaClicadaFrequencia(frequencia)" class="col-data-content-4 py-2"
+                            style=" font-size: 13px ; cursor: pointer;">{{ frequencia.nomeClasse }}
                         </td>
 
-                        <td [style.color]="lancamentoEbd.frequencia == 'Presente' ? 'green' :  
-                            lancamentoEbd.frequencia == 'Ausente' ? 'red' : 'purple'"
-                            (click)="linhaClicadaLancamento(lancamentoEbd)" class="col-data-content py-2"
-                            style=" font-size: 13px; cursor: pointer;">{{ lancamentoEbd.frequencia
+                        <td (click)="linhlinhaClicadaFrequenciaClicada(frequencia)" class="col-date py-2"
+                            style=" font-size: 13px; cursor: pointer;">{{ frequencia.anoLetivo
                             }}
                         </td>
 
-                        <td (click)="linhlinhaClicadaLancamentoClicada(lancamentoEbd)" class="col-data-content py-2"
-                            style=" font-size: 13px; cursor: pointer;">{{ lancamentoEbd.anoLetivo
-                            }}
-                        </td>
-                        <td (click)="linhaClicadaLancamento(lancamentoEbd)" class="col-data-content py-2"
-                            style=" font-size: 13px; cursor: pointer;">{{ lancamentoEbd.trimestre
-                            }}
-                        </td>
-                        <td (click)="linhaClicadaLancamento(lancamentoEbd)" class="col-data-content py-2"
-                            style=" font-size: 13px; cursor: pointer;">{{ lancamentoEbd.classificacao
+                        <td (click)="linhaClicadaFrequencia(frequencia)" class="col-date py-2"
+                            style=" font-size: 13px; cursor: pointer;">{{ frequencia.trimestre + "º Trimestre"
                             }}
                         </td>
                     </tr>
@@ -183,21 +164,26 @@
         </div>
     </app-card>
 
-    <!-- MODAL LANÇAMENTOS INICIO -->
-    <form [formGroup]="lancamentoEbdForm" autocomplete="off" (submit)="submitForm()">
-        <app-ui-modal #modalLancamento [dialogClass]="'modal-lg'">
-            <div class="app-modal-header ml-2 ">
-                <div class="card header mb-2"
-                    style="width: 46rem; height: 1rem; padding-bottom: 10px; padding-top: 5px">
-                    <h5 class="modal-title text-dark">{{ pageTitle }}</h5>
-
+    <!-- MODAL LANÇAMENTOS/FREQUENCIA INICIO -->
+    <form [formGroup]="aulaForm" autocomplete="off" (submit)="submitAulaForm()">
+         <p-dialog  [modal]="true" [(visible)]="visibleLancamento" [position]="position"
+            [dismissableMask]="false" [style]="{width: '60vw', 'min-height': '50vh', height: 'auto'}"
+            [closeOnEscape]="false" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false"
+            [resizable]="false" > 
+         
+                <div class="card header mb-0 mt-0"
+                    style="height: 2rem;">
+                    <h4 class="f-24" style="color: black"><b>{{ pageTitle }}</b>
+                    </h4>
                 </div>
-            </div>
+
+
             <div class="app-modal-body ml-2 mr-2">
 
                 <!-- Modal Body Inicio -->
                 <div class="row ">
-                    <!-- date -->
+
+                    <!-- date-->
                     <span class=" col-sm-4 mb-1 ">
                         <label class="text-dark mb-1">Data de lançamento</label>
                         <p-datepicker (ngModelChange)="onCloseDataModal($event)"
@@ -209,7 +195,7 @@
                     <!-- Lição -->
                     <div class="form-group col-md-2">
                         <label class="text-danger mb-1">Nº da Lição</label>
-                        <input type="text" class="form-control" formControlName="licao">
+                        <input type="number" class="form-control" formControlName="licao">
                     </div>
 
                     <!-- Tema da Lição -->
@@ -217,6 +203,10 @@
                         <label class="text-success mb-1">Tema da Lição</label>
                         <input type="text" style="text-transform: uppercase" class="form-control"
                             formControlName="tema">
+                        @if (dataCheckedAula() && aulaForm.controls['tema'].value !== null) {
+                        <p class="danger" [style]="{'font-size':'12px' }" margin-left>
+                            Já existe lançamentos para esta data!</p>
+                        }
                     </div>
 
                 </div>
@@ -265,50 +255,106 @@
                 <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
                 <div class="modal-footer py-1" style="height: 38px;">
 
-                    <!-- Titalização -->
-                    <div class="form-group col 12  ">
-                        <label class="text-danger mb-1 f-16 float-left">Total de Classes  </label>
-                        <label>{{ totalRegistrosModalClasse }}</label>
-                    </div>
-
                     <!-- Fechar -->
                     <button data-dismiss="modal" type="button" class=" ml-4 mb-3 " pButton pRipple
-                        (click)="modalLancamento.hide();" label="Fechar" style="width: 9em; height: 30px; font-size: small;
+                        (click)="visibleLancamento = false" label="Fechar" style="width: 9em; height: 30px; font-size: small;
                           border-radius: 6px; border: 0;background: #1a82ce;" icon='pi pi-wallet'>
                     </button>
 
                     <!-- Salvar -->
-                    <strong><button  [disabled]="lancamentoEbdForm.invalid"
-                            type="submit" class=" float-end mb-3 mt-1" pButton pRipple label="Confirmar"
+                    <strong><button [disabled]="aulaForm.invalid || dataCheckedAula() === true" type="submit"
+                            class=" float-end mb-3 mt-1" pButton pRipple label="Confirmar"
                             style="width: 9em; border: 0;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
                             icon='pi pi-check'>
                         </button></strong>
 
                 </div>
-                <!-- <div class="form-group ">
-                    <pre> {{ lancamentoEbdForm.value | json}} </pre>
-                </div> -->
+
             </div>
-        </app-ui-modal>
+        </p-dialog>
+
+
+        <div class="col-md-12 col-xl-12" data-backdrop="static">
+
+            <div class="card flex justify-center">
+                <p-dialog header="Edit Profile" [modal]="true" [(visible)]="visibleEscala" [position]="position"
+                    [dismissableMask]="false" [style]="{width: '60vw', 'min-height': '40vh', height: 'auto'}"
+                    [closeOnEscape]="false" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false"
+                    [resizable]="false" [contentStyle]="{ 'overflow': 'visible' }">
+                    <h5 class="align-center"><strong>{{ pageTitle +":    "}} <span class="text-primary f-16">{{
+                                nomeClasse + "  "+
+                                professoresDaClasse().length+ "  Professores" }} </span></strong></h5>
+                    <hr class="mt-0 mb-2">
+
+                    <!-- Modal Body Inicio -->
+
+                    <div class="row col-12">
+                        <div class="form-group col-md-8">
+                            <label class="mb-1">Classes</label>
+                            <p-select style="min-height: 30px; width: 100%" (onChange)="onClasseSelecionada($event)"
+                                [options]="classes" [editable]="false" [filter]="true" filterBy="nome"
+                                [showClear]="false" optionLabel="nome" resetFilterOnHide="true" class=""
+                                dropdownIcon="pi pi-users" optionValue="id" placeholder="Seleciona uma classe" />
+                        </div>
+
+                        <!-- Data da Mes de referencia -->
+                        <div class="form-group col-md-4 ">
+                            <label class="mb-1">Data</label>
+                            <p-datepicker (ngModelChange)="onCloseDataModalEscala($event)" view="year"
+                                [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                                [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
+                                inputId="icondisplay" dataType="string" dateFormat="yy" formControlName="dataEscala"
+                                placeholder="dd/mm/aaaa" />
+                        </div>
+                    </div>
+
+                    <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
+                    <div class="modal-footer" style="height: 38px;">
+
+                        <!-- Cancelar -->
+                        <button (click)="limparModal(); visibleEscala = false" styleClass="p-button-sm" icon='pi pi-wallet'
+                            style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton pRipple
+                            type="button" label="Fechar" class="p-button-primary mx-3 p-button-outlined mt-1 ">
+                        </button>
+
+                        <!-- OK -->
+                        <button [disabled]="this.frequenciaForm.controls['classeId'].value == null"
+                            (click)="dataUS(); imprimirEscalaPronta()" styleClass="p-button-sm" icon='pi pi-check'
+                            style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton pRipple
+                            type="button" label="Imprimir" class="p-button-success  mt-1 ">
+                        </button>
+                    </div>
+                    <!-- <hr class="mt-4"> -->
+                </p-dialog>
+            </div>
+
+            <!-- FIM MODAL IMPRIMIR EBD -->
+        </div>
+        <!-- <div class="form-group ">
+            <pre> {{ frequenciaForm.value | json}} </pre>
+        </div> -->
     </form>
 
-    <!-- MODAL LANÇAMENTO FIM -->
-
+    <!-- MODAL FREQUENCIA FIM -->
 
     <!-- MODAL DIARIOCLASSE INICIO -->
+ 
+    <!-- [contentStyle]="{ 'overflow': 'visible' }" --> 
 
     <form [formGroup]="diarioClasseForm" autocomplete="off" (submit)="submitFormDiarioClasse()">
-        <app-ui-modal #modalModalDiario [dialogClass]="'modal-xl'">
-            <div class="app-modal-header ">
-                <div class="card header mb-1"
-                    style="width: 46rem; height: 1rem; padding-bottom: 10px; padding-top: 5px">
-                    <h5 class="modal-title " style="color: black"><b>{{ pageTitle }}</b>:     
+        <p-dialog  [modal]="true" [(visible)]="visibleDiario" [position]="position"
+            [dismissableMask]="false" [style]="{width: '70vw', 'min-height': '50vh', height: 'auto'}"
+            [closeOnEscape]="false" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false"
+            [resizable]="false" > 
+         
+                <div class="card header mb-0 mt-0"
+                    style="height: 2rem;">
+                    <h4 class="f-24" style="color: black"><b>{{ pageTitle }}</b>:     
                         <strong style="color: purple"><b><i>{{ diarioClasse.nomeClasse
                                     }}</i></b></strong>
-                    </h5>
+                    </h4>
                 </div>
-            </div>
-
+        
             <div class="app-modal-body ">
 
                 <div class="row ">
@@ -418,7 +464,7 @@
 
                         <!-- Fechar -->
                         <p-button data-dismiss="modal" type="button" class="float-end ml-4 mb-2 " size="small"
-                            (click)="modalModalDiario.hide();" label="Fechar"
+                            (click)="limparModal(); visibleDiario = false" label="Fechar"
                             [style]="{'width':'4rem', 'height':'32px', 'background':'#1a82ce'}" />
 
                     </div>
@@ -579,9 +625,10 @@
                     <pre> {{ diarioClasseForm.value | json}} </pre>
                 </div> -->
             </div>
-        </app-ui-modal>
-    </form>
+           </p-dialog>
 
+            <!-- SESSAO IMPRIMIR EBD - MODAL -->
+    </form>
     <!-- MODAL DIARIOCLASSE FIM -->
 
 </section>

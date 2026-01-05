@@ -95,8 +95,8 @@ const routes: Routes = [
         loadChildren: () => import('./pages/escola-biblica-dominical/aluno/aluno.routes').then((module) => module.ALUNO_ROUTES),
       },
       {
-        path: 'lancamentoebds',
-        loadChildren: () => import('./pages/escola-biblica-dominical/lancamentoEBD/lancamento-ebd.routes').then((module) => module.LANCAMENTO_EBD_ROUTES),
+        path: 'frequencias',
+        loadChildren: () => import('./pages/escola-biblica-dominical/frequencia/frequencia.routes').then((module) => module.FREQUENCIA_ROUTES),
       },
 
       {

@@ -125,6 +125,15 @@ export class SharedService {
 
   }
 
+  anoLetivo() {// 0000
+    let data = new Date(),
+      dia = data.getDate().toString().padStart(2, '0'),
+      mes = (data.getMonth() + 1).toString().padStart(2, '0'),
+      ano = data.getFullYear();
+    return `${ano}`;
+
+  }
+
   mesAno() {// 00/0000
     let data = new Date(),
       dia = data.getDate().toString().padStart(2, '0'),
@@ -133,13 +142,18 @@ export class SharedService {
     return `${mes}/${ano}`;
   }
 
-  anoLetivo() {// 0000
-    let data = new Date(),
-      dia = data.getDate().toString().padStart(2, '0'),
-      mes = (data.getMonth() + 1).toString().padStart(2, '0'),
-      ano = data.getFullYear();
-    return `${ano}`;
+  anoDataString(dataString) { // Retorna ano da data passada
+    const dataBRString = dataString;
+    const partes = dataBRString.split('/'); // ["15", "08", "2024"]
 
+    // Reorganiza para YYYY/MM/DD/
+    const dataUSString = `${partes[2]}-${partes[1]}-${partes[0]}`;
+    // console.log(dataUSString); // Saída: 2024-12-25
+
+    // const dia = `${partes[0]}`;
+    const ano: string = (`${partes[2]}`);
+    // console.log(mesAno)
+    return ano;
   }
 
   // Função auxiliar para formatar a data como YYYY-MM-DD
@@ -165,11 +179,11 @@ export class SharedService {
     const mes = +(`${partes[1]}`); //Mes 
     // const ano = `${partes[2]}`;
 
-    let trimestre = '';
-    mes >= 1 && mes <= 3 ? trimestre = '1º Trimestre' :
-      mes >= 4 && mes <= 6 ? trimestre = '2º Trimestre' :
-        mes >= 7 && mes <= 9 ? trimestre = '3º Trimestre' :
-          mes >= 10 && mes <= 12 ? trimestre = '4º Trimestre' : ''
+    let trimestre = 0;
+    mes >= 1 && mes <= 3 ? trimestre = 1 :
+      mes >= 4 && mes <= 6 ? trimestre = 2 :
+        mes >= 7 && mes <= 9 ? trimestre = 3 :
+          mes >= 10 && mes <= 12 ? trimestre = 4 : ''
     return trimestre;
   }
 

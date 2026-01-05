@@ -79,12 +79,6 @@ export const NavigationItems: NavigationItem[] = [
                 breadcrumbs: true,
               },
               {
-                id: 'secretaria-professor',
-                title: 'Professores',
-                type: 'item',
-                url: '/professores',
-              },
-              {
                 id: 'secretaria-regencia',
                 title: 'Regência',
                 type: 'item',
@@ -136,7 +130,7 @@ export const NavigationItems: NavigationItem[] = [
             id: 'ebd-lancamento',
             title: 'Lançamentos',
             type: 'item',
-            url: '/lancamentoebds',
+            url: '/frequencias',
           },
 
           {
@@ -157,12 +151,18 @@ export const NavigationItems: NavigationItem[] = [
             type: 'item',
             url: '/classes',
           },
+          {
+            id: 'ebd-escala-professor',
+            title: 'Escala',
+            type: 'item',
+            url: '/escalaprofessores',
+          },
         ],
       },
 
       // Ebd fim
 
-       // Inicio Lançamentos departamentais
+      // Inicio Lançamentos departamentais
       {
         id: 'cargos-dpto',
         title: 'Cargos departamentais',
@@ -170,7 +170,7 @@ export const NavigationItems: NavigationItem[] = [
         icon: 'feather icon-book',
 
         children: [
-           {
+          {
             id: 'lancamento-cargo-departamento',
             title: 'Lançamentos',
             type: 'item',

@@ -213,7 +213,6 @@ export class AlunoListComponent implements OnInit, AfterContentChecked {
     this.alunoService.delete(aluno.id)
       .subscribe({
         next: () => {
-          this.alunos = this.alunos.filter(element => element != this.aluno.id)
           this.grid.reset();//atualiza a tabela do primeng
         },
         error: () => { },

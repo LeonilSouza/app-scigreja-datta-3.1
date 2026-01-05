@@ -1,4 +1,5 @@
 export class AlunoDTO {
+    alunoId: number;
     constructor(
         public id?: number,
         public nome?: string,
