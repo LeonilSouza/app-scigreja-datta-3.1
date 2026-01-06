@@ -9,7 +9,7 @@ import moment from 'moment';
 
 import Swal from 'sweetalert2';
 
-import { trim } from 'lodash';
+import { trim } from 'lodash-es';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
