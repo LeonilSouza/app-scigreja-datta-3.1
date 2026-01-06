@@ -150,13 +150,7 @@ export const NavigationItems: NavigationItem[] = [
             title: 'Classes',
             type: 'item',
             url: '/classes',
-          },
-          {
-            id: 'ebd-escala-professor',
-            title: 'Escala',
-            type: 'item',
-            url: '/escalaprofessores',
-          },
+          }
         ],
       },
 

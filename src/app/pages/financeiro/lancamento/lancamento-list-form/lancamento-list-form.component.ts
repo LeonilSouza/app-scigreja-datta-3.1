@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -25,8 +25,8 @@ import { PessoaDTO } from 'src/app/theme/shared/models/pessoa.dto';
 import { LancamentoService } from 'src/app/theme/shared/services/lancamento.service';
 import { igrejaIdSignal, nomeIgrejaSignal, nomeUsuarioSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
 import { DatePicker } from 'primeng/datepicker';
-import { InputGroup } from "primeng/inputgroup";
 import { InputNumberModule } from 'primeng/inputnumber';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'; // Importe o operador
 import { Table } from 'primeng/table';
 
 
@@ -72,6 +72,8 @@ export class LancamentoFiltro {
   ]
 })
 export class LancamentoListFormComponent implements OnInit {
+
+  private destroyRef = inject(DestroyRef); // 1. Injete a referência de destruição
 
   nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
   igrejaIdSignal = igrejaIdSignal;
@@ -232,6 +234,7 @@ export class LancamentoListFormComponent implements OnInit {
     private contaService: ContaService,
     private centroCustoService: CentroCustoService,
     private formaService: FormaService
+
   ) {
     this.activeTab = 'home';
   }
@@ -311,7 +314,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   loadFormas() {
     this.formaService.getListFormaFromIgreja(this.igrejaId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
           this.formas = response;
@@ -330,7 +333,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   loadCategorias() {
     this.categoriaService.getListCategoriaFromIgreja(this.igrejaId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
           this.categorias = response; // Armazena todas as categorias de Receitas e Despesa para serem filtradas
@@ -351,7 +354,7 @@ export class LancamentoListFormComponent implements OnInit {
   loadContas() {
     let total = 0;
     this.contaService.getListContaFromIgreja(this.igrejaId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
           if (response.length == 0) {
@@ -399,7 +402,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   loadCentroCustos() {
     this.centroCustoService.getListCentroCustoFromIgreja(this.igrejaId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
           this.centroCustos = response;
@@ -484,7 +487,7 @@ export class LancamentoListFormComponent implements OnInit {
     this.filtro.page = page;
     this.pesquisa ? this.filtro.tipoLancamento : this.filtro.tipoLancamento = "";
     this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
-      // .pipe(takeUntil(this.destroy$))
+      // .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
           this.lancamentos = response['content'].sort((a, b) => b.id - a.id);
@@ -616,7 +619,7 @@ export class LancamentoListFormComponent implements OnInit {
   loadLancamento(lancamento: LancamentoDTO) {
     this.lancamentoId = lancamento.id;
     this.lancamentoService.findById(this.lancamentoId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
           this.lancamento = response;
@@ -738,7 +741,7 @@ export class LancamentoListFormComponent implements OnInit {
 
     const lancamento: LancamentoDTO = this.lancamentoForm.value;
     this.lancamentoService.create(lancamento)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
           this.lancamento.id = parseInt(this.extractId(response.headers.get('location'))); // Extrai o Id da URI retornada do banco      
@@ -776,7 +779,7 @@ export class LancamentoListFormComponent implements OnInit {
 
     const lancamento: LancamentoDTO = Object.assign(new LancamentoDTO(), this.lancamentoForm.value);
     this.lancamentoService.update(lancamento)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: () => {
           this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
@@ -792,7 +795,7 @@ export class LancamentoListFormComponent implements OnInit {
     this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value * -1);
     const lancamento: LancamentoDTO = this.lancamentoForm.value;
     this.lancamentoService.create(lancamento)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
           this.lancamentoIdOrigem = parseInt(this.extractId(response.headers.get('location'))); // Extrai o Id da URI retornada do banco 
@@ -806,7 +809,7 @@ export class LancamentoListFormComponent implements OnInit {
 
           lancamento.contaId = this.contaIdTransferencia;
           this.lancamentoService.create(lancamento)
-            .pipe(takeUntil(this.destroy$))
+            .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
             .subscribe({
               next: response => {
                 this.lancamentoIdTransferencia = parseInt(this.extractId(response.headers.get('location'))); // Extrai o Id da URI retornada do banco 
@@ -819,7 +822,7 @@ export class LancamentoListFormComponent implements OnInit {
                 lancamento.lancamentoIdTransferencia = this.lancamentoIdOrigem;
                 // lancamento.tipoConta = this.lancamentoForm.controls['tipoContaDestino'].value.toString();//Atualiza tipoConta Destino
                 this.lancamentoService.update(lancamento)
-                  .pipe(takeUntil(this.destroy$))
+                  .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
                   .subscribe({
                     next: () => {
                       lancamento.contaId = this.contaId;
@@ -833,7 +836,7 @@ export class LancamentoListFormComponent implements OnInit {
                       // lancamento.tipoConta = this.lancamentoForm.controls['tipoConta'].value.toString(); //Atualiza tipoConta Origem
                       lancamento.tipoLancamento = 'Despesa'
                       this.lancamentoService.update(lancamento)
-                        .pipe(takeUntil(this.destroy$))
+                        .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
                         .subscribe({
                           next: () => {
                             this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
@@ -863,7 +866,7 @@ export class LancamentoListFormComponent implements OnInit {
 
     const lancamento: LancamentoDTO = Object.assign(new LancamentoDTO(), this.lancamentoForm.value);
     this.lancamentoService.update(lancamento)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: () => {
           // this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
@@ -883,7 +886,7 @@ export class LancamentoListFormComponent implements OnInit {
     // const lancamento: LancamentoDTO = Object.assign(new LancamentoDTO(), this.lancamentoForm.value);
 
     this.lancamentoService.update(lancamento)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: () => {
           this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
@@ -899,7 +902,7 @@ export class LancamentoListFormComponent implements OnInit {
     this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value * -1);
     const lancamento: LancamentoDTO = this.lancamentoForm.value;
     this.lancamentoService.create(lancamento)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
           this.lancamentoIdOrigem = parseInt(this.extractId(response.headers.get('location'))); // Extrai o Id da URI retornada do banco 
@@ -913,7 +916,7 @@ export class LancamentoListFormComponent implements OnInit {
 
           lancamento.formaId = this.formaIdTransferencia;
           this.lancamentoService.create(lancamento)
-            .pipe(takeUntil(this.destroy$))
+            .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
             .subscribe({
               next: response => {
                 this.lancamentoIdTransferencia = parseInt(this.extractId(response.headers.get('location'))); // Extrai o Id da URI retornada do banco 
@@ -926,7 +929,7 @@ export class LancamentoListFormComponent implements OnInit {
                 lancamento.lancamentoIdTransferencia = this.lancamentoIdOrigem;
                 // lancamento.tipoConta = this.lancamentoForm.controls['tipoContaDestino'].value.toString();//Atualiza tipoConta Destino
                 this.lancamentoService.update(lancamento)
-                  .pipe(takeUntil(this.destroy$))
+                  .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
                   .subscribe({
                     next: () => {
                       lancamento.formaId = this.formaId;
@@ -940,7 +943,7 @@ export class LancamentoListFormComponent implements OnInit {
                       // lancamento.tipoConta = this.lancamentoForm.controls['tipoConta'].value.toString(); //Atualiza tipoConta Origem
                       lancamento.tipoLancamento = 'Despesa'
                       this.lancamentoService.update(lancamento)
-                        .pipe(takeUntil(this.destroy$))
+                        .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
                         .subscribe({
                           next: () => {
                             this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
@@ -969,7 +972,7 @@ export class LancamentoListFormComponent implements OnInit {
 
     const lancamento: LancamentoDTO = Object.assign(new LancamentoDTO(), this.lancamentoForm.value);
     this.lancamentoService.update(lancamento)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: () => { }
       }),
@@ -984,7 +987,7 @@ export class LancamentoListFormComponent implements OnInit {
     // const lancamento: LancamentoDTO = Object.assign(new LancamentoDTO(), this.lancamentoForm.value);
 
     this.lancamentoService.update(lancamento)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: () => {
           this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
@@ -998,7 +1001,7 @@ export class LancamentoListFormComponent implements OnInit {
   loadPessoas() {
     let situacaoCadastral = 'Ativo'
     this.pessoaService.getPessoasAtivasFromIgreja(this.igrejaId, situacaoCadastral)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
           this.pessoas = response;
@@ -1021,7 +1024,7 @@ export class LancamentoListFormComponent implements OnInit {
       }
     }
     this.lancamentoService.getTotalReceitaFromIgreja(this.filtro)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
           response !== null ? this.total_creditos_sem_transferencias = response : this.total_creditos_sem_transferencias = 0.00;
@@ -1044,7 +1047,7 @@ export class LancamentoListFormComponent implements OnInit {
       }
     }
     this.lancamentoService.getTotalGeralCreditoFromIgreja(this.filtro)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
           response !== null ? this.total_geral_creditos = response : this.total_geral_creditos = 0.00;
@@ -1067,7 +1070,7 @@ export class LancamentoListFormComponent implements OnInit {
       }
     }
     this.lancamentoService.getTotalGeralDebitoFromIgreja(this.filtro)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
           response !== null ? this.total_geral_debitos = response * -1 : this.total_geral_debitos = 0.00;
@@ -1091,7 +1094,7 @@ export class LancamentoListFormComponent implements OnInit {
       }
     }
     this.lancamentoService.getTotalOfertasFromIgreja(this.filtro)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
           response !== null ? this.totalOfertas = response : this.totalOfertas = 0.00;
@@ -1116,7 +1119,7 @@ export class LancamentoListFormComponent implements OnInit {
     }
 
     this.lancamentoService.getTotalMissoesFromIgreja(this.filtro)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
           response !== null ? this.totalMissoes = response : this.totalMissoes = 0.00;
@@ -1127,7 +1130,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   getTotalSaldoAnterior() {
     this.lancamentoService.getTotalRDSaldoAnteriorFromIgreja(this.igrejaId, this.dataDiaAnterior)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
           response !== null ? this.saldoAnterior = response : this.saldoAnterior = 0.00;
@@ -1139,7 +1142,7 @@ export class LancamentoListFormComponent implements OnInit {
   getTotalReceitaDizimoOferta() {
     this.filtro.tipoLancamento = 'Receita'
     this.lancamentoService.getTotalReceitaDizimOfertaFromIgreja(this.igrejaId, this.dtInicio, this.dtFim)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
           response !== null ? this.totalReceitaDizimOferta = response : this.totalReceitaDizimOferta = 0.00;
@@ -1179,7 +1182,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   private loadPessoa(value) {
     this.pessoaService.getById(value)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
           this.pessoa = response;
@@ -1268,7 +1271,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   private getCategoria(value) {
     this.categoriaService.findById(value)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
           this.categoria = response;
@@ -1375,7 +1378,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   excluirLancamento(indexId) {
     this.lancamentoService.delete(indexId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: () => {
           this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
@@ -1390,6 +1393,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   excluirSelectedLancamento(indexIdTransferencia) {
     this.lancamentoService.delete(indexIdTransferencia)
+     .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: () => {
           this.grid.reset();
@@ -1415,11 +1419,11 @@ export class LancamentoListFormComponent implements OnInit {
 
   excluirLancamentoTransferencia(lancamento: LancamentoDTO) {
     this.lancamentoService.delete(lancamento.id)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: () => {
           this.lancamentoService.delete(lancamento.lancamentoIdTransferencia)
-            .pipe(takeUntil(this.destroy$))
+            .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
             .subscribe({
               next: () => {
                 this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
@@ -1444,11 +1448,11 @@ export class LancamentoListFormComponent implements OnInit {
 
   excluirLancamentoPermuta(lancamento: LancamentoDTO) {
     this.lancamentoService.delete(lancamento.id)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: () => {
           this.lancamentoService.delete(lancamento.lancamentoIdTransferencia)
-            .pipe(takeUntil(this.destroy$))
+            .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
             .subscribe({
               next: () => {
                 this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)

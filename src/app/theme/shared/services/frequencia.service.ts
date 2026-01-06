@@ -15,35 +15,6 @@ export class FrequenciaService {
   constructor(public http: HttpClient) {
   }
 
-  findAll(): Observable<FrequenciaDTO> {
-    return this.http.get<FrequenciaDTO>(this.apiPath)
-      .pipe(
-        catchError(this.handleError));
-  }
-
-   getById(id: number): Observable<FrequenciaDTO> {
-    const url = `${this.apiPath}/${id}`;
-
-    return this.http.get(url).pipe(
-      catchError(this.handleError),
-      //  map(this.jsonDataToFrequencia)
-    )
-  }
-
-
-buscarPorAula(aulaId: number, page: number = 0, linesPerPage: number = 20): Observable<PageResponse<FrequenciaResponse>> {
-  return this.http.get<PageResponse<FrequenciaResponse>>(
-    `${this.apiPath}/aula/${aulaId}?page=${page}&linesPerPage=${linesPerPage}`
-  );
-}
-
-  getByPageFrequenciaFromIgreja(igrejaId, data, aula, page, linesPerPage) {
-
-    return this.http.get(`${API_CONFIG.baseUrl}/frequencias/page/?igreja=${igrejaId}&data=${data}&aula=${aula}&page=${page}&linesPerPage=${linesPerPage}`)
-      .pipe(
-        catchError(this.handleError)
-      );
-  }
 
   getByPageTodosFrequenciaFromIgreja(igrejaId, classeId, data, page, linesPerPage) {
 
@@ -53,42 +24,26 @@ buscarPorAula(aulaId: number, page: number = 0, linesPerPage: number = 20): Obse
       );
   }
 
+  getListFrequenciaFromIgreja(igrejaId, data) {
 
-  getByPageFrequenciaFromTipo(igrejaId, nome, page, linesPerPage) {
-
-    return this.http.get(`${API_CONFIG.baseUrl}/frequencias/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
+    return this.http.get(`${API_CONFIG.baseUrl}/frequencias/list/?igreja=${igrejaId}&data=${data}`)
       .pipe(
         catchError(this.handleError)
       );
   }
 
-  getListFrequenciaFromIgreja(igrejaId) {
 
-    return this.http.get(`${API_CONFIG.baseUrl}/frequencias/list/?igreja=${igrejaId}`)
-      .pipe(
-        catchError(this.handleError)
-      );
-  }
+  // update(frequencia: FrequenciaDTO): Observable<FrequenciaDTO> {
+  //   const url = `${this.apiPath}/${frequencia.aulaId}`;
 
- // Método que envia o DTO para o endpoint @PostMapping  no Spring
-  registrarFrequencia(dto: FrequenciaDTO): Observable<string> {
-    return this.http.post<string>(`${this.apiPath}`, dto, {
-      responseType: 'text' as 'json' // Necessário se o Spring retornar String em vez de JSON
-    });
-  }  
-
-
-  update(frequencia: FrequenciaDTO): Observable<FrequenciaDTO> {
-    const url = `${this.apiPath}/${frequencia.aulaId}`;
-
-    return this.http.put(url, frequencia)
-      .pipe(
-        // map(this.jsonDataToFrequencia),
-        catchError(this.handleError),
-        //map(this.jsonDataToFrequenciaFuncao)
-        map(() => frequencia)
-      )
-  }
+  //   return this.http.put(url, frequencia)
+  //     .pipe(
+  //       // map(this.jsonDataToFrequencia),
+  //       catchError(this.handleError),
+  //       //map(this.jsonDataToFrequenciaFuncao)
+  //       map(() => frequencia)
+  //     )
+  // }
 
 
   delete(id: number): Observable<any> {

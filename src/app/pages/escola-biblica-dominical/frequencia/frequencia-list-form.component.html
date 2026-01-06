@@ -69,7 +69,7 @@
 
         @if(!totalRegistros){
         <span class="col-sm-2 mb-0 mt-2 ">
-            <p-button (click)="loadDiarioClasses(); visibleDiario = true"
+            <p-button (click)="loadDiarioClasses(); visibleDiario = false"
                 [style]="{'height':'35px', 'width':'100%', 'border-radius':'6px', 'margin-left':'10px'}" size="small"
                 class="float-end" label="Diário de Classe" severity="info" />
         </span>
@@ -85,7 +85,7 @@
 
     <app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-blue shadow  border-1">
         <div class="p-0">
-            <p-table #dtfrequencia [value]="frequencias"
+            <p-table #dtfrequencia [value]="frequencias()"
                 [globalFilterFields]="['nome', 'country.name', 'representative.name', 'status']" [lazy]="true"
                 responsiveLayout="stack" (onLazyLoad)="loadFrequenciaLazy($event)" [showCurrentPageReport]="true"
                 [totalRecords]="totalRegistros" showGridlines stripedRows [rowsPerPageOptions]="[10, 30, 50, 100]"
@@ -95,8 +95,13 @@
 
                 <ng-template #header>
                     <tr>
-                        <th class="col-date"
+                        <th style="width: 4rem"
                             style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; ; border-top-left-radius: 5px">
+                            <!-- Checkbox Selecionar Todos -->
+                            <p-checkbox (onChange)="setarTodos($event.checked)" [binary]="true"></p-checkbox>
+                        </th>
+                        <th class="col-date"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px">
                             <b>Data</b>
                         </th>
                         <th class="col-date"
@@ -128,6 +133,12 @@
 
                 <ng-template #body let-frequencia>
                     <tr (click)="linhaClicadaFrequencia(frequencia)" [ngClass]="{'linha-destaque': frequencia.id}">
+
+                        <td>
+                            <!-- Checkbox Individual vinculado ao Signal -->
+                            <p-checkbox [binary]="true" (onChange)="atualizarCalculos()"></p-checkbox>
+                        </td>
+
                         <td (click)="linhaClicadaFrequencia(frequencia)" class="col-date py-2"
                             style=" font-size: 13px; cursor: pointer;">{{ frequencia.data
                             }}
@@ -166,16 +177,15 @@
 
     <!-- MODAL LANÇAMENTOS/FREQUENCIA INICIO -->
     <form [formGroup]="aulaForm" autocomplete="off" (submit)="submitAulaForm()">
-         <p-dialog  [modal]="true" [(visible)]="visibleLancamento" [position]="position"
+        <p-dialog [modal]="true" [(visible)]="visibleLancamento" [position]="positionLancamento"
             [dismissableMask]="false" [style]="{width: '60vw', 'min-height': '50vh', height: 'auto'}"
             [closeOnEscape]="false" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false"
-            [resizable]="false" > 
-         
-                <div class="card header mb-0 mt-0"
-                    style="height: 2rem;">
-                    <h4 class="f-24" style="color: black"><b>{{ pageTitle }}</b>
-                    </h4>
-                </div>
+            [resizable]="false">
+
+            <div class="card header mb-0 mt-0" style="height: 2rem;">
+                <h4 class="f-24" style="color: black"><b>{{ pageTitle }}</b>
+                </h4>
+            </div>
 
 
             <div class="app-modal-body ml-2 mr-2">
@@ -277,7 +287,7 @@
         <div class="col-md-12 col-xl-12" data-backdrop="static">
 
             <div class="card flex justify-center">
-                <p-dialog header="Edit Profile" [modal]="true" [(visible)]="visibleEscala" [position]="position"
+                <p-dialog header="Edit Profile" [modal]="true" [(visible)]="visibleEscala" [position]="positionEscala"
                     [dismissableMask]="false" [style]="{width: '60vw', 'min-height': '40vh', height: 'auto'}"
                     [closeOnEscape]="false" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false"
                     [resizable]="false" [contentStyle]="{ 'overflow': 'visible' }">
@@ -312,7 +322,7 @@
                     <div class="modal-footer" style="height: 38px;">
 
                         <!-- Cancelar -->
-                        <button (click)="limparModal(); visibleEscala = false" styleClass="p-button-sm" icon='pi pi-wallet'
+                        <button (click)="visibleEscala = false" styleClass="p-button-sm" icon='pi pi-wallet'
                             style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton pRipple
                             type="button" label="Fechar" class="p-button-primary mx-3 p-button-outlined mt-1 ">
                         </button>
@@ -338,23 +348,21 @@
     <!-- MODAL FREQUENCIA FIM -->
 
     <!-- MODAL DIARIOCLASSE INICIO -->
- 
-    <!-- [contentStyle]="{ 'overflow': 'visible' }" --> 
+
+    <!-- [contentStyle]="{ 'overflow': 'visible' }" -->
 
     <form [formGroup]="diarioClasseForm" autocomplete="off" (submit)="submitFormDiarioClasse()">
-        <p-dialog  [modal]="true" [(visible)]="visibleDiario" [position]="position"
-            [dismissableMask]="false" [style]="{width: '70vw', 'min-height': '50vh', height: 'auto'}"
-            [closeOnEscape]="false" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false"
-            [resizable]="false" > 
-         
-                <div class="card header mb-0 mt-0"
-                    style="height: 2rem;">
-                    <h4 class="f-24" style="color: black"><b>{{ pageTitle }}</b>:     
-                        <strong style="color: purple"><b><i>{{ diarioClasse.nomeClasse
-                                    }}</i></b></strong>
-                    </h4>
-                </div>
-        
+        <p-dialog [modal]="true" [(visible)]="visibleDiario" [position]="positionDiario" [dismissableMask]="false"
+            [style]="{width: '70vw', 'min-height': '50vh', height: 'auto'}" [closeOnEscape]="false"
+            [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false">
+
+            <div class="card header mb-0 mt-0" style="height: 2rem;">
+                <h4 class="f-24" style="color: black"><b>{{ pageTitle }}</b>:     
+                    <strong style="color: purple"><b><i>{{ diarioClasse.nomeClasse
+                                }}</i></b></strong>
+                </h4>
+            </div>
+
             <div class="app-modal-body ">
 
                 <div class="row ">
@@ -457,16 +465,15 @@
                             [style]="{'height':'32px', 'margin-left':'25px','margin-right':'20px', 'background':'#388669'}"
                             size="small" label="Salvar" icon='pi pi-check' />
 
-                            <!-- Fechar -->
+                        <!-- Fechar -->
                         <p-button data-dismiss="modal" type="button" class="float-end ml-4 mb-2 " size="small"
-                            (click)="limparModal(); visibleDiario = false" label="Fechar"
+                            (click)="visibleDiario = false" label="Fechar"
                             [style]="{'height':'32px', 'background':'#1a82ce'}" />
 
                         <!-- Imprimir -->
-                        <p-button  icon='pi pi-print'
-                            [style]="{'height':'32px', 'margin-right':'25px'}" size="small"
+                        <p-button icon='pi pi-print' [style]="{'height':'32px', 'margin-right':'25px'}" size="small"
                             severity="contrast" label="Imprimir" class="float-end mb-1 m-t-0 " />
-                        
+
                     </div>
 
                 </div>
@@ -625,9 +632,9 @@
                     <pre> {{ diarioClasseForm.value | json}} </pre>
                 </div> -->
             </div>
-           </p-dialog>
+        </p-dialog>
 
-            <!-- SESSAO IMPRIMIR EBD - MODAL -->
+        <!-- SESSAO IMPRIMIR EBD - MODAL -->
     </form>
     <!-- MODAL DIARIOCLASSE FIM -->
 

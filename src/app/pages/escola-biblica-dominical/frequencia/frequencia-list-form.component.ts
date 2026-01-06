@@ -1,5 +1,5 @@
 // angular import
-import { AfterContentChecked, AfterViewInit, Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { AfterContentChecked, AfterViewInit, Component, DestroyRef, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { DecimalPipe, formatDate } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
@@ -7,7 +7,7 @@ import { SharedModule } from "src/app/theme/shared/shared.module";
 import { igrejaIdSignal, nomeIgrejaSignal, perfilSignal } from 'src/app/theme/shared/_helpers/shared-signals';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
-import { Subject, Subscription, takeUntil } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { PessoaDTO } from 'src/app/theme/shared/models/pessoa.dto';
 import { ClasseDTO } from 'src/app/theme/shared/models/classe.dto';
@@ -37,7 +37,9 @@ import { EscalaItemDTO, EscalaProfessorDTO } from 'src/app/theme/shared/models/e
 import { ProfessorDTO } from 'src/app/theme/shared/models/professor.dto';
 import { ProfessorService } from 'src/app/theme/shared/services/professor.service';
 import { EscalaService } from 'src/app/theme/shared/services/escala.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DialogModule } from 'primeng/dialog';
+import { PessoaService } from 'src/app/theme/shared/services/pessoa.service';
 
 // project import
 
@@ -80,7 +82,9 @@ import { DialogModule } from 'primeng/dialog';
 })
 export class FrequenciaListFormComponent implements OnInit, AfterContentChecked, AfterViewInit {
 
-  position: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'center';
+  positionEscala: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
+  positionDiario: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
+  positionLancamento: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
 
   @ViewChild('meuInput') totalMatriculados: ElementRef;
 
@@ -122,6 +126,8 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   // Signal que guarda os professores da classe selecionada no momento
   professoresDaClasse = signal<any[]>([]);
 
+  frequencias = signal<any[]>([]);
+
   // Signal que guarda a escala gerada para esta classe específica
   escalaDaClasseNormalizada = signal<EscalaItemDTO[]>([]);
   // escala = signal<EscalaProfessorDTO[]>([]);
@@ -145,6 +151,8 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   private aulaService = inject(AulaService);
   private professorService = inject(ProfessorService);
   private escalaService = inject(EscalaService);
+  private pessoaService = inject(PessoaService);
+  private destroyRef = inject(DestroyRef); // 1. Injete a referência de destruição
 
 
   currentAction!: string;
@@ -176,12 +184,11 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   totalFrequenciaSistema!: number;
   totalFrequenciaIgreja!: number;
 
-  frequencias: any[] = [];
-
   diarioClasses: any[] = [];
   diarioClasse: DiarioClasseDTO = new DiarioClasseDTO();
 
-  pessoas: PessoaDTO[] = [];
+  // pessoas: PessoaDTO[] = [];
+  pessoas = signal<PessoaDTO[]>([]);
   pessoa: PessoaDTO = new PessoaDTO();
   pessoaId: number;
 
@@ -230,7 +237,9 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
 
   constructor(
     private route: ActivatedRoute,
-  ) { }
+  ) {
+
+  }
 
   ngOnInit(): void {
     this.setCurrentAction();
@@ -238,23 +247,19 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     this.buildDiarioClasseForm();
     this.buildAulaForm();
     this.loadAlunos();
+    this.loadPessoas()
     this.printItems = this.getPrintItems;
     this.data = this.sharedService.dataAtualFormatada();
     // this.dataEscala = this.sharedService.dataAtualFormatada();
     this.checkDataFromAula();
   };
 
-  // showDialog(position: 'top') {
-  //   this.position = position;
-  //   this.visible = true;
-  // }
-
-
   ngAfterContentChecked() {
     //  this.setPageTitle();
   }
 
   setPageTitleFrequencias() {
+    this.positionLancamento = 'top';
     this.pageTitle = "Geração de frequencias";
     this.aulaForm.controls['licao'].setValue(null);
     this.aulaForm.controls['tema'].setValue(null);
@@ -296,6 +301,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   private buildFrequenciaForm() {
     this.frequenciaForm = this.formBuilder.group({
       aulaId: [null],
+      alunoId: [null],
       presente: [true],
       nomeClasse: [null],
       nomeAluno: [null],
@@ -347,6 +353,17 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     });
   }
 
+  // Função para o checkbox do cabeçalho seta 
+  setarTodos(status: boolean) {
+    this.frequencias.update(lista => {
+      return lista.map(frequencia => ({ ...frequencia, presente: status }));
+    });
+  }
+
+  // Força o Signal a notificar mudanças quando um checkbox individual é clicado
+  atualizarCalculos() {
+    // this.alunos.update(lista => [...lista]);
+  }
 
   loadFrequenciaLazy(event: any) {
     // this.loading.set(true);
@@ -357,7 +374,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
       this.data = this.sharedService.dataAtualFormatada(); // Substituir pelo ID da aula selecionada
     }
     this.classeService.getListClasseFromIgreja(this.igrejaId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
           this.totalRegistros = response.totalRegistros;
@@ -366,7 +383,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
             this.classeId.set(this.classes[0].id);
             this.nomeClasse = this.classes[0].nome;
           }
-          this.loadTodosFrequencias(this.igrejaId, this.classeId(), this.data, page, this.linesPerPage)
+          this.loadTodosFrequencias(this.igrejaId, this.classeId(), this.data, page, this.linesPerPage);
         }
       });
   }
@@ -374,9 +391,10 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   // Busca frequencias selecionadas
   loadTodosFrequencias(igrejaId, classeId, data, page, linesPerPage) {
     this.frequenciaService.getByPageTodosFrequenciaFromIgreja(igrejaId, classeId, data, page, linesPerPage)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
-          this.frequencias = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
+          this.frequencias.set(response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id));
           this.totalRegistros = response.totalElements;
           this.loading.set(false);
 
@@ -397,6 +415,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   // Carrega classes na grade da modal
   loadClassesModal(igrejaId: number, nome: string, pageModal: number, linesPerPageModal: number) {
     this.classeService.getByPageClasseFromIgreja(igrejaId, nome, pageModal, linesPerPageModal)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
           this.classesModal = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
@@ -418,6 +437,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   // Carrega diarioClasses na grade da modal
   loadDiarioClassesModal(igrejaId: number, data: string, pageModalDiario: number, linesPerPageModalDiario: number) {
     this.diarioClasseService.getByPageDiarioClasseFromIgreja(igrejaId, data, pageModalDiario, linesPerPageModalDiario)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
           this.diarioClasses = response['content'].sort((a: { id: number; }, b: { id: number; }) => a.id - b.id);
@@ -431,6 +451,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
 
   checkDataFromAula() {// Verifica se a data já foi lançada retorna true| false
     this.aulaService.checkDataFromAula(this.igrejaId, this.data)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
           this.dataCheckedAula.set(response);
@@ -439,9 +460,22 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
       });
   }
 
+  loadPessoas() {
+    const situacaoCadastral = 'Ativo'
+    this.pessoaService.getPessoasAtivasFromIgreja(this.igrejaId, situacaoCadastral)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .subscribe({
+        next: (response) => {
+          this.pessoas.set(response);
+        },
+        error: () => { }
+      });
+  }
+
+
   loadProfessores() {
     this.professorService.getListProfessorFromIgreja(this.igrejaId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
           this.professores = response.sort((a: { id: number; }, b: { id: number; }) => {
@@ -476,6 +510,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     const ano = parseInt(this.sharedService.anoDataString(this.dataEscala));
     this.ano = (this.sharedService.anoDataString(this.dataEscala));
     const professores = this.professoresDaClasse();
+    const pessoas = this.pessoas();
 
     const escalaNormalizada: any[] = [];
     const meses = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; // Jan a Dez
@@ -497,15 +532,32 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
 
       while (data.getMonth() === mes) {
         if (data.getDay() === 0) {
+
+          // 1. Obtém os objetos completos dos professores (que contêm pessoaId)
+          const profTitularObj = professores[indiceProfessor % professores.length];
+          const profSuplenteObj = professores[(indiceProfessor + 1) % professores.length];
+
           const professor = professores[indiceProfessor % professores.length].nome;
           const suplente = professores[(indiceProfessor + 1) % professores.length].nome;
 
+          // 2. Busca os dados da Pessoa para obter a abreviaturaMin
+          // Supõe-se que você tenha um array 'listaPessoas' disponível no seu componente
+          const pessoaTitular = pessoas.find(p => p.id === profTitularObj.pessoaId);
+          const pessoaSuplente = pessoas.find(p => p.id === profSuplenteObj.pessoaId);
+
+          // 3. Concatena: "Abrev. Nome" (ou apenas o nome se a pessoa não for encontrada)
+          const professorFormatado = pessoaTitular
+            ? `${pessoaTitular.abreviaturaMin} ${profTitularObj.nome}`
+            : profTitularObj.nome;
+
+          const suplenteFormatado = pessoaSuplente
+            ? `${pessoaSuplente.abreviaturaMin} ${profSuplenteObj.nome}`
+            : profSuplenteObj.nome;
+
           domingosDoMes.push({
-            // data: formatDate(data, 'EEE-dd', 'pt-BR').toUpperCase(), // Resultado: DOM-04 
-            // data: formatDate(data, 'EEE-dd', 'pt-BR').replace(/^\w/, (c) => c.toUpperCase()), // Resultado: Dom-04
             data: formatDate(data, 'dd/MM', 'en-US'),
-            professor: professor,
-            suplente: suplente,
+            professor: professorFormatado,
+            suplente: suplenteFormatado,
             isHeader: false
           });
           indiceProfessor++;
@@ -533,13 +585,6 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     return escalaNormalizada;
   }
 
-  // Estrategia para a modal impressão de escala
-  limparModal() {
-    // redirect/reload component page 
-    this.router.navigateByUrl('alunos', { skipLocationChange: true })
-      .then(() => this.router.navigate(['frequencias']));
-  }
-
   imprimirEscalaPronta() {
     this.gerarEscalaNormalizada();
     const payload: EscalaProfessorDTO = {
@@ -550,6 +595,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     };
 
     this.escalaService.gerarEscalaProfessorPdf(payload)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (res: Blob) => {
           // O 'res' aqui é o Blob. Criamos uma URL para o navegador entender.
@@ -611,16 +657,18 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
 
   loadDiarioClasses() {
     if (this.totalRegistros) {
+      this.positionDiario = 'top';
       this.loadDiarioClassesModal(this.igrejaId, this.data, this.pageModalDiario, this.linesPerPageModalDiario);
 
     } else {
-      Swal.fire({
-        title: 'Informação',
-        text: 'Não existe Lançamentos para esta data !!!',
-        icon: 'info',
-        showCloseButton: true,
-        showCancelButton: false
-      });
+      this.toastr.warning('Lançamentos inexistentes!');
+      // Swal.fire({
+      //   title: 'Informação',
+      //   text: 'Não existe Lançamentos para esta data !!!',
+      //   icon: 'info',
+      //   showCloseButton: true,
+      //   showCancelButton: false
+      // });
     }
   }
 
@@ -668,7 +716,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
 
   private loadClasse(id) {
     this.classeService.findById(id)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
           this.classe = response;
@@ -683,7 +731,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
 
   loadAlunos() {
     this.alunoService.getListAlunoFromIgreja(this.igrejaId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
           this.alunos.set(response);
@@ -694,6 +742,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   povoarArrayDeFrequencias() {
     if (this.classes && this.classes.length > 0) {
       this.aulaService.checkDataFromAula(this.igrejaId, this.data)
+        .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
         .subscribe({
           next: (response) => {
             const dataCheckdAula = response;
@@ -746,16 +795,18 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
               // payload.presencas = payload.presencas.map(p => ({ alunoId: p.alunoId, presente: p.presente }));
 
               // 4. Envia para o serviço
-              this.aulaService.createAulaComFrequencias(payload).subscribe({
-                next: () => {
-                  this.actionsForSuccess()
-                  this.frequenciaForm.reset(); // Limpa o formulário para a próxima
-                  this.grid.reset();
-                },
-                error: (error) => {
-                  this.error = error;
-                }
-              });
+              this.aulaService.createAulaComFrequencias(payload)
+                .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+                .subscribe({
+                  next: () => {
+                    this.actionsForSuccess()
+                    this.frequenciaForm.reset(); // Limpa o formulário para a próxima
+                    this.grid.reset();
+                  },
+                  error: (error) => {
+                    this.error = error;
+                  }
+                });
 
 
               // LANÇAMENTO NA TABELA DIARIO ////////////////////////////////////////////
@@ -787,6 +838,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
               // GRAVAÇAO DO DIARIO DE CLASSE NO BANCO
 
               this.diarioClasseService.salvarDiarioClasse(this.diarioClasses)
+                .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
                 .subscribe({
                   next: () => {
                   },
@@ -824,6 +876,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     diarioClasse.tema.toUpperCase();
     diarioClasse.totalPresentes = (diarioClasse.totalMatriculados - diarioClasse.totalAusentes)
     this.diarioClasseService.update(diarioClasse)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe(() => {
         this.gridDiario.reset();//atualiza a tabela do primeng
         this.toastr.success('Registro Atualizado com sucesso', 'Escala');
@@ -853,7 +906,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
         this.setPageTitleModalEbd('Escala de Professores');
         this.setDataModalEbd();
         this.classeSelecionada.set(this.classeId());
-        this.position = 'top';
+        this.positionEscala = 'top';
         this.visibleEscala = true; // Abre a modal
       },
 
@@ -909,7 +962,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
         showCloseButton: true,
         showCancelButton: false
       });
-      this.visibleLancamento=false;
+      this.visibleLancamento = false;
 
     } else {
       Swal.fire('Atualização', 'Registro atualizado com sucesso!', 'success');

@@ -2,6 +2,7 @@
 export interface FrequenciaItemDTO {
   alunoId: number;
   classeId: number;
+  nome: string;
   presente: boolean;
 }
 
@@ -11,6 +12,7 @@ export interface FrequenciaDTO {
 	igrejaId: number;
   classeId: number;
   aulaId: number;
+  alunoId: number;
   nomeAluno: string;
   nomeClasse: string;
   anoLetivo: string;

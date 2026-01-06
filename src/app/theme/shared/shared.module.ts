@@ -50,6 +50,8 @@ import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
+import { CheckboxModule } from 'primeng/checkbox';
+
 
 import localePt from '@angular/common/locales/pt';
 
@@ -81,6 +83,7 @@ registerLocaleData(localePt);
     IconFieldModule,
     InputMaskModule,
     RadioButtonModule,
+    CheckboxModule,
     ToastModule,
     TabViewModule,
     ToolbarModule,
@@ -118,6 +121,7 @@ registerLocaleData(localePt);
     ToastModule,
     InputNumberModule,
     MultiSelectModule,
+    CheckboxModule,
     InputMaskModule,
     RadioButtonModule,
     TableModule,
