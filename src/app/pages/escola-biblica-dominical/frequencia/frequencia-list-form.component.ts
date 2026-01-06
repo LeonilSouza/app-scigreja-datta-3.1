@@ -909,7 +909,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
         showCloseButton: true,
         showCancelButton: false
       });
-      this.modalFrequencia.hide();
+      this.visibleLancamento=false;
 
     } else {
       Swal.fire('Atualização', 'Registro atualizado com sucesso!', 'success');

@@ -256,14 +256,14 @@
                 <div class="modal-footer py-1" style="height: 38px;">
 
                     <!-- Fechar -->
-                    <button data-dismiss="modal" type="button" class=" ml-4 mb-3 " pButton pRipple
+                    <button data-dismiss="modal" type="button" class=" mx-4 mb-2 " pButton pRipple
                         (click)="visibleLancamento = false" label="Fechar" style="width: 9em; height: 30px; font-size: small;
                           border-radius: 6px; border: 0;background: #1a82ce;" icon='pi pi-wallet'>
                     </button>
 
                     <!-- Salvar -->
                     <strong><button [disabled]="aulaForm.invalid || dataCheckedAula() === true" type="submit"
-                            class=" float-end mb-3 mt-1" pButton pRipple label="Confirmar"
+                            class=" float-end mb-2" pButton pRipple label="Gerar"
                             style="width: 9em; border: 0;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
                             icon='pi pi-check'>
                         </button></strong>
@@ -451,22 +451,22 @@
                     </div>
 
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
-                        <!-- Imprimir -->
-                        <p-button routerLink="/diarioclasses" icon='pi pi-print'
-                            [style]="{'width':'10rem','height':'32px', 'margin-right':'25px'}" size="small"
-                            severity="contrast" label="Imprimir" class="float-left mb-1 m-t-0 " />
-
                         <!-- Salvar -->
                         <p-button [disabled]="diarioClasseForm.invalid" severity="success" type="submit"
                             class="float-end mb-1 m-t-0"
-                            [style]="{'width':'10rem', 'height':'32px', 'margin-left':'25px','margin-right':'20px', 'background':'#388669'}"
-                            size="small" label="OK" icon='pi pi-check' />
+                            [style]="{'height':'32px', 'margin-left':'25px','margin-right':'20px', 'background':'#388669'}"
+                            size="small" label="Salvar" icon='pi pi-check' />
 
-                        <!-- Fechar -->
+                            <!-- Fechar -->
                         <p-button data-dismiss="modal" type="button" class="float-end ml-4 mb-2 " size="small"
                             (click)="limparModal(); visibleDiario = false" label="Fechar"
-                            [style]="{'width':'4rem', 'height':'32px', 'background':'#1a82ce'}" />
+                            [style]="{'height':'32px', 'background':'#1a82ce'}" />
 
+                        <!-- Imprimir -->
+                        <p-button  icon='pi pi-print'
+                            [style]="{'height':'32px', 'margin-right':'25px'}" size="small"
+                            severity="contrast" label="Imprimir" class="float-end mb-1 m-t-0 " />
+                        
                     </div>
 
                 </div>
