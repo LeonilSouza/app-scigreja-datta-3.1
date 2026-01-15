@@ -82,6 +82,7 @@ import { values } from 'lodash-es';
 })
 export class FrequenciaListFormComponent implements OnInit, AfterContentChecked, AfterViewInit {
 
+  // Controle Dialog Modal
   positionEscala: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
   positionDiario: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
   positionLancamento: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
