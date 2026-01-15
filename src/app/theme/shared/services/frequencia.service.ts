@@ -3,8 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { Observable, throwError } from "rxjs";
 import { catchError, map } from 'rxjs/operators';
 import { API_CONFIG } from "src/app/app-config";
-import { FrequenciaDTO, FrequenciaResponse } from "../models/frequencia.dto";
-import { PageResponse } from "../models/page.model";
+import { FrequenciaDTO } from "../models/frequencia.dto";
 
 
 @Injectable()
@@ -15,34 +14,25 @@ export class FrequenciaService {
   constructor(public http: HttpClient) {
   }
 
+  atualizarFrequencias(lista: FrequenciaDTO[]): Observable<void> {
+  return this.http.post<void>(`${this.apiPath}/salvar-e-atualizar-diario`, lista);
+}
 
-  getByPageTodosFrequenciaFromIgreja(igrejaId, classeId, data, page, linesPerPage) {
 
-    return this.http.get(`${API_CONFIG.baseUrl}/frequencias/page/?igreja=${igrejaId}&classe=${classeId}&data=${data}&page=${page}&linesPerPage=${linesPerPage}`)
+  getByListFrequenciaFromIgreja(igrejaId, classeId, data) {
+
+    return this.http.get(`${API_CONFIG.baseUrl}/frequencias/lista/?igreja=${igrejaId}&classe=${classeId}&data=${data}`)
       .pipe(
         catchError(this.handleError)
       );
   }
 
-  getListFrequenciaFromIgreja(igrejaId, data) {
+  // getListFrequenciaFromIgreja(igrejaId, data) {
 
-    return this.http.get(`${API_CONFIG.baseUrl}/frequencias/list/?igreja=${igrejaId}&data=${data}`)
-      .pipe(
-        catchError(this.handleError)
-      );
-  }
-
-
-  // update(frequencia: FrequenciaDTO): Observable<FrequenciaDTO> {
-  //   const url = `${this.apiPath}/${frequencia.aulaId}`;
-
-  //   return this.http.put(url, frequencia)
+  //   return this.http.get(`${API_CONFIG.baseUrl}/frequencias/list/?igreja=${igrejaId}&data=${data}`)
   //     .pipe(
-  //       // map(this.jsonDataToFrequencia),
-  //       catchError(this.handleError),
-  //       //map(this.jsonDataToFrequenciaFuncao)
-  //       map(() => frequencia)
-  //     )
+  //       catchError(this.handleError)
+  //     );
   // }
 
 
@@ -55,11 +45,6 @@ export class FrequenciaService {
       map(() => null)
     )
   }
-
-
-  // private jsonDataToFrequencia(jsonData: any): FrequenciaDTO {
-  //   return (new FrequenciaDTO(), jsonData);
-  // }
 
   private handleError(error: any): Observable<any> {
     console.log("ERRO NA REQUISIÇÃO => ", error);

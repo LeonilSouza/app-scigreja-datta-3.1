@@ -70,8 +70,6 @@ TEM que colocar no scss do componente*/
 //Fim select
 
 
-
-
 //p-multSelect
 
 :host ::ng-deep.p-multiselect-filter {
@@ -79,6 +77,7 @@ TEM que colocar no scss do componente*/
 }
 //FIM p-multSelect
 
-
+.status-presente { color: #10b981 }
+.status-ausente { color: #ef4444 }
       
 

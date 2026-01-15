@@ -3,12 +3,13 @@ export interface FrequenciaItemDTO {
   alunoId: number;
   classeId: number;
   nome: string;
-  presente: boolean;
+  presente: boolean | null;
 }
 
 // Representa o corpo completo da chamada que será enviado ao Spring
 export interface FrequenciaDTO {
-  presente: boolean;
+  id: number;
+  presente: boolean | null;
 	igrejaId: number;
   classeId: number;
   aulaId: number;
@@ -20,17 +21,18 @@ export interface FrequenciaDTO {
   presencas: FrequenciaItemDTO[];
 }
 
-// Opcional: Interface para carregar os dados da Aula (para preencher o Select)
-export interface Aula {
-  id: number;
-  data?: string; // Usamos string para facilitar a manipulação de datas do JSON
+export interface TotaisDiarioDTO {
+  classeId: number;
+  nomeClasse: string;
+  totalPresentes: number;
+  totalAusentes: number;
+  data: string; // Necessário para o vínculo no Banco de Dados
 }
-
 
 // src/app/models/frequencia.model.ts
 export interface FrequenciaResponse {
   id: number;
-  presente: boolean;
+ presente: boolean | null;
   aluno: {
     id: number;
     nome: string; // Adicione os campos que sua entidade Aluno possui

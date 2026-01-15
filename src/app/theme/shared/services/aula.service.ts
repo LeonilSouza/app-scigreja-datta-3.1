@@ -16,7 +16,7 @@ export class AulaService {
 
   createAulaComFrequencias(dto: AulaNewDTO): Observable<string> {
     return this.http.post(`${this.apiPath}`, dto, {
-      // Como o seu Controller no Java retorna ResponseEntity.ok("Mensagem"),
+      // Como o  Controller no Java retorna ResponseEntity.ok("Mensagem"),
       // precisamos avisar o Angular para tratar a resposta como texto, não JSON.
       responseType: 'text'
     });

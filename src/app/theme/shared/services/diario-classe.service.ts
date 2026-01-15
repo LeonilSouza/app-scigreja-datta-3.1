@@ -21,12 +21,12 @@ export class DiarioClasseService {
         catchError(this.handleError));
   }
 
-   getById(id: number): Observable<DiarioClasseDTO> {
+  getById(id: number): Observable<DiarioClasseDTO> {
     const url = `${this.apiPath}/${id}`;
 
     return this.http.get(url).pipe(
       catchError(this.handleError),
-       map(this.jsonDataToDiarioClasse)
+      map(this.jsonDataToDiarioClasse)
     )
   }
 
@@ -38,15 +38,15 @@ export class DiarioClasseService {
       );
   }
 
-   getByPageDiarioClasseFromIgreja(igrejaId, data, page, linesPerPage) {
+  getByPageDiarioClasseFromIgreja(igrejaId, data, page, linesPerPage) {
 
-        return this.http.get(`${API_CONFIG.baseUrl}/diarioclasses/page/?igreja=${igrejaId}&data=${data}&page=${page}&linesPerPage=${linesPerPage}`)
-          .pipe(
-            catchError(this.handleError)
-        );
-      }
+    return this.http.get(`${API_CONFIG.baseUrl}/diarioclasses/page/?igreja=${igrejaId}&data=${data}&page=${page}&linesPerPage=${linesPerPage}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }''
 
-   salvarDiarioClasse(diarioClasse: any[]): Observable<any> {
+  salvarDiarioClasse(diarioClasse: any[]): Observable<any> {
     // O Angular/HttpClient automaticamente serializa o array para JSON
     return this.http.post<any>(this.apiPath2, diarioClasse);
   }

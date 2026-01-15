@@ -158,7 +158,7 @@
                         <!-- Classificação -->
                         <div class="form-group col-md-4">
                             <label>Classificação</label>
-                            <p-select class="w-full md  mb-2" formControlName="classificacao" [options]="classificacao"
+                            <p-select [style]="{'width':'100%','height':'35px'}" class="w-full md  mb-2" formControlName="classificacao" [options]="classificacao"
                                 [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
                                 optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
                                 [autofocus]="false" optionValue="nome" placeholder="Selecione uma Classificação">
@@ -175,10 +175,11 @@
                         <!-- Status -->
                         <div class="form-group col-md-4">
                             <label>Status</label>
-                            <p-select class="w-full md  mb-2" formControlName="status" [options]="status"
-                                [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
-                                optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
-                                [autofocus]="false" optionValue="nome" placeholder="Selecione um status">
+                            <p-select [style]="{'width':'100%','height':'35px'}" class="w-full md  mb-2"
+                                formControlName="status" [options]="status" [editable]="false" [filter]="false"
+                                filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="true"
+                                dropdownIcon="pi pi-chevron-down" [autofocus]="false" optionValue="nome"
+                                placeholder="Selecione um status">
                             </p-select>
                         </div>
 

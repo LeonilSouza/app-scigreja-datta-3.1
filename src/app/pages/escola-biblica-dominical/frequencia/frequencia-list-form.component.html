@@ -1,38 +1,17 @@
 <!-- Cards Estaticticas -->
 <section class="main-content">
 
-    <!-- <div class="card-border-c-blue row col-12 mb-3 border-2 shadow py-3 pb-0 m-l-0">
-        <div class="form-group  align-items-center">
-            <p-button (click)="marcaPresenteAusente('Presente')" class=" m-b-2 float-left" size="small"
-                icon='pi pi-thumbs-up' label="Marca Presente" severity="success" />
-
-            <p-button (click)="marcaPresenteAusente('Ausente')" class="mx-3" size="small" icon='pi pi-thumbs-down'
-                label="Marca Ausente" severity="warn" />
-
-            <p-button (click)="marcaPresenteAusente('Aguardando')" class=" m-b-1" size="small" icon='pi pi-question'
-                label="Aguardando" severity="help" />
-
-
-            <p-button (click)="marcaPresenteAusente('Presentes')" class="mx-3" size="small" icon='pi pi-check'
-                label="Presentes" severity="success" />
-
-
-            <p-button (click)="marcaPresenteAusente('Ausentes')" class=" mx-3" size="small" icon='pi pi-times'
-                label="Ausentes" severity="danger" />
-        </div>
-    </div> -->
-
     <!-- Fim Cards Estaticticas -->
 
-    <div class="card-border-c-blue row col-12 mb-3 border-2 shadow py-2 m-l-0">
+    <div class="card-border-c-blue row col-12 mb-2 border-2 shadow py-2 m-l-0">
 
-        <span class="col-sm-2 mt-2 mb-2">
+        <span class="col-sm-2 mt-2 mb-1">
             <i class="fas fa-plus f-28 text-success"></i>    <p-button (click)="imodo=0; setData(); 
              setPageTitleFrequencias(); visibleLancamento = true;" severity="info" label="Lançamento" size="small" />
         </span>
 
         <!-- data -->
-        <span class=" col-sm-2 mb-2 mt-2">
+        <span class=" col-sm-2 mb-1 mt-2">
             <p-floatlabel variant="on">
                 <p-datepicker (ngModelChange)="onCloseData($event)" [style]="{'width':'100%','height':'35px'}"
                     [monthNavigator]="true" [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true"
@@ -43,7 +22,7 @@
         </span>
 
         <!-- Classe-->
-        <span class="col-sm-4 mb-0 mt-2 mb-2 ">
+        <span class="col-sm-4 mb-0 mt-2 mb-1 ">
             <p-floatlabel variant="on">
                 <span class=" col-sm-3 mt-0 ">
                     <p-select style="min-height: 35px; width: 100%;" inputId=" on_label"
@@ -59,7 +38,7 @@
         <!-- <span class="col-sm-1"> </span> -->
 
         @if(totalRegistros){
-        <span class="col-sm-2 mb-0 mt-2 ">
+        <span class="col-sm-2 mb-1 mt-2 ">
             <p-button
                 (click)="loadDiarioClasses(); visibleDiario = true ; setPageTitleDiarioClasse() ; resetModalDiario()"
                 [style]="{'height':'35px', 'width':'100%', 'border-radius':'6px', 'margin-left':'5px'}" size="small"
@@ -68,14 +47,14 @@
         }
 
         @if(!totalRegistros){
-        <span class="col-sm-2 mb-0 mt-2 ">
+        <span class="col-sm-2 mb-1 mt-2 ">
             <p-button (click)="loadDiarioClasses(); visibleDiario = false"
                 [style]="{'height':'35px', 'width':'100%', 'border-radius':'6px', 'margin-left':'10px'}" size="small"
                 class="float-end" label="Diário de Classe" severity="info" />
         </span>
         }
 
-        <span class=" col-sm-2 mb-2 mt-2">
+        <span class=" col-sm-2 mb-1 mt-2">
             <p-splitButton class="float-end " label="Relatórios" icon="pi pi-print" [model]="printItems"
                 severity="contrast" size="small"
                 [style]="{'height':'35px',  'border-radius':'6px', 'margin-left':'10px'}" />
@@ -83,35 +62,56 @@
 
     </div>
 
+    <div class="row showGridlines mx-0 py-2 mb-2 mt-0 shadow-1 border-round bg-gray-900 text-white">
+
+         <span class="col-sm-6 text-right"></span>
+
+        <div class="col-sm-2  ">
+            <small class="f-14 text-rigth">Presentes</small>
+            <span class="f-16 font-bold text-green-400  mx-3 float-left">{{ totaisRelatorios().presentes }}</span>
+        </div>
+
+        <div class="col-sm-2 text-left">
+            <small class="f-14">Ausentes</small>
+            <span class="f-16 font-bold text-red-400 mx-4 float-left" style="align-items: center;">{{ totaisRelatorios().ausentes }}</span>
+        </div>
+
+        <div class="col-sm-2 text-left">
+            <small class="f-14">Total Alunos</small>
+            <span class="f-16 font-bold text-blue-400 mx-4 float-left" style="align-items: center;">{{ totaisRelatorios().total }}</span>
+        </div>
+    </div>
+
+
     <app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-blue shadow  border-1">
         <div class="p-0">
             <p-table #dtfrequencia [value]="frequencias()"
-                [globalFilterFields]="['nome', 'country.name', 'representative.name', 'status']" [lazy]="true"
-                responsiveLayout="stack" (onLazyLoad)="loadFrequenciaLazy($event)" [showCurrentPageReport]="true"
-                [totalRecords]="totalRegistros" showGridlines stripedRows [rowsPerPageOptions]="[10, 30, 50, 100]"
+                [globalFilterFields]="['nome', 'country.name', 'representative.name', 'status']"
+                responsiveLayout="stack"  [showCurrentPageReport]="true"
+                showGridlines stripedRows [rowsPerPageOptions]="[10, 30, 50, 100]"
                 currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
-                [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado" [loading]="loading()">
+                [rows]="10" emptyMessage="Nenhum registro encontrado">
 
 
                 <ng-template #header>
                     <tr>
-                        <th style="width: 4rem"
-                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; ; border-top-left-radius: 5px">
-                            <!-- Checkbox Selecionar Todos -->
-                            <p-checkbox (onChange)="setarTodos($event.checked)" [binary]="true"></p-checkbox>
+                        <th class="py-2"
+                            style="width: 3rem; background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; ; border-top-left-radius: 5px">
+                            <p-checkbox (onChange)="setarTodos($event.checked)" [binary]="true"  [placement]="'bottom'" ngbTooltip="Seleciona Todos."/>
                         </th>
-                        <th class="col-date"
+
+                         <th class="f-12 col-data-content-4"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                            <b>Aluno</b>
+                        </th>
+
+                        <th class="col-data-100 py-2"
                             style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px">
                             <b>Data</b>
                         </th>
                         <th class="col-date"
                             style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
                             <b>Frequência</b>
-                        </th>
-
-                        <th class="f-12 col-data-content-4"
-                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
-                            <b>Aluno</b>
                         </th>
 
                         <th class="col-data-content-4"
@@ -132,41 +132,43 @@
                 </ng-template>
 
                 <ng-template #body let-frequencia>
-                    <tr (click)="linhaClicadaFrequencia(frequencia)" [ngClass]="{'linha-destaque': frequencia.id}">
-
+                    <tr>
                         <td>
                             <!-- Checkbox Individual vinculado ao Signal -->
-                            <p-checkbox [binary]="true" (onChange)="atualizarCalculos()"></p-checkbox>
+                            <p-checkbox [(ngModel)]="frequencia.presente" [binary]="true"
+                                (onChange)="setarUm(frequencia.alunoId, $event.checked)">></p-checkbox>
                         </td>
 
-                        <td (click)="linhaClicadaFrequencia(frequencia)" class="col-date py-2"
-                            style=" font-size: 13px; cursor: pointer;">{{ frequencia.data
-                            }}
-                        </td>
-
-                        <!-- @if(linhaSelecionada == frequencia.id ){ -->
-                        <td (click)="linhaClicadaFrequencia(frequencia)" class="col-date py-2"
-                            style="font-size: 13px; cursor: pointer ">{{
-                            frequencia.presente ? '✅ Presente' : '❌ Ausente'
-                            }}</td>
-                        <!-- } -->
-
-                        <td (click)="linhaClicadaFrequencia(frequencia)" class="col-data-content-4 py-2"
-                            style="font-size: 13px; cursor: pointer; ">{{
+                         <td class="col-data-content-4 py-2" style="font-size: 13px; cursor: pointer; ">{{
                             frequencia.nomeAluno
                             }}</td>
 
-                        <td (click)="linhaClicadaFrequencia(frequencia)" class="col-data-content-4 py-2"
-                            style=" font-size: 13px ; cursor: pointer;">{{ frequencia.nomeClasse }}
-                        </td>
-
-                        <td (click)="linhlinhaClicadaFrequenciaClicada(frequencia)" class="col-date py-2"
-                            style=" font-size: 13px; cursor: pointer;">{{ frequencia.anoLetivo
+                        <td class="col-date py-2" style=" font-size: 13px; cursor: pointer;">{{ frequencia.data
                             }}
                         </td>
 
-                        <td (click)="linhaClicadaFrequencia(frequencia)" class="col-date py-2"
-                            style=" font-size: 13px; cursor: pointer;">{{ frequencia.trimestre + "º Trimestre"
+                        @if(frequencia.presente === true){
+                        <td class="col-date py-2 status-presente" style="font-size: 13px; cursor: pointer ">{{
+                            frequencia.presente === true ? '✅ Presente' :''
+                            }}</td>
+                        }
+
+                        @if(frequencia.presente === false){
+                        <td class="col-date py-2 status-ausente" style="font-size: 13px; cursor: pointer ">{{
+                            frequencia.presente === false ? '❌ Ausente' :''
+                            }}</td>
+                        }
+
+                        <td class="col-data-content-4 py-2" style=" font-size: 13px ; cursor: pointer;">{{
+                            frequencia.nomeClasse }}
+                        </td>
+
+                        <td class="col-date py-2" style=" font-size: 13px; cursor: pointer;">{{ frequencia.anoLetivo
+                            }}
+                        </td>
+
+                        <td class="col-date py-2" style=" font-size: 13px; cursor: pointer;">{{ frequencia.trimestre +
+                            "º Trimestre"
                             }}
                         </td>
                     </tr>
@@ -180,7 +182,7 @@
         <p-dialog [modal]="true" [(visible)]="visibleLancamento" [position]="positionLancamento"
             [dismissableMask]="false" [style]="{width: '60vw', 'min-height': '50vh', height: 'auto'}"
             [closeOnEscape]="false" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false"
-            [resizable]="false">
+            [resizable]="false" [transitionOptions]="'500ms ease-out'">
 
             <div class="card header mb-0 mt-0" style="height: 2rem;">
                 <h4 class="f-24" style="color: black"><b>{{ pageTitle }}</b>
@@ -290,7 +292,8 @@
                 <p-dialog header="Edit Profile" [modal]="true" [(visible)]="visibleEscala" [position]="positionEscala"
                     [dismissableMask]="false" [style]="{width: '60vw', 'min-height': '40vh', height: 'auto'}"
                     [closeOnEscape]="false" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false"
-                    [resizable]="false" [contentStyle]="{ 'overflow': 'visible' }">
+                    [resizable]="false" [contentStyle]="{ 'overflow': 'visible' }"
+                    [transitionOptions]="'500ms ease-out'">
                     <h5 class="align-center"><strong>{{ pageTitle +":    "}} <span class="text-primary f-16">{{
                                 nomeClasse + "  "+
                                 professoresDaClasse().length+ "  Professores" }} </span></strong></h5>
@@ -354,7 +357,8 @@
     <form [formGroup]="diarioClasseForm" autocomplete="off" (submit)="submitFormDiarioClasse()">
         <p-dialog [modal]="true" [(visible)]="visibleDiario" [position]="positionDiario" [dismissableMask]="false"
             [style]="{width: '70vw', 'min-height': '50vh', height: 'auto'}" [closeOnEscape]="false"
-            [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false">
+            [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false"
+            [transitionOptions]="'500ms ease-out'">
 
             <div class="card header mb-0 mt-0" style="height: 2rem;">
                 <h4 class="f-24" style="color: black"><b>{{ pageTitle }}</b>:     
@@ -471,7 +475,7 @@
                             [style]="{'height':'32px', 'background':'#1a82ce'}" />
 
                         <!-- Imprimir -->
-                        <p-button icon='pi pi-print' [style]="{'height':'32px', 'margin-right':'25px'}" size="small"
+                        <p-button (click)="imprimirDiarioClasse()" icon='pi pi-print' [style]="{'height':'32px', 'margin-right':'25px'}" size="small"
                             severity="contrast" label="Imprimir" class="float-end mb-1 m-t-0 " />
 
                     </div>
@@ -544,14 +548,14 @@
                             <ng-template #body let-diarioClasse>
                                 <tr (click)="linhaClicadaDiario(diarioClasse)"
                                     [ngClass]="{'linha-destaque': diarioClasse.id}">
-                                    <td [style.color]="diarioClasse.totalMatriculados !== null && diarioClasse.totalPresentes !== null ? 'green' : 'black'"
+                                    <td [style.color]="diarioClasse.totalMatriculados !== null && diarioClasse.totalRevistas !== null ? 'green' : 'black'"
                                         (click)="loadDiarioClasse(diarioClasse)" class="col-foto py-1"
                                         style="cursor: pointer; font-size: 13px">{{ diarioClasse.data
                                         }}
                                     </td>
 
                                     @if(linhaSelecionada !== diarioClasse.id ){
-                                    <td [style.color]="diarioClasse.totalMatriculados !== null && diarioClasse.totalPresentes !== null ? 'green' : 'black'"
+                                    <td [style.color]="diarioClasse.totalMatriculados !== null && diarioClasse.totalRevistas !== null ? 'green' : 'black'"
                                         class="col-data-content-3 py-1" (click)="loadDiarioClasse(diarioClasse)"
                                         style=" font-size: 13px; cursor: pointer">{{ diarioClasse.nomeClasse}}
                                     </td>
@@ -567,46 +571,46 @@
                                     </td>
                                     }
 
-                                    <td [style.color]="diarioClasse.totalMatriculados !== null && diarioClasse.totalPresentes !== null ? 'green' : 'black'"
+                                    <td [style.color]="diarioClasse.totalMatriculados !== null && diarioClasse.totalRevistas !== null ? 'green' : 'black'"
                                         (click)="loadDiarioClasse(diarioClasse)" class="col-data-100 py-1"
                                         style="cursor: pointer; font-size: 13px">{{
                                         diarioClasse.totalMatriculados
                                         }}
                                     </td>
 
-                                    <td [style.color]="diarioClasse.totalMatriculados !== null && diarioClasse.totalPresentes !== null ? 'green' : 'black'"
+                                    <td [style.color]="diarioClasse.totalMatriculados !== null && diarioClasse.totalRevistas !== null ? 'green' : 'black'"
                                         (click)="loadDiarioClasse(diarioClasse)" class="col-data-100 py-1"
                                         style="cursor: pointer; font-size: 13px">{{
                                         diarioClasse.totalAusentes
                                         }}
                                     </td>
 
-                                    <td [style.color]="diarioClasse.totalMatriculados !== null && diarioClasse.totalPresentes !== null ? 'green' : 'black'"
+                                    <td [style.color]="diarioClasse.totalMatriculados !== null && diarioClasse.totalRevistas !== null ? 'green' : 'black'"
                                         (click)="loadDiarioClasse(diarioClasse)" class="col-data-100 py-1"
                                         style="cursor: pointer; font-size: 13px">{{
                                         diarioClasse.totalPresentes
                                         }}
                                     </td>
 
-                                    <td [style.color]="diarioClasse.totalMatriculados !== null && diarioClasse.totalPresentes !== null ? 'green' : 'black'"
+                                    <td [style.color]="diarioClasse.totalMatriculados !== null && diarioClasse.totalRevistas !== null ? 'green' : 'black'"
                                         (click)="loadDiarioClasse(diarioClasse)" class="col-data-100 py-1"
                                         style="cursor: pointer; font-size: 13px">{{
                                         diarioClasse.totalVisitantes
                                         }}
                                     </td>
-                                    <td [style.color]="diarioClasse.totalMatriculados !== null && diarioClasse.totalPresentes !== null ? 'green' : 'black'"
+                                    <td [style.color]="diarioClasse.totalMatriculados !== null && diarioClasse.totalRevistas !== null ? 'green' : 'black'"
                                         (click)="loadDiarioClasse(diarioClasse)" class="col-data-100 py-1"
                                         style="cursor: pointer; font-size: 13px">{{
                                         diarioClasse.totalBiblias
                                         }}
                                     </td>
-                                    <td [style.color]="diarioClasse.totalMatriculados !== null && diarioClasse.totalPresentes !== null ? 'green' : 'black'"
+                                    <td [style.color]="diarioClasse.totalMatriculados !== null && diarioClasse.totalRevistas !== null ? 'green' : 'black'"
                                         (click)="loadDiarioClasse(diarioClasse)" class="col-data-100 py-1"
                                         style="cursor: pointer; font-size: 13px">{{
                                         diarioClasse.totalRevistas
                                         }}
                                     </td>
-                                    <td [style.color]="diarioClasse.totalMatriculados !== null && diarioClasse.totalPresentes !== null ? 'green' : 'black'"
+                                    <td [style.color]="diarioClasse.totalMatriculados !== null && diarioClasse.totalRevistas !== null ? 'green' : 'black'"
                                         (click)="loadDiarioClasse(diarioClasse)" class="col-data-100 py-1"
                                         style="cursor: pointer; font-size: 13px">{{
                                         diarioClasse.totalOfertas | currency:' '

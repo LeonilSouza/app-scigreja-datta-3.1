@@ -1,5 +1,5 @@
 // angular import
-import { AfterContentChecked, AfterViewInit, Component, DestroyRef, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { AfterContentChecked, AfterViewInit, Component, computed, DestroyRef, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { DecimalPipe, formatDate } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
@@ -7,7 +7,7 @@ import { SharedModule } from "src/app/theme/shared/shared.module";
 import { igrejaIdSignal, nomeIgrejaSignal, perfilSignal } from 'src/app/theme/shared/_helpers/shared-signals';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
-import { Subject, Subscription } from 'rxjs';
+import { lastValueFrom, Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { PessoaDTO } from 'src/app/theme/shared/models/pessoa.dto';
 import { ClasseDTO } from 'src/app/theme/shared/models/classe.dto';
@@ -30,7 +30,7 @@ import { UiModalComponent } from 'src/app/theme/shared/components/modal/ui-modal
 import { AlunoService } from 'src/app/theme/shared/services/aluno.service';
 import { AlunoDTO } from 'src/app/theme/shared/models/aluno.dto';
 import { FrequenciaService } from 'src/app/theme/shared/services/frequencia.service';
-import { FrequenciaDTO, FrequenciaResponse } from 'src/app/theme/shared/models/frequencia.dto';
+import { FrequenciaDTO } from 'src/app/theme/shared/models/frequencia.dto';
 import { AulaService } from 'src/app/theme/shared/services/aula.service';
 import { AulaNewDTO } from 'src/app/theme/shared/models/aula-new-dto.dto';
 import { EscalaItemDTO, EscalaProfessorDTO } from 'src/app/theme/shared/models/escala-professor.dto';
@@ -40,8 +40,8 @@ import { EscalaService } from 'src/app/theme/shared/services/escala.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DialogModule } from 'primeng/dialog';
 import { PessoaService } from 'src/app/theme/shared/services/pessoa.service';
-
-// project import
+import { API_CONFIG } from 'src/app/app-config';
+import { values } from 'lodash-es';
 
 @Component({
   selector: 'app-frequencia-ebd-list-form',
@@ -110,11 +110,8 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   igrejaId = igrejaIdSignal();
   perfil = perfilSignal();
 
-  presencas = signal<FrequenciaResponse[]>([]);
-
   loading = signal(false);
 
-  // Escala de Professores
   // Índice do primeiro registro da página atual
   first = signal(0);
   rows = 10; // Quantidade de domingos por página
@@ -126,19 +123,13 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   // Signal que guarda os professores da classe selecionada no momento
   professoresDaClasse = signal<any[]>([]);
 
-  frequencias = signal<any[]>([]);
+  frequencias = signal<FrequenciaDTO[]>([]);
 
   // Signal que guarda a escala gerada para esta classe específica
   escalaDaClasseNormalizada = signal<EscalaItemDTO[]>([]);
-  // escala = signal<EscalaProfessorDTO[]>([]);
 
 
   linhaSelecionada: number = 0;
-
-  controleCheckData = signal<boolean>(false);
-  // frequencias = this.frequenciaSignal();
-
-  private destroy$: Subject<void> = new Subject<void>();
 
   private classeService = inject(ClasseService);
   private router = inject(Router);
@@ -213,8 +204,6 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   ano: string;
   faixaEtaria: string;
 
-  // frequencia: string = 'Aguardando-1';
-
   error = '';
 
   classeSelecionada = signal<any>(null); // Inicializa explicitamente com null
@@ -250,9 +239,21 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     this.loadPessoas()
     this.printItems = this.getPrintItems;
     this.data = this.sharedService.dataAtualFormatada();
-    // this.dataEscala = this.sharedService.dataAtualFormatada();
     this.checkDataFromAula();
+    this.loadFrequencias();
   };
+
+  // Signal Computada: Ela se recalcula automaticamente sempre que a lista muda
+  totaisRelatorios = computed(() => {
+    const lista = this.frequencias();
+
+    const presentes = lista.filter(aluno => aluno.presente === true).length;
+    const ausentes = lista.filter(aluno => aluno.presente === false).length;
+    const total = lista.length;
+
+    return { presentes, ausentes, total };
+  });
+
 
   ngAfterContentChecked() {
     //  this.setPageTitle();
@@ -265,6 +266,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     this.aulaForm.controls['tema'].setValue(null);
     this.aulaForm.controls['data'].setValue(this.sharedService.dataAtualFormatada());
   }
+
 
   setPageTitleDiarioClasse() {
     this.pageTitle = "Diario de Classe";
@@ -349,27 +351,41 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
       totalRevistas: [null, [Validators.required]],
       totalBiblias: [null, [Validators.required]],
       percentualPresentes: [null],
+      classeId: [Validators.required],
       igrejaId: [this.igrejaId, [Validators.required]]
     });
   }
 
-  // Função para o checkbox do cabeçalho seta 
-  setarTodos(status: boolean) {
+  async setarTodos(valor: boolean) {
+    // 1. Atualiza a Signal localmente para o usuário ver a mudança visual imediata
     this.frequencias.update(lista => {
-      return lista.map(frequencia => ({ ...frequencia, presente: status }));
+      lista.forEach(aluno => aluno.presente = valor);
+      return [...lista];
     });
+
+    // 2. Salva no banco de dados. 
+    try {
+      await lastValueFrom(this.frequenciaService.atualizarFrequencias(this.frequencias()));
+    } catch (error) {
+      this.toastr.error('erro!');
+    }
   }
 
-  // Força o Signal a notificar mudanças quando um checkbox individual é clicado
-  atualizarCalculos() {
-    // this.alunos.update(lista => [...lista]);
+  setarUm(id: number, valor: boolean) {
+    this.frequencias.update(lista =>
+      lista.map(a => a.id === id ? { ...a, presente: valor } : a));
+    if (this.frequencias() && this.frequencias().length > 0) {
+      try {
+        // Envia para o novo método que salva Frequência + Diário
+        lastValueFrom(this.frequenciaService.atualizarFrequencias(this.frequencias()));
+
+      } catch (err) {
+        this.toastr.error('Erro!');
+      }
+    }
   }
 
-  loadFrequenciaLazy(event: any) {
-    // this.loading.set(true);
-    const page = event!.first! / event!.rows!; // divisão para encontrar a paginações
-    this.page = page;
-    this.linesPerPage = event.rows;
+  loadFrequencias() {
     if (!this.data) {
       this.data = this.sharedService.dataAtualFormatada(); // Substituir pelo ID da aula selecionada
     }
@@ -377,26 +393,25 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
-          this.totalRegistros = response.totalRegistros;
+          this.totalRegistros = response.length;
           if (response.length > 0 && !this.classeId()) {
             this.classes = response;
             this.classeId.set(this.classes[0].id);
             this.nomeClasse = this.classes[0].nome;
           }
-          this.loadTodosFrequencias(this.igrejaId, this.classeId(), this.data, page, this.linesPerPage);
+          this.listaFrequencias(this.igrejaId, this.classeId(), this.data);
         }
       });
   }
 
   // Busca frequencias selecionadas
-  loadTodosFrequencias(igrejaId, classeId, data, page, linesPerPage) {
-    this.frequenciaService.getByPageTodosFrequenciaFromIgreja(igrejaId, classeId, data, page, linesPerPage)
+  listaFrequencias(igrejaId, classeId, data) {
+    this.frequenciaService.getByListFrequenciaFromIgreja(igrejaId, classeId, data)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
-          this.frequencias.set(response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id));
-          this.totalRegistros = response.totalElements;
-          this.loading.set(false);
+          this.frequencias.set([...response.sort((a: { id: number; }, b: { id: number; }) => b.id - a.id)]);
+          this.totalRegistros = response.length;
 
         },
         error: (error) => {
@@ -537,9 +552,6 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
           const profTitularObj = professores[indiceProfessor % professores.length];
           const profSuplenteObj = professores[(indiceProfessor + 1) % professores.length];
 
-          const professor = professores[indiceProfessor % professores.length].nome;
-          const suplente = professores[(indiceProfessor + 1) % professores.length].nome;
-
           // 2. Busca os dados da Pessoa para obter a abreviaturaMin
           // Supõe-se que você tenha um array 'listaPessoas' disponível no seu componente
           const pessoaTitular = pessoas.find(p => p.id === profTitularObj.pessoaId);
@@ -581,7 +593,6 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     });
 
     this.escalaDaClasseNormalizada.set(escalaNormalizada);
-    // this.imprimirEscalaPronta();
     return escalaNormalizada;
   }
 
@@ -609,30 +620,12 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
 
   }
 
-
-  loadDiarioClasse(diarioClasse) {    // Recebendo item do ngFor do Html passado como parametro no evento (click)="loadMinisterio(item)"
-    this.diarioClasse = this.diarioClasses.filter(diario => diario.id == diarioClasse.id)[0];
-    this.diarioClasseForm.patchValue(this.diarioClasse)
-
-  }
-
-  linhaClicadaDiario(diarioClasse: any) {
-    this.linhaSelecionada = diarioClasse.id;
-  }
-
-  linhaClicadaFrequencia(frequencia: any) {
-    this.frequenciaForm.controls['nomeClasse'].setValue(frequencia.nome);
-    this.linhaSelecionada = frequencia.id;
-    this.classeId.set(frequencia.classeId);
-    this.frequencia = frequencia;
-  }
-
   resetModal() {
     this.frequenciaForm.reset();
   }
 
   resetModalDiario() {
-    // this.diarioClasseForm.reset();
+    this.diarioClasseForm.reset()
     this.diarioClasseForm.controls['igrejaId'].setValue(this.igrejaId);
   }
 
@@ -662,29 +655,21 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
 
     } else {
       this.toastr.warning('Lançamentos inexistentes!');
-      // Swal.fire({
-      //   title: 'Informação',
-      //   text: 'Não existe Lançamentos para esta data !!!',
-      //   icon: 'info',
-      //   showCloseButton: true,
-      //   showCancelButton: false
-      // });
     }
   }
 
-  onChangeFrequencia(id) {
+  async onChangeFrequencia(event: any) {
     this.grid.reset();
-    this.classeId.set(id.value);
-    this.classeSelecionada.set(id.value);
-    this.loadTodosFrequencias(this.igrejaId, this.classeId(), this.data, this.page, this.linesPerPage);
-
+    this.classeId.set(event.value);
+    this.classeSelecionada.set(event.value);
+    this.listaFrequencias(this.igrejaId, this.classeId(), this.data);
   }
 
   onCloseData(data) {
     this.data = data
     this.trimestre = JSON.stringify(this.sharedService.retornaTrimestre(data));
     this.ano = this.sharedService.anoDataString(data)
-    this.loadTodosFrequencias(this.igrejaId, this.classeId(), this.data, this.page, this.linesPerPage);
+    this.listaFrequencias(this.igrejaId, this.classeId(), this.data);
   }
 
   onCloseDataModal(data) {
@@ -701,7 +686,6 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     this.dataEscala = dataMontada;
 
     this.ano = JSON.stringify(ano);
-    // this.checkDataFromAula();
   }
 
   onCloseDataModalEbd(data) {
@@ -729,6 +713,18 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
       });
   }
 
+  linhaClicadaDiario(diarioClasse: any) {
+    this.linhaSelecionada = diarioClasse.id;
+  }
+
+  loadDiarioClasse(diarioClasse) {    // Recebendo item do ngFor do Html passado como parametro no evento (click)="loadMinisterio(item)"
+    this.diarioClasse = this.diarioClasses.filter(diario =>
+      diario.id == diarioClasse.id)[0];
+    this.diarioClasseForm.patchValue(this.diarioClasse)
+
+
+  }
+
   loadAlunos() {
     this.alunoService.getListAlunoFromIgreja(this.igrejaId)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
@@ -740,141 +736,102 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   }
 
   povoarArrayDeFrequencias() {
-    if (this.classes && this.classes.length > 0) {
-      this.aulaService.checkDataFromAula(this.igrejaId, this.data)
-        .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-        .subscribe({
-          next: (response) => {
-            const dataCheckdAula = response;
-
-            if (dataCheckdAula === false) {
-              // Povoar o array
-              const formArray = this.frequenciaForm.get('presencas') as FormArray;
-
-              // Limpa o array antes de popular (evita duplicados se mudar de aula)
-              formArray.clear();
-
-              this.alunos().forEach(aluno => {
-                formArray.push(
-                  this.formBuilder.group({
-                    alunoId: [aluno.id], // ID que o Spring precisa
-                    classeId: [aluno.classeId], // ID que o Spring precisa
-                    data: [this.data], // ID que o Spring precisa
-                    igrejaId: [this.igrejaId],   // Apenas para mostrar na tela (o Spring ignora)
-                    presente: [false]    // Valor inicial do checkbox
-                  })
-                );
-              });
-
-              const contagemPorClasse = this.alunos().reduce((acc, aluno) => {
-                const id = aluno.classeId;
-                acc[id] = (acc[id] || 0) + 1;
-                return acc;
-              }, {} as Record<number, number>);
-
-
-              const resultadoComTotais = this.classes.map(classe => {
-                return {
-                  ...classe,
-                  // Busca o total no mapa usando o ID da classe; se não existir, retorna 0
-                  totalAlunos: contagemPorClasse[classe.id] || 0
-                };
-              });
-
-              // SALVAR LANÇAMENTOS NO BANCO
-              // O getRawValue() retorna: { titulo: '...', data: '...', presencas: [...] }
-              let payload: AulaNewDTO = this.frequenciaForm.getRawValue();
-              payload.data = this.data;
-              payload.igrejaId = this.igrejaId;
-              payload.licao = this.aulaForm.controls['licao'].value;
-              payload.tema = this.aulaForm.controls['tema'].value;
-              payload.trimestre = this.sharedService.retornaTrimestre(this.data);
-              // 3. (Opcional) Ajuste fino: Se o seu Spring espera alunoId e presente,
-              // mas o seu FormArray tem campos extras como 'nome', o Spring irá ignorar o 'nome',
-              // o que é ótimo. Mas se quiser limpar, você pode mapear:
-              // payload.presencas = payload.presencas.map(p => ({ alunoId: p.alunoId, presente: p.presente }));
-
-              // 4. Envia para o serviço
-              this.aulaService.createAulaComFrequencias(payload)
-                .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-                .subscribe({
-                  next: () => {
-                    this.actionsForSuccess()
-                    this.frequenciaForm.reset(); // Limpa o formulário para a próxima
-                    this.grid.reset();
-                  },
-                  error: (error) => {
-                    this.error = error;
-                  }
-                });
-
-
-              // LANÇAMENTO NA TABELA DIARIO ////////////////////////////////////////////
-
-              // 4. Percorrendo o registro de Classe com total de alunos e lançando na Tabela DiarioClasse
-
-              resultadoComTotais.forEach(classe => {
-                // Para cada instância, extraímos os dados e adicionamos à tabela de destino DiarioClasse
-                this.diarioClasses.push({
-                  classeId: classe.id,
-                  igrejaId: this.igrejaId,
-                  data: this.data,
-                  nomeClasse: classe.nome,
-                  nomeProfessor: null,
-                  classificacao: classe.classificacao,
-                  licao: this.aulaForm.controls['licao'].value,
-                  tema: this.aulaForm.controls['tema'].value,
-                  totalMatriculados: contagemPorClasse[classe.id] || 0, //Pulo do gato
-                  totalAusentes: null,
-                  totalPresentes: null,
-                  totalVisitantes: null,
-                  totalBiblias: null,
-                  totalRevistas: null,
-                  percentualPresentes: null,
-                  totalOfertas: 0
-                });
-              });
-
-              // GRAVAÇAO DO DIARIO DE CLASSE NO BANCO
-
-              this.diarioClasseService.salvarDiarioClasse(this.diarioClasses)
-                .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-                .subscribe({
-                  next: () => {
-                  },
-                  error: () => { }
-                });
-
-            } else {
-              Swal.fire({
-                title: 'Informação',
-                text: 'Já existe Lançamentos para esta data !!!',
-                icon: 'warning',
-                showCloseButton: true,
-                showCancelButton: false
-              });
-            }
-          },
-          error: () => {
-          }
-        });
-
-    } else {
-      Swal.fire({
-        title: 'Informação',
-        text: 'Nenhuma classe cadastrada! !!!',
-        icon: 'warning',
-        showCloseButton: true,
-        showCancelButton: false
-      });
+    if (!this.classes || this.classes.length === 0) {
+      this.toastr.info('Nenhuma classe cadastrada!');
+      return;
     }
+
+    this.aulaService.checkDataFromAula(this.igrejaId, this.data)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (existeLancamento) => {
+          if (existeLancamento) {
+            this.toastr.warning('Já existe Lançamentos para esta data!');
+            return;
+          }
+
+          // --- INÍCIO DO PROCESSO DE GERAÇÃO ---
+
+          // 1. Limpar arrays temporários para evitar duplicatas na memória do Angular
+          const formArray = this.frequenciaForm.get('presencas') as FormArray;
+          formArray.clear();
+          this.diarioClasses = []; // IMPORTANTE: Limpar o array do diário aqui!
+
+          // 2. Preparar Frequências Individuais
+          this.alunos().forEach(aluno => {
+            formArray.push(this.formBuilder.group({
+              alunoId: [aluno.id],
+              classeId: [aluno.classeId],
+              data: [this.data],
+              igrejaId: [this.igrejaId],
+              presente: [false] // Iniciamos com false como planejado
+            }));
+          });
+
+          // 3. Preparar Totais do Diário
+          const contagemPorClasse = this.alunos().reduce((acc, aluno) => {
+            acc[aluno.classeId] = (acc[aluno.classeId] || 0) + 1;
+            return acc;
+          }, {} as Record<number, number>);
+
+          const listaDiarioParaSalvar = this.classes.map(classe => ({
+            classeId: classe.id,
+            igrejaId: this.igrejaId,
+            data: this.data,
+            nomeClasse: classe.nome,
+            classificacao: classe.classificacao,
+            licao: this.aulaForm.controls['licao'].value,
+            tema: this.aulaForm.controls['tema'].value,
+            totalMatriculados: contagemPorClasse[classe.id] || 0,
+            totalOfertas: 0,
+            totalPresentes: 0,
+            totalAusentes: 0
+          }));
+
+          // 4. SALVAMENTO SEQUENCIAL (Garante que um termina antes do outro começar)
+          let payload: AulaNewDTO = this.frequenciaForm.getRawValue();
+          payload.data = this.data;
+          payload.igrejaId = this.igrejaId;
+          payload.licao = this.aulaForm.controls['licao'].value;
+          payload.tema = this.aulaForm.controls['tema'].value;
+          payload.trimestre = this.sharedService.retornaTrimestre(this.data);
+
+          // Primeiro salvamos Aula e Frequências
+          this.aulaService.createAulaComFrequencias(payload).subscribe({
+            next: () => {
+              // Povoa agrade após a geração de frequencias
+              this.classeId.set(this.classes[0].id);
+
+              this.nomeClasse = this.classes[0].nome;
+              this.listaFrequencias(this.igrejaId, this.classeId(), this.data);
+
+              this.grid.reset();
+              this.frequenciaForm.reset(); // Limpa o formulário para a próxima
+
+              this.actionsForSuccess();
+
+              // SÓ DEPOIS que a aula foi criada, salvamos o Diário
+              this.diarioClasseService.salvarDiarioClasse(listaDiarioParaSalvar)
+                .subscribe({
+                  next: () => { }
+                });
+            }
+          });
+        }
+      });
   }
 
   updateDiarioClasse() {
-    const diarioClasse: DiarioClasseDTO = Object.assign(new DiarioClasseDTO(),
-      this.diarioClasseForm.value);
-    diarioClasse.tema.toUpperCase();
-    diarioClasse.totalPresentes = (diarioClasse.totalMatriculados - diarioClasse.totalAusentes)
+    const a = this.diarioClasseForm.controls['totalMatriculados'].value;
+    const b = this.diarioClasseForm.controls['totalAusentes'].value;
+    this.diarioClasseForm.controls['totalPresentes'].setValue( this.diarioClasseForm.controls['totalMatriculados'].value - this.diarioClasseForm.controls['totalAusentes'].value);
+    const c = this.diarioClasseForm.controls['totalPresentes'].value;
+    if(a){
+      this.diarioClasseForm.controls['percentualPresentes'].setValue( (+c / a) * 100);
+    }
+    
+    const diarioClasse: DiarioClasseDTO = Object.assign(new DiarioClasseDTO(), this.diarioClasseForm.value);
+     
     this.diarioClasseService.update(diarioClasse)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe(() => {
@@ -883,6 +840,13 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
         // Swal.fire('Atualização', 'Registro atualizado com sucesso!', 'success');
       }),
       (error: any) => (error);
+  }
+
+  // RELATORIOS ///////////////////////////////////////////
+
+  imprimirDiarioClasse() {
+    const url = `${API_CONFIG.baseUrl}/relatorios/diario-classe/?nome=diario-classe&igreja=${this.igrejaId}&data=${this.data}`;
+    window.open(url, '_blank');
   }
 
 
@@ -942,6 +906,8 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
 
     }
   ];
+
+  // FIM  RELATORIOS ///////////////////////////////////////////
 
   // METODOS PRIVADOS
 

@@ -44,6 +44,11 @@ export class ClasseListComponent implements OnInit, AfterContentChecked {
 
   tipos = [{ nome: 'Padrao' }, { nome: 'Igreja' }]; // Tipo padrão é o tipo que grava null no igrejaId do Banco, tadas a Igreja podem ver. Igreja grava o id da igreja do usuario, outras igreja não pode ver.
 
+  classificacao = [
+    { nome: 'Adulto' },
+    { nome: 'Infanto Juvenil' }
+  ];
+
   nomeIgrejaSignal = nomeIgrejaSignal;
   igrejaIdSignal = igrejaIdSignal;
   perfilSignal = perfilSignal;
@@ -56,13 +61,6 @@ export class ClasseListComponent implements OnInit, AfterContentChecked {
   private router = inject(Router);
   private formBuilder = inject(FormBuilder);
   private classeService = inject(ClasseService);
-
-  classificacao = [
-    { nome: 'Criança' },
-    { nome: 'Adolescente' },
-    { nome: 'Jovem' },
-    { nome: 'Adulto' }
-  ];
 
   status = [
     { nome: 'Ativo' },
