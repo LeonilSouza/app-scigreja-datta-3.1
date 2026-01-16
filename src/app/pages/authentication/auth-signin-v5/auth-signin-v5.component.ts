@@ -83,8 +83,8 @@ export class AuthSigninV5Component {
     this.loginForm = this.formBuilder.group({
       id: [null],
       name: [null],
-      email: ['leonilsouza@gmail.com', Validators.compose([Validators.required, emailValidator])],
-      password: ['01020102', Validators.compose([Validators.required, Validators.minLength(6)])],
+      email: ['', Validators.compose([Validators.required, emailValidator])],
+      password: ['', Validators.compose([Validators.required, Validators.minLength(6)])],
       perfil: [null],
       imageUrl: [null]
     });
