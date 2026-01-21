@@ -3,7 +3,7 @@ import { MenuItem, MessageService } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { ActivatedRoute, RouterLink, RouterModule } from '@angular/router';
+import { RouterLink, RouterModule } from '@angular/router';
 import { SplitButtonModule } from 'primeng/splitbutton';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
@@ -19,6 +19,8 @@ import { SharedModule } from "src/app/theme/shared/shared.module";
 import { DatePicker } from 'primeng/datepicker';
 import { DatasService } from 'src/app/theme/shared/services/datas-service.service';
 import { DatasDTO } from 'src/app/theme/shared/models/datas.dto';
+import { UiModalComponent } from 'src/app/theme/shared/components/modal/ui-modal/ui-modal.component';
+import { SharedService } from 'src/app/theme/shared/services/shared.service';
 
 
 @Component({
@@ -49,6 +51,9 @@ import { DatasDTO } from 'src/app/theme/shared/models/datas.dto';
 })
 
 export class PessoaListComponent implements OnInit {
+
+  // Acionamento da modal no HTML  aqui pelo componente (#modalFrequencia)
+  @ViewChild('modalChamada') public modalChamada: UiModalComponent;
 
   igrejaIdSignal = igrejaIdSignal;
   perfilSignal = perfilSignal;
@@ -103,7 +108,8 @@ export class PessoaListComponent implements OnInit {
     private pessoaService: PessoaService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
-    private datasService: DatasService
+    private datasService: DatasService,
+    private sharedService: SharedService,
   ) {
 
   }
@@ -157,12 +163,13 @@ export class PessoaListComponent implements OnInit {
   dataUS(value = this.pessoaListForm.controls['dtChamada'].value) {
     let data_brasileira = value; //Postgres usa este formato no Jasper 
     let data_americana = data_brasileira.split('/').reverse().join('-'); // CONVERTE DATA BRASILEIRA EM AMERICANA. Preciso da data no formato americano p/ jsaper com MySQL.
-    let [ano, mes, dia] = data_americana.split('-').map(Number);
+    let [ano, mes] = data_americana.split('-').map(Number);
     mes = mes - 1; // Meses em javascript vai de 0 a 11
 
     this.getDiasDaSemanaNoMes(ano, mes);
   }
 
+  //  ROTINA PARA CALCULAR DIAS DE CULTO DOM-TER-QUI | DOM-QUA-SEX
   getDiasDaSemanaNoMes(ano, mes) {
     const weekdays = [];
     // Define a data de início como o primeiro dia do mês especificado
@@ -178,15 +185,15 @@ export class PessoaListComponent implements OnInit {
       const dayOfWeek = date.getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
 
       // Verifica se o dia da semana é igual aos dias desejados. 0 = Domingo, 1 = segunda, ...
-     //  Para cultos Dom | Ter | Quin
+      //  Para cultos Dom | Ter | Quin
       if (this.dom_ter_qui) {
         if (dayOfWeek === 0 || dayOfWeek === 2 || dayOfWeek === 4) {
           // Adiciona a data (ou apenas o dia do mês, se preferir) ao array
           weekdays.push(new Date(date)); // Cria uma nova instância para evitar problemas de referência
         }
       }
-       
-     //  Para cultos Dom | Qua | Sex
+
+      //  Para cultos Dom | Qua | Sex
       if (this.dom_qua_sex) {
         if (dayOfWeek === 0 || dayOfWeek === 3 || dayOfWeek === 5) {
           // Adiciona a data (ou apenas o dia do mês, se preferir) ao array
@@ -223,6 +230,9 @@ export class PessoaListComponent implements OnInit {
 
     return weekdays;
   }
+
+  // FIM ROTINA PARA CALCULAR DIAS DE CULTO DOM-TER-QUI | DOM-QUA-SEX
+
 
   updateDatas() {
     const data: DatasDTO = Object.assign(new DatasDTO(), this.dataForm.value);
@@ -314,7 +324,7 @@ export class PessoaListComponent implements OnInit {
         response => {
           response ? this.totalMembros = response : 0;
         },
-        error => { });
+        () => { });
   }
 
   countObreirosAtivos() {
@@ -325,7 +335,7 @@ export class PessoaListComponent implements OnInit {
         response => {
           response ? this.totalObreiros = response : 0;
         },
-        error => { });
+        () => { });
   }
 
   getPrintItems = [
@@ -340,14 +350,12 @@ export class PessoaListComponent implements OnInit {
       separator: true,
     },
     {
-      label: 'Lista de Membros',
+      label: 'Chamada de Obreiros',
       icon: 'fas fa-users',
       command: () => {
-        // alert('')
-      },
-      // target: '_blank',
-      // url: `${API_CONFIG.baseUrl}/relatorios/list/?nome=chamada-de-obreiros&igreja=${this.igrejaId}`
-
+        this.modalChamada.show();
+        this.setData()
+      }
     },
     {
       separator: true,
@@ -375,7 +383,7 @@ export class PessoaListComponent implements OnInit {
         response => {
           response ? this.totalNovos = response.length : 0;
         },
-        error => { });
+        () => { });
   }
 
   countCongregadosAtivos() {
@@ -386,7 +394,7 @@ export class PessoaListComponent implements OnInit {
         response => {
           response ? this.totalCongregados = response : 0;
         },
-        error => { });
+        () => { });
   }
 
   private showError(error: { message: any; }) {

@@ -29,6 +29,11 @@ export interface TotaisDiarioDTO {
   data: string; // Necessário para o vínculo no Banco de Dados
 }
 
+export interface FiltroTrimestral {
+  igrejaId: number;
+  classeId: number;
+}
+
 // src/app/models/frequencia.model.ts
 export interface FrequenciaResponse {
   id: number;

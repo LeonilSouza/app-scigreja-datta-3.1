@@ -30,7 +30,7 @@ import { UiModalComponent } from 'src/app/theme/shared/components/modal/ui-modal
 import { AlunoService } from 'src/app/theme/shared/services/aluno.service';
 import { AlunoDTO } from 'src/app/theme/shared/models/aluno.dto';
 import { FrequenciaService } from 'src/app/theme/shared/services/frequencia.service';
-import { FrequenciaDTO } from 'src/app/theme/shared/models/frequencia.dto';
+import { FiltroTrimestral, FrequenciaDTO } from 'src/app/theme/shared/models/frequencia.dto';
 import { AulaService } from 'src/app/theme/shared/services/aula.service';
 import { AulaNewDTO } from 'src/app/theme/shared/models/aula-new-dto.dto';
 import { EscalaItemDTO, EscalaProfessorDTO } from 'src/app/theme/shared/models/escala-professor.dto';
@@ -41,7 +41,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DialogModule } from 'primeng/dialog';
 import { PessoaService } from 'src/app/theme/shared/services/pessoa.service';
 import { API_CONFIG } from 'src/app/app-config';
-import { values } from 'lodash-es';
+import { DatasService } from 'src/app/theme/shared/services/datas-service.service';
+import { DatasDTO } from 'src/app/theme/shared/models/datas.dto';
 
 @Component({
   selector: 'app-frequencia-ebd-list-form',
@@ -77,15 +78,11 @@ import { values } from 'lodash-es';
     DiarioClasseService,
     AulaService,
     ProfessorService,
-    EscalaService
+    EscalaService,
+    DatasService
   ]
 })
 export class FrequenciaListFormComponent implements OnInit, AfterContentChecked, AfterViewInit {
-
-  // Controle Dialog Modal
-  positionEscala: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
-  positionDiario: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
-  positionLancamento: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
 
   @ViewChild('meuInput') totalMatriculados: ElementRef;
 
@@ -98,6 +95,46 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   @ViewChild('dtfrequencia') grid!: Table;
 
   @ViewChild('dtDiarioClasse') gridDiario!: Table;
+
+  private classeService = inject(ClasseService);
+  private router = inject(Router);
+  private sharedService = inject(SharedService);
+  private formBuilder = inject(FormBuilder);
+  private frequenciaService = inject(FrequenciaService);
+  private alunoService = inject(AlunoService);
+  private diarioClasseService = inject(DiarioClasseService);
+  private toastr = inject(ToastrService);
+  private aulaService = inject(AulaService);
+  private professorService = inject(ProfessorService);
+  private escalaService = inject(EscalaService);
+  private pessoaService = inject(PessoaService);
+  private datasService = inject(DatasService);
+  private destroyRef = inject(DestroyRef); // 1. Injete a referência de destruição
+
+  // Controle Dialog Modal
+  positionChamada: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
+  positionEscala: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
+  positionDiario: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
+  positionLancamento: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
+
+  visibleLancamento: boolean = false;
+  visibleEscala: boolean = false;
+  visibleChamada: boolean = false;
+  visibleDiario: boolean = false;
+
+  ano = new Date().getFullYear();
+  trimestre = this.getTrimestreAtual();
+  // classeSelecionada: number | null = null;
+  classeSelecionada = signal<number>(null); // Inicializa explicitamente com null
+
+  dataSelecionada = signal<Date>(new Date());
+
+  opcoesTrimestre = [
+    { nome: '1º Trimestre', id: 0 },
+    { nome: '2º Trimestre', id: 1 },
+    { nome: '3º Trimestre', id: 2 },
+    { nome: '4º Trimestre', id: 3 }
+  ];
 
   ngAfterViewInit() {
 
@@ -129,30 +166,14 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   // Signal que guarda a escala gerada para esta classe específica
   escalaDaClasseNormalizada = signal<EscalaItemDTO[]>([]);
 
-
   linhaSelecionada: number = 0;
-
-  private classeService = inject(ClasseService);
-  private router = inject(Router);
-  private sharedService = inject(SharedService);
-  private formBuilder = inject(FormBuilder);
-  private frequenciaService = inject(FrequenciaService);
-  private alunoService = inject(AlunoService);
-  private diarioClasseService = inject(DiarioClasseService);
-  private toastr = inject(ToastrService);
-  private aulaService = inject(AulaService);
-  private professorService = inject(ProfessorService);
-  private escalaService = inject(EscalaService);
-  private pessoaService = inject(PessoaService);
-  private destroyRef = inject(DestroyRef); // 1. Injete a referência de destruição
-
 
   currentAction!: string;
 
   frequenciaForm!: FormGroup;
   diarioClasseForm!: FormGroup;
   aulaForm!: FormGroup;
-
+  dataForm!: FormGroup;
 
   submittingForm: boolean = false;
   pageTitle!: string;
@@ -160,9 +181,6 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   id!: number;
 
   imodo: number = 0;
-  visibleLancamento: boolean = false;
-  visibleEscala: boolean = false;
-  visibleDiario: boolean = false;
   length: number = 0;
 
   aulaId: number = 1;
@@ -201,13 +219,10 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   classe: ClasseDTO = new ClasseDTO();
 
   nomeClasse: string;
-  trimestre: string;
-  ano: string;
+
   faixaEtaria: string;
 
   error = '';
-
-  classeSelecionada = signal<any>(null); // Inicializa explicitamente com null
 
   printItems: MenuItem[];
 
@@ -227,15 +242,14 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
 
   constructor(
     private route: ActivatedRoute,
-  ) {
-
-  }
+  ) { }
 
   ngOnInit(): void {
     this.setCurrentAction();
     this.buildFrequenciaForm();
     this.buildDiarioClasseForm();
     this.buildAulaForm();
+    this.buildDataForm();
     this.loadAlunos();
     this.loadPessoas()
     this.printItems = this.getPrintItems;
@@ -244,17 +258,10 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     this.loadFrequencias();
   };
 
-  // Signal Computada: Ela se recalcula automaticamente sempre que a lista muda
-  totaisRelatorios = computed(() => {
-    const lista = this.frequencias();
-
-    const presentes = lista.filter(aluno => aluno.presente === true).length;
-    const ausentes = lista.filter(aluno => aluno.presente === false).length;
-    const total = lista.length;
-
-    return { presentes, ausentes, total };
-  });
-
+  // Retorna o trimestre atual 
+  getTrimestreAtual(): number {
+    return Math.floor(((new Date().getMonth() + 3) / 3) - 1);
+  }
 
   ngAfterContentChecked() {
     //  this.setPageTitle();
@@ -321,12 +328,34 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   private buildAulaForm() {
     this.aulaForm = this.formBuilder.group({
       aulaId: [null],
+      classeId: [null],
       trimestre: [null],
       tema: [null, [Validators.required]],
       licao: [null, [Validators.required]],
       data: [this.sharedService.dataAtualFormatada()],
       dataEscala: [null],
+      ano: [null],
       igrejaId: [this.igrejaId, [Validators.required]]
+    });
+  }
+
+  private buildDataForm() {
+    this.dataForm = this.formBuilder.group({
+      id: [0],
+      primeiro: [null],
+      segundo: [null],
+      terceiro: [null],
+      quarto: [null],
+      quinto: [null],
+      sexto: [null],
+      setimo: [null],
+      oitavo: [null],
+      nono: [null],
+      decimo: [null],
+      decimo_primeiro: [null],
+      decimo_segundo: [null],
+      decimo_terceiro: [null],
+      decimo_quarto: [null]
     });
   }
 
@@ -356,6 +385,110 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
       igrejaId: [this.igrejaId, [Validators.required]]
     });
   }
+
+  // Passa a data selecionada no Datepicker ano para value
+  gerarChamadaAlunoTrimestral(value = this.aulaForm.controls['ano'].value) {
+    const data = new Date().toLocaleDateString();
+    const partes = data.split('/');
+    partes[2] = value;
+    partes[0] = '15';
+    const dataMontada = `${partes[2]}-${partes[1]}-${partes[0]}`;
+
+    const valueDate = new Date(dataMontada)
+
+    // Geração de todos os domingos do trimestre
+    this.getDomingosDotrimestre(valueDate)
+
+    const filtro: FiltroTrimestral = {
+      igrejaId: this.igrejaId,
+      classeId: this.classeSelecionada(),
+    };
+
+    this.frequenciaService.imprimirChamadaTrimestral(filtro);
+  }
+
+  //////////////////////////////////////////////////
+
+  //  ROTINA PARA CALCULAR DOMINGOS NO TRIMESTRE - USANDO A MESMA TABELA DATA 
+  getDomingosDotrimestre(data) { // ano
+    const ano = data.getFullYear();
+
+    // Recebe o numero do trimestre (0: Jan-Mar, 1: Abr-Jun, 2: Jul-Set, 3: Out-Dez)
+    // Define o mês inicial do trimestre (0, 3, 6 ou 9)
+    const mesInicial = this.trimestre * 3;
+
+    const domingos: Date[] = [];
+
+    // Itera pelos 3 meses do trimestre
+    for (let m = 0; m < 3; m++) {
+      const mes = mesInicial + m;
+
+      // Pega o último dia do mês corrente para o loop
+      const ultimoDia = new Date(ano, mes + 1, 0).getDate();
+
+      for (let i = 1; i <= ultimoDia; i++) {
+        const d = new Date(ano, mes, i);
+
+        // Verifica se é Domingo (0)
+        if (d.getDay() === 0) {
+          domingos.push(new Date(d));
+        }
+      }
+    }
+    this.dataForm.controls['primeiro'].setValue(domingos[0].toLocaleDateString('pt-BR'));
+    this.dataForm.controls['segundo'].setValue(domingos[1].toLocaleDateString('pt-BR'));
+    this.dataForm.controls['terceiro'].setValue(domingos[2].toLocaleDateString('pt-BR'));
+    this.dataForm.controls['quarto'].setValue(domingos[3].toLocaleDateString('pt-BR'));
+    this.dataForm.controls['quinto'].setValue(domingos[4].toLocaleDateString('pt-BR'));
+    this.dataForm.controls['sexto'].setValue(domingos[5].toLocaleDateString('pt-BR'));
+    this.dataForm.controls['setimo'].setValue(domingos[6].toLocaleDateString('pt-BR'));
+    this.dataForm.controls['oitavo'].setValue(domingos[7].toLocaleDateString('pt-BR'));
+    this.dataForm.controls['nono'].setValue(domingos[8].toLocaleDateString('pt-BR'));
+    this.dataForm.controls['decimo'].setValue(domingos[9].toLocaleDateString('pt-BR'));
+    this.dataForm.controls['decimo_primeiro'].setValue(domingos[10].toLocaleDateString('pt-BR'));
+    this.dataForm.controls['decimo_segundo'].setValue(domingos[11].toLocaleDateString('pt-BR'));
+
+    if (domingos[12]) {
+      this.dataForm.controls['decimo_terceiro'].setValue(domingos[12].toLocaleDateString('pt-BR'));
+    } else {
+      this.dataForm.controls['decimo_terceiro'].setValue(null);
+    }
+
+    if (domingos[13]) {
+      this.dataForm.controls['decimo_quarto'].setValue(domingos[13].toLocaleDateString('pt-BR'));
+    } else {
+      this.dataForm.controls['decimo_quarto'].setValue(null);
+    }
+
+    this.updateDatas();
+  }
+
+  updateDatas() {
+    const data: DatasDTO = Object.assign(new DatasDTO(), this.dataForm.value);
+    data.id = 1; //Para atualizar sempre o mesmo arquivo
+    this.datasService.update(data)
+      .subscribe({
+        next: () => {
+          let url = (`${API_CONFIG.baseUrl}/relatorios/chamada/?nome=chamada-de-aluno-trimestral&igreja=${this.igrejaId}&classe=${this.classeId()}&trimestre=${this.trimestre+1}`)
+          window.open(url, "_blank");
+
+        },
+        error: () => {
+        }
+
+      })
+  }
+
+  // Signal Computada: Ela se recalcula automaticamente sempre que a lista muda
+  totaisRelatorios = computed(() => {
+    const lista = this.frequencias();
+
+    const presentes = lista.filter(aluno => aluno.presente === true).length;
+    const ausentes = lista.filter(aluno => aluno.presente === false).length;
+    const total = lista.length;
+
+    return { presentes, ausentes, total };
+  });
 
   async setarTodos(valor: boolean) {
     // 1. Atualiza a Signal localmente para o usuário ver a mudança visual imediata
@@ -502,8 +635,8 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
       });
   }
 
-  // Função que chama ao selecionar uma classe no PrimeNG
-  onClasseSelecionada(event: any) {
+  // Função que chamada ao selecionar uma classe na impressão de Escala
+  onClasseSelecionadaEscala(event: any) {
     let classe = this.classes.filter(c => (c.id === event.value))
     this.nomeClasse = classe[0].nome;
     this.faixaEtaria = classe[0].faixaEtaria;
@@ -517,14 +650,28 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     // Atualiza o Signal que a escala e a grid utilizam
     this.professoresDaClasse.set(filtrados);
 
-    this.trimestre = JSON.stringify(this.sharedService.retornaTrimestre(this.dataEscala));
-    this.ano = this.sharedService.anoDataString(this.dataEscala);
+    this.trimestre = this.sharedService.retornaTrimestre(this.dataEscala);
+    this.ano = JSON.parse(this.sharedService.anoDataString(this.dataEscala));
   }
 
-  // }
+  // Função que chamada ao selecionar uma classe na impressão de Chamada de Alunos Trimestral
+  onClasseSelecionadaChamada(event: any) {
+    let classe = this.classes.filter(c => (c.id === event.value))
+    this.nomeClasse = classe[0].nome;
+    this.faixaEtaria = classe[0].faixaEtaria;
+    this.classeId.set(event.value);
+    this.classeSelecionada.set(event.value);
+
+  }
+
+
+  onChangeTrimestre(event: any) {
+    this.trimestre = event.value;
+  }
+
   gerarEscalaNormalizada() {
     const ano = parseInt(this.sharedService.anoDataString(this.dataEscala));
-    this.ano = (this.sharedService.anoDataString(this.dataEscala));
+    this.ano = JSON.parse(this.sharedService.anoDataString(this.dataEscala));
     const professores = this.professoresDaClasse();
     const pessoas = this.pessoas();
 
@@ -601,8 +748,8 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     this.gerarEscalaNormalizada();
     const payload: EscalaProfessorDTO = {
       nomeClasse: this.nomeClasse + " - " + this.faixaEtaria,
-      trimestre: this.trimestre,
-      ano: parseInt(this.ano),
+      trimestre: JSON.stringify(this.trimestre),
+      ano: this.ano,
       itens: this.escalaDaClasseNormalizada() // A lista já calculada com data, titular e suplente
     };
 
@@ -641,14 +788,6 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     this.frequenciaForm.controls['igrejaId'].setValue(this.igrejaId);
   }
 
-  // Passa a data selecionada no Datepicker para value
-  dataUS(value = this.frequenciaForm.controls['data'].value) {
-    let data_brasileira = value; //Postgres usa este formato no Jasper 
-    let data_americana = data_brasileira.split('/').reverse().join('-'); // CONVERTE DATA BRASILEIRA EM AMERICANA. Preciso da data no formato americano p/ jsaper com MySQL.
-    let [ano, mes, dia] = data_americana.split('-').map(Number);
-    mes = mes - 1; // Meses em javascript vai de 0 a 11
-  }
-
   loadDiarioClasses() {
     if (this.totalRegistros) {
       this.positionDiario = 'top';
@@ -668,15 +807,15 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
 
   onCloseData(data) {
     this.data = data
-    this.trimestre = JSON.stringify(this.sharedService.retornaTrimestre(data));
-    this.ano = this.sharedService.anoDataString(data)
+    this.trimestre = this.sharedService.retornaTrimestre(data);
+    this.ano = JSON.parse(this.sharedService.anoDataString(data));
     this.listaFrequencias(this.igrejaId, this.classeId(), this.data);
   }
 
   onCloseDataModal(data) {
     this.data = data;
-    this.trimestre = JSON.stringify(this.sharedService.retornaTrimestre(data));
-    this.ano = this.sharedService.anoDataString(data)
+    this.trimestre = (this.sharedService.retornaTrimestre(data));
+    this.ano = JSON.parse(this.sharedService.anoDataString(data));
     this.checkDataFromAula();
   }
 
@@ -686,7 +825,11 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     const dataMontada = formatDate(dataBase, 'dd/MM/yyyy', 'pt-BR');
     this.dataEscala = dataMontada;
 
-    this.ano = JSON.stringify(ano);
+    this.ano = ano;
+  }
+
+  onCloseDataModalChamada(data) {
+    //Está no dataUs do botão imprimir
   }
 
   onCloseDataModalEbd(data) {
@@ -825,14 +968,14 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   updateDiarioClasse() {
     const a = this.diarioClasseForm.controls['totalMatriculados'].value;
     const b = this.diarioClasseForm.controls['totalAusentes'].value;
-    this.diarioClasseForm.controls['totalPresentes'].setValue( this.diarioClasseForm.controls['totalMatriculados'].value - this.diarioClasseForm.controls['totalAusentes'].value);
+    this.diarioClasseForm.controls['totalPresentes'].setValue(this.diarioClasseForm.controls['totalMatriculados'].value - this.diarioClasseForm.controls['totalAusentes'].value);
     const c = this.diarioClasseForm.controls['totalPresentes'].value;
-    if(a){
-      this.diarioClasseForm.controls['percentualPresentes'].setValue( (+c / a) * 100);
+    if (a) {
+      this.diarioClasseForm.controls['percentualPresentes'].setValue((+c / a) * 100);
     }
-    
+
     const diarioClasse: DiarioClasseDTO = Object.assign(new DiarioClasseDTO(), this.diarioClasseForm.value);
-     
+
     this.diarioClasseService.update(diarioClasse)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe(() => {
@@ -853,11 +996,19 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
 
   getPrintItems = [
     {
-      label: 'Chameda de Alunos - Trimestral',
+      label: 'Chamada de Alunos - Trimestral',
       icon: 'fas fa-users',
       command: () => {
-        // this.setPageTitleModalEbd('Chamada de Alunos por classe - Trimestral')
-        // this.modalEbd.show();
+        this.setPageTitleModalEbd('Chamada de Alunos - Trimestral');
+        this.trimestre = this.getTrimestreAtual();
+        this.aulaForm.controls['classeId'].setValue(null);
+        this.nomeClasse = 'Classe';
+        this.aulaForm.controls['ano'].setValue(this.sharedService.anoDataString(this.data));
+        this.aulaForm.controls['trimestre'].setValue(this.trimestre);
+        this.classeSelecionada.set(null);
+        this.classeId.set(null);
+        this.positionChamada = 'top';
+        this.visibleChamada = true; // Abre a modal
       }
     },
     {
@@ -866,6 +1017,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
       command: () => {
         this.nomeClasse = '';
         this.dataEscala = this.data;
+        this.aulaForm.controls['classeId'].setValue(null);
         this.aulaForm.controls['dataEscala'].setValue(this.sharedService.anoDataString(this.data))
         this.loadProfessores();
         this.setPageTitleModalEbd('Escala de Professores');

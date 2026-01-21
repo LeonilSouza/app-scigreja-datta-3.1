@@ -64,7 +64,7 @@
 
     <div class="row showGridlines mx-0 py-2 mb-2 mt-0 shadow-1 border-round bg-gray-900 text-white">
 
-         <span class="col-sm-6 text-right"></span>
+        <span class="col-sm-6 text-right"></span>
 
         <div class="col-sm-2  ">
             <small class="f-14 text-rigth">Presentes</small>
@@ -73,12 +73,14 @@
 
         <div class="col-sm-2 text-left">
             <small class="f-14">Ausentes</small>
-            <span class="f-16 font-bold text-red-400 mx-4 float-left" style="align-items: center;">{{ totaisRelatorios().ausentes }}</span>
+            <span class="f-16 font-bold text-red-400 mx-4 float-left" style="align-items: center;">{{
+                totaisRelatorios().ausentes }}</span>
         </div>
 
         <div class="col-sm-2 text-left">
             <small class="f-14">Total Alunos</small>
-            <span class="f-16 font-bold text-blue-400 mx-4 float-left" style="align-items: center;">{{ totaisRelatorios().total }}</span>
+            <span class="f-16 font-bold text-blue-400 mx-4 float-left" style="align-items: center;">{{
+                totaisRelatorios().total }}</span>
         </div>
     </div>
 
@@ -87,8 +89,8 @@
         <div class="p-0">
             <p-table #dtfrequencia [value]="frequencias()"
                 [globalFilterFields]="['nome', 'country.name', 'representative.name', 'status']"
-                responsiveLayout="stack"  [showCurrentPageReport]="true"
-                showGridlines stripedRows [rowsPerPageOptions]="[10, 30, 50, 100]"
+                responsiveLayout="stack" [showCurrentPageReport]="true" showGridlines stripedRows
+                [rowsPerPageOptions]="[10, 30, 50, 100]"
                 currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
                 [rows]="10" emptyMessage="Nenhum registro encontrado">
 
@@ -97,10 +99,11 @@
                     <tr>
                         <th class="py-2"
                             style="width: 3rem; background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; ; border-top-left-radius: 5px">
-                            <p-checkbox (onChange)="setarTodos($event.checked)" [binary]="true"  [placement]="'bottom'" ngbTooltip="Seleciona Todos."/>
+                            <p-checkbox (onChange)="setarTodos($event.checked)" [binary]="true" [placement]="'bottom'"
+                                ngbTooltip="Seleciona Todos." />
                         </th>
 
-                         <th class="f-12 col-data-content-4"
+                        <th class="f-12 col-data-content-4"
                             style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
                             <b>Aluno</b>
                         </th>
@@ -139,7 +142,7 @@
                                 (onChange)="setarUm(frequencia.alunoId, $event.checked)">></p-checkbox>
                         </td>
 
-                         <td class="col-data-content-4 py-2" style="font-size: 13px; cursor: pointer; ">{{
+                        <td class="col-data-content-4 py-2" style="font-size: 13px; cursor: pointer; ">{{
                             frequencia.nomeAluno
                             }}</td>
 
@@ -285,18 +288,90 @@
             </div>
         </p-dialog>
 
+        <!-- INICIO MODAL IMPRIMIR CHAMADA EBD -->
 
         <div class="col-md-12 col-xl-12" data-backdrop="static">
 
             <div class="card flex justify-center">
-                <p-dialog header="Edit Profile" [modal]="true" [(visible)]="visibleEscala" [position]="positionEscala"
-                    [dismissableMask]="false" [style]="{width: '60vw', 'min-height': '40vh', height: 'auto'}"
-                    [closeOnEscape]="false" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false"
-                    [resizable]="false" [contentStyle]="{ 'overflow': 'visible' }"
-                    [transitionOptions]="'500ms ease-out'">
-                    <h5 class="align-center"><strong>{{ pageTitle +":    "}} <span class="text-primary f-16">{{
-                                nomeClasse + "  "+
-                                professoresDaClasse().length+ "  Professores" }} </span></strong></h5>
+                <p-dialog header="CHAMADA DE ALUNOS - TRIMESTRAL" [modal]="true" [(visible)]="visibleChamada"
+                    [position]="positionChamada" [dismissableMask]="false"
+                    [style]="{width: '60vw', 'min-height': '40vh', height: 'auto'}" [closeOnEscape]="false"
+                    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false"
+                    [contentStyle]="{ 'overflow': 'visible' }" [transitionOptions]="'500ms ease-out'">
+                    <span class="align-center"><strong><span class="text-primary f-18">{{
+                                nomeClasse }} </span></strong></span>
+                    <hr class="mt-1 mb-2">
+
+                    <!-- Modal Body Inicio -->
+
+                    <div class="row col-12">
+                        <div class="form-group col-md-5">
+                            <label class="mb-1">Classes</label>
+                            <p-select style="min-height: 30px; width: 100%"
+                                (onChange)="onClasseSelecionadaChamada($event)" [options]="classes" [editable]="false"
+                                [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
+                                formControlName="classeId" resetFilterOnHide="true" class="" dropdownIcon="pi pi-users"
+                                optionValue="id" placeholder="Seleciona uma classe" />
+                        </div>
+
+                        <!-- Trimestre de referencia -->
+                        <div class="form-group col-md-4 ">
+                            <label class="mb-1">Trimestre</label>
+                            <p-select [options]="opcoesTrimestre" style="min-height: 30px; width: 100%"
+                                [showClear]="false" optionLabel="nome" (onChange)="onChangeTrimestre($event)"
+                                formControlName="trimestre" dropdownIcon="pi pi-users" optionValue="id"
+                                placeholder="Seleciona um Trimestre" />
+                        </div>
+
+                        <!-- Ano de referencia -->
+                        <!-- Data da Mes de referencia -->
+                        <div class="form-group col-md-3 ">
+                            <label class="mb-1">Ano</label>
+                            <p-datepicker (ngModelChange)="onCloseDataModalChamada($event)" view="year"
+                                [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                                [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
+                                inputId="icondisplay" dataType="string" dateFormat="yy" formControlName="ano"
+                                placeholder="dd/mm/aaaa" />
+                        </div>
+
+                    </div>
+
+                    <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
+                    <div class="modal-footer" style="height: 38px;">
+
+                        <!-- Cancelar -->
+                        <button (click)="visibleChamada = false" styleClass="p-button-sm" icon='pi pi-wallet'
+                            style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton pRipple
+                            type="button" label="Fechar" class="p-button-primary mx-3 p-button-outlined mt-1 ">
+                        </button>
+
+                        <!-- Gerar Relatorio -->
+                        <button [disabled]="this.classeId() == null" (click)="gerarChamadaAlunoTrimestral()"
+                            styleClass="p-button-sm" icon='pi pi-check'
+                            style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton pRipple
+                            type="button" label="Imprimir" class="p-button-success  mt-1 ">
+                        </button>
+                    </div>
+                    <!-- <hr class="mt-4"> -->
+                </p-dialog>
+            </div>
+
+            <!-- FIM MODAL IMPRIMIR CHAMADA EBD -->
+        </div>
+
+        <!-- INICIO MODAL IMPRIMIR ESCALA EBD -->
+
+        <div class="col-md-12 col-xl-12" data-backdrop="static">
+
+            <div class="card flex justify-center">
+                <p-dialog [modal]="true" header="ESCALA DE PROFESSORES" [(visible)]="visibleEscala"
+                    [position]="positionEscala" [dismissableMask]="false"
+                    [style]="{width: '60vw', 'min-height': '40vh', height: 'auto'}" [closeOnEscape]="false"
+                    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false"
+                    [contentStyle]="{ 'overflow': 'visible' }" [transitionOptions]="'500ms ease-out'">
+                    <h5 class="align-center"><i><span class="text-c-purple f-18">{{
+                      nomeClasse + "  "+ professoresDaClasse().length+ "  Professores" }}
+                      </span></i></h5>
                     <hr class="mt-0 mb-2">
 
                     <!-- Modal Body Inicio -->
@@ -304,15 +379,16 @@
                     <div class="row col-12">
                         <div class="form-group col-md-8">
                             <label class="mb-1">Classes</label>
-                            <p-select style="min-height: 30px; width: 100%" (onChange)="onClasseSelecionada($event)"
-                                [options]="classes" [editable]="false" [filter]="true" filterBy="nome"
-                                [showClear]="false" optionLabel="nome" resetFilterOnHide="true" class=""
-                                dropdownIcon="pi pi-users" optionValue="id" placeholder="Seleciona uma classe" />
+                            <p-select style="min-height: 30px; width: 100%"
+                                (onChange)="onClasseSelecionadaEscala($event)" [options]="classes" [editable]="false"
+                                [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
+                                resetFilterOnHide="true" class="" dropdownIcon="pi pi-users" optionValue="id"
+                                formControlName="classeId" placeholder="Seleciona uma classe" />
                         </div>
 
                         <!-- Data da Mes de referencia -->
                         <div class="form-group col-md-4 ">
-                            <label class="mb-1">Data</label>
+                            <label class="mb-1">Ano</label>
                             <p-datepicker (ngModelChange)="onCloseDataModalEscala($event)" view="year"
                                 [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
                                 [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
@@ -332,7 +408,7 @@
 
                         <!-- OK -->
                         <button [disabled]="this.frequenciaForm.controls['classeId'].value == null"
-                            (click)="dataUS(); imprimirEscalaPronta()" styleClass="p-button-sm" icon='pi pi-check'
+                            (click)="imprimirEscalaPronta()" styleClass="p-button-sm" icon='pi pi-check'
                             style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton pRipple
                             type="button" label="Imprimir" class="p-button-success  mt-1 ">
                         </button>
@@ -341,7 +417,7 @@
                 </p-dialog>
             </div>
 
-            <!-- FIM MODAL IMPRIMIR EBD -->
+            <!-- FIM MODAL IMPRIMIR ESCALA EBD -->
         </div>
         <!-- <div class="form-group ">
             <pre> {{ frequenciaForm.value | json}} </pre>
@@ -475,8 +551,9 @@
                             [style]="{'height':'32px', 'background':'#1a82ce'}" />
 
                         <!-- Imprimir -->
-                        <p-button (click)="imprimirDiarioClasse()" icon='pi pi-print' [style]="{'height':'32px', 'margin-right':'25px'}" size="small"
-                            severity="contrast" label="Imprimir" class="float-end mb-1 m-t-0 " />
+                        <p-button (click)="imprimirDiarioClasse()" icon='pi pi-print'
+                            [style]="{'height':'32px', 'margin-right':'25px'}" size="small" severity="contrast"
+                            label="Imprimir" class="float-end mb-1 m-t-0 " />
 
                     </div>
 

@@ -187,6 +187,28 @@ export class SharedService {
     return trimestre;
   }
 
+  calcularLimitesTrimestre(dataRef: Date) {
+    const ano = dataRef.getFullYear();
+    // Identifica o trimestre (0 a 3)
+    const trimestreAtual = Math.floor(dataRef.getMonth() / 3);
+
+    // Primeiro mês do trimestre (0, 3, 6 ou 9)
+    const mesInicial = trimestreAtual * 3;
+
+    // Primeiro dia do primeiro mês
+    const primeiroDia = new Date(ano, mesInicial, 1);
+
+    // Último dia do trimestre: 
+    // Criamos o primeiro dia do PRÓXIMO trimestre (mesInicial + 3) 
+    // e definimos o dia como '0' para pegar o último dia do mês anterior.
+    const ultimoDia = new Date(ano, mesInicial + 3, 0);
+
+    return {
+      inicio: primeiroDia.toLocaleDateString(),
+      fim: ultimoDia.toLocaleDateString()
+    };
+  }
+
   retornaMes(dataString) { // Retorna Mes da data passada
     const dataBRString = dataString;
     const partes = dataBRString.split('/'); // ["15", "08", "2024"]

@@ -76,7 +76,7 @@ export class PessoaService {
     return this.http.get(`${API_CONFIG.baseUrl}/reports/?igreja=${id}`)
 }
 
-
+y
   countMembrosAtivosFromIgreja(igrejaId, situacaoCadastral,  tipoMembro) {
     return this.http.get(`${API_CONFIG.baseUrl}/pessoas/count/?igreja=${igrejaId}&situacaoCadastral=${situacaoCadastral}&tipoMembro=${tipoMembro}`)
       .pipe(
