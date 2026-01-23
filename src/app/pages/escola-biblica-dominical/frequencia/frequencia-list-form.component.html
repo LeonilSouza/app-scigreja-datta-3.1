@@ -288,14 +288,14 @@
             </div>
         </p-dialog>
 
-        <!-- INICIO MODAL IMPRIMIR CHAMADA EBD -->
+        <!-- INICIO MODAL IMPRIMIR CHAMADA ALUNO EBD -->
 
         <div class="col-md-12 col-xl-12" data-backdrop="static">
 
-            <div class="card flex justify-center">
-                <p-dialog header="CHAMADA DE ALUNOS - TRIMESTRAL" [modal]="true" [(visible)]="visibleChamada"
-                    [position]="positionChamada" [dismissableMask]="false"
-                    [style]="{width: '60vw', 'min-height': '40vh', height: 'auto'}" [closeOnEscape]="false"
+            <div class="card flex justify-center" >
+                <p-dialog header="CHAMADA DE ALUNOS - TRIMESTRAL" [modal]="true" [(visible)]="visibleChamadaAluno"
+                    [position]="positionChamadaAluno" [dismissableMask]="false"
+                    [style]="{width: '60vw', 'min-height': '35vh', height: 'auto'}" [closeOnEscape]="false"
                     [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false"
                     [contentStyle]="{ 'overflow': 'visible' }" [transitionOptions]="'500ms ease-out'">
                     <span class="align-center"><strong><span class="text-primary f-18">{{
@@ -337,10 +337,10 @@
                     </div>
 
                     <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
-                    <div class="modal-footer" style="height: 38px;">
+                    <div class="modal-footer">
 
                         <!-- Cancelar -->
-                        <button (click)="visibleChamada = false" styleClass="p-button-sm" icon='pi pi-wallet'
+                        <button (click)="visibleChamadaAluno = false" styleClass="p-button-sm" icon='pi pi-wallet'
                             style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton pRipple
                             type="button" label="Fechar" class="p-button-primary mx-3 p-button-outlined mt-1 ">
                         </button>
@@ -356,7 +356,69 @@
                 </p-dialog>
             </div>
 
-            <!-- FIM MODAL IMPRIMIR CHAMADA EBD -->
+            <!-- FIM MODAL IMPRIMIR CHAMADA ALUNO EBD -->
+        </div>
+
+
+         <!-- INICIO MODAL IMPRIMIR CHAMADA PROFESSOR -->
+
+        <div class="col-md-12 col-xl-12" data-backdrop="static">
+
+            <div class="card flex justify-center" >
+                <p-dialog header="CHAMADA DE PROFESSORES - TRIMESTRAL" [modal]="true" [(visible)]="visibleChamadaProfessor"
+                    [position]="positionChamadaProfessor" [dismissableMask]="false"
+                    [style]="{width: '60vw', 'min-height': '30vh', height: 'auto'}" [closeOnEscape]="false"
+                    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false"
+                    [contentStyle]="{ 'overflow': 'visible' }" [transitionOptions]="'500ms ease-out'">
+                    <hr class="mt-1 mb-2">
+
+                    <!-- Modal Body Inicio -->
+
+                    <div class="row col-12">
+
+                        <!-- Trimestre de referencia -->
+                        <div class="form-group col-md-7 ">
+                            <label class="mb-1">Trimestre</label>
+                            <p-select [options]="opcoesTrimestre" style="min-height: 30px; width: 100%"
+                                [showClear]="false" optionLabel="nome" (onChange)="onChangeTrimestre($event)"
+                                formControlName="trimestre" dropdownIcon="pi pi-users" optionValue="id"
+                                placeholder="Seleciona um Trimestre" />
+                        </div>
+
+                           <!-- Ano de referencia -->
+                        <!-- Data da Mes de referencia -->
+                        <div class="form-group col-md-5 ">
+                            <label class="mb-1">Ano</label>
+                            <p-datepicker (ngModelChange)="onCloseDataModalChamada($event)" view="year"
+                                [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                                [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
+                                inputId="icondisplay" dataType="string" dateFormat="yy" formControlName="ano"
+                                placeholder="dd/mm/aaaa" />
+                        </div>
+
+                    </div>
+
+                    <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
+                    <div class="modal-footer">
+
+                        <!-- Cancelar -->
+                        <button (click)="visibleChamadaProfessor = false" styleClass="p-button-sm" icon='pi pi-wallet'
+                            style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton pRipple
+                            type="button" label="Fechar" class="p-button-primary mx-3 p-button-outlined mt-1 ">
+                        </button>
+
+                        <!-- Gerar Relatorio -->
+                        <button (click)="gerarChamadaProfessorTrimestral()"
+                            styleClass="p-button-sm" icon='pi pi-check'
+                            style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton pRipple
+                            type="button" label="Imprimir" class="p-button-success  mt-1 ">
+                        </button>
+                    </div>
+                    <!-- <hr class="mt-4"> -->
+                </p-dialog>
+            </div>
+
+            <!-- FIM MODAL IMPRIMIR CHAMADA PROFESSOR -->
         </div>
 
         <!-- INICIO MODAL IMPRIMIR ESCALA EBD -->

@@ -112,14 +112,16 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   private destroyRef = inject(DestroyRef); // 1. Injete a referência de destruição
 
   // Controle Dialog Modal
-  positionChamada: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
+  positionChamadaAluno: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
+  positionChamadaProfessor: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
   positionEscala: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
   positionDiario: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
   positionLancamento: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
 
   visibleLancamento: boolean = false;
   visibleEscala: boolean = false;
-  visibleChamada: boolean = false;
+  visibleChamadaAluno: boolean = false;
+  visibleChamadaProfessor: boolean = false;
   visibleDiario: boolean = false;
 
   ano = new Date().getFullYear();
@@ -128,6 +130,8 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
   classeSelecionada = signal<number>(null); // Inicializa explicitamente com null
 
   dataSelecionada = signal<Date>(new Date());
+
+  controleModal = signal<string>("");
 
   opcoesTrimestre = [
     { nome: '1º Trimestre', id: 0 },
@@ -388,6 +392,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
 
   // Passa a data selecionada no Datepicker ano para value
   gerarChamadaAlunoTrimestral(value = this.aulaForm.controls['ano'].value) {
+    this.controleModal.set('ChamadaAluno')
     const data = new Date().toLocaleDateString();
     const partes = data.split('/');
     partes[2] = value;
@@ -404,7 +409,27 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
       classeId: this.classeSelecionada(),
     };
 
-    this.frequenciaService.imprimirChamadaTrimestral(filtro);
+  }
+
+  // Passa a data selecionada no Datepicker ano para value
+  gerarChamadaProfessorTrimestral(value = this.aulaForm.controls['ano'].value) {
+    this.controleModal.set('ChamadaProfessor')
+    const data = new Date().toLocaleDateString();
+    const partes = data.split('/');
+    partes[2] = value;
+    partes[0] = '15';
+    const dataMontada = `${partes[2]}-${partes[1]}-${partes[0]}`;
+
+    const valueDate = new Date(dataMontada)
+
+    // Geração de todos os domingos do trimestre
+    this.getDomingosDotrimestre(valueDate)
+
+    const filtro: FiltroTrimestral = {
+      igrejaId: this.igrejaId,
+      classeId: this.classeSelecionada(),
+    };
+
   }
 
   //////////////////////////////////////////////////
@@ -460,16 +485,39 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
       this.dataForm.controls['decimo_quarto'].setValue(null);
     }
 
-    this.updateDatas();
+    if (this.controleModal() == 'ChamadaAluno') {
+      this.updateDatasClamadaAluno();
+    }
+
+    if (this.controleModal() == 'ChamadaProfessor') {
+      this.updateDatasClamadaProfessor();
+    }
   }
 
-  updateDatas() {
+  updateDatasClamadaAluno() {
     const data: DatasDTO = Object.assign(new DatasDTO(), this.dataForm.value);
     data.id = 1; //Para atualizar sempre o mesmo arquivo
     this.datasService.update(data)
       .subscribe({
         next: () => {
-          let url = (`${API_CONFIG.baseUrl}/relatorios/chamada/?nome=chamada-de-aluno-trimestral&igreja=${this.igrejaId}&classe=${this.classeId()}&trimestre=${this.trimestre+1}`)
+          let url = (`${API_CONFIG.baseUrl}/relatorios/chamada/?nome=chamada-de-aluno-trimestral&igreja=${this.igrejaId}&classe=${this.classeId()}&trimestre=${this.trimestre + 1}`)
+          window.open(url, "_blank");
+
+        },
+        error: () => {
+        }
+
+      })
+  }
+
+  updateDatasClamadaProfessor() {
+    const data: DatasDTO = Object.assign(new DatasDTO(), this.dataForm.value);
+    data.id = 1; //Para atualizar sempre o mesmo arquivo
+    this.datasService.update(data)
+      .subscribe({
+        next: () => {
+          // Está sendo enviado o parametro classe mas, nao usa
+          let url = (`${API_CONFIG.baseUrl}/relatorios/chamada/?nome=chamada-de-professor-trimestral&igreja=${this.igrejaId}&classe=${this.classeId()}&trimestre=${this.trimestre + 1}`)
           window.open(url, "_blank");
 
         },
@@ -1002,14 +1050,32 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
         this.setPageTitleModalEbd('Chamada de Alunos - Trimestral');
         this.trimestre = this.getTrimestreAtual();
         this.aulaForm.controls['classeId'].setValue(null);
-        this.nomeClasse = 'Classe';
         this.aulaForm.controls['ano'].setValue(this.sharedService.anoDataString(this.data));
         this.aulaForm.controls['trimestre'].setValue(this.trimestre);
         this.classeSelecionada.set(null);
         this.classeId.set(null);
-        this.positionChamada = 'top';
-        this.visibleChamada = true; // Abre a modal
+        this.positionChamadaAluno = 'top';
+        this.visibleChamadaAluno = true; // Abre a modal
       }
+    },
+    {
+      separator: true,
+    },
+    {
+      label: 'Chamada de Professores - Trimestral',
+      icon: 'fas fa-users',
+      command: () => {
+        this.aulaForm.controls['ano'].setValue(this.sharedService.anoDataString(this.data));
+        this.setPageTitleModalEbd('Chamada de Professores - Trimestral');
+        this.trimestre = this.getTrimestreAtual();
+        this.aulaForm.controls['trimestre'].setValue(this.trimestre);
+        this.positionChamadaProfessor = 'top';
+        this.visibleChamadaProfessor = true; // Abre a modal
+      }
+    },
+
+    {
+      separator: true,
     },
     {
       label: 'Escala de professores',
@@ -1031,33 +1097,33 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     {
       separator: true,
     },
-    {
-      label: 'Lista de Membros',
-      icon: 'fas fa-users',
-      command: () => {
-        // alert('')
-      },
-      // target: '_blank',
-      // url: `${API_CONFIG.baseUrl}/relatorios/list/?nome=chamada-de-obreiros&igreja=${this.igrejaId}`
+    // {
+    //   label: 'Lista de Membros',
+    //   icon: 'fas fa-users',
+    //   command: () => {
+    //     // alert('')
+    //   },
+    //   // target: '_blank',
+    //   // url: `${API_CONFIG.baseUrl}/relatorios/list/?nome=chamada-de-obreiros&igreja=${this.igrejaId}`
 
-    },
-    {
-      separator: true,
-    },
-    {
-      label: 'Ficha de membros',
-      icon: 'fas fa-clipboard-list',
-      // target: '_blank',
-      // url: `${API_CONFIG.baseUrl}/relatorios/list/?nome=ficha-de-membros&igreja=${this.igrejaId}`
+    // },
+    // {
+    //   separator: true,
+    // },
+    // {
+    //   label: 'Ficha de membros',
+    //   icon: 'fas fa-clipboard-list',
+    //   // target: '_blank',
+    //   // url: `${API_CONFIG.baseUrl}/relatorios/list/?nome=ficha-de-membros&igreja=${this.igrejaId}`
 
-    },
-    {
-      label: 'Ficha em branco',
-      icon: 'fas fa-book-reader',
-      // target: '_blank',
-      // url: `${API_CONFIG.baseUrl}/relatorios/list/?nome=ficha-branco&igreja=${this.igrejaId}`
+    // },
+    // {
+    //   label: 'Ficha em branco',
+    //   icon: 'fas fa-book-reader',
+    //   // target: '_blank',
+    //   // url: `${API_CONFIG.baseUrl}/relatorios/list/?nome=ficha-branco&igreja=${this.igrejaId}`
 
-    }
+    // }
   ];
 
   // FIM  RELATORIOS ///////////////////////////////////////////

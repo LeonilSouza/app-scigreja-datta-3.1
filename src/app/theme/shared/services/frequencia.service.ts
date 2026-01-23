@@ -3,21 +3,20 @@ import { HttpClient } from "@angular/common/http";
 import { Observable, throwError } from "rxjs";
 import { catchError, map } from 'rxjs/operators';
 import { API_CONFIG } from "src/app/app-config";
-import { FiltroTrimestral, FrequenciaDTO } from "../models/frequencia.dto";
+import { FrequenciaDTO } from "../models/frequencia.dto";
 
 
 @Injectable()
 export class FrequenciaService {
 
   private apiPath: string = `${API_CONFIG.baseUrl}/frequencias`;
-  private apiPathRelatorios: string = `${API_CONFIG.baseUrl}/relatorios`;
 
   constructor(public http: HttpClient) {
   }
 
   atualizarFrequencias(lista: FrequenciaDTO[]): Observable<void> {
-  return this.http.post<void>(`${this.apiPath}/salvar-e-atualizar-diario`, lista);
-}
+    return this.http.post<void>(`${this.apiPath}/salvar-e-atualizar-diario`, lista);
+  }
 
 
   getByListFrequenciaFromIgreja(igrejaId, classeId, data) {
@@ -27,26 +26,6 @@ export class FrequenciaService {
         catchError(this.handleError)
       );
   }
-
-   imprimirChamadaTrimestral(filtro: FiltroTrimestral): Observable<Blob> {
-  // O Java agora espera um objeto no corpo (POST)
-  return this.http.post(`${this.apiPathRelatorios}/chamada-trimestral`, filtro, {
-    responseType: 'blob' // Essencial para receber o PDF (binário)
-  });
-}
-
-//  imprimirChamadaTrimestral(filtro: FiltroTrimestral): void {
-//   // Construímos a URL com os parâmetros para o Jasper
-//   const url = `${this.apiPathRelatorios}/chamada-trimestral?` +
-//               `igrejaId=${filtro.igrejaId}&` +
-//               `classeId=${filtro.classeId}&` +
-//               `ano=${filtro.ano}&` +
-//               `trimestre=${filtro.trimestre}`;
-
-//   // Abre o PDF gerado pelo Java em uma nova aba
-//   window.open(url, '_blank');
-// }
-
 
   delete(id: number): Observable<any> {
 
