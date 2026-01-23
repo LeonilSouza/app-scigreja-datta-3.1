@@ -490,7 +490,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     }
 
     if (this.controleModal() == 'ChamadaProfessor') {
-      this.updateDatasClamadaProfessor();
+      this.updateDatasChamadaProfessor();
     }
   }
 
@@ -500,7 +500,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     this.datasService.update(data)
       .subscribe({
         next: () => {
-          let url = (`${API_CONFIG.baseUrl}/relatorios/chamada/?nome=chamada-de-aluno-trimestral&igreja=${this.igrejaId}&classe=${this.classeId()}&trimestre=${this.trimestre + 1}`)
+          let url = (`${API_CONFIG.baseUrl}/relatorios/chamada-aluno/?nome=chamada-de-aluno-trimestral&igreja=${this.igrejaId}&classe=${this.classeId()}&trimestre=${this.trimestre + 1}`)
           window.open(url, "_blank");
 
         },
@@ -510,14 +510,14 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
       })
   }
 
-  updateDatasClamadaProfessor() {
+  updateDatasChamadaProfessor() {
     const data: DatasDTO = Object.assign(new DatasDTO(), this.dataForm.value);
     data.id = 1; //Para atualizar sempre o mesmo arquivo
     this.datasService.update(data)
       .subscribe({
         next: () => {
           // Está sendo enviado o parametro classe mas, nao usa
-          let url = (`${API_CONFIG.baseUrl}/relatorios/chamada/?nome=chamada-de-professor-trimestral&igreja=${this.igrejaId}&classe=${this.classeId()}&trimestre=${this.trimestre + 1}`)
+          let url = (`${API_CONFIG.baseUrl}/relatorios/chamada-professor/?nome=chamada-de-professor-trimestral&igreja=${this.igrejaId}&trimestre=${this.trimestre + 1}`)
           window.open(url, "_blank");
 
         },
