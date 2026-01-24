@@ -21,6 +21,7 @@ import { DatasDTO } from 'src/app/theme/shared/models/datas.dto';
 import { UiModalComponent } from 'src/app/theme/shared/components/modal/ui-modal/ui-modal.component';
 import { SharedService } from 'src/app/theme/shared/services/shared.service';
 import { Subject, Subscription } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 
 @Component({
@@ -352,6 +353,7 @@ export class PessoaListComponent implements OnInit {
   loadPessoas(nomeSemAcento: string, statusNome: string, page: number, linesPerPage: any) {
     this.pessoaService
       .getByPagePessoasFromIgreja(this.igrejaId, nomeSemAcento, statusNome, page, linesPerPage)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
           this.pessoas = response['content']
@@ -369,6 +371,7 @@ export class PessoaListComponent implements OnInit {
     const tipoMembro = 'Membro';
     const situacaoCadastral = 'Ativo';
     this.pessoaService.countMembrosAtivosFromIgreja(this.igrejaId, situacaoCadastral, tipoMembro)
+    .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe(
         response => {
           response ? this.totalMembros = response : 0;
@@ -429,6 +432,7 @@ export class PessoaListComponent implements OnInit {
   countNovos() {
     const situacaoCadastral = 'Ativo';
     this.pessoaService.countNovos(this.igrejaId, situacaoCadastral)
+    .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe(
         response => {
           response ? this.totalNovos = response.length : 0;
@@ -440,6 +444,7 @@ export class PessoaListComponent implements OnInit {
     const tipoMembro = 'Congregado';
     const situacaoCadastral = 'Ativo';
     this.pessoaService.countMembrosAtivosFromIgreja(this.igrejaId, situacaoCadastral, tipoMembro)
+    .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe(
         response => {
           response ? this.totalCongregados = response : 0;
@@ -453,7 +458,3 @@ export class PessoaListComponent implements OnInit {
 
 
 }
-function takeUntilDestroyed(destroyRef: DestroyRef): import("rxjs").OperatorFunction<DatasDTO, unknown> {
-  throw new Error('Function not implemented.');
-}
-
