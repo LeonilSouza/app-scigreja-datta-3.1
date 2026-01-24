@@ -1,5 +1,5 @@
 // angular import
-import { AfterContentChecked, AfterViewInit, Component, computed, DestroyRef, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { AfterContentChecked, AfterViewInit, Component, computed, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { DecimalPipe, formatDate } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
@@ -82,7 +82,7 @@ import { DatasDTO } from 'src/app/theme/shared/models/datas.dto';
     DatasService
   ]
 })
-export class FrequenciaListFormComponent implements OnInit, AfterContentChecked, AfterViewInit {
+export class FrequenciaListFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('meuInput') totalMatriculados: ElementRef;
 
@@ -267,10 +267,6 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     return Math.floor(((new Date().getMonth() + 3) / 3) - 1);
   }
 
-  ngAfterContentChecked() {
-    //  this.setPageTitle();
-  }
-
   setPageTitleFrequencias() {
     this.positionLancamento = 'top';
     this.pageTitle = "Geração de frequencias";
@@ -311,6 +307,13 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     this.updateDiarioClasse();
   }
 
+   ngOnDestroy() {
+    console.log('Limpando recursos do componente de Frequência...');
+    // Se você tiver alguma Subscription manual (this.subscription.unsubscribe())
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
 
   private buildFrequenciaForm() {
     this.frequenciaForm = this.formBuilder.group({
@@ -498,6 +501,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     const data: DatasDTO = Object.assign(new DatasDTO(), this.dataForm.value);
     data.id = 1; //Para atualizar sempre o mesmo arquivo
     this.datasService.update(data)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: () => {
           let url = (`${API_CONFIG.baseUrl}/relatorios/chamada-aluno/?nome=chamada-de-aluno-trimestral&igreja=${this.igrejaId}&classe=${this.classeId()}&trimestre=${this.trimestre + 1}`)
@@ -514,6 +518,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
     const data: DatasDTO = Object.assign(new DatasDTO(), this.dataForm.value);
     data.id = 1; //Para atualizar sempre o mesmo arquivo
     this.datasService.update(data)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: () => {
           // Está sendo enviado o parametro classe mas, nao usa
@@ -989,26 +994,29 @@ export class FrequenciaListFormComponent implements OnInit, AfterContentChecked,
           payload.trimestre = this.sharedService.retornaTrimestre(this.data);
 
           // Primeiro salvamos Aula e Frequências
-          this.aulaService.createAulaComFrequencias(payload).subscribe({
-            next: () => {
-              // Povoa agrade após a geração de frequencias
-              this.classeId.set(this.classes[0].id);
+          this.aulaService.createAulaComFrequencias(payload)
+            .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+            .subscribe({
+              next: () => {
+                // Povoa agrade após a geração de frequencias
+                this.classeId.set(this.classes[0].id);
 
-              this.nomeClasse = this.classes[0].nome;
-              this.listaFrequencias(this.igrejaId, this.classeId(), this.data);
+                this.nomeClasse = this.classes[0].nome;
+                this.listaFrequencias(this.igrejaId, this.classeId(), this.data);
 
-              this.grid.reset();
-              this.frequenciaForm.reset(); // Limpa o formulário para a próxima
+                this.grid.reset();
+                this.frequenciaForm.reset(); // Limpa o formulário para a próxima
 
-              this.actionsForSuccess();
+                this.actionsForSuccess();
 
-              // SÓ DEPOIS que a aula foi criada, salvamos o Diário
-              this.diarioClasseService.salvarDiarioClasse(listaDiarioParaSalvar)
-                .subscribe({
-                  next: () => { }
-                });
-            }
-          });
+                // SÓ DEPOIS que a aula foi criada, salvamos o Diário
+                this.diarioClasseService.salvarDiarioClasse(listaDiarioParaSalvar)
+                  .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+                  .subscribe({
+                    next: () => { }
+                  });
+              }
+            });
         }
       });
   }
