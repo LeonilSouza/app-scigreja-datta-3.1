@@ -1,5 +1,5 @@
 // angular import
-import { AfterContentChecked, AfterViewInit, Component, computed, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, computed, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { DecimalPipe, formatDate } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
@@ -82,7 +82,7 @@ import { DatasDTO } from 'src/app/theme/shared/models/datas.dto';
     DatasService
   ]
 })
-export class FrequenciaListFormComponent implements OnInit, AfterViewInit, OnDestroy {
+export class FrequenciaListFormComponent implements OnInit, OnDestroy {
 
   @ViewChild('meuInput') totalMatriculados: ElementRef;
 
@@ -139,10 +139,6 @@ export class FrequenciaListFormComponent implements OnInit, AfterViewInit, OnDes
     { nome: '3º Trimestre', id: 2 },
     { nome: '4º Trimestre', id: 3 }
   ];
-
-  ngAfterViewInit() {
-
-  }
 
   nomeIgrejaSignal = nomeIgrejaSignal;
   igrejaIdSignal = igrejaIdSignal;
@@ -308,7 +304,7 @@ export class FrequenciaListFormComponent implements OnInit, AfterViewInit, OnDes
   }
 
    ngOnDestroy() {
-    console.log('Limpando recursos do componente de Frequência...');
+    // console.log('Limpando recursos do componente de Frequência...');
     // Se você tiver alguma Subscription manual (this.subscription.unsubscribe())
     if (this.subscription) {
       this.subscription.unsubscribe();
