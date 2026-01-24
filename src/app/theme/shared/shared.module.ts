@@ -54,6 +54,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 
 
 import localePt from '@angular/common/locales/pt';
+import { DialogModule } from 'primeng/dialog';
 
 registerLocaleData(localePt);
 
@@ -130,6 +131,7 @@ registerLocaleData(localePt);
     AccordionModule,
     SplitButtonModule,
     SelectModule,
+    DialogModule
   ],
   providers: [
     UsuarioService,

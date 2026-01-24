@@ -76,7 +76,6 @@ export class PessoaDTO {
 		  public cidadeEndereco?: string,
 		  public bairro?: string,
 		  public ufEndereco?: string,
-
 		  public telefone1?: string,
 		  public telefone2?: string,
 		  public celular1?: string,

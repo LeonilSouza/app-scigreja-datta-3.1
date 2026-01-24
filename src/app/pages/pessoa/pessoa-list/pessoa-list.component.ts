@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, ViewChild } from '@angular/core';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -14,13 +14,13 @@ import { API_CONFIG } from 'src/app/app-config';
 import { PessoaService } from 'src/app/theme/shared/services/pessoa.service';
 import { CardComponent } from 'src/app/theme/shared/components/card/card.component';
 import { igrejaIdSignal, perfilSignal } from 'src/app/theme/shared/_helpers/shared-signals';
-import moment from 'moment';
 import { SharedModule } from "src/app/theme/shared/shared.module";
 import { DatePicker } from 'primeng/datepicker';
 import { DatasService } from 'src/app/theme/shared/services/datas-service.service';
 import { DatasDTO } from 'src/app/theme/shared/models/datas.dto';
 import { UiModalComponent } from 'src/app/theme/shared/components/modal/ui-modal/ui-modal.component';
 import { SharedService } from 'src/app/theme/shared/services/shared.service';
+import { Subject, Subscription } from 'rxjs';
 
 
 @Component({
@@ -52,6 +52,12 @@ import { SharedService } from 'src/app/theme/shared/services/shared.service';
 
 export class PessoaListComponent implements OnInit {
 
+   private destroyRef = inject(DestroyRef); // 1. Injete a referência de destruição
+
+  positionChamadaObreiro: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
+
+  visibleChamadaObreiro: boolean = false;
+
   // Acionamento da modal no HTML  aqui pelo componente (#modalFrequencia)
   @ViewChild('modalChamada') public modalChamada: UiModalComponent;
 
@@ -75,8 +81,6 @@ export class PessoaListComponent implements OnInit {
 
   @ViewChild('dtpessoa') grid!: Table;
 
-  dataAtual = moment();
-
   dataForm!: FormGroup;
   pessoaListForm!: FormGroup;
 
@@ -86,6 +90,8 @@ export class PessoaListComponent implements OnInit {
   totalObreiros: number = 0;
   totalNovos: number = 0;
   totalCongregados: number = 0;
+
+  subscription!: Subscription;
 
   totalGeralMembros!: number;
 
@@ -109,7 +115,7 @@ export class PessoaListComponent implements OnInit {
     private messageService: MessageService,
     private formBuilder: FormBuilder,
     private datasService: DatasService,
-    private sharedService: SharedService,
+    private sharedService: SharedService
   ) {
 
   }
@@ -126,11 +132,20 @@ export class PessoaListComponent implements OnInit {
     this.pessoaListForm.controls['nome'].setValue('Ativo');
   };
 
+  ngOnDestroy() {
+    // console.log('Limpando recursos do componente de Frequência...');
+    // Se você tiver alguma Subscription manual (this.subscription.unsubscribe())
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+
   private buildPessoaListForm() {
     this.pessoaListForm = this.formBuilder.group({
       id: [0],
       nome: [null],
-      dtChamada: [null]
+      ano: [null]
     });
   }
 
@@ -150,81 +165,114 @@ export class PessoaListComponent implements OnInit {
       decimo_primeiro: [null],
       decimo_segundo: [null],
       decimo_terceiro: [null],
-      decimo_quarto: [null]
+      decimo_quarto: [null],
+
+      primeiroSem: [null],
+      segundoSem: [null],
+      terceiroSem: [null],
+      quartoSem: [null],
+      quintoSem: [null],
+      sextoSem: [null],
+      setimoSem: [null],
+      oitavoSem: [null],
+      nonoSem: [null],
+      decimoSem: [null],
+      decimo_primeiroSem: [null],
+      decimo_segundoSem: [null],
+      decimo_terceiroSem: [null],
+      decimo_quartoSem: [null]
     });
   }
 
-  // Seta data atual no DatePicker
-  setData() {
-    this.pessoaListForm.controls['dtChamada'].setValue(this.dataAtualFormatada());
-  }
+  // Passa a data selecionada no Datepicker ano para value
+  imprimirChamadaObreiros(value = this.pessoaListForm.controls['ano'].value) {
+    const partes = value.split('/');
+    const mes = partes[0] - (+1);
+    const ano = partes[1];
 
-  // Passa a data selecionada no Datepicker para value
-  dataUS(value = this.pessoaListForm.controls['dtChamada'].value) {
-    let data_brasileira = value; //Postgres usa este formato no Jasper 
-    let data_americana = data_brasileira.split('/').reverse().join('-'); // CONVERTE DATA BRASILEIRA EM AMERICANA. Preciso da data no formato americano p/ jsaper com MySQL.
-    let [ano, mes] = data_americana.split('-').map(Number);
-    mes = mes - 1; // Meses em javascript vai de 0 a 11
-
-    this.getDiasDaSemanaNoMes(ano, mes);
+    // Geração dos dias da semana
+    this.getDiasDaSemanaNoMes(+ano, +mes);
   }
 
   //  ROTINA PARA CALCULAR DIAS DE CULTO DOM-TER-QUI | DOM-QUA-SEX
   getDiasDaSemanaNoMes(ano, mes) {
     const weekdays = [];
-    // Define a data de início como o primeiro dia do mês especificado
     const startDate = new Date(ano, mes, 1);
-    // Define a data de fim como o primeiro dia do mês seguinte, o que nos permite
-    // iterar até o último dia do mês atual sem nos preocuparmos com a quantidade
-    // exata de dias (28, 29, 30 ou 31)
     const endDate = new Date(ano, mes + 1, 1);
 
-    // Loop por todos os dias do mês
-    for (let date = new Date(startDate); date < endDate; date.setDate(date.getDate() + 1)) {
-      // const index = date.getDate()
-      const dayOfWeek = date.getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+    // Mapeamento dos nomes curtos
+    const nomesDias = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"];
 
-      // Verifica se o dia da semana é igual aos dias desejados. 0 = Domingo, 1 = segunda, ...
-      //  Para cultos Dom | Ter | Quin
-      if (this.dom_ter_qui) {
-        if (dayOfWeek === 0 || dayOfWeek === 2 || dayOfWeek === 4) {
-          // Adiciona a data (ou apenas o dia do mês, se preferir) ao array
-          weekdays.push(new Date(date)); // Cria uma nova instância para evitar problemas de referência
-        }
+    for (let date = new Date(startDate); date < endDate; date.setDate(date.getDate() + 1)) {
+      const dayOfWeek = date.getDay();
+      let incluir = false;
+
+      // Lógica de filtro baseada nas propriedades da classe
+      if (this.dom_ter_qui && (dayOfWeek === 0 || dayOfWeek === 2 || dayOfWeek === 4)) {
+        incluir = true;
+      } else if (this.dom_qua_sex && (dayOfWeek === 0 || dayOfWeek === 3 || dayOfWeek === 5)) {
+        incluir = true;
       }
 
-      //  Para cultos Dom | Qua | Sex
-      if (this.dom_qua_sex) {
-        if (dayOfWeek === 0 || dayOfWeek === 3 || dayOfWeek === 5) {
-          // Adiciona a data (ou apenas o dia do mês, se preferir) ao array
-          weekdays.push(new Date(date)); // Cria uma nova instância para evitar problemas de referência
-        }
+      if (incluir) {
+        weekdays.push({
+          dia: new Date(date),           // Ex: 24
+          diaSemana: nomesDias[dayOfWeek], // Ex: "SAB"
+        });
       }
     }
-    this.dataForm.controls['primeiro'].setValue(weekdays[0].toLocaleDateString('pt-BR'));
-    this.dataForm.controls['segundo'].setValue(weekdays[1].toLocaleDateString('pt-BR'));
-    this.dataForm.controls['terceiro'].setValue(weekdays[2].toLocaleDateString('pt-BR'));
-    this.dataForm.controls['quarto'].setValue(weekdays[3].toLocaleDateString('pt-BR'));
-    this.dataForm.controls['quinto'].setValue(weekdays[4].toLocaleDateString('pt-BR'));
-    this.dataForm.controls['sexto'].setValue(weekdays[5].toLocaleDateString('pt-BR'));
-    this.dataForm.controls['setimo'].setValue(weekdays[6].toLocaleDateString('pt-BR'));
-    this.dataForm.controls['oitavo'].setValue(weekdays[7].toLocaleDateString('pt-BR'));
-    this.dataForm.controls['nono'].setValue(weekdays[8].toLocaleDateString('pt-BR'));
-    this.dataForm.controls['decimo'].setValue(weekdays[9].toLocaleDateString('pt-BR'));
-    this.dataForm.controls['decimo_primeiro'].setValue(weekdays[10].toLocaleDateString('pt-BR'));
-    this.dataForm.controls['decimo_segundo'].setValue(weekdays[11].toLocaleDateString('pt-BR'));
+    // Dias da semana
+    this.dataForm.controls['primeiro'].setValue(weekdays[0].dia.toLocaleDateString('pt-BR'));
+    this.dataForm.controls['segundo'].setValue(weekdays[1].dia.toLocaleDateString('pt-BR'));
+    this.dataForm.controls['terceiro'].setValue(weekdays[2].dia.toLocaleDateString('pt-BR'));
+    this.dataForm.controls['quarto'].setValue(weekdays[3].dia.toLocaleDateString('pt-BR'));
+    this.dataForm.controls['quinto'].setValue(weekdays[4].dia.toLocaleDateString('pt-BR'));
+    this.dataForm.controls['sexto'].setValue(weekdays[5].dia.toLocaleDateString('pt-BR'));
+    this.dataForm.controls['setimo'].setValue(weekdays[6].dia.toLocaleDateString('pt-BR'));
+    this.dataForm.controls['oitavo'].setValue(weekdays[7].dia.toLocaleDateString('pt-BR'));
+    this.dataForm.controls['nono'].setValue(weekdays[8].dia.toLocaleDateString('pt-BR'));
+    this.dataForm.controls['decimo'].setValue(weekdays[9].dia.toLocaleDateString('pt-BR'));
+    this.dataForm.controls['decimo_primeiro'].setValue(weekdays[10].dia.toLocaleDateString('pt-BR'));
+    this.dataForm.controls['decimo_segundo'].setValue(weekdays[11].dia.toLocaleDateString('pt-BR'));
 
     if (weekdays[12]) {
-      this.dataForm.controls['decimo_terceiro'].setValue(weekdays[12].toLocaleDateString('pt-BR'));
+      this.dataForm.controls['decimo_terceiro'].setValue(weekdays[12].dia.toLocaleDateString('pt-BR'));
     } else {
       this.dataForm.controls['decimo_terceiro'].setValue(null);
     }
 
     if (weekdays[13]) {
-      this.dataForm.controls['decimo_quarto'].setValue(weekdays[13].toLocaleDateString('pt-BR'));
+      this.dataForm.controls['decimo_quarto'].setValue(weekdays[13].dia.toLocaleDateString('pt-BR'));
     } else {
       this.dataForm.controls['decimo_quarto'].setValue(null);
     }
+
+    // Nomes Curtos Semana DOM | TER | Etc...
+    this.dataForm.controls['primeiroSem'].setValue(weekdays[0].diaSemana);
+    this.dataForm.controls['segundoSem'].setValue(weekdays[1].diaSemana);
+    this.dataForm.controls['terceiroSem'].setValue(weekdays[2].diaSemana);
+    this.dataForm.controls['quartoSem'].setValue(weekdays[3].diaSemana);
+    this.dataForm.controls['quintoSem'].setValue(weekdays[4].diaSemana);
+    this.dataForm.controls['sextoSem'].setValue(weekdays[5].diaSemana);
+    this.dataForm.controls['setimoSem'].setValue(weekdays[6].diaSemana);
+    this.dataForm.controls['oitavoSem'].setValue(weekdays[7].diaSemana);
+    this.dataForm.controls['nonoSem'].setValue(weekdays[8].diaSemana);
+    this.dataForm.controls['decimoSem'].setValue(weekdays[9].diaSemana);
+    this.dataForm.controls['decimo_primeiroSem'].setValue(weekdays[10].diaSemana);
+    this.dataForm.controls['decimo_segundoSem'].setValue(weekdays[11].diaSemana);
+
+    if (weekdays[12]) {
+      this.dataForm.controls['decimo_terceiroSem'].setValue(weekdays[12].diaSemana);
+    } else {
+      this.dataForm.controls['decimo_terceiroSem'].setValue(null);
+    }
+
+    if (weekdays[13]) {
+      this.dataForm.controls['decimo_quartoSem'].setValue(weekdays[13].diaSemana);
+    } else {
+      this.dataForm.controls['decimo_quartoSem'].setValue(null);
+    }
+
 
     this.updateDatas();
 
@@ -238,6 +286,7 @@ export class PessoaListComponent implements OnInit {
     const data: DatasDTO = Object.assign(new DatasDTO(), this.dataForm.value);
     data.id = 1;
     this.datasService.update(data)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: () => {
           let url = (`${API_CONFIG.baseUrl}/relatorios/list/?nome=chamada-de-obreiros&igreja=${this.igrejaId}`)
@@ -353,8 +402,9 @@ export class PessoaListComponent implements OnInit {
       label: 'Chamada de Obreiros',
       icon: 'fas fa-users',
       command: () => {
-        this.modalChamada.show();
-        this.setData()
+        this.pessoaListForm.controls['ano'].setValue(this.sharedService.mesAno());
+        this.positionChamadaObreiro = 'top';
+        this.visibleChamadaObreiro = true; // Abre a modal
       }
     },
     {
@@ -403,3 +453,7 @@ export class PessoaListComponent implements OnInit {
 
 
 }
+function takeUntilDestroyed(destroyRef: DestroyRef): import("rxjs").OperatorFunction<DatasDTO, unknown> {
+  throw new Error('Function not implemented.');
+}
+

@@ -1,5 +1,5 @@
 // angular import
-import { AfterViewInit, Component, computed, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, computed, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { DecimalPipe, formatDate } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
@@ -38,7 +38,6 @@ import { ProfessorDTO } from 'src/app/theme/shared/models/professor.dto';
 import { ProfessorService } from 'src/app/theme/shared/services/professor.service';
 import { EscalaService } from 'src/app/theme/shared/services/escala.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DialogModule } from 'primeng/dialog';
 import { PessoaService } from 'src/app/theme/shared/services/pessoa.service';
 import { API_CONFIG } from 'src/app/app-config';
 import { DatasService } from 'src/app/theme/shared/services/datas-service.service';
@@ -56,7 +55,6 @@ import { DatasDTO } from 'src/app/theme/shared/models/datas.dto';
     ButtonModule,
     InputNumberModule,
     Fluid,
-    DialogModule,
     // RouterLink,
     SharedModule,
     SelectModule,

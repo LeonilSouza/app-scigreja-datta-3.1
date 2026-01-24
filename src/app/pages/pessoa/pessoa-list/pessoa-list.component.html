@@ -69,17 +69,22 @@
 
     <!-- Fim ToolBar -->
 
-    <!-- SESSAO IMPRIMIR CHAMADA - MODAL -->
+    <!-- INICIO MODAL IMPRIMIR CHAMADA OBREIROS -->
 
     <div class="col-md-12 col-xl-12" data-backdrop="static">
-      <app-ui-modal #modalChamada id="modalChamada" [dialogClass]="'modal-lg'">
-        <div class="app-modal-body">
-          <h5 class="align-center"><strong>Chamada de obreiros culto oficial</strong></h5>
-          <hr class="mt-0 mb-2">
+
+      <div class="card flex justify-center">
+        <p-dialog header="CHAMADA DE OBREIROS - CULTOS OFICIAL" [modal]="true" [(visible)]="visibleChamadaObreiro"
+          [position]="positionChamadaObreiro" [dismissableMask]="false"
+          [style]="{width: '60vw', 'min-height': '30vh', height: 'auto'}" [closeOnEscape]="false"
+          [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false"
+          [contentStyle]="{ 'overflow': 'visible' }" [transitionOptions]="'500ms ease-out'">
+          <hr class="mt-1 mb-2">
 
           <!-- Modal Body Inicio -->
 
           <div class="row col-12">
+
             <!-- CheckBox DomTerQui -->
             <div class="form-group col-md-4 d-inline mb-1  ">
               <label class="text-dark">Dom | Ter | Qui</label>
@@ -102,40 +107,38 @@
 
             <!-- Fim CheckBox  -->
 
+            <!-- Ano de referencia -->
             <!-- Data da Mes de referencia -->
             <div class="form-group col-md-4 ">
-              <label>Data</label>
-              <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true" [yearNavigator]="true"
+              <label class="mb-1">Ano</label>
+              <p-datepicker view="month"
+                [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true" [yearNavigator]="true"
                 yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true" inputId="icondisplay" dataType="string"
-                dateFormat="dd/mm/yy" formControlName="dtChamada" placeholder="dd/mm/aaaa" [placement]="'left'"
-                ngbTooltip="Selecione qualquer dia no mês de referência" />
+                dateFormat="mm/yy" formControlName="ano" placeholder="dd/mm/aaaa" />
             </div>
-          </div>
 
-          <hr class="mb-0">
+          </div>
 
           <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
-          <div class="modal-footer" style="height: 38px;">
+          <div class="modal-footer">
 
             <!-- Cancelar -->
-            <button (click)="modalChamada.hide();" styleClass="p-button-sm" icon='pi pi-wallet'
+            <button (click)="visibleChamadaObreiro = false" styleClass="p-button-sm" icon='pi pi-wallet'
               style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton pRipple type="button"
-              label="Cancelar" class="p-button-danger ml-2 p-button-outlined mt-1 ">
+              label="Fechar" class="p-button-primary mx-3 p-button-outlined mt-1 ">
             </button>
 
-            <!-- OK -->
-            <strong><button (click)="modalChamada.hide(); dataUS()" type="button" class="msl-3 float-end mt-0" pButton
-                pRipple label="OK"
-                style="width: 7em;  background:#388669; height: 30px; border-radius: 5px; font-size: small; "
-                icon='pi pi-check'>
-              </button></strong>
+            <!-- Imprimir -->
+            <button (click)="imprimirChamadaObreiros()" styleClass="p-button-sm" icon='pi pi-check'
+              style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton pRipple type="button"
+              label="Imprimir" class="p-button-success  mt-1 ">
+            </button>
           </div>
-          <!-- <hr class="mt-4"> -->
-        </div>
-      </app-ui-modal>
+        </p-dialog>
+      </div>
+      <!-- FIM MODAL IMPRIMIR CHAMADA OBREIROS -->
     </div>
   </form>
-  <!-- FIM MODAL IMPRIMIR CHAMADA -->
 
   <app-card [hidHeader]="true" cardClass="card-border-c-green shadow  border-1">
     <div class="p-0">

@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { ConfirmationService, LazyLoadEvent, MenuItem, MessageService } from 'primeng/api';
-import { Subject, Subscription, takeUntil } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import { ButtonModule } from 'primeng/button';
@@ -85,7 +85,7 @@ export class LancamentoListFormComponent implements OnInit {
   nomeUsuario = nomeUsuarioSignal();
   setorId = setorIdSignal();
 
-  private destroy$: Subject<void> = new Subject<void>();
+  // private destroy$: Subject<void> = new Subject<void>();
 
   filtro = new LancamentoFiltro();
 
@@ -270,9 +270,12 @@ export class LancamentoListFormComponent implements OnInit {
     });
   };
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  ngOnDestroy() {
+    // console.log('Limpando recursos do componente de Frequência...');
+    // Se você tiver alguma Subscription manual (this.subscription.unsubscribe())
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
 
@@ -1393,7 +1396,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   excluirSelectedLancamento(indexIdTransferencia) {
     this.lancamentoService.delete(indexIdTransferencia)
-     .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: () => {
           this.grid.reset();
