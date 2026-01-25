@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { ConfirmationService, LazyLoadEvent, MenuItem, MessageService } from 'primeng/api';
-import { Subject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import { ButtonModule } from 'primeng/button';
@@ -73,6 +73,12 @@ export class LancamentoFiltro {
 })
 export class LancamentoListFormComponent implements OnInit {
 
+  positionLancamento: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
+  positionModalTransferencia: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
+
+  visibleLancamento: boolean = false; 
+  visibleModalTransferencia: boolean = false; 
+
   private destroyRef = inject(DestroyRef); // 1. Injete a referência de destruição
 
   nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
@@ -85,6 +91,7 @@ export class LancamentoListFormComponent implements OnInit {
   nomeUsuario = nomeUsuarioSignal();
   setorId = setorIdSignal();
 
+   imodo = signal<number>(0);
   // private destroy$: Subject<void> = new Subject<void>();
 
   filtro = new LancamentoFiltro();
@@ -204,7 +211,6 @@ export class LancamentoListFormComponent implements OnInit {
   pessoa: PessoaDTO = new PessoaDTO();
   categoria: CategoriaDTO = new CategoriaDTO();
   pageTitle: string;
-  imodo: number = 0;
   submittingForm: boolean = false;
 
   imaskConfig = {
@@ -415,12 +421,13 @@ export class LancamentoListFormComponent implements OnInit {
   }
 
 
-  submitForm() {
+  submitFormLancamento() {
     this.submittingForm = true;
-    if (this.imodo === 0)
+    if (this.imodo() === 0)
       this.createLancamento();
     else
       this.updateLancamento();
+    
   }
 
   limpaCheckbox() {
@@ -430,7 +437,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   submitFormTransferencia() {
     this.submittingForm = true;
-    if (this.imodo === 0) {
+    if (this.imodo() === 0) {
       this.createLancamentoTransferencia();
     } else {
       this.updateLancamentoTransferencia();
@@ -439,7 +446,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   submitFormPermuta() {
     this.submittingForm = true;
-    if (this.imodo === 0) {
+    if (this.imodo() === 0) {
       this.createLancamentoPermuta();
     } else {
       this.updateLancamentoPermuta();
@@ -750,7 +757,7 @@ export class LancamentoListFormComponent implements OnInit {
           this.lancamento.id = parseInt(this.extractId(response.headers.get('location'))); // Extrai o Id da URI retornada do banco      
           this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
           this.lancamentoForm.controls['nome'].setValue(null);
-          this.lancamentoForm.controls['pessoaId'].setValue(null)
+          this.lancamentoForm.controls['pessoaId'].setValue(0)
           this.lancamentoForm.controls['valor'].setValue(null)
           this.toastr.success('Registro inserido com sucesso!', 'Lançamento');
           this.loadContas();
@@ -1475,21 +1482,24 @@ export class LancamentoListFormComponent implements OnInit {
     this.crtCategoria = 3;
   }
   setModalEdicao(value) {
-    if (value == 'Transferencia') { value = 'Receita' }
+    if (value == 'Transferencia') { 
+      value = 'Receita' 
+    }
     this.filtraCategorias(value);
-    this.pageTitle = "Editando Movimento";
-    this.imodo = 1;
+    this.pageTitle = "Editando Movimento".toUpperCase();
+    this.imodo.set(1);
+    console.log(this.imodo())
   }
 
   setModalInclusao(value) {
     this.resetModal();
-    this.imodo = 0;
+     this.imodo.set(0);
 
     switch (value) {
       case "Receita":
         let catReceita = this.categorias.filter((cat): boolean => cat.tipo !== "Despesa"); //Receita LC = Receita Livro Caixa
         this.categoriasFiltradas = catReceita;
-        this.pageTitle = "Nova Receita";
+        this.pageTitle = "Nova Receita".toUpperCase();
         this.lancamentoForm.controls['cadastrado'].setValue('sim');
         this.lancamentoForm.controls['igrejaId'].setValue(this.igrejaId);
         this.lancamentoForm.controls['tipoLancamento'].setValue('Receita');
@@ -1509,7 +1519,7 @@ export class LancamentoListFormComponent implements OnInit {
       case "Oferta":
         let catOferta = this.categorias.filter(cat => (cat.tipo == 'Receita' || cat.tipo == 'Receita LC' || cat.tipo == 'Oferta')); //Receita LC = Receita Livro Caixa
         this.categoriasFiltradas = catOferta;
-        this.pageTitle = "Nova Oferta";
+        this.pageTitle = "Nova Oferta".toUpperCase();
         this.lancamentoForm.controls['cadastrado'].setValue('sim');
         this.lancamentoForm.controls['igrejaId'].setValue(this.igrejaId);
         this.lancamentoForm.controls['tipoLancamento'].setValue('Receita');
@@ -1528,7 +1538,7 @@ export class LancamentoListFormComponent implements OnInit {
       case "Despesa":
         let cat1 = this.categorias.filter(cat => cat.tipo == "Despesa"); //Armazema todas as categorias de um tipo passado por parametro
         this.categoriasFiltradas = cat1;
-        this.pageTitle = "Nova Despesa";
+        this.pageTitle = "Nova Despesa".toUpperCase();
         this.lancamentoForm.controls['cadastrado'].setValue('sim');
         this.lancamentoForm.controls['igrejaId'].setValue(this.igrejaId);
         this.lancamentoForm.controls['tipoLancamento'].setValue("Despesa");
@@ -1547,7 +1557,7 @@ export class LancamentoListFormComponent implements OnInit {
       case "Transferencia": //Transferencia de forma pgto
         let catTransferencia = this.categorias.filter(cat => (cat.tipo == 'Receita')); //Receita LC = Receita Livro Caixa
         this.categoriasFiltradas = catTransferencia;
-        this.pageTitle = "Transferência";
+        this.pageTitle = "Transferência".toUpperCase();
         this.lancamentoForm.controls['cadastrado'].setValue('nao');
         this.lancamentoForm.controls['igrejaId'].setValue(this.igrejaId);
         this.lancamentoForm.controls['tipoLancamento'].setValue('Receita');
@@ -1567,7 +1577,7 @@ export class LancamentoListFormComponent implements OnInit {
         break;
 
       case "Permuta": //Transferencia de forma pgto;
-        this.pageTitle = "Permuta | Troca";
+        this.pageTitle = "Permuta | Troca".toUpperCase();
         this.lancamentoForm.controls['cadastrado'].setValue('nao');
         this.lancamentoForm.controls['igrejaId'].setValue(this.igrejaId);
         this.lancamentoForm.controls['tipoLancamento'].setValue('Receita');

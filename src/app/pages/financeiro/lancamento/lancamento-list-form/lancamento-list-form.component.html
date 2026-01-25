@@ -116,7 +116,7 @@
 
             <div class=" form-group col-sm-1 float-end mb-0">
                 <label class="f-13"> </label>
-                <button (click)="modalLancamento.show(); limpaCheckbox(); setModalInclusao('Receita'); imodo=0"
+                <button (click)="visibleLancamento = true; limpaCheckbox(); setModalInclusao('Receita'); imodo.set(0)"
                     class="btn btn-icon  btn-outline-success p-0 float-end mb-0" type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Dízimo
                 </button>
@@ -124,7 +124,7 @@
 
             <div class=" form-group col-sm-1 float-end mb-0">
                 <label class="f-13"> </label>
-                <button (click)="modalLancamento.show(); limpaCheckbox(); setModalInclusao('Oferta'); imodo=0"
+                <button (click)="visibleLancamento = true; limpaCheckbox(); setModalInclusao('Oferta'); imodo.set(0)"
                     class="btn btn-icon  btn-outline-primary p-0 float-end mb-0" type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Oferta
                 </button>
@@ -132,7 +132,7 @@
 
             <div class=" form-group col-sm-1 float-end mb-0">
                 <label class="f-13"> </label>
-                <button (click)="modalLancamento.show(); limpaCheckbox(); setModalInclusao('Receita'); imodo=0"
+                <button (click)="visibleLancamento = true; limpaCheckbox(); setModalInclusao('Receita'); imodo.set(0)"
                     class="btn btn-icon  btn-outline-success p-0 float-end mb-0 " type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Receita
                 </button>
@@ -140,7 +140,7 @@
 
             <div class=" form-group col-sm-1 float-end mb-0">
                 <label class="f-13"> </label>
-                <button (click)="modalLancamento.show(); limpaCheckbox(); setModalInclusao('Despesa'); imodo=0"
+                <button (click)="visibleLancamento = true; limpaCheckbox(); setModalInclusao('Despesa'); imodo.set(0)"
                     class="btn btn-icon  btn-outline-danger p-0 float-end mb-0 " type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Despesa
                 </button>
@@ -154,7 +154,7 @@
 
             <div class=" form-group col-sm-1 float-end ">
                 <label class="f-13"> </label>
-                <button (click)="modalPermuta.show(); limpaCheckbox(); setModalInclusao('Permuta'); imodo=0"
+                <button (click)="modalPermuta.show(); limpaCheckbox(); setModalInclusao('Permuta'); imodo.set(0)"
                     class="btn btn-icon  btn-outline-warning p-0 float-end " type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Permuta
                 </button>
@@ -162,7 +162,8 @@
 
             <div class=" form-group col-sm-1 float-end ">
                 <label class="f-13"> </label>
-                <button (click)="modalTransferencia.show(); limpaCheckbox(); setModalInclusao('Transferencia'); imodo=0"
+                <button
+                    (click)="visibleModalTransferencia = true; limpaCheckbox(); setModalInclusao('Transferencia'); imodo.set(0)"
                     class="btn btn-icon  btn-outline-secondary p-0 float-end" type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Transferir
                 </button>
@@ -229,7 +230,7 @@
                 }
 
                 @if(length() < 1){ <div class="flex justify-between">
-                    <p-button  [style]="{'height':'32px', 'margin-right':'20px'}" disabled severity="secondary"
+                    <p-button [style]="{'height':'32px', 'margin-right':'20px'}" disabled severity="secondary"
                         [outlined]="true" icon="pi pi-trash" label="Limpar" label="Deletar"
                         (click)="deleteMultiplos()" />
 </div>
@@ -288,7 +289,7 @@
             currentPaportTemplate="Exibindo {first} a {last} de {totalRecords} registros " [paginator]="true"
             emptyMessage="Nenhum registro encontrado" selectionMode="multiple"
             (onRowSelect)="linhasSelecionada(selectedLancamentos)" (onRowUnselect)="aoDesmarcar($event)"
-            (onHeaderCheckboxToggle)="linhasSelecionada(selectedLancamentos)" >
+            (onHeaderCheckboxToggle)="linhasSelecionada(selectedLancamentos)">
 
             <ng-template #header>
                 <tr>
@@ -335,7 +336,7 @@
             <ng-template #body let-lancamento let-columns="columns">
                 <tr>
                     <td class="col-check-box py-1" style="width: 3rem;">
-                        <p-tableCheckbox [value]="lancamento" [index]="rowIndex"/>
+                        <p-tableCheckbox [value]="lancamento" [index]="rowIndex" />
                     </td>
 
                     <td class="col-data-100 py-1" style=" font-size: 13px">{{ lancamento.data }}
@@ -359,8 +360,8 @@
 
                     <!-- Editar -->
                     <td class="col-acoes-header py-1">
-                        <button (click)="imodo=1; limpaCheckbox(); lancamento.nome == 'Transferencia' ? modalTransferencia.show() : 
-                            lancamento.nome == 'Permuta' ? modalPermuta.show() : modalLancamento.show(); 
+                        <button [disabled]="lancamento.nome == 'Transferencia'" (click)="limpaCheckbox();  lancamento.nome == 'Transferencia' ? visibleModalTransferencia = true : 
+                            lancamento.nome == 'Permuta' ? modalPermuta.show() : visibleLancamento = true; 
                             loadLancamento(lancamento); setModalEdicao(lancamento.tipoLancamento) " type="button"
                             class="btn btn-icon  btn-outline-success p-1 mb-0 mt-0 "
                             [style]="{'margin-right': '10px','height': '26px', 'width': '26px'} " [placement]="'top'"
@@ -370,7 +371,7 @@
 
                         <!-- Recibo -->
                         @if(lancamento.tipoLancamento == "Despesa" ){
-                        <button (click)="imodo=1; limpaCheckbox(); imprimirRecibo(lancamento.id)" type="button"
+                        <button (click)="limpaCheckbox(); imprimirRecibo(lancamento.id)" type="button"
                             class="btn btn-icon  btn-outline-primary p-1 mb-0 mt-0 "
                             [style]="{'height': '26px', 'width': '26px'} " [placement]="'top'" ngbTooltip="Recibo">
                             <i class="pi pi-print"></i>
@@ -426,267 +427,263 @@
 </app-card>
 </div>
 
-<!-- MODAL Lancamentos INICIO -->
-<form [formGroup]="lancamentoForm" autocomplete="off" (submit)="submitForm()">
-    <app-ui-modal #modalLancamento [dialogClass]="'modal-lg'">
-        <div class="app-modal-header  ">
-            <div class="" style="width: 46rem; height: 1rem; padding-bottom: 10px; padding-top: 5px">
-                <h5 class="modal-title text-dark">{{ pageTitle }}</h5>
 
-            </div>
-        </div>
+<form [formGroup]="lancamentoForm" autocomplete="off">
 
-        <div class="app-modal-body">
-            <div class="row">
-                <!-- date -->
-                <div class="form-group col-md-4 mb-3 ">
-                    <label class="mb-1" for="data">Data</label>
-                    <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
-                        [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
-                        inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
-                        selectionMode="range" formControlName="data" />
-                </div>
+    <!-- INICIO MODAL  LANCAMENTO -->
+    <div class="col-md-12 col-xl-12" data-backdrop="static">
 
-                <div class="row form-group col-md-6  mb-2">
-                    <div class="flex flex-wrap">
-                        <div class="flex align-items-center mb-0">
-                            <label class="text-dark ">Nome/Historico     </label>
-                            <p-radioButton (click)="cadastradoNC()" value="nao" formControlName="cadastrado"
-                                inputId="naocadastrado"></p-radioButton>
+        <div class="card flex justify-center">
+            <p-dialog header="LANÇAMENTO DE - {{  pageTitle }}" [modal]="true" [(visible)]="visibleLancamento"
+                [position]="positionLancamento" [dismissableMask]="false"
+                [style]="{width: '60vw', 'min-height': '30vh', height: 'auto'}" [closeOnEscape]="false"
+                [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false"
+                [contentStyle]="{ 'overflow': 'visible' }" [transitionOptions]="'500ms ease-out'">
+                <hr class="mt-1 mb-2">
 
-                            <label for="naocadastrado" class="ml-2 text-c-blue"> Não Cadastrado    </label>
-                            <p-radioButton (click)="cadastradoC()" value="sim" formControlName="cadastrado"
-                                inputId="cadastrado"></p-radioButton>
-                            <label for="cadastrado" class="ml-2 text-success"> Cadastrado</label>
-                        </div>
+                <!-- Modal Body Inicio -->
 
-
-                        @if(lancamentoForm.controls['cadastrado'].value == 'sim'){
-                        <p-select [style]="{'width':'100%','height':'30px'}" formControlName="pessoaId"
-                            (onChange)="onChangeNomeHistorico($event)" class="w-full md mb-3 " [options]="pessoas"
-                            [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
-                            resetFilterOnHide="true" dateFormat="dd/mm/yy" dropdownIcon="pi pi-users"
-                            [autofocus]="false" optionValue="id" placeholder="Selecione um provedor" class="mt-1 " />
-                        }
-
-                        <!-- Nome/Histórico Não Cadastrado -->
-                        @if(lancamentoForm.controls['cadastrado'].value == 'nao'){
-                        <div class="form-group  mb-0">
-                            <input type="text" style="text-transform: uppercase" class="form-control mt-1"
-                                formControlName="nome">
-                        </div>
-                        }
-                    </div>
-                </div>
-
-                <!-- Competencia -->
-                <div class="form-group col-md-2 mb-2">
-                    <label class="mb-1">Competência</label>
-                    <p-inputMask class="float-end"
-                        [style]="{'width':'100%','height':'30px', 'border-radius':'6px', 'font-size':'13px' }"
-                        ariaRequired="false" mask="99/9999" formControlName="competencia"
-                        placeholder="MM/AAAA"></p-inputMask>
-                    @if(lancamentoForm.controls['competencia'].errors){
-                    <p class="danger" [style]="{'font-size':'10px' }" margin-left>
-                        Informe mês e ano.</p>
-                    }
-                </div>
-
-                <!-- Histórico -->
-                <div class="form-group col-md-5 mb-3">
-                    <label class="mb-1">Descrição</label>
-                    <input type="text" class="form-control mb-0" formControlName="historico">
-                </div>
-
-                <!-- Forma de Pagamento -->
-                <div class="form-group col-md-4 mb-2">
-                    <label class="m-b-9 mb-1">Forma de Contribuição</label>
-                    <p-select [style]="{'width':'100%','height':'30px'}" formControlName="formaId" class="w-full md  "
-                        [options]="formas" [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
-                        optionLabel="nome" resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
-                        [autofocus]="false" optionValue="id" placeholder="Selecione..." />
-
-                </div>
-
-                <!-- Valor Principal -->
-                <div class="form-group col-md-3  mb-3">
-                    <label class="mb-1">Valor R$</label>
-                    <p-inputnumber size="small" formControlName="valor" inputId="valor" mode="decimal" locale="pt-BR"
-                        class="mb-0" [minFractionDigits]="2" [style]="{'width':'100%','height':'30px'}" />
-
-                    @if(lancamentoForm.controls['valor'].errors){
-                    <p class="danger" [style]="{'font-size':'12px' }" margin-left>
-                        Informe um valor.</p>
-                    }
-                </div>
-
-                <!-- Conta -->
-                <div class="form-group col-md-4 mb-3">
-                    <label class="mb-1">Conta </label>
-                    <p-select [style]="{'width':'100%','height':'30px'}" formControlName="contaId"
-                        (onChange)="onChangeTPConta($event)" class="w-full md   mb-0" [options]="contas"
-                        [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
-                        resetFilterOnHide="true" dateFormat="dd/mm/yy" dropdownIcon="pi pi-users" [autofocus]="false"
-                        optionValue="id" placeholder="Selecione uma categoriar" />
-
-                </div>
-
-                <!-- Categoria -->
-                <div class="form-group col-md-4 mb-0">
-                    <label class="mb-1">Categoria </label>
-                    <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangeTPCategorias($event)"
-                        formControlName="categoriaId" class="w-full md  mb-1" [options]="categoriasFiltradas"
-                        [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
-                        resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar" [autofocus]="false"
-                        optionValue="id" placeholder="Selecione uma categoria" />
-                </div>
-
-                <!-- Centro de Custo -->
-                <div class="form-group col-md-4 m-b-09">
-                    <label class="mb-1">Centro de Custo </label>
-                    <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangeTPCategorias($event)"
-                        formControlName="centroCustoId" class="w-full md  mb-1" [options]="centroCustos"
-                        [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
-                        resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-check" [autofocus]="false"
-                        optionValue="id" placeholder="Selecione uma categoria" />
-                </div>
-
-                <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
-                <div class="modal-footer" style="height: 30px;">
-
-                    <!-- Imprimir Recibo -->
-                    <!-- <button *ngIf="lancamentoForm.controls['tipoLancamento'].value == 'Despesa'"
-                                data-dismiss="modal" type="button" class="mb-0" pButton pRipple
-                                (click)="imprimirRecibo(); modalLancamento.hide();" label="Visualizar Recibo" style="width: 12em; height: 30px; font-size: small;
-                            border-radius: 6px; border: 0;background:   #3F4D67;" icon='pi pi-print'>
-                            </button> -->
-
-                    <!-- Excluir -->
-                    <!-- <button *ngIf="lancamentoForm.controls['id'].value > 0" type="button" pButton pRipple
-                                (click)="confirmarExclusaoLancamento(lancamento); modalLancamento.hide(); resetModal()"
-                                styleClass="p-button-sm" icon='pi pi-times'
-                                style="width: 7em; height: 30px; border-radius: 6px;" pButton pRipple label="Excluir"
-                                class="ml-4 p-button-danger  p-button-outlined mr-auto  mb-0">
-                            </button> -->
-
-                    <!-- Fechar -->
-                    <button data-dismiss="modal" type="button" class=" ml-4 mb-0" pButton pRipple (click)="modalLancamento.hide();
-                                      resetModal()" label="Fechar" style="width: 7em; height: 30px; font-size: small;
-                                      border-radius: 6px; border: 0;background: #1a82ce;" icon='pi pi-wallet'>
-                    </button>
-
-                    <!-- Salvar -->
-                    <strong><button (click)="modalLancamento.hide()" [disabled]="lancamentoForm.invalid" type="submit"
-                            class="ml-4 float-end mb-0" pButton pRipple label="Salvar"
-                            style="width: 7em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
-                            icon='pi pi-check'>
-                        </button></strong>
-
-                    <!-- Salvar e Novo Receita -->
-                    @if(imodo == 0 && lancamentoForm.controls['tipoLancamento'].value == 'Receita'){
-                    <strong><button (click)="modalLancamento.show()" [disabled]="lancamentoForm.invalid" type="submit"
-                            class="ml-4 float-end mb-0" pButton pRipple label="Salvar e Novo"
-                            style="width: 11em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
-                            icon='pi pi-check'>
-                        </button></strong>
-                    }
-
-                    <!-- Salvar e Novo Despesa -->
-                    @if(imodo == 0 && lancamentoForm.controls['tipoLancamento'].value == 'Despesa'){
-                    <strong><button (click)="modalLancamento.show()" [disabled]="lancamentoForm.invalid" type="submit"
-                            class="ml-4 float-end mb-0" pButton pRipple label="Salvar e Novo"
-                            style="width: 11em;  background:#fd0505; height: 30px; border-radius: 6px; font-size: small; "
-                            icon='pi pi-check'>
-                        </button></strong>
-                    }
-
-                </div>
-            </div>
-        </div>
-    </app-ui-modal>
-
-    <!-- MODAL INICIO Transferencia -->
-
-    <div class="col-md-12 col-xl-12">
-
-        <div class="col-sm-12">
-            <app-ui-modal #modalTransferencia id="modalTransferencia" [dialogClass]="'modal-lg'">
-                <div class="app-modal-body">
-                    <div class="app-modal-header ml-2 ">
-                        <div class="card header mb-3"
-                            style="width: 46rem; height: 1rem; padding-bottom: 10px; padding-top: 5px">
-                            <h5 class="modal-title text-dark">{{ pageTitle }}</h5>
-                        </div>
+                <div class="row col-12">
+                    <!-- date -->
+                    <div class="form-group col-md-4 mb-3 ">
+                        <label class="mb-1" for="data">Data</label>
+                        <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                            [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
+                            inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
+                            formControlName="data" />
                     </div>
 
-                    <!-- Modal Body Inicio -->
+                    <div class="row form-group col-md-6  mb-2">
+                        <div class="flex flex-wrap">
+                            <div class="flex align-items-center mb-0">
+                                <label class="text-dark mr-5">Nome/Historico               </label>
+                                <p-radioButton (click)="cadastradoNC()" value="nao" formControlName="cadastrado"
+                                    inputId="naocadastrado"></p-radioButton>
 
-                    <div class="row col-12">
-
-                        <!-- Data da Transferencia -->
-                        <div class="form-group col-md-4 ">
-                            <label class="m-b-09" for="data">Data</label>
-                            <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
-                                [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
-                                inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
-                                selectionMode="range" formControlName="data" />
-                        </div>
-
-                        <!--  Origem da Transferencia-->
-                        @if(lancamentoForm.controls['id'].value == null){
-                        <div class="form-group col-md-4 ">
-                            <label class="m-b-9 text-danger">Transferir da conta </label>
-                            <p-select [style]="{'width':'100%','height':'30px'}"
-                                (onChange)="onChangeTransferenciaOrigem($event)" formControlName="contaId"
-                                class="w-full md  mb-2" [options]="contas" [editable]="false" [filter]="false"
-                                filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
-                                dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id"
-                                placeholder="Selecione..." />
-                        </div>
-                        }
+                                <label for="naocadastrado" class="ml-2 text-c-blue">  Não Cadastrado       </label>
+                                <p-radioButton (click)="cadastradoC()" value="sim" formControlName="cadastrado"
+                                    inputId="cadastrado"></p-radioButton>
+                                <label for="cadastrado" class="ml-2 text-success">  Cadastrado</label>
+                            </div>
 
 
+                            @if(lancamentoForm.controls['cadastrado'].value == 'sim'){
+                            <p-select [style]="{'width':'100%','height':'30px'}" formControlName="pessoaId"
+                                (onChange)="onChangeNomeHistorico($event)" class="w-full md mb-3 " [options]="pessoas"
+                                [editable]="false" [filter]="true" filterBy="nome" [showClear]="false"
+                                optionLabel="nome" resetFilterOnHide="true" dateFormat="dd/mm/yy"
+                                dropdownIcon="pi pi-users" [autofocus]="false" optionValue="id"
+                                placeholder="Selecione um provedor" class="mt-1 " />
+                            }
 
-                        <!-- Destino -->
-                        @if(lancamentoForm.controls['id'].value == null){
-                        <div class="form-group col-md-4 ">
-                            <label class="m-b-9 text-success">Para</label>
-                            <p-select [style]="{'width':'100%','height':'30px'}"
-                                (onChange)="onChangeTransferenciaDestino($event)" formControlName="contaIdTransferencia"
-                                class="w-full md  mb-2" [options]="contasTransferencia" [editable]="false"
-                                [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
-                                resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
-                                [autofocus]="false" optionValue="id" placeholder="Selecione..." />
-
-
-                            @if(lancamentoForm.controls['contaId'].value ==
-                            lancamentoForm.controls['contaIdTransferencia'].value){
-                            <p class="danger" [style]="{'font-size':'12px' }" margin-left>
-                                Impossível para a mesma conta.</p>
+                            <!-- Nome/Histórico Não Cadastrado -->
+                            @if(lancamentoForm.controls['cadastrado'].value == 'nao'){
+                            <div class="form-group  mb-0">
+                                <input type="text" style="text-transform: uppercase" class="form-control mt-1"
+                                    formControlName="nome">
+                            </div>
                             }
                         </div>
+                    </div>
+
+                    <!-- Competencia -->
+                    <div class="form-group col-md-2 mb-2">
+                        <label class="mb-1">Competência</label>
+                        <p-inputMask class="float-end"
+                            [style]="{'width':'100%','height':'30px', 'border-radius':'6px', 'font-size':'13px' }"
+                            ariaRequired="false" mask="99/9999" formControlName="competencia"
+                            placeholder="MM/AAAA"></p-inputMask>
+                        @if(lancamentoForm.controls['competencia'].errors){
+                        <p class="danger" [style]="{'font-size':'10px' }" margin-left>
+                            Informe mês e ano.</p>
                         }
+                    </div>
 
-                        <!-- Historico -->
-                        <div class="form-group col-md-8 mb-5">
-                            <label>Historico</label>
-                            <input readonly type="text" class="form-control" formControlName="historico">
-                        </div>
+                    <!-- Histórico -->
+                    <div class="form-group col-md-5 mb-3">
+                        <label class="mb-1">Descrição</label>
+                        <input type="text" class="form-control mb-0" formControlName="historico">
+                    </div>
 
-                        <!-- Valor Principal -->
-                        <div class="form-group col-md-4 p-fluid ">
-                            <label>Valor R$</label>
-                            <p-inputNumber formControlName="valor" inputId="valor" mode="decimal" locale="pt-BR"
-                                class="ml-auto" [minFractionDigits]="2"
-                                [style]="{'width':'100%','height':'30px', 'border-radius':'10px'}">
-                            </p-inputNumber>
-                            @if(lancamentoForm.controls['valor'].errors || this.lancamentoForm.controls['valor'].value
-                            <= 0){ <p class="danger" [style]="{'font-size':'12px' }" margin-left>
-                                Informe um valor válido.</p>
-                                }
-                        </div>
+                    <!-- Forma de Pagamento -->
+                    <div class="form-group col-md-4 mb-2">
+                        <label class="m-b-9 mb-1">Forma de Contribuição</label>
+                        <p-select [style]="{'width':'100%','height':'30px'}" formControlName="formaId"
+                            class="w-full md  " [options]="formas" [editable]="false" [filter]="false" filterBy="nome"
+                            [showClear]="false" optionLabel="nome" resetFilterOnHide="false" dateFormat="dd/mm/yy"
+                            dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id"
+                            placeholder="Selecione..." />
 
                     </div>
+
+                    <!-- Valor Principal -->
+                    <div class="form-group col-md-3  mb-3">
+                        <label class="mb-1">Valor R$</label>
+                        <p-inputnumber size="small" formControlName="valor" inputId="valor" mode="decimal"
+                            locale="pt-BR" class="mb-0" [minFractionDigits]="2"
+                            [style]="{'width':'100%','height':'30px'}" />
+
+                        @if(lancamentoForm.controls['valor'].errors){
+                        <p class="danger" [style]="{'font-size':'12px' }" margin-left>
+                            Informe um valor.</p>
+                        }
+                    </div>
+
+                    <!-- Conta -->
+                    <div class="form-group col-md-4 mb-3">
+                        <label class="mb-1">Conta </label>
+                        <p-select [style]="{'width':'100%','height':'30px'}" formControlName="contaId"
+                            (onChange)="onChangeTPConta($event)" class="w-full md   mb-0" [options]="contas"
+                            [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
+                            resetFilterOnHide="true" dateFormat="dd/mm/yy" dropdownIcon="pi pi-users"
+                            [autofocus]="false" optionValue="id" placeholder="Selecione uma categoriar" />
+
+                    </div>
+
+                    <!-- Categoria -->
+                    <div class="form-group col-md-4 mb-0">
+                        <label class="mb-1">Categoria </label>
+                        <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangeTPCategorias($event)"
+                            formControlName="categoriaId" class="w-full md  mb-1" [options]="categoriasFiltradas"
+                            [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
+                            resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
+                            [autofocus]="false" optionValue="id" placeholder="Selecione uma categoria" />
+                    </div>
+
+                    <!-- Centro de Custo -->
+                    <div class="form-group col-md-4 m-b-09">
+                        <label class="mb-1">Centro de Custo </label>
+                        <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangeTPCategorias($event)"
+                            formControlName="centroCustoId" class="w-full md  mb-1" [options]="centroCustos"
+                            [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
+                            resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-check"
+                            [autofocus]="false" optionValue="id" placeholder="Selecione uma categoria" />
+                    </div>
+
+                    <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
+                    <div class="modal-footer" style="height: 38px;">
+
+                        <!-- Fechar -->
+                        <button (click)="visibleLancamento = false" type="button" class=" ml-4 mb-0" pButton pRipple
+                            (click)="visibleLancamento = false;
+                                      resetModal()" label="Fechar" style="width: 7em; height: 30px; font-size: small;
+                                      border-radius: 6px; border: 0;background: #1a82ce;" icon='pi pi-wallet'>
+                        </button>
+
+                        <!-- Salvar -->
+                        <strong><button (click)="visibleLancamento = false; submitFormLancamento()"
+                                [disabled]="lancamentoForm.invalid" type="button" class="mx-3 float-end mb-0" pButton
+                                pRipple label="Salvar"
+                                style="width: 7em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
+                                icon='pi pi-check'>
+                            </button></strong>
+
+                        <!-- Salvar e Novo Receita -->
+                        @if(imodo() == 0 && lancamentoForm.controls['tipoLancamento'].value == 'Receita'){
+                        <strong><button (click)="visibleLancamento = true; submitFormLancamento()"
+                                [disabled]="lancamentoForm.invalid" type="button" class="ml-4 float-end mb-0" pButton
+                                pRipple label="Salvar e Novo"
+                                style="width: 11em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
+                                icon='pi pi-check'>
+                            </button></strong>
+                        }
+
+                        <!-- Salvar e Novo Despesa -->
+                        @if(imodo() == 0 && lancamentoForm.controls['tipoLancamento'].value == 'Despesa'){
+                        <strong><button (click)="visibleLancamento = true; submitFormLancamento()"
+                                [disabled]="lancamentoForm.invalid" type="button" class="ml-4 float-end mb-0" pButton
+                                pRipple label="Salvar e Novo"
+                                style="width: 11em;  background:#fd0505; height: 30px; border-radius: 6px; font-size: small; "
+                                icon='pi pi-check'>
+                            </button></strong>
+                        }
+
+                    </div>
+                </div>
+            </p-dialog>
+        </div>
+
+        <!-- FIM MODAL  LANCAMENTO -->
+    </div>
+
+    <!-- INICIO MODAL  TRANSFERENCIA -->
+    <div class="col-md-12 col-xl-12" data-backdrop="static">
+
+        <div class="card flex justify-center">
+            <p-dialog header="LANÇAMENTO DE - {{  pageTitle }}" [modal]="true" [(visible)]="visibleModalTransferencia"
+                [position]="positionModalTransferencia" [dismissableMask]="false"
+                [style]="{width: '60vw', 'min-height': '30vh', height: 'auto'}" [closeOnEscape]="false"
+                [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false"
+                [contentStyle]="{ 'overflow': 'visible' }" [transitionOptions]="'500ms ease-out'">
+                <hr class="mt-1 mb-2">
+
+                <!-- Modal Body Inicio -->
+
+                <div class="row col-12">
+
+                    <!-- Data da Transferencia -->
+                    <div class="form-group col-md-4 ">
+                        <label class="m-b-09" for="data">Data</label>
+                        <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                            [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
+                            inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
+                            formControlName="data" />
+                    </div>
+
+                    <!--  Origem da Transferencia-->
+                    @if(lancamentoForm.controls['id'].value == null){
+                    <div class="form-group col-md-4 ">
+                        <label class="m-b-9 text-danger">Transferir da conta </label>
+                        <p-select [style]="{'width':'100%','height':'30px'}"
+                            (onChange)="onChangeTransferenciaOrigem($event)" formControlName="contaId"
+                            class="w-full md  mb-2" [options]="contas" [editable]="false" [filter]="false"
+                            filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
+                            dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id"
+                            placeholder="Selecione..." />
+                    </div>
+                    }
+
+
+
+                    <!-- Destino -->
+                    @if(lancamentoForm.controls['id'].value == null){
+                    <div class="form-group col-md-4 ">
+                        <label class="m-b-9 text-success">Para</label>
+                        <p-select [style]="{'width':'100%','height':'30px'}"
+                            (onChange)="onChangeTransferenciaDestino($event)" formControlName="contaIdTransferencia"
+                            class="w-full md  mb-2" [options]="contasTransferencia" [editable]="false" [filter]="false"
+                            filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
+                            dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id"
+                            placeholder="Selecione..." />
+
+
+                        @if(lancamentoForm.controls['contaId'].value ==
+                        lancamentoForm.controls['contaIdTransferencia'].value){
+                        <p class="danger" [style]="{'font-size':'12px' }" margin-left>
+                            Impossível para a mesma conta.</p>
+                        }
+                    </div>
+                    }
+
+                    <!-- Historico -->
+                    <div class="form-group col-md-8 mb-5">
+                        <label>Historico</label>
+                        <input readonly type="text" class="form-control" formControlName="historico">
+                    </div>
+
+                    <!-- Valor Principal -->
+                    <div class="form-group col-md-4 p-fluid ">
+                        <label>Valor R$</label>
+                        <p-inputNumber formControlName="valor" inputId="valor" mode="decimal" locale="pt-BR"
+                            class="ml-auto" [minFractionDigits]="2"
+                            [style]="{'width':'100%','height':'30px', 'border-radius':'10px'}">
+                        </p-inputNumber>
+                        @if(lancamentoForm.controls['valor'].errors || this.lancamentoForm.controls['valor'].value
+                        <= 0){ <p class="danger" [style]="{'font-size':'12px' }" margin-left>
+                            Informe um valor válido.</p>
+                            }
+                    </div>
+
 
                     <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
                     <div class="modal-footer" style="height: 38px;">
@@ -694,7 +691,7 @@
                         <!-- Excluir -->
                         @if(lancamentoForm.controls['id'].value > 0){
                         <button type="button" pButton pRipple
-                            (click)="confirmarExclusaoLancamentoTransferencia(lancamento); modalTransferencia.hide(); resetModal()"
+                            (click)="confirmarExclusaoLancamentoTransferencia(lancamento); visibleModalTransferencia = false; resetModal()"
                             styleClass="p-button-sm" icon='pi pi-times'
                             style="width: 7em; height: 30px; border-radius: 6px;" pButton pRipple label="Excluir"
                             class="ml-4 p-button-danger  p-button-outlined   mb-0">
@@ -702,14 +699,14 @@
                         }
 
                         <!-- Fechar -->
-                        <button data-dismiss="modal" type="button" class=" ml-4 mb-0" pButton pRipple (click)="modalTransferencia.hide();
+                        <button data-dismiss="modal" type="button" class=" mx-4 mb-0" pButton pRipple (click)="visibleModalTransferencia = false;
                                       resetModal()" label="Fechar" style="width: 7em; height: 30px; font-size: small;
                                       border-radius: 6px; border: 0;background: #1a82ce;" icon='pi pi-wallet'>
                         </button>
 
                         <!-- Salvar -->
                         @if(lancamentoForm.controls['id'].value == null){
-                        <strong><button (click)="modalTransferencia.hide(); submitFormTransferencia()"
+                        <strong><button (click)="visibleModalTransferencia = false; submitFormTransferencia()"
                                 [disabled]="lancamentoForm.invalid 
                                 || this.lancamentoForm.controls['valor'].value <= 0 || this.lancamentoForm.controls['contaIdTransferencia'].value == null 
                                 || (lancamentoForm.controls['contaId'].value == lancamentoForm.controls['contaIdTransferencia'].value)" type="button" class="ml-4 float-end mb-0" pButton
@@ -718,16 +715,17 @@
                                 icon='pi pi-check'>
                             </button></strong>
                         }
-                    </div>
-                    <!-- <div class="form-group ">
+                        <!-- <div class="form-group ">
                         <pre> {{ lancamentoForm.value | json}} </pre>
                     </div> -->
-                </div>
-            </app-ui-modal>
-        </div>
-    </div>
-    <!-- FIM MODAL Transferencia -->
 
+                    </div>
+                </div>
+            </p-dialog>
+        </div>
+
+        <!-- FIM MODAL  TRANSFERENCIA -->
+    </div>
 
     <!-- MODAL INICIO Permuta -->
     <div class="col-md-12 col-xl-12">
