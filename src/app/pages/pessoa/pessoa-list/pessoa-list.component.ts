@@ -392,10 +392,17 @@ export class PessoaListComponent implements OnInit {
 
   getPrintItems = [
     {
-      label: 'Lista de obreiros',
+      label: 'Lista de obreiros Ativos',
       icon: 'fas fa-users',
       target: '_blank',
       url: `${API_CONFIG.baseUrl}/relatorios/list/?nome=lista-de-obreiros&igreja=${this.igrejaId}`
+
+    },
+    {
+      label: 'Lista de obreiros Ativos - Foto',
+      icon: 'fas fa-users',
+      target: '_blank',
+      url: `${API_CONFIG.baseUrl}/relatorios/list/?nome=lista-de-obreiros-foto&igreja=${this.igrejaId}`
 
     },
     {
@@ -413,18 +420,18 @@ export class PessoaListComponent implements OnInit {
     {
       separator: true,
     },
-    {
-      label: 'Ficha de membros',
-      icon: 'fas fa-clipboard-list',
-      // target: '_blank',
-      // url: `${API_CONFIG.baseUrl}/relatorios/list/?nome=ficha-de-membros&igreja=${this.igrejaId}`
+    // {
+    //   label: 'Ficha de membros',
+    //   icon: 'fas fa-clipboard-list',
+    //   // target: '_blank',
+    //   // url: `${API_CONFIG.baseUrl}/relatorios/list/?nome=ficha-de-membros&igreja=${this.igrejaId}`
 
-    },
+    // },
     {
-      label: 'Ficha em branco',
-      icon: 'fas fa-book-reader',
-      // target: '_blank',
-      // url: `${API_CONFIG.baseUrl}/relatorios/list/?nome=ficha-branco&igreja=${this.igrejaId}`
+      // label: 'Ficha em branco',
+      // icon: 'fas fa-book-reader',
+      // // target: '_blank',
+      // // url: `${API_CONFIG.baseUrl}/relatorios/list/?nome=ficha-branco&igreja=${this.igrejaId}`
 
     }
   ];
