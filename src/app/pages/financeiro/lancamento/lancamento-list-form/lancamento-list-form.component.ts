@@ -75,9 +75,11 @@ export class LancamentoListFormComponent implements OnInit {
 
   positionLancamento: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
   positionModalTransferencia: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
+  positionModalPermuta: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
 
   visibleLancamento: boolean = false; 
   visibleModalTransferencia: boolean = false; 
+  visibleModalPermuta: boolean = false; 
 
   private destroyRef = inject(DestroyRef); // 1. Injete a referência de destruição
 

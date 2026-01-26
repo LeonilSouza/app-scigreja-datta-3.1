@@ -154,7 +154,7 @@
 
             <div class=" form-group col-sm-1 float-end ">
                 <label class="f-13"> </label>
-                <button (click)="modalPermuta.show(); limpaCheckbox(); setModalInclusao('Permuta'); imodo.set(0)"
+                <button (click)="visibleModalPermuta = true; limpaCheckbox(); setModalInclusao('Permuta'); imodo.set(0)"
                     class="btn btn-icon  btn-outline-warning p-0 float-end " type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Permuta
                 </button>
@@ -709,8 +709,8 @@
                         <strong><button (click)="visibleModalTransferencia = false; submitFormTransferencia()"
                                 [disabled]="lancamentoForm.invalid 
                                 || this.lancamentoForm.controls['valor'].value <= 0 || this.lancamentoForm.controls['contaIdTransferencia'].value == null 
-                                || (lancamentoForm.controls['contaId'].value == lancamentoForm.controls['contaIdTransferencia'].value)" type="button" class="ml-4 float-end mb-0" pButton
-                                pRipple label="Salvar"
+                                || (lancamentoForm.controls['contaId'].value == lancamentoForm.controls['contaIdTransferencia'].value)"
+                                type="button" class="ml-4 float-end mb-0" pButton pRipple label="Salvar"
                                 style="width: 7em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
                                 icon='pi pi-check'>
                             </button></strong>
@@ -727,124 +727,117 @@
         <!-- FIM MODAL  TRANSFERENCIA -->
     </div>
 
-    <!-- MODAL INICIO Permuta -->
-    <div class="col-md-12 col-xl-12">
+    <!-- INICIO MODAL  PERMUTA -->
+    <div class="col-md-12 col-xl-12" data-backdrop="static">
 
-        <div class="col-sm-12">
-            <app-ui-modal #modalPermuta id="modalPermuta" [dialogClass]="'modal-lg'">
-                <div class="app-modal-body">
-                    <div class="app-modal-header ml-2 ">
-                        <div class="card header mb-3"
-                            style="width: 46rem; height: 1rem; padding-bottom: 10px; padding-top: 5px">
-                            <h5 class="modal-title text-dark">{{ pageTitle }}</h5>
-                        </div>
+        <div class="card flex justify-center">
+            <p-dialog header="LANÇAMENTO DE - {{  pageTitle }}" [modal]="true" [(visible)]="visibleModalPermuta"
+                [position]="positionModalPermuta" [dismissableMask]="false"
+                [style]="{width: '60vw', 'min-height': '30vh', height: 'auto'}" [closeOnEscape]="false"
+                [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false"
+                [contentStyle]="{ 'overflow': 'visible' }" [transitionOptions]="'500ms ease-out'">
+                <hr class="mt-1 mb-2">
+
+                <!-- Modal Body Inicio -->
+
+                <div class="row col-12">
+
+                    <!-- Data da Permuta -->
+                    <div class="form-group col-md-4 ">
+                        <label class="m-b-09" for="data">Data</label>
+                        <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                            [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
+                            inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
+                            formControlName="data" />
+
                     </div>
 
-                    <!-- Modal Body Inicio -->
+                    <!--  Origem da Permuta-->
+                    @if(lancamentoForm.controls['id'].value == null){
+                    <div class="form-group col-md-4 ">
+                        <label class="m-b-9 text-primary">Trocar </label>
+                        <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangePermutaDestino($event)"
+                            formControlName="formaIdTransferencia" class="w-full md  mb-2" [options]="formasPermuta"
+                            [editable]="false" [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
+                            resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
+                            [autofocus]="false" optionValue="formaIdTransferencia" placeholder="Selecione..." />
 
-                    <div class="row col-12">
+                        @if(lancamentoForm.controls['formaId'].value ==
+                        lancamentoForm.controls['formaIdTransferencia'].value){
+                        <p class="danger" [style]="{'font-size':'12px' }" margin-left>
+                            Impossível para a mesma conta.</p>
+                        }
+                    </div>
+                    }
 
-                        <!-- Data da Permuta -->
-                        <div class="form-group col-md-4 ">
-                            <label class="m-b-09" for="data">Data</label>
-                            <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
-                                [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
-                                inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
-                                selectionMode="range" formControlName="data" />
+                    <!-- Destino -->
+                    @if(lancamentoForm.controls['id'].value == null){
+                    <div class="form-group col-md-4 ">
+                        <label class="m-b-9 text-success">Por</label>
+                        <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangePermutaOrigem($event)"
+                            formControlName="formaId" class="w-full md  mb-2" [options]="formas" [editable]="false"
+                            [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
+                            resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
+                            [autofocus]="false" readonly="true" optionValue="id" placeholder="Selecione..." />
 
-                        </div>
+                    </div>
+                    }
 
-                        <!--  Origem da Permuta-->
-                        @if(lancamentoForm.controls['id'].value == null){
-                        <div class="form-group col-md-4 ">
-                            <label class="m-b-9 text-primary">Trocar </label>
-                            <p-select [style]="{'width':'100%','height':'30px'}"
-                                (onChange)="onChangePermutaDestino($event)" formControlName="formaIdTransferencia"
-                                class="w-full md  mb-2" [options]="formasPermuta" [editable]="false" [filter]="false"
-                                filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
-                                dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar" [autofocus]="false"
-                                optionValue="formaIdTransferencia" placeholder="Selecione..." />
+                    <!-- Historico -->
+                    <div class="form-group col-md-8 mb-5">
+                        <label>Historico</label>
+                        <input readonly type="text" class="form-control" formControlName="historico">
+                    </div>
 
-                            @if(lancamentoForm.controls['formaId'].value ==
-                            lancamentoForm.controls['formaIdTransferencia'].value){
-                            <p class="danger" [style]="{'font-size':'12px' }" margin-left>
-                                Impossível para a mesma conta.</p>
+                    <!-- Valor Principal -->
+                    <div class="form-group col-md-4 p-fluid ">
+                        <label>Valor R$</label>
+                        <p-inputNumber formControlName="valor" inputId="valor" mode="decimal" locale="pt-BR"
+                            class="ml-auto" [minFractionDigits]="2"
+                            [style]="{'width':'100%','height':'30px', 'border-radius':'10px'}">
+                        </p-inputNumber>
+                        @if(lancamentoForm.controls['valor'].errors || this.lancamentoForm.controls['valor'].value
+                        <= 0){ <p class="danger" [style]="{'font-size':'12px' }" margin-left>
+                            Informe um valor válido.</p>
                             }
-                        </div>
-                        }
-
-                        <!-- Destino -->
-                        @if(lancamentoForm.controls['id'].value == null){
-                        <div class="form-group col-md-4 ">
-                            <label class="m-b-9 text-success">Por</label>
-                            <p-select [style]="{'width':'100%','height':'30px'}"
-                                (onChange)="onChangePermutaOrigem($event)" formControlName="formaId"
-                                class="w-full md  mb-2" [options]="formas" [editable]="false" [filter]="false"
-                                filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
-                                dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar" [autofocus]="false" readonly="true"
-                                optionValue="id" placeholder="Selecione..." />
-
-                        </div>
-                        }
-
-                        <!-- Historico -->
-                        <div class="form-group col-md-8 mb-5">
-                            <label>Historico</label>
-                            <input readonly type="text" class="form-control" formControlName="historico">
-                        </div>
-
-                        <!-- Valor Principal -->
-                        <div class="form-group col-md-4 p-fluid ">
-                            <label>Valor R$</label>
-                            <p-inputNumber formControlName="valor" inputId="valor" mode="decimal" locale="pt-BR"
-                                class="ml-auto" [minFractionDigits]="2"
-                                [style]="{'width':'100%','height':'30px', 'border-radius':'10px'}">
-                            </p-inputNumber>
-                            @if(lancamentoForm.controls['valor'].errors || this.lancamentoForm.controls['valor'].value
-                            <= 0){ <p class="danger" [style]="{'font-size':'12px' }" margin-left>
-                                Informe um valor válido.</p>
-                                }
-                        </div>
-
                     </div>
+                </div>
 
-                    <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
-                    <div class="modal-footer" style="height: 38px;">
 
-                        <!-- Excluir -->
-                        @if(lancamentoForm.controls['id'].value > 0){
-                        <button type="button" pButton pRipple
-                            (click)="confirmarExclusaoLancamentoPermuta(lancamento); modalPermuta.hide(); resetModal()"
-                            styleClass="p-button-sm" icon='pi pi-times'
-                            style="width: 7em; height: 30px; border-radius: 6px;" pButton pRipple label="Excluir"
-                            class="ml-4 p-button-danger  p-button-outlined   mb-0">
-                        </button>
-                        }
+                <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
+                <div class="modal-footer" style="height: 38px;">
 
-                        <!-- Fechar -->
-                        <button data-dismiss="modal" type="button" class=" ml-4 mb-0" pButton pRipple (click)="modalPermuta.hide();
+                    <!-- Excluir -->
+                    @if(lancamentoForm.controls['id'].value > 0){
+                    <button type="button" pButton pRipple
+                        (click)="confirmarExclusaoLancamentoPermuta(lancamento); visibleModalPermuta = false; resetModal()"
+                        styleClass="p-button-sm" icon='pi pi-times'
+                        style="width: 7em; height: 30px; border-radius: 6px;" pButton pRipple label="Excluir"
+                        class="ml-4 p-button-danger  p-button-outlined   mb-0">
+                    </button>
+                    }
+
+                    <!-- Fechar -->
+                    <button data-dismiss="modal" type="button" class=" ml-4 mb-0" pButton pRipple (click)="visibleModalPermuta = false;
                                       resetModal()" label="Fechar" style="width: 7em; height: 30px; font-size: small;
                                       border-radius: 6px; border: 0;background: #1a82ce;" icon='pi pi-wallet'>
-                        </button>
+                    </button>
 
-                        <!-- Salvar -->
-                        @if(lancamentoForm.controls['id'].value == null){
-                        <strong><button (click)="modalPermuta.hide(); submitFormPermuta()"
-                                [disabled]="lancamentoForm.invalid 
+                    <!-- Salvar -->
+                    @if(lancamentoForm.controls['id'].value == null){
+                    <strong><button (click)="visibleModalPermuta = false; submitFormPermuta()"
+                            [disabled]="lancamentoForm.invalid 
                                 || this.lancamentoForm.controls['valor'].value <= 0 
-                                || (lancamentoForm.controls['formaId'].value == lancamentoForm.controls['formaIdTransferencia'].value)" type="button" class="ml-4 float-end mb-0"
-                                pButton pRipple label="Salvar"
-                                style="width: 7em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
-                                icon='pi pi-check'>
-                            </button></strong>
-                        }
-                    </div>
-                    <!-- <div class="form-group ">
-                        <pre> {{ lancamentoForm.value | json}} </pre>
-                    </div> -->
+                                || (lancamentoForm.controls['formaId'].value == lancamentoForm.controls['formaIdTransferencia'].value)" type="button" class="mx-4 float-end mb-0"
+                            pButton pRipple label="Salvar"
+                            style="width: 7em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
+                            icon='pi pi-check'>
+                        </button></strong>
+                    }
                 </div>
-            </app-ui-modal>
+            </p-dialog>
         </div>
+
+        <!-- FIM MODAL  PERMUTA -->
     </div>
-    <!-- FIM MODAL Permuta -->
 </form>
