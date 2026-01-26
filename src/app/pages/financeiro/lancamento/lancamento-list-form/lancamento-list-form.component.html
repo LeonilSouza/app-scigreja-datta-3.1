@@ -360,8 +360,8 @@
 
                     <!-- Editar -->
                     <td class="col-acoes-header py-1">
-                        <button [disabled]="lancamento.nome == 'Transferencia'" (click)="limpaCheckbox();  lancamento.nome == 'Transferencia' ? visibleModalTransferencia = true : 
-                            lancamento.nome == 'Permuta' ? modalPermuta.show() : visibleLancamento = true; 
+                        <button [disabled]="lancamento.nome == 'Transferencia' || lancamento.nome == 'Permuta'" (click)="limpaCheckbox();  lancamento.nome == 'Transferencia' ? visibleModalTransferencia = true : 
+                            lancamento.nome == 'Permuta' ? visibleModalPermuta = true : visibleLancamento = true; 
                             loadLancamento(lancamento); setModalEdicao(lancamento.tipoLancamento) " type="button"
                             class="btn btn-icon  btn-outline-success p-1 mb-0 mt-0 "
                             [style]="{'margin-right': '10px','height': '26px', 'width': '26px'} " [placement]="'top'"
