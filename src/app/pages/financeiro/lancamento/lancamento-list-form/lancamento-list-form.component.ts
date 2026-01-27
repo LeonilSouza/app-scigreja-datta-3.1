@@ -300,7 +300,6 @@ export class LancamentoListFormComponent implements OnInit {
   }
 
   linhasSelecionada(event): void {
-    console.log(event)
     this.length.set(event.length);
     if (event.length >= 1) {
       this.indexId = event[0].id;
@@ -416,7 +415,7 @@ export class LancamentoListFormComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
-          this.centroCustos = response;
+          this.centroCustos = response;    
         },
         error: () => { }
       })
@@ -1490,7 +1489,6 @@ export class LancamentoListFormComponent implements OnInit {
     this.filtraCategorias(value);
     this.pageTitle = "Editando Movimento".toUpperCase();
     this.imodo.set(1);
-    console.log(this.imodo())
   }
 
   setModalInclusao(value) {

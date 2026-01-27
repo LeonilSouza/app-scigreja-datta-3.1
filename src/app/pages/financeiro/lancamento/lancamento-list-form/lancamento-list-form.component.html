@@ -553,11 +553,11 @@
                     <!-- Centro de Custo -->
                     <div class="form-group col-md-4 m-b-09">
                         <label class="mb-1">Centro de Custo </label>
-                        <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangeTPCategorias($event)"
-                            formControlName="centroCustoId" class="w-full md  mb-1" [options]="centroCustos"
-                            [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
-                            resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-check"
-                            [autofocus]="false" optionValue="id" placeholder="Selecione uma categoria" />
+                        <p-select [style]="{'width':'100%','height':'30px'}" formControlName="centroCustoId"
+                            class="w-full md  mb-1" [options]="centroCustos" [editable]="false" [filter]="true"
+                            filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
+                            dateFormat="dd/mm/yy" dropdownIcon="pi pi-check" [autofocus]="false" optionValue="id"
+                            placeholder="Selecione um centro de custo" />
                     </div>
 
                     <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
@@ -828,8 +828,8 @@
                     <strong><button (click)="visibleModalPermuta = false; submitFormPermuta()"
                             [disabled]="lancamentoForm.invalid 
                                 || this.lancamentoForm.controls['valor'].value <= 0 
-                                || (lancamentoForm.controls['formaId'].value == lancamentoForm.controls['formaIdTransferencia'].value)" type="button" class="mx-4 float-end mb-0"
-                            pButton pRipple label="Salvar"
+                                || (lancamentoForm.controls['formaId'].value == lancamentoForm.controls['formaIdTransferencia'].value)" type="button" class="mx-4 float-end mb-0" pButton
+                            pRipple label="Salvar"
                             style="width: 7em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
                             icon='pi pi-check'>
                         </button></strong>
