@@ -731,8 +731,8 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
       const nomeMes = new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(new Date(ano, mes));
       escalaNormalizada.push({
         data: nomeMes.toUpperCase(), // O Jasper usará isso como título
-        suplente: 'SUPLENTE',
-        professor: 'TITULAR',
+        suplente: '  SUPLENTE',
+        professor: '  PROFESSOR',
         isHeader: true // Flag para estilização no Jasper
       });
 
