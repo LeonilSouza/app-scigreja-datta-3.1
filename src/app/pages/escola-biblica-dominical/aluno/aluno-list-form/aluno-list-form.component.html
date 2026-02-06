@@ -85,11 +85,6 @@
                         </th>
                         <th class="col-data-content"
                             style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
-                            <b>Status</b>
-                        </th>
-
-                        <th class="col-data-content"
-                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
                             <b>Classificação</b>
                         </th>
 
@@ -108,27 +103,15 @@
                             }}</td>
                         <td class="col-data-content-4 py-1" style=" font-size: 13px">{{ aluno.classe }}
                         </td>
-                        <td>
-                            <i class="pi"
-                                [ngClass]="{'pi-check-circle text-green-500': aluno.status == 'Ativo', 'pi-times-circle text-red-500': aluno.status == 'Inativo'}">
-                            </i>
-                            {{ aluno.status == "Ativo" ? ' Ativo' : 'Inativo' }}
-                        </td>
                         <td class="col-data-content py-1" style=" font-size: 13px">{{ aluno.classificacao
                             }}
                         </td>
-                        <td class="col-data-content py-1">
+                        <td class="col-acoes py-1">
                             <button (click)=" imodo=1; modalAluno.show(); loadAluno(aluno) " type="button"
-                                class="btn btn-icon btn-outline-info p-1 mt-0 mb-0"
+                                class="btn btn-icon btn-outline-info p-1 mt-0 mb-0 mx-2"
                                 [style]="{'height': '25px', 'width': '25px'} " [placement]="'top'"
                                 ngbTooltip="Transferência">
                                 <i class="pi pi-chevron-up"></i>
-                            </button>
-
-                            <button (click)="alterarStatus(aluno)" type="button"
-                                class="btn btn-icon btn-outline-warning p-1 mt-0 mb-0 mx-2"
-                                [style]="{'height': '25px', 'width': '25px'} " [placement]="'top'" ngbTooltip="Status">
-                                <i class="pi pi-user"></i>
                             </button>
 
                             <button (click)="exclusaoAluno(aluno)" type="button"

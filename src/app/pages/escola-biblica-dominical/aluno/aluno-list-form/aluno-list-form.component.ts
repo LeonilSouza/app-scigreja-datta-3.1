@@ -16,7 +16,6 @@ import { PessoaDTO } from 'src/app/theme/shared/models/pessoa.dto';
 import { ClasseDTO } from 'src/app/theme/shared/models/classe.dto';
 import { ClasseService } from 'src/app/theme/shared/services/classe.service';
 import { InputMaskModule } from 'primeng/inputmask';
-import { DatePicker } from 'primeng/datepicker';
 import { SharedService } from 'src/app/theme/shared/services/shared.service';
 import { FloatLabel } from "primeng/floatlabel"
 import { AlunoService } from 'src/app/theme/shared/services/aluno.service';
@@ -195,39 +194,6 @@ export class AlunoListComponent implements OnInit, AfterContentChecked {
     this.alunoForm.reset();
   }
 
-  alterarStatus(aluno: any) {
-    console.log(aluno.status)
-    if (aluno.status == 'Ativo') {
-      aluno.status = 'Inativo';
-    } else {
-      aluno.status = 'Ativo';
-    }
-
-    Swal.fire({
-      // title: 'Exclusão',
-      text: `Tem certeza que deseja mudar para ${aluno.status}?`,
-      // icon: 'info',
-      showCloseButton: true,
-      showCancelButton: true,
-    }).then((willDelete) => {
-      if (willDelete.dismiss) {
-        // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
-      } else {
-        this.alunoService.update(aluno).subscribe({
-          next: () => {
-            this.grid.reset();//atualiza a tabela do primeng
-            this.toastr.success(`Status alterado com sucesso!`)
-          },
-          error: (err) => {
-            // REVERSÃO: Se der erro na API, volta o botão ao estado original na tela
-            // aluno.ativo = !aluno.ativo;
-            this.toastr.error('Falha ao atualizar Status no servidor. Alteração revertida.');
-          }
-        });
-      }
-    });
-
-  }
 
   exclusaoAluno(aluno: AlunoDTO) {
     Swal.fire({
