@@ -7,6 +7,7 @@ import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { StorageService } from '../services/storage.service';
+import Swal from 'sweetalert2';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
@@ -77,31 +78,30 @@ handle401(errorObj) {
 }
 
 handle403(errorObj) {
+    const error = errorObj.message
     this.storage.setLocalUser(null);
     this.storage.setLocalToken(null);
     this.storage.setLocalIgreja(null);
     this.router.navigate(['/login'])
-    this.messageService.add({severity:'error', summary: errorObj.error, detail: 'Acesso negado'});
+    this.toastr.error(error);
 
 }
 
 handle404(errorObj) {
     const error = errorObj.message
-    this.toastr.error(error)
-    this.messageService.add({severity:'error', summary: 'Servidor', detail: 'Erro no servidor'});
+    this.toastr.info(error);
+    // Swal.fire('', (error), 'info');
 }
 
 
 handle422(errorObj) {
     const error = errorObj.message
-    this.toastr.error(error)
-    this.messageService.add({severity:'error', summary: errorObj.error});
+    this.toastr.error(error);
 }
 
 handleDefaultEror(errorObj) {
     const error = errorObj.message
-    this.toastr.error(error)
-    this.messageService.add({severity:'error', summary: errorObj.error, detail: errorObj.message});
+    this.toastr.error(error);
 }
 
 }

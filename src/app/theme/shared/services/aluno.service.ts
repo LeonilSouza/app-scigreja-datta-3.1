@@ -76,6 +76,14 @@ export class AlunoService {
       )
   }
 
+    // Método para atualizar status
+  atualizarStatus(id: number, statusAtual: boolean) {
+    // Converte o booleano do componente para a string do banco
+    const statusString = statusAtual ? 'Ativo' : 'Inativo';
+    
+    return this.http.put(`${this.apiPath}/${id}`, { status: statusString });
+}
+
 
   delete(id: number): Observable<any> {
 

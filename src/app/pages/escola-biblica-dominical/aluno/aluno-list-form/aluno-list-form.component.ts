@@ -22,6 +22,7 @@ import { FloatLabel } from "primeng/floatlabel"
 import { AlunoService } from 'src/app/theme/shared/services/aluno.service';
 import { ToastrService } from 'ngx-toastr';
 import { AlunoDTO } from 'src/app/theme/shared/models/aluno.dto';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
 
 // project import
@@ -39,8 +40,9 @@ import { AlunoDTO } from 'src/app/theme/shared/models/aluno.dto';
     SharedModule,
     SelectModule,
     InputMaskModule,
-    DatePicker,
-    FloatLabel
+    // DatePicker,
+    FloatLabel,
+    ToggleSwitchModule
     // JsonPipe
   ],
   templateUrl: './aluno-list-form.component.html',
@@ -148,7 +150,8 @@ export class AlunoListComponent implements OnInit, AfterContentChecked {
 
     if (this.imodo === 0)
       this.createAluno();
-    else this.updateAluno();
+    else
+      this.updateAluno();
   }
 
   private buildAlunoForm() {
@@ -192,9 +195,43 @@ export class AlunoListComponent implements OnInit, AfterContentChecked {
     this.alunoForm.reset();
   }
 
+  alterarStatus(aluno: any) {
+    console.log(aluno.status)
+    if (aluno.status == 'Ativo') {
+      aluno.status = 'Inativo';
+    } else {
+      aluno.status = 'Ativo';
+    }
+
+    Swal.fire({
+      // title: 'Exclusão',
+      text: `Tem certeza que deseja mudar para ${aluno.status}?`,
+      // icon: 'info',
+      showCloseButton: true,
+      showCancelButton: true,
+    }).then((willDelete) => {
+      if (willDelete.dismiss) {
+        // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
+      } else {
+        this.alunoService.update(aluno).subscribe({
+          next: () => {
+            this.grid.reset();//atualiza a tabela do primeng
+            this.toastr.success(`Status alterado com sucesso!`)
+          },
+          error: (err) => {
+            // REVERSÃO: Se der erro na API, volta o botão ao estado original na tela
+            // aluno.ativo = !aluno.ativo;
+            this.toastr.error('Falha ao atualizar Status no servidor. Alteração revertida.');
+          }
+        });
+      }
+    });
+
+  }
+
   exclusaoAluno(aluno: AlunoDTO) {
     Swal.fire({
-      title: 'Exclusão',
+      // title: 'Exclusão',
       text: 'Tem certeza que deseja excluir este registro?',
       icon: 'error',
       showCloseButton: true,
@@ -204,18 +241,20 @@ export class AlunoListComponent implements OnInit, AfterContentChecked {
         // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
       } else {
         this.excluir(aluno);
-        Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
       }
     });
   }
 
-  excluir(aluno: any) {
+  excluir(aluno: AlunoDTO) {
     this.alunoService.delete(aluno.id)
       .subscribe({
         next: () => {
           this.grid.reset();//atualiza a tabela do primeng
+          this.toastr.success(`Registro excluido com sucesso!`)
         },
-        error: () => { },
+        error: () => {
+          this.toastr.error(`Erro ao excluir registro!`)
+        },
       });
   }
 
@@ -237,8 +276,10 @@ export class AlunoListComponent implements OnInit, AfterContentChecked {
     if (this.imodo === 0)
       this.pageTitle = 'Matriculando: Novo Aluno';
     else {
-      const alunoName = 'Alterando: ' + this.aluno.nome || '';
-      this.pageTitle = alunoName;
+      if (this.imodo === 1) {
+        const alunoName = 'Transferindo: ' + this.aluno.nome || '';
+        this.pageTitle = alunoName;
+      }
     }
   }
 
@@ -311,19 +352,21 @@ export class AlunoListComponent implements OnInit, AfterContentChecked {
       });
   }
 
-
   public createAluno() {
     const aluno: AlunoDTO = this.alunoForm.value;
-    this.alunoService.create(aluno).subscribe(
-      (response: any): void => {
-        this.id = parseInt(this.extractId(response.headers.get('location'))); // Extrai o Id da URI retornada do banco
-        this.aluno.id = this.id;
-        this.grid.reset();//atualiza a tabela do primeng
-        this.actionsForSuccess();
-      },
-      (_error) => { }
-    );
+    this.alunoService
+      .create(aluno)
+      .subscribe({
+        next: (response) => {
+          this.id = parseInt(this.extractId(response.headers.get('location'))); // Extrai o Id da URI retornada do banco
+          this.aluno.id = this.id;
+          this.grid.reset();//atualiza a tabela do primeng
+          this.actionsForSuccess();
+        },
+        error: (err) => { }
+      });
   }
+
 
   public updateAluno() {
     const aluno: AlunoDTO = Object.assign(
@@ -350,10 +393,10 @@ export class AlunoListComponent implements OnInit, AfterContentChecked {
         () => this.router.navigate([path]));
     if (this.imodo === 0) {
       // Swal.fire('Cadastro', 'Registro inserido com sucesso!', 'success');
-       this.toastr.success('Registro Inserido com sucesso');
+      this.toastr.success('Registro Inserido com sucesso');
     } else {
       // Swal.fire('Atualização', 'Registro atualizado com sucesso!', 'success');
-       this.toastr.success('Registro Atualizado com sucesso');
+      this.toastr.success('Registro Atualizado com sucesso');
     }
   }
 

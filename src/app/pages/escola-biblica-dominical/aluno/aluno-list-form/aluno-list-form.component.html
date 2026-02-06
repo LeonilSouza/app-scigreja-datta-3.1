@@ -20,16 +20,17 @@
 
     <div class="row mb-2">
         <!-- Nome Classe-->
-         <span class="col-sm-4 ">
-        <p-floatlabel variant="on">
-            <span class=" col-sm-4 mt-0 mb-2">
-                <p-select style="min-height: 35px;" inputId=" on_label" (onChange)="onChangeSelecaoClasses($event)" [options]="classes"
-                [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
-                    resetFilterOnHide="true"class="" dropdownIcon="pi pi-users" optionValue="id" [autofocus]="false"/>
-                <label class="" for="on_label">Classes</label>
-            </span>
-        </p-floatlabel>
-         </span>
+        <span class="col-sm-4 ">
+            <p-floatlabel variant="on">
+                <span class=" col-sm-4 mt-0 mb-2">
+                    <p-select style="min-height: 35px;" inputId=" on_label" (onChange)="onChangeSelecaoClasses($event)"
+                        [options]="classes" [editable]="false" [filter]="true" filterBy="nome" [showClear]="false"
+                        optionLabel="nome" resetFilterOnHide="true" class="" dropdownIcon="pi pi-users" optionValue="id"
+                        [autofocus]="false" />
+                    <label class="" for="on_label">Classes</label>
+                </span>
+            </p-floatlabel>
+        </span>
 
         <!--Label  -->
         <span class="col-sm-3 "><strong>
@@ -52,9 +53,9 @@
 
         <!--Novo  -->
         <span class="col-sm-2 ">
-            <p-button (click)="imodo=0; modalAluno.show(); loadAluno(aluno)"
-                type="button" severity="success" class="float-end" label="Novo"
-                [style]="{'height':'30px', 'background':'#388669'}" size="small" icon="pi pi-check" />
+            <p-button (click)="imodo=0; modalAluno.show(); loadAluno(aluno)" type="button" severity="success"
+                class="float-end" label="Novo" [style]="{'height':'30px', 'background':'#388669'}" size="small"
+                icon="pi pi-check" />
         </span>
 
     </div>
@@ -62,8 +63,8 @@
         <div class="p-0">
             <p-table #dtaluno [value]="alunos"
                 [globalFilterFields]="['nome', 'country.name', 'representative.name', 'status']" [lazy]="true"
-                responsiveLayout="stack" (onLazyLoad)="loadAlunosLazy($event)"
-                [showCurrentPageReport]="true" [totalRecords]="totalRegistros" showGridlines stripedRows
+                responsiveLayout="stack" (onLazyLoad)="loadAlunosLazy($event)" [showCurrentPageReport]="true"
+                [totalRecords]="totalRegistros" showGridlines stripedRows
                 currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
                 [rows]="linesPerPage" emptyMessage="Nenhum registro encontrado">
 
@@ -84,13 +85,14 @@
                         </th>
                         <th class="col-data-content"
                             style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
-                            <b>Faixa Etária</b>
+                            <b>Status</b>
                         </th>
 
                         <th class="col-data-content"
                             style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
                             <b>Classificação</b>
                         </th>
+
                         <th class="col-acoes-header"
                             style="font-size: 13px; background-color: rgb(77, 83, 90); color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-right-radius: 5px;">
                             Ações</th>
@@ -106,19 +108,33 @@
                             }}</td>
                         <td class="col-data-content-4 py-1" style=" font-size: 13px">{{ aluno.classe }}
                         </td>
-                        <td class="col-data-content py-1" style=" font-size: 13px">{{ aluno.faixaEtaria
-                            }}
+                        <td>
+                            <i class="pi"
+                                [ngClass]="{'pi-check-circle text-green-500': aluno.status == 'Ativo', 'pi-times-circle text-red-500': aluno.status == 'Inativo'}">
+                            </i>
+                            {{ aluno.status == "Ativo" ? ' Ativo' : 'Inativo' }}
                         </td>
                         <td class="col-data-content py-1" style=" font-size: 13px">{{ aluno.classificacao
                             }}
                         </td>
-                        <td class="col-acoes-header py-1">
-
-                            <button
-                                (click)=" imodo=1; modalAluno.show(); loadAluno(aluno) "
-                                type="button" class="btn btn-icon btn-outline-info p-1 mt-0 mb-0"
-                                [style]="{'height': '25px', 'width': '25px'} ">
+                        <td class="col-data-content py-1">
+                            <button (click)=" imodo=1; modalAluno.show(); loadAluno(aluno) " type="button"
+                                class="btn btn-icon btn-outline-info p-1 mt-0 mb-0"
+                                [style]="{'height': '25px', 'width': '25px'} " [placement]="'top'"
+                                ngbTooltip="Transferência">
                                 <i class="pi pi-chevron-up"></i>
+                            </button>
+
+                            <button (click)="alterarStatus(aluno)" type="button"
+                                class="btn btn-icon btn-outline-warning p-1 mt-0 mb-0 mx-2"
+                                [style]="{'height': '25px', 'width': '25px'} " [placement]="'top'" ngbTooltip="Status">
+                                <i class="pi pi-user"></i>
+                            </button>
+
+                            <button (click)="exclusaoAluno(aluno)" type="button"
+                                class="btn btn-icon btn-outline-danger p-1 mt-0 mb-0"
+                                [style]="{'height': '25px', 'width': '25px'} " [placement]="'top'" ngbTooltip="Excluir">
+                                <i class="pi pi-trash"></i>
                             </button>
                         </td>
                     </tr>
@@ -148,39 +164,60 @@
 
                     <!-- Modal Body Inicio -->
                     <div class="row ml-2 mr-2">
-                        <!-- Id -->
-                        <div class="form-group col-md-1">
-                            <label for="dataSeparacao">Código</label>
-                            <input readonly type="text" class="form-control" formControlName="id">
-                        </div>
 
                         <!-- Nome Classe-->
-                        <div class="form-group col-md-5 ">
-                            <label class="">Nome Classe</label>
+                        @if(imodo===0){
+                        <div class="form-group col-md-6 ">
+                            <label class="">Classe</label>
                             <p-select (onChange)="onChangeClasse($event)" formControlName="classeId" [options]="classes"
                                 [editable]="false" [filter]="true" filterBy="nome" [showClear]="false"
                                 optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-users" optionValue="id"
                                 [autofocus]="false" placeholder="Selecione uma classe" />
                         </div>
+                        }
 
-                         <!-- Nome Aluno-->
+                        <!-- Nome Aluno Transferencia-->
+                        @if(imodo===1){
                         <div class="form-group col-md-6 ">
-                            <label class="">Nome</label>
-                            <p-select (onChange)="onChangeAluno($event)" formControlName="pessoaId"
-                                [options]="pessoas" [editable]="false" [filter]="true" filterBy="nome"
-                                [showClear]="false" optionLabel="nome" resetFilterOnHide="true"
+                            <label class="">Aluno</label>
+                            <input readonly type="text" class=" form-control " style="background: rgb(238, 236, 236);"
+                                formControlName="nome">
+                        </div>
+                        }
+
+                        <!-- Nome Aluno -->
+                        @if(imodo===0){
+                        <div class="form-group col-md-6 ">
+                            <label class="">Aluno</label>
+                            <p-select [disabled]="imodo === 1" (onChange)="onChangeAluno($event)"
+                                formControlName="pessoaId" [options]="pessoas" [editable]="false" [filter]="true"
+                                filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="true"
                                 dropdownIcon="pi pi-users" optionValue="id" [autofocus]="false"
                                 placeholder="Selecione um aluno" />
                         </div>
+                        }
 
-                        <!-- Telefone -->
-                        <div class="form-group col-md-4">
-                            <label>Telefone</label>
-                            <p-inputMask [style]="{'width':'100%','height':'30px'}" formControlName="telefone"
-                                mask="(99) 9 9999-9999" placeholder="(  )       -    "></p-inputMask>
+                        <!-- Nome Classe  transferencia-->
+                        @if(imodo===1){
+                        <div class="form-group col-md-6 ">
+                            <label class="">Transferir para Classe</label>
+                            <p-select (onChange)="onChangeClasse($event)" formControlName="classeId" [options]="classes"
+                                [editable]="false" [filter]="true" filterBy="nome" [showClear]="false"
+                                optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-users" optionValue="id"
+                                [autofocus]="false" placeholder="Selecione uma classe" />
                         </div>
+                        }
 
+                        <!-- Classificaçao -->
+                        @if(imodo===0){
+                        <div class="form-group col-md-4 ">
+                            <label for="rg">Classificação</label>
+                            <input readonly type="text" class=" form-control " style="background: rgb(238, 236, 236);"
+                                formControlName="classificacao">
+                        </div>
+                        }
                         <!-- Status -->
+                        @if(imodo===0){
                         <div class="form-group col-md-4">
                             <label>Status</label>
                             <p-select class="w-full md  mb-2" formControlName="status" [options]="status"
@@ -189,29 +226,14 @@
                                 [autofocus]="false" optionValue="nome" placeholder="Selecione um status">
                             </p-select>
                         </div>
-
+                        }
                         <!-- Faixa Etária -->
+                        @if(imodo===0){
                         <div class="form-group col-md-4">
                             <label for="dataSeparacao">Faixa Etária</label>
                             <input type="text" class="form-control" formControlName="faixaEtaria">
                         </div>
-
-                        <!-- dataNascimento -->
-                        @if (imodo === 1) {
-                        <div class="form-group col-md-4 ">
-                            <label for="dtNascimento">Nascimento</label>
-                            <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
-                                [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
-                                inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy"
-                                formControlName="dtNascimento" placeholder="dd/mm/aaaa" />
-                        </div>
                         }
-                        <!-- idade -->
-                        <div class="form-group col-md-2 ">
-                            <label for="rg">Classificação</label>
-                            <input readonly type="text" class=" form-control " style="background: rgb(238, 236, 236);"
-                                formControlName="classificacao">
-                        </div>
 
                     </div>
 
@@ -221,26 +243,16 @@
                         <!-- Botões Inicio-->
 
                         <span class="float-end ">
-                            <p-button (click)="modalAluno.hide(); resetModal()"
-                                routerLink="/alunos" icon='pi pi-chevron-left'
-                                [style]="{'height':'30px', 'margin-left':'10px'}" size="small" severity="info"
-                                label="voltar" class=" " label="Voltar" />
+                            <p-button (click)="modalAluno.hide(); resetModal()" routerLink="/alunos"
+                                icon='pi pi-chevron-left' [style]="{'height':'30px', 'margin-left':'10px'}" size="small"
+                                severity="info" label="Fechar" class=" " />
                         </span>
 
                         <span class="float-end ml-4">
-                            <p-button (click)="modalAluno.hide()" severity="success"
-                                [disabled]="alunoForm.invalid" type="submit" class="mr-4"
+                            <p-button (click)="modalAluno.hide();" severity="success" [disabled]="alunoForm.invalid"
+                                type="submit" class="mr-4"
                                 [style]="{'height':'30px', 'margin-left':'10px', 'background':'#388669'}" size="small"
                                 label="Salvar" icon='pi pi-check' />
-                        </span>
-
-                        <span class="float-end">
-                            @if(imodo !== 0){
-                            <p-button type="button"
-                                (click)="exclusaoAluno(aluno); modalAluno.hide(); resetModal()"
-                                [style]="{'height':'30px', 'margin-left':'10px'}" size="small" icon='pi pi-times'
-                                variant="outlined" severity="danger" label="Excluir" class="mb-0" />
-                            }
                         </span>
                         <!-- Botões Fim-->
 
