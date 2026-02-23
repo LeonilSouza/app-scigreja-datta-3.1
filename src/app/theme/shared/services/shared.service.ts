@@ -31,10 +31,10 @@ export class SharedService {
     return data_americana;
   }
 
-  formataDataBR(data) {// Data a converter = "yyyy-mm-dd" Retorna data formatada "dd/mm/yyyy"
-    let data_brasileira = data.split('-').reverse().join('/');
-    return data_brasileira;
-  }
+  // formataDataBR(data) {// Data a converter = "yyyy-mm-dd" Retorna data formatada "dd/mm/yyyy"
+  //   let data_brasileira = data.split('-').reverse().join('/');
+  //   return data_brasileira;
+  // }
 
   dataSubDay(data, day) { //Subtrae um dia na data - Metodo exclusivo para pegar o dia anterior as 23h:59m
     const strinDate = data + 'T23:59:00'
@@ -114,6 +114,13 @@ export class SharedService {
 
     return lastDayDate;
 
+  }
+
+   // Função simples para formatar
+  formataDataBR(date: Date) {
+    if (!date) return null;
+    const d = new Date(date);
+    return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
   }
 
   dataUltimoDiaMesAnterior() {

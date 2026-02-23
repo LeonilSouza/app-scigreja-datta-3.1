@@ -1,0 +1,455 @@
+<div class="col-md-12">
+    <app-card [hidHeader]="true" cardTitle="" cardClass="shadow" blockClass="pc-component">
+
+        <!-- Barra filtros -->
+        <nav aria-label="breadcrumb mb-0">
+            <div class="form-group row col-sm-12 ml-0 mb-0">
+                <div class="card mb-2 mx-2 mt-2" style="background-color: rgb(77, 83, 90); border-radius: 5px;">
+                    <span class="mb-1 mt-1 text-white f-16"> Contas a Pagar | Filtros</span>
+                </div>
+            </div>
+        </nav>
+
+        <div class="form-group row col-md-12 mt-2 mb-2">
+
+            <!-- Periodo -->
+            <div class="col-sm-3 ">
+                <label class="mb-1">Período de vencimentos</label>
+                <p-datepicker (click)="periodo()" [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                    [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
+                    inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" [(ngModel)]="rangeDates"
+                    placeholder="dd/mm/aaaa" selectionMode="range" />
+            </div>
+
+            <!-- Status -->
+            <span class=" col-sm-3">
+                <label class="mb-1">Status</label>
+                <p-multiSelect class="mb-0"
+                    [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                    [options]="status" optionLabel="label" optionValue="label" placeholder="Todas"
+                    (onChange)="onChangeContas($event)" [showClear]="false" />
+            </span>
+
+            <!-- frequencia -->
+            <span class=" col-sm-3">
+                <label class="mb-1">Frequência</label>
+                <p-multiSelect class="mb-0"
+                    [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                    [options]="frequencia" optionLabel="label" optionValue="label" placeholder="Todas"
+                    (onChange)="onChangeContas($event)" [showClear]="false" />
+
+            </span>
+
+            <!-- forma de pagamento -->
+            <span class=" col-sm-3">
+                <label class="mb-1">forma de pagamento</label>
+                <p-multiSelect class="mb-0"
+                    [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                    [options]="formas" optionLabel="nome" optionValue="id" placeholder="Todas" [showClear]="false" />
+            </span>
+
+            <!-- Categorias -->
+            <div class="col-sm-5 mt-1">
+                <label class="mb-1">Categoria</label>
+                <p-multiSelect [filter]="true"
+                    [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                    [options]="categoriasFiltradas" optionLabel="nome" optionValue="id" placeholder="Todas"
+                    [showClear]="false" [autofocus]="false" display="chip" (onChange)="onChangeCategorias($event)" />
+            </div>
+
+
+            <!-- Forma de pagamento -->
+            <div class="col-sm-4 mt-1">
+                <label class=" mb-1">Conta</label>
+                <p-multiSelect
+                    [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                    [options]="contasBanco" optionLabel="nome" optionValue="id" placeholder="Todas"
+                    (onChange)="onChangeContas($event)"></p-multiSelect>
+            </div>
+
+            <span class="col-sm-3 mt-4 ">
+                <label class="f-13 mb-1"> </label>
+                <button (click)="visibleContasPagar = true;  setModalInclusao(); imodo.set(0)" icon="pi pi-plus"
+                    type="button" class=" mb-0 ml-3 m-t-5 float-end" pButton pRipple label="Adicionar"
+                    style="width: auto; height: 30px; background:green ; font-size: small; border-radius: 5px; color: aliceblue;">
+                </button>
+            </span>
+        </div>
+
+
+        <hr class="text-c-red mb-0">
+
+        <!-- FIM FILTROS -->
+
+        <p-toolbar styleClass="border-0">
+            <ng-template #start>
+
+                <!-- Botão reset window -->
+                <div class="flex justify-between">
+                    <p-button [style]="{'height':'32px', 'margin-right':'20px'}" [outlined]="true"
+                        icon="pi pi-filter-slash" label="Limpar" (click)="resetContasPagar()" />
+                </div>
+
+                <!-- Fim Ação Selecionados -->
+            </ng-template>
+
+
+            <ng-template #center>
+
+                <!-- Pesquisa -->
+                <p-iconfield iconPosition="left">
+                    <p-inputicon class="pi pi-search" />
+                    <input (input)="dtContasPagar.filterGlobal($event.target?.addEventListener, 'contains')" type="text"
+                        style="height: 32px; width:400px;" pInputText placeholder="Pesquisar " [(ngModel)]="descricao"
+                        [ngModelOptions]="{standalone: true}" />
+                </p-iconfield>
+
+            </ng-template>
+
+
+            <ng-template #end>
+                <!-- Busca  -->
+                <strong><button (click)="buscaLancamentos()" icon="pi pi-search" type="button" class=" mb-0 mx-3"
+                        pButton pRipple label="Buscar"
+                        style=" height: 32px; background:green ; font-size: small; border-radius: 5px; color: aliceblue;">
+                    </button></strong>
+
+                <p-splitButton class="float-end mr-0 mb-1" label="   Relatórios          " icon="pi pi-print"
+                    [model]="printItems" [style]="{'height':'32px'}" outlined severity="contrast" />
+
+
+            </ng-template>
+        </p-toolbar>
+
+        <div class="col-sm-12">
+            <div class=" mb-0 ">
+                <p-table #dtContasPagar [value]="contasPagar"
+                    [globalFilterFields]="['descricao', 'contas-pagar.descricao', 'contas-pagar.valor']" [lazy]="true"
+                    [rows]="linesPerPage" responsiveLayout="stack" (onLazyLoad)="loadContasPagarLazy($event)"
+                    [showCurrentPageReport]="true" [totalRecords]="totalRegistros" showGridlines stripedRows
+                    [rowsPerPageOptions]="[10, 20, 30, 50]" [tableStyle]="{ 'min-width': '30rem' }"
+                    currentPaportTemplate="Exibindo {first} a {last} de {totalRecords} registros " [paginator]="true"
+                    emptyMessage="Nenhum registro encontrado">
+
+                    <ng-template #header>
+                        <tr>
+
+                            <th class="col-data-100 py-2"
+                                style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                                <b>Vencimento</b>
+                            </th>
+
+                            <th class=" py-2"
+                                style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue;">
+                                <b>Nome/Fornecedor</b>
+                            </th>
+
+                            <th class="py-2"
+                                style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue;">
+                                <b>Descrição</b>
+                            </th>
+
+                            <th class="col-data-150 py-2"
+                                style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
+                                <b>Frequencia</b>
+                            </th>
+
+                            <th class="col-data-150 py-2"
+                                style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
+                                <b>Valor R$</b>
+                            </th>
+                            <th class="col-data-100 py-2"
+                                style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
+                                <b>Status</b>
+                            </th>
+
+                            <th class="col-acoes-header py-2"
+                                style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; ; border-top-right-radius: 5px">
+                                <b>Ações</b>
+                            </th>
+
+                        </tr>
+                    </ng-template>
+
+                    <ng-template #body let-contaPagar let-columns="columns">
+                        <tr>
+
+                            <td class="col-data-100 py-1" style=" font-size: 13px">{{ contaPagar.dataVencimento }}
+                            </td>
+
+                            <td class="py-1" style=" font-size: 13px ">{{
+                                contaPagar.pessoaId }}</td>
+                            <td class="py-1" style=" font-size: 13px">{{
+                                contaPagar.descricao }}</td>
+                            <td class="col-data-150 py-1" style=" font-size: 13px">{{
+                                contaPagar.frequencia }}<br>
+                            </td>
+                            <td class="col-data-150 py-1" style=" font-size: 13px;">{{
+                                contaPagar.valor }}<br>
+                            </td>
+                            <td class="col-data-150 py-1" style=" font-size: 13px;">{{
+                                contaPagar.status }}<br>
+                            </td>
+
+                            <!-- Editar -->
+                            <td class="col-acoes-header py-1">
+                                <button (click)="visibleContasPagar = true; loadContasPagar(contasPagar)" type="button"
+                                    class="btn btn-icon  btn-outline-success p-1 mb-0 mt-0 "
+                                    [style]="{'margin-right': '10px','height': '26px', 'width': '26px'} "
+                                    [placement]="'top'" ngbTooltip="Editar">
+                                    <i class="pi pi-pencil"></i>
+                                </button>
+
+                                <!-- Recibo -->
+                                <!-- @if(contasPagar.tipoLancamento == "Despesa" ){
+                                <button (click)="limpaCheckbox(); imprimirRecibo(contasPagar.id)" type="button"
+                                    class="btn btn-icon  btn-outline-primary p-1 mb-0 mt-0 "
+                                    [style]="{'height': '26px', 'width': '26px'} " [placement]="'top'"
+                                    ngbTooltip="Recibo">
+                                    <i class="pi pi-print"></i>
+                                </button>
+                                } -->
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+
+        <div class="col-md-4 float-end border border-top-0 mt-0 mb-2" style="background-color: #fafafa;">
+            <span class="row mb-0 float-end">
+
+                <div class=" form-group col-sm-4 mt-0 mb-0 ">
+                    <label class="f-13 mt-1" style="width:100%; text-align:left">Crédito</label>
+                    <strong><label class="mb-0 mt-0 ml-0  text-success "
+                            style="width:100% ; height: 30px;  text-align:left; background:#fafafa ; border: 0px; font-size: 13px; border-radius: 6px;">
+                        </label></strong>
+                </div>
+
+
+                <div class=" form-group col-sm-4  mb-0 ">
+                    <label class="f-13 mt-1 mb-0" style="width:100%;  text-align:left">Débito</label>
+                    <strong><label class="mb-0 ml-0 mt-0 text-danger"
+                            style="width:100% ; height: 30px; text-align:left; background:#fafafa ;  border: 0px; font-size: 13px; border-radius: 6px; ">
+                        </label></strong>
+                </div>
+
+
+                <div class=" form-group  col-sm-4  mb-0 ">
+                    <label class="f-13  mt-1" style="width:100%;  text-align:left">Saldo</label>
+                    <strong><label class="mb-0 ml-0 text-primary"
+                            style="width:100% ; height: 30px; text-align:left; background:#fafafa ; border: 0px; font-size: 13px; border-radius: 6px;">
+
+                        </label></strong>
+                </div>
+            </span>
+        </div>
+        <!-- Contas Pagar Fim -->
+
+    </app-card>
+</div>
+
+
+<form [formGroup]="contasPagarForm" autocomplete="off">
+
+    <!-- INICIO MODAL  contasPagar -->
+    <div class="col-md-12 col-xl-12" data-backdrop="static">
+
+        <div class="card flex justify-center">
+            <p-dialog header="CONTAS A PAGAR - {{ pageTitle }}" [modal]="true" [(visible)]="visibleContasPagar"
+                [position]="positionContasPagar" [dismissableMask]="false"
+                [style]="{width: '60vw', 'min-height': '30vh', height: 'auto'}" [closeOnEscape]="false"
+                [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false"
+                [contentStyle]="{ 'overflow': 'visible' }" [transitionOptions]="'500ms ease-out'">
+                <b>Origem
+                    <hr class="mt-1 mb-2 text-c-red">
+                </b>
+
+                <!-- Modal Body Inicio -->
+
+                <div class="row col-12">
+
+                    <div class=" form-group col-md-6  mb-2">
+                        <div class="flex flex-wrap">
+                            <div class="flex align-items-center mb-0">
+
+                                <label class="text-dark mr-5">Pagar para:             </label>
+                                <p-radioButton (click)="cadastradoC()" value="sim" formControlName="cadastrado"
+                                    inputId="cadastrado"></p-radioButton>
+                                <label for="cadastrado" class="ml-2 text-success"> Pessoas      </label>
+
+                                <p-radioButton (click)="cadastradoNC()" value="nao" formControlName="cadastrado"
+                                    inputId="naocadastrado"></p-radioButton>
+
+                                <label for="naocadastrado" class="ml-2 text-c-blue">  Fornecedores</label>
+
+                            </div>
+
+                            @if(cadastrado == 'sim'){
+                            <p-select (onChange)="onChangePessoa($event)" [style]="{'width':'100%','height':'30px'}"
+                                class="w-full md mb-3 " [options]="pessoas" [editable]="false" [filter]="true"
+                                filterBy="nome" formControlName="pessoaId" [showClear]="false" optionLabel="nome"
+                                resetFilterOnHide="true" dateFormat="dd/mm/yy" dropdownIcon="pi pi-chevron-up"
+                                [autofocus]="false" optionValue="id" placeholder="Selecione ..." class="mt-2 " />
+                            }
+
+                            <!-- Para Pessoas e fornecedores -->
+                            @if(cadastrado == 'nao'){
+                            <div class="form-group  mb-0">
+                                <input type="text" style="text-transform: uppercase" class="form-control mt-1"
+                                    formControlName="descricao">
+                            </div>
+                            }
+                        </div>
+
+                    </div>
+
+                    <!-- Descrição -->
+                    <div class="form-group col-md-6 mb-3">
+                        <label class="mb-2">Descrição</label>
+                        <input type="text" class="form-control mb-0" formControlName="descricao">
+                    </div>
+
+                    <b>Pagamento
+                        <hr class="mt-1 mb-2 text-c-green">
+                    </b>
+
+                    <!-- Forma de pagamento -->
+                    <!-- @if(isParcelamento){ -->
+                    <div class="col-sm-4 mb-2">
+                        <label class=" mb-1">Conta</label>
+                        <p-select formControlName="contaBancoId"
+                            [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                            [options]="contasBanco" optionLabel="nome" optionValue="id" placeholder=""
+                            (onChange)="onChangeContas($event)" [showClear]="false" [filter]="true">
+                        </p-select>
+                    </div>
+                    <!-- } -->
+                    <!-- forma de pagamento -->
+                    <span class=" col-sm-4 mb-3 float-end">
+                        <label class="mb-1">forma de pagamento</label>
+                        <p-select class="mb-0" [filter]="true" formControlName="formaId"
+                            [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                            [options]="formas" optionLabel="nome" optionValue="id" placeholder=""
+                            (onChange)="onChangeFormaPagamento($event)" [showClear]="false">
+                        </p-select>
+                    </span>
+
+                    <!-- data vencimento -->
+                    <div class="form-group col-md-4 mb-0 ">
+                        <label class="mb-1 font-bold">{{ isParcelamento ? 'Data do 1º Vencimento' : 'Data de Vencimento'
+                            }}</label>
+                        <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                            [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
+                            inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
+                            formControlName="dataVencimento" />
+                    </div>
+
+                    <!-- espaço -->
+                    <div class="form-group col-md-8 mb-3 "></div>
+
+
+                    <!-- frequencia -->
+                    <div class="form-group col-md-4 ">
+                        <label class="font-bold">Frequência</label>
+                        <p-select class="mb-0 " [filter]="true" formControlName="frequencia"
+                            [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                            [options]="frequencia" optionLabel="label" optionValue="label" placeholder="Uma única vez"
+                            (onChange)="onChangeFrequencia($event)" [showClear]="false">
+                        </p-select>
+                    </div>
+
+                    <!-- espaço -->
+                    <div class="form-group col-md-8 mb-3 "></div>
+
+                    <!--Valor Se for parcelamento, o label muda para "Valor Total" -->
+                    <div class="form-group col-md-4 ">
+                        <label class="font-bold">{{ isParcelamento ? 'Valor Total' : 'Valor' }}</label>
+                        <p-inputnumber size="small" formControlName="valor" inputId="valor" mode="decimal"
+                            locale="pt-BR" class="mb-0" [minFractionDigits]="2"
+                            [style]="{'width':'100%','height':'30px'}" />
+                    </div>
+
+                    <!-- Categorias -->
+                    <div class="col-sm-6 mb-2">
+                        <label class="mb-1 font-bold ">Categoria</label>
+                        <p-select [filter]="true" [filter]="true" formControlName="categoriaId"
+                            [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                            [options]="categoriasFiltradas" optionLabel="nome" optionValue="id" placeholder=""
+                            [showClear]="false" [autofocus]="false" display="chip"
+                            (onChange)="onChangeCategorias($event)">
+                        </p-select>
+                    </div>
+
+                    <div class="form-group col-md-2 mb-0"></div>
+
+                    <!-- Quantidade de Parcelas (Só aparece se for  parcelar) -->
+                    @if(isParcelamento){
+                    <div class="form-group col-md-4 mb-0">
+                        <p-fluid>
+                            <div class="flex-auto">
+                                <label class="mb-1 block font-bold text-dark" for="horizontal">Quantidade de Parcelas</label>
+                                <p-inputnumber size="small" formControlName="quantidadeParcelas" [showButtons]="true"
+                                    buttonLayout="horizontal" inputId="horizontal" spinnerMode="horizontal" [min]="2"
+                                    [max]="180" mode="decimal" />
+                            </div>
+                        </p-fluid>
+                    </div>
+                    }
+
+                    <!-- Centro de Custo -->
+                    <div class="form-group col-md-6">
+                        <label class="mb-1">Centro de Custo </label>
+                        <p-select formControlName="centroCustoId" [style]="{'width':'100%','height':'30px'}"
+                            class="w-full md " [options]="centroCustos" [editable]="false" [filter]="true"
+                            filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
+                            dateFormat="dd/mm/yy" dropdownIcon="pi pi-check" [autofocus]="false" optionValue="id"
+                            placeholder="" />
+                    </div>
+
+                    <!-- espaço -->
+                    <!-- <div class="form-group col-md-4 ">
+
+                    </div> -->
+
+                    <hr class="mb-2">
+                    <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
+                    <div class="modal-footer" style="height: 38px;">
+
+                        <!-- Parcelar -->
+                        @if(!isParcelamento){
+                        <button type="button" class=" mx-3 mb-0 float-left" pButton pRipple
+                            (click)="isParcelamento = true; parcelar()" label="Parcelar" style="width: 7em; height: 30px; font-size: small;
+                                      border-radius: 6px; border: 0; background: #c47d03;" icon='pi pi-list'>
+                        </button>
+                        }
+
+                        <!-- Fechar -->
+                        <button type="button" class=" ml-4 mb-0" pButton pRipple
+                            (click)="visibleContasPagar = false; resetModal()" label="Cancelar" style="width: 7em; height: 30px; font-size: small;
+                                      border-radius: 6px; border: 0;background: #1a82ce;" icon='pi pi-wallet'>
+                        </button>
+
+                        <!-- Salvar -->
+                        <strong><button (click)="visibleContasPagar = false; submitForm()"
+                                [disabled]="contasPagarForm.invalid" type="button" class="mx-3 float-end mb-0" pButton
+                                pRipple label="OK"
+                                style="width: 7em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
+                                icon='pi pi-check'>
+                            </button></strong>
+
+                    </div>
+                    <hr class="mt-2">
+                </div>
+
+            </p-dialog>
+            <div class="form-group ">
+                <pre> {{ contasPagarForm.value | json}} </pre>
+            </div>
+        </div>
+
+        <!-- FIM MODAL  contasPagar -->
+    </div>
+
+
+</form>

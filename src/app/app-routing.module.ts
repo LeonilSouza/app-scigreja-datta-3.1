@@ -60,7 +60,7 @@ const routes: Routes = [
       },
       {
         path: 'lancamentocargodeptos',
-        loadChildren: () => import('./pages/lancamento-cargo-depto/lancamento-cargo-depto.routes').then((module) => module.LANCAMENTO_CARGO_DEPTO_ROUTES),
+        loadChildren: () => import('./pages/lancamento-cargo-depto/lancamento-cargo.routes').then((module) => module.LANCAMENTO_CARGO_ROUTES),
       },
       {
         path: 'variaveis',
@@ -107,6 +107,11 @@ const routes: Routes = [
         path: 'lancamentos',
         loadChildren: () => import('./pages/financeiro/lancamento/lancamento.routes').then((module) => module.LANCAMENTO_ROUTES),
       },
+       {
+        path: 'contas-pagar',
+        loadChildren: () => import('./pages/financeiro/contas-pagar/contas-pagar.routes').then((module) => module.CONTAS_PAGAR_ROUTES),
+      },
+      
       // {
       //   path: 'casos',
       //   loadChildren: () =>

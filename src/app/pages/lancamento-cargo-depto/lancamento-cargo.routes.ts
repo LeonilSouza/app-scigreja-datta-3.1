@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
-import { FrequenciaListFormComponent } from './frequencia-list-form/frequencia-list-form.component';
-export const  FREQUENCIA_ROUTES: Routes = [
+import { LancamentoCargoListFormComponent } from './lancamento-cargo-list-form/lancamento-cargo-list-form.component';
+export const  LANCAMENTO_CARGO_ROUTES: Routes = [
   {
     path: '',
     children: [
       {
         path: '',
-        component: FrequenciaListFormComponent,
+        component: LancamentoCargoListFormComponent,
         data: {
           title: 'Frequencias EBD',
           path: 'frequencias'
@@ -14,7 +14,7 @@ export const  FREQUENCIA_ROUTES: Routes = [
       },
       {
         path: 'new',
-        component: FrequenciaListFormComponent,
+        component: LancamentoCargoListFormComponent,
         data: {
           title: 'Frequencias EBD',
           path: 'frequencias'
@@ -22,7 +22,7 @@ export const  FREQUENCIA_ROUTES: Routes = [
       },
       {
         path: ':id/edit',
-        component: FrequenciaListFormComponent,
+        component: LancamentoCargoListFormComponent,
         data: {
           title: 'Frequencias EBD',
           path: 'diarioclasses'

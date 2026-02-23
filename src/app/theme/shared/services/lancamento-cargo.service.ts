@@ -3,23 +3,23 @@ import { HttpClient } from "@angular/common/http";
 import { API_CONFIG } from "src/app/app-config";
 import { Observable, throwError } from "rxjs";
 import { catchError, map } from 'rxjs/operators';
-import { LancamentoCargoDeptoDTO } from "../models/lancamento-cargo-depto.dto";
+import { LancamentoCargoDTO } from "../models/lancamento-cargo.dto";
 
 @Injectable()
-export class LancamentoCargoDeptoService {
+export class LancamentoCargoService {
 
     private apiPath: string = `${API_CONFIG.baseUrl}/lancamentocargodeptos`;
 
     constructor(public http: HttpClient) {
     }
 
-    findAll(): Observable<LancamentoCargoDeptoDTO> {
-        return this.http.get<LancamentoCargoDeptoDTO>(this.apiPath)
+    findAll(): Observable<LancamentoCargoDTO> {
+        return this.http.get<LancamentoCargoDTO>(this.apiPath)
         .pipe(
           catchError(this.handleError));
       }
 
-    findById(id: number): Observable<LancamentoCargoDeptoDTO> {
+    findById(id: number): Observable<LancamentoCargoDTO> {
 
         const url = `${this.apiPath}/${id}`;
 
@@ -37,7 +37,7 @@ export class LancamentoCargoDeptoService {
         );
       }
 
-     create(LancamentoCargoDepto : LancamentoCargoDeptoDTO) {
+     create(LancamentoCargoDepto : LancamentoCargoDTO) {
       return this.http.post(this.apiPath,
         LancamentoCargoDepto,
           {
@@ -47,7 +47,7 @@ export class LancamentoCargoDeptoService {
         );
      }
 
-      update(LancamentoCargoDepto: LancamentoCargoDeptoDTO): Observable<LancamentoCargoDeptoDTO> {
+      update(LancamentoCargoDepto: LancamentoCargoDTO): Observable<LancamentoCargoDTO> {
         const url = `${this.apiPath}/${LancamentoCargoDepto.id}`;
 
         return this.http.put(url, LancamentoCargoDepto)
@@ -71,8 +71,8 @@ export class LancamentoCargoDeptoService {
       }
 
 
-      private jsonDataToLancamentoCargoDepto(jsonData: any): LancamentoCargoDeptoDTO {
-        return (new LancamentoCargoDeptoDTO(), jsonData);
+      private jsonDataToLancamentoCargoDepto(jsonData: any): LancamentoCargoDTO {
+        return (new LancamentoCargoDTO(), jsonData);
       }
 
       private handleError(error: any): Observable<any>{

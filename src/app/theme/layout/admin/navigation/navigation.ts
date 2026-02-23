@@ -156,25 +156,16 @@ export const NavigationItems: NavigationItem[] = [
 
       // Ebd fim
 
-      // Inicio Lançamentos departamentais
+      // Inicio departamentais
       {
         id: 'cargos-dpto',
         title: 'Cargos departamentais',
-        type: 'collapse',
+        type: 'item',
         icon: 'feather icon-book',
-
-        children: [
-          {
-            id: 'lancamento-cargo-departamento',
-            title: 'Lançamentos',
-            type: 'item',
-            url: '/lancamentocargodeptos',
-            breadcrumbs: true,
-          }
-        ],
+        url: '/lancamentocargodeptos',
+        breadcrumbs: true,
       },
-
-      // Lançamentos departamentais fim
+      // departamentais fim
 
       // Cadastro-Inicio
       {

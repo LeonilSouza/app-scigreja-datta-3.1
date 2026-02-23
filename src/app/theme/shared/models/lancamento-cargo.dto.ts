@@ -1,4 +1,4 @@
-export class LancamentoCargoDeptoDTO {
+export class LancamentoCargoDTO {
     constructor(
         public id?: number,
         public nomePessoa?: string,
