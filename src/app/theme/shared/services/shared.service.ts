@@ -25,6 +25,14 @@ export class SharedService {
 
   }
 
+  // Função simples para formatar
+  formataDataBR(date: Date) {
+    if (!date) return null;
+    const d = new Date(date);
+    return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+  }
+
+
 
   formataDataUS(data) { // Data a converter = "dd/mm/yyyy" Retorna data formatada "yyyy-mm-dd"
     let data_americana = data.split('/').reverse().join('-');
@@ -114,13 +122,6 @@ export class SharedService {
 
     return lastDayDate;
 
-  }
-
-   // Função simples para formatar
-  formataDataBR(date: Date) {
-    if (!date) return null;
-    const d = new Date(date);
-    return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
   }
 
   dataUltimoDiaMesAnterior() {

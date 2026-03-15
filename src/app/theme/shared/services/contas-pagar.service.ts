@@ -9,6 +9,7 @@ import { ContasPagarDTO } from "../models/contas-pagar.dto";
 export class ContasPagarService {
 
   private apiPath: string = `${API_CONFIG.baseUrl}/contas-pagar`;
+  // private apiPath2: string = `${API_CONFIG.baseUrl}/baixar-pagamento`;
 
   constructor(public http: HttpClient) {
   }
@@ -25,12 +26,24 @@ export class ContasPagarService {
 
     return this.http.get(url).pipe(
       catchError(this.handleError),
-      // map(this.jsonDataToContasPagarDepto)
+
     )
   }
 
-  getByPageContasPagarFromIgreja(igrejaId, dtInicio, dtFim, page, linesPerPage) {
-     const params = new HttpParams()
+   getResumoContasPagarFromIgreja(igrejaId, dtInicio, dtFim) {
+    const params = new HttpParams()
+      .set('dtInicio', dtInicio)
+      .set('dtFim', dtFim);
+
+    return this.http.get(`${API_CONFIG.baseUrl}/contas-pagar/resumo/?igreja=${igrejaId}`, { params })
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  getByPageContasPagarFromIgreja(igrejaId, nome, dtInicio, dtFim, page, linesPerPage) {
+    const params = new HttpParams()
+      .set('nome', nome)
       .set('dataInicio', dtInicio)
       .set('dataFim', dtFim)
       .set('page', page)
@@ -40,15 +53,6 @@ export class ContasPagarService {
       .pipe(
         catchError(this.handleError)
       );
-  }
-
-  gerarParcelas(contaMestre: any, quantidadeParcelas: number): Observable<any> {
-    const payload = {
-      contaMestre: contaMestre,
-      quantidadeParcelas: quantidadeParcelas
-    };
-    console.log(payload)
-    return this.http.post(`${this.apiPath}/gerar-parcelas`, payload);
   }
 
 
@@ -62,15 +66,22 @@ export class ContasPagarService {
     );
   }
 
-  update(ContasPagarDepto: ContasPagarDTO): Observable<ContasPagarDTO> {
-    const url = `${this.apiPath}/${ContasPagarDepto.id}`;
+  baixarPagamento(id: number, data?: string, valor?: string ): Observable<any> {
+    // data deve estar no formato dd/MM/yyyy se enviado
+    const url = `${this.apiPath}/baixar-pagamento/${id}`;
+    const params = data ? { params: { dataPagamento: data,  valorPago: valor }  } : {};
 
-    return this.http.put(url, ContasPagarDepto)
+    console.log(params)
+    return this.http.put(url, {}, params);
+  }
+
+  update(contasPagar: ContasPagarDTO): Observable<ContasPagarDTO> {
+    const url = `${this.apiPath}/${contasPagar.id}`;
+
+    return this.http.put(url, contasPagar)
       .pipe(
-        // map(this.jsonDataToContasPagarDepto),
         catchError(this.handleError),
-        //map(this.jsonDataToContasPagarDeptoFuncao)
-        map(() => ContasPagarDepto)
+        map(() => contasPagar)
       )
   }
 
@@ -85,10 +96,12 @@ export class ContasPagarService {
     )
   }
 
+  estornarPagamento(id: number): Observable<any> {
 
-  // private jsonDataToContasPagarDepto(jsonData: any): ContasPagarDTO {
-  //   return (new ContasPagarDTO(), jsonData);
-  // }
+    const url = `${this.apiPath}/estornar-pagamento/${id}`;
+
+    return this.http.put(`${this.apiPath}/estornar-pagamento/${id}`, {});
+  }
 
   private handleError(error: any): Observable<any> {
     console.log("ERRO NA REQUISIÇÃO => ", error);

@@ -286,7 +286,7 @@
             [rows]="filtro.linesPerPage" responsiveLayout="stack" (onLazyLoad)="aoMudarPagina($event)"
             [showCurrentPageReport]="true" [totalRecords]="totalRegistros" showGridlines stripedRows
             [rowsPerPageOptions]="[6, 10, 20, 30, 50]" [tableStyle]="{ 'min-width': '30rem' }"
-            currentPaportTemplate="Exibindo {first} a {last} de {totalRecords} registros " [paginator]="true"
+            currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros " [paginator]="true"
             emptyMessage="Nenhum registro encontrado" selectionMode="multiple"
             (onRowSelect)="linhasSelecionada(selectedLancamentos)" (onRowUnselect)="aoDesmarcar($event)"
             (onHeaderCheckboxToggle)="linhasSelecionada(selectedLancamentos)">
@@ -360,7 +360,8 @@
 
                     <!-- Editar -->
                     <td class="col-acoes-header py-1">
-                        <button [disabled]="lancamento.nome == 'Transferencia' || lancamento.nome == 'Permuta'" (click)="limpaCheckbox();  lancamento.nome == 'Transferencia' ? visibleModalTransferencia = true : 
+                        <button [disabled]="lancamento.nome == 'Transferencia' || lancamento.nome == 'Permuta'" 
+                            (click)="limpaCheckbox();  lancamento.nome == 'Transferencia' ? visibleModalTransferencia = true : 
                             lancamento.nome == 'Permuta' ? visibleModalPermuta = true : visibleLancamento = true; 
                             loadLancamento(lancamento); setModalEdicao(lancamento.tipoLancamento) " type="button"
                             class="btn btn-icon  btn-outline-success p-1 mb-0 mt-0 "

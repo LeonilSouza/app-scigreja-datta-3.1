@@ -1,33 +1,28 @@
-export interface ContasPagarDTO {
-    id?: number;
-    descricao: string;
-    frequencia: string;
-    saldoResidual: string;
-    valor: number;
-    dataVencimento: string; // Formato "dd/MM/yyyy" que definimos no @JsonFormat
-    dataPagamento?: string;
-    formaPagamento: 'DINHEIRO' |'TRANSFERENCIA' | 'PIX' | 'CARTAO' | 'CHEQUE';
-    status: 'PENDENTE' | 'RECEBIDO' | 'CANCELADO' | 'ATRASADO';
-    igrejaId: number;
-    pessoa: {
-        id: number;
-        nome?: string
-    };
+export class ContasPagarDTO {
+    constructor(
+        public id?: number,
+        public descricao?: string,
+        public nome?: string,
+        public saldoResidual?: string,
+        public frequenciaCP?: string,
+        public valor?: number,
+        public dataVencimento?: string, // Formato "dd/MM/yyyy" que definimos no @JsonFormat
+        public dataPagamento?: string,
+        public status?: 'PENDENTE' | 'PAGO' | 'CANCELADO' | 'ATRASADO',
+        public igrejaId?: number,
+        public quantidadeParcelas?: number,
+        public pessoaId?: number,
+        public pessoa?: {
+            id: number;
+            nome?: string;
+        }
+    ) { }
 }
 
-// export class ContasPagarDTO {
-//     constructor(
-//         public id?: number,
-//         public descricao?: string,
-//         public valor?: string,
-//         public frequencia?: string, //Semanal|Mensal |etc..
-//         public saldoResidual?: string,
-//         public dataVencimento?: string,
-//         public dataPagamento?: string,
-//         public formaPagamento?: string,
-//         public status?: string,
-//         public igrejaId?: number,
-//         public pessoaId?: number,
-//     ) { }
-// }
-
+export class ContasPagarResumoDTO {
+    constructor(
+        public totalPago?: string,
+        public totalPendente?: string,
+        public totalAtrasado?: string,
+    ) {}
+}

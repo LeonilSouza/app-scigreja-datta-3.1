@@ -1,9 +1,9 @@
 import { Component, DestroyRef, inject, OnInit, signal, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
-import { Subscription } from 'rxjs';
+import { MenuItem, MessageService } from 'primeng/api';
+import { merge, Subscription } from 'rxjs';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import { ButtonModule } from 'primeng/button';
@@ -11,7 +11,6 @@ import { RouterModule } from '@angular/router';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 import { API_CONFIG } from 'src/app/app-config';
 import { ContaDTO } from 'src/app/theme/shared/models/conta.dto';
-import { FormaDTO } from 'src/app/theme/shared/models/forma.dto';
 import { CategoriaDTO } from 'src/app/theme/shared/models/categoria.dto';
 import { PessoaService } from 'src/app/theme/shared/services/pessoa.service';
 import { SharedService } from 'src/app/theme/shared/services/shared.service';
@@ -27,23 +26,9 @@ import { DatePicker } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'; // Importe o operador
 import { Table } from 'primeng/table';
-import { ContasPagarDTO } from 'src/app/theme/shared/models/contas-pagar.dto';
 import { Fluid } from 'primeng/fluid';
-
-
-export class ContasPagarFiltro {
-  igrejaId?: number = igrejaIdSignal();
-  setorId?: number = setorIdSignal();
-  nome?: string = ''.toLowerCase();
-  dtInicio?: string = '';
-  dtFim?: string = '';
-  page: number = 0;
-  linesPerPage: number = 10;
-  contas?: string = "";
-  categorias?: string = "";
-  formas?: string = "";
-  tipoContasPagar?: string = "";
-}
+import { FormaDTO } from 'src/app/theme/shared/models/forma.dto';
+import { ContasPagarDTO, ContasPagarResumoDTO } from 'src/app/theme/shared/models/contas-pagar.dto';
 
 @Component({
   selector: 'app-contas-pagar-list-form',
@@ -65,13 +50,14 @@ export class ContasPagarFiltro {
     CentroCustoService,
     PessoaService,
     FormaService
-
   ]
 })
-export class ContasPagarListFormComponent implements OnInit {
 
+export class ContasPagarListFormComponent implements OnInit {
   positionContasPagar: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
   visibleContasPagar: boolean = false;
+  positionPagamento: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
+  visiblePagamento: boolean = false;
 
   private destroyRef = inject(DestroyRef); // 1. Injete a referência de destruição
 
@@ -82,6 +68,8 @@ export class ContasPagarListFormComponent implements OnInit {
 
   isParcelamento: boolean = false;
 
+  resumo: ContasPagarResumoDTO = new ContasPagarResumoDTO();
+
   nomeIgreja = nomeIgrejaSignal();
   igrejaId = igrejaIdSignal();
   nomeUsuario = nomeUsuarioSignal();
@@ -90,52 +78,48 @@ export class ContasPagarListFormComponent implements OnInit {
   imodo = signal<number>(0);
   // private destroy$: Subject<void> = new Subject<void>();
 
-  filtro = new ContasPagarFiltro();
+  nome?: string = ''.toLowerCase();
 
   pesquisa?: boolean = false;
 
   descricao: string;
 
-  indexId: number;
-  indexIdTransferencia: number;
+  contaPagarId: number;
 
   length = signal(0);
 
-  transf: number;
-
-  @ViewChild('dtContasPagar') grid!: Table;
+  @ViewChild('dtcontaspagar') grid!: Table;
 
   // Mes atual
   rangeDates: String;
   dtInicio: string = "";
   dtFim: string = "";
-
-  // Saldo dia anterior
-  dataDiaAnterior: string = ""; // Data para pegar o saldo anterior
-
+  hoje: string = "";
 
   pessoaId: number = 0;
 
   dataAtual: any = moment();
 
-  status = [
-    { label: 'Pendente' },
-    { label: 'Pago' },
-    { label: 'Cancelado' },
-    { label: 'Atrasado' },
-
+  frequenciaCP = [
+    { nome: 'AVISTA' },
+    { nome: 'SEMANAL' },
+    { nome: 'QUINZENAL' },
+    { nome: 'MENSAL' },
+    { nome: 'TRIMESTRAL' },
+    { nome: 'ANUAL' }
   ]
 
-  frequencia = [
-    { label: 'Uma única vez' },
-    { label: 'Mensal' },
-    { label: 'Semanal' },
-    { label: 'Quinzenal' },
-    { label: 'Anual' }
-  ]
+  opcoesFiltroDatas = [
+    { label: 'Todas', value: 'Todas' },
+    { label: 'Vencidos', value: 'Vencidos' },
+    { label: 'Vencendo Hoje', value: 'Hoje' },
+    { label: 'Mês Atual', value: 'Mês Atual' },
+    { label: 'Personalizado', value: 'Personalizado' }
+  ];
 
-  totalRegistros: number = 0
-  totalRegistrosConta: number = 0
+  filtroSelecionado = 'Todas';
+
+  totalRegistros: number = 0;
 
   contasPagarId: number;
   cadastrado: string = 'sim';
@@ -156,15 +140,14 @@ export class ContasPagarListFormComponent implements OnInit {
   public page = 0;
   public linesPerPage: any = 10;
 
-
   public activeTab: string;
 
-  contasPagarNome: string = "";
+  // contasPagarNome: string = "";
   subscription: Subscription;
   contasPagarForm: FormGroup;
-
   pessoa: PessoaDTO = new PessoaDTO();
   categoria: CategoriaDTO = new CategoriaDTO();
+  contaPagar: ContasPagarDTO = new ContasPagarDTO;
   pageTitle: string;
   submittingForm: boolean = false;
 
@@ -179,14 +162,13 @@ export class ContasPagarListFormComponent implements OnInit {
 
   printItems: MenuItem[];
 
-  selecaoItemsIndividual: MenuItem[];
-  selecaoItemsMultiplos: MenuItem[];
+  // selecaoItemsIndividual: MenuItem[];
+  // selecaoItemsMultiplos: MenuItem[];
 
   constructor(
     private contasPagarService: ContasPagarService,
     private formBuilder: FormBuilder,
     private toastr: ToastrService,
-    private confirmationService: ConfirmationService,
     public pessoaService: PessoaService,
     private messageService: MessageService,
     public translate: TranslateService,
@@ -206,19 +188,21 @@ export class ContasPagarListFormComponent implements OnInit {
     this.loadCategorias();
     this.loadCentroCustos();
     this.loadPessoas();
-    this.loadFormas();
+    this.loadFormasPagamento();
     this.periodo();
-    this.rangeDates = this.sharedService.rangeMesAtual();
+    // this.aplicarFiltroDatas();
+    this.rangeDates = this.sharedService.rangeMesAtual(); //Mes tual
+    this.hoje = this.sharedService.dataAtualFormatada();
     this.dtInicio = this.sharedService.primeiroDiaMes();
     this.dtFim = this.sharedService.ultimoDiaMes();
-
-    this.dtInicio = this.sharedService.primeiroDiaMes();
-    this.dtFim = this.sharedService.ultimoDiaMes();
-
-    // Data um dia anterior
-    const data_americana = this.sharedService.formataDataUS(this.dtInicio);
-    const data_subtraida = this.sharedService.dataSubDay(data_americana, 1);
-    this.dataDiaAnterior = data_subtraida;
+    // Observa mudanças no Formulario e ja seta o valor automaticamente
+    merge(
+      this.contasPagarForm.get('dataVencimento')!.valueChanges,
+      this.contasPagarForm.get('quantidadeParcelas')!.valueChanges
+    ).subscribe(() => {
+      //  console.log(this.contasPagarForm.get('dataVencimento')?.value);
+      // const valor = this.contasPagarForm.get('valor')?.value;
+    });
   };
 
   ngOnDestroy() {
@@ -229,11 +213,70 @@ export class ContasPagarListFormComponent implements OnInit {
 
 
   loadContasPagarLazy(event: any) {
-    const page = event!.first! / event!.rows!; // divisão para encontrar a paginações
+    this.page = event!.first! / event!.rows!;
     this.linesPerPage = event.rows;
-    this.loadContasPagar();
+    this.loadContasPagar(this.igrejaId, this.nome.toLowerCase(), this.dtInicio, this.dtFim, this.page, this.linesPerPage);
   }
 
+  aplicarFiltroDatas() {
+    this.hoje = this.sharedService.dataAtualFormatada();
+
+    switch (this.filtroSelecionado) {
+      case 'Hoje':
+        this.dtInicio = this.sharedService.dataAtualFormatada();
+        this.dtFim = this.sharedService.dataAtualFormatada();
+        break;
+
+      case 'Vencidos':
+        const dataLimite = new Date();
+        dataLimite.setDate(dataLimite.getDate() - 1); // Define como ontem
+
+        // Formata para string dd/MM/yyyy para enviar ao Spring
+        const dtInicio = '01/01/2000'; // Uma data bem antiga de início
+        const dtFim = dataLimite.toLocaleDateString('pt-BR');
+        this.dtInicio = dtInicio;
+        this.dtFim = dtFim;
+        this.loadContasPagar(this.igrejaId, this.nome, this.dtInicio, this.dtFim, this.page, this.linesPerPage);
+        break;
+
+      case 'Mês Atual':
+        this.dtInicio = this.sharedService.primeiroDiaMes();
+        this.dtFim = this.sharedService.ultimoDiaMes();
+        this.loadContasPagar(this.igrejaId, this.nome, this.dtInicio, this.dtFim, this.page, this.linesPerPage);
+        break;
+
+      case 'Todas':
+        this.dtInicio = '01/01/2000';
+        this.dtFim = '01/01/2999';
+        this.loadContasPagar(this.igrejaId, this.nome, this.dtInicio, this.dtFim, this.page, this.linesPerPage);
+        return;
+
+      case 'Personalizado':
+        this.filtroSelecionado = 'Personalizado';
+        this.dtInicio = this.sharedService.primeiroDiaMes();
+        this.dtFim = this.sharedService.ultimoDiaMes();
+        this.loadContasPagar(this.igrejaId, this.nome, this.dtInicio, this.dtFim, this.page, this.linesPerPage);
+        return; // Abre os campos de data (Calendar) na tela
+    }
+
+    if (this.rangeDates == null) {
+      this.dtInicio = this.rangeDates[0];
+      if (this.dtInicio.length < 10) {
+        this.dtInicio = this.rangeDates.substring(0, 10);
+      } else {
+        this.dtInicio = this.rangeDates[0];;
+      }
+    }
+
+    if (this.dtFim == null) {
+      this.dtFim = this.dtInicio
+    }
+    this.rangeDates = this.dtInicio + " - " + this.dtFim;
+
+
+    // Chama seu método de busca passando as datas calculadas
+    this.loadContasPagar(this.igrejaId, this.nome, this.dtInicio, this.dtFim, this.page, this.linesPerPage);
+  }
 
   loadCategorias() {
     this.categoriaService.getListCategoriaFromIgreja(this.igrejaId)
@@ -247,7 +290,7 @@ export class ContasPagarListFormComponent implements OnInit {
       this.error; () => { }
   }
 
-  loadFormas() {
+  loadFormasPagamento() {
     this.formaService.getListFormaFromIgreja(this.igrejaId)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
@@ -271,6 +314,17 @@ export class ContasPagarListFormComponent implements OnInit {
       })
   }
 
+  isAtrasado(dataVencimento: string): boolean {
+    if (!dataVencimento) return false;
+
+    // Converte "dd/MM/yyyy" para um objeto Date comparável
+    const partes = dataVencimento.split('/');
+    const dataVenc = new Date(+partes[2], +partes[1] - 1, +partes[0]);
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0); // Zera as horas para comparar apenas os dias
+
+    return dataVenc < hoje;
+  }
 
   submitForm() {
     this.submittingForm = true;
@@ -292,74 +346,52 @@ export class ContasPagarListFormComponent implements OnInit {
       // Dados da Conta Mestre
       id: [null],
       descricao: ['', Validators.required],
+      nome: ['', Validators.required],
       saldoResidual: [null],
-      frequencia: [null],
+      frequenciaCP: [false, [Validators.required]],
       valor: [null, [Validators.required, Validators.min(0.01)]],
       dataVencimento: ['', Validators.required],
+      dataPagamento: [''],
       igrejaId: [this.igrejaId], // Aqui você pegaria do seu serviço de auth
       cadastrado: ['sim'],
-      contaBancoId: [null],
+      status: ['PENDENTE'],
+      contaBancoId: [null, [Validators.required]],
       setorId: [this.setorId],
       formaId: [null, [Validators.required]],
-      centroCustoId:  [null, [Validators.required]],
+      centroCustoId: [null, [Validators.required]],
       categoriaId: [null, [Validators.required]],
       pessoaId: [null, [Validators.required]],
-
-      // pessoa: this.formBuilder.group({
-      //   id: [null, Validators.required]
-      // }),
-      // Campo extra para o DTO
-      quantidadeParcelas: [1, [Validators.required, Validators.min(1)]]
+      quantidadeParcelas: [1, [Validators.required, Validators.min(1)]],
     });
+
   }
 
- parcelar() {
-  this.contasPagarForm.controls['frequencia'].setValue('Mensal');
-
- }
-  salvar() {
-    if (this.contasPagarForm.valid) {
-      const dados = {
-        contaMestre: {
-          descricao: this.contasPagarForm.value.descricao,
-          valor: this.contasPagarForm.value.valor,
-          dataVencimento: this.sharedService.formataDataBR(this.contasPagarForm.value.dataVencimento),
-          formaPagamento: this.contasPagarForm.value.formaPagamento,
-          igrejaId: this.contasPagarForm.value.igrejaId,
-          pessoa: this.contasPagarForm.value.pessoaId
-        },
-        quantidadeParcelas: this.contasPagarForm.value.quantidadeParcelas
-      };
-      this.contasPagarService.gerarParcelas(dados.contaMestre, dados.quantidadeParcelas).subscribe({
-        next: () => this.toastr.success('Parcelas geradas com sucesso!'),
-        error: (err) => console.error('Erro ao gerar parcelas', err)
-      });
-    }
+  parcelar() {
+    this.contasPagarForm.controls['frequenciaCP'].setValue('AVISTA');
+    this.contasPagarForm.controls['quantidadeParcelas'].setValue(2);
   }
-
-
 
   cadastradoC() {
     this.cadastrado = 'sim'
-    this.contasPagarForm.controls['descricao'].setValue("");
+    this.contasPagarForm.controls['cadastrado'].setValue('sim');
   }
   cadastradoNC() {
     this.cadastrado = 'nao'
     this.contasPagarForm.controls['cadastrado'].setValue('nao');
     this.contasPagarForm.controls['pessoaId'].setValue(0);
-    this.contasPagarForm.controls['descricao'].setValue("");
     this.pessoaId = 0;
 
   }
 
-  loadContasPagar() {
+  loadContasPagar(igrejaId: number, nome: string, dtInicio: string, dtFim: string, page: number, linesPerPage: number) {
     this.contasPagarService
-      .getByPageContasPagarFromIgreja(this.igrejaId, this.dtInicio, this.dtFim, this.page, this.linesPerPage)
+      .getByPageContasPagarFromIgreja(igrejaId, nome.toLowerCase(), dtInicio, dtFim, page, linesPerPage)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
           this.contasPagar = response['content']
-          this.totalRegistros = response.totalElements
+          this.totalRegistros = response.totalElements;
+          this.loadResumo();
         },
         error: (error) => {
           this.error = error;
@@ -369,13 +401,49 @@ export class ContasPagarListFormComponent implements OnInit {
 
   }
 
+  loadResumo() {
+    this.contasPagarService
+      .getResumoContasPagarFromIgreja(this.igrejaId, this.dtInicio, this.dtFim)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .subscribe({
+        next: (response) => {
+          this.resumo = response;
+        },
+        error: (error) => {
+          this.error = error;
+          this.showError(error)
+        }
+      });
+
+  }
+
+  loadContaPagar(contaPagar: ContasPagarDTO) {
+    this.contaPagarId = contaPagar.id;
+    this.contasPagarService.findById(this.contaPagarId)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .subscribe({
+        next: response => {
+          this.contaPagar = response;
+          this.contasPagarForm.patchValue(this.contaPagar)   // binds loaded  
+          this.pessoaId = response['pessoa'].id;
+          this.contasPagarForm.controls['pessoaId'].setValue(this.pessoaId);
+          this.contasPagarForm.controls['dataPagamento'].setValue(this.sharedService.dataAtualFormatada());
+          if (this.pessoaId == 0) {
+            this.cadastradoNC();
+          } else {
+            this.cadastradoC();
+          }
+        },
+        error: () => { }
+      })
+  }
+
   loadContasBanco() {
     this.contaService.getListContaFromIgreja(this.igrejaId)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
           this.contasBanco = response;
-          this.totalRegistros = response.totalElements;
         },
         error: (error) => {
           this.error = error;
@@ -485,9 +553,10 @@ export class ContasPagarListFormComponent implements OnInit {
     }
     if (this.dtFim == null) {
       this.dtFim = this.dtInicio;
-      this.filtro.dtFim = this.dtInicio;
     }
   }
+
+
 
   resetContasPagar() {
     window.location.reload()
@@ -496,58 +565,78 @@ export class ContasPagarListFormComponent implements OnInit {
 
   // METODOS CONTA
   public createContasPagar() {
-    // this.contasPagarForm.controls['nome'].setValue(this.contasPagarForm.controls['nome'].value.toUpperCase());
     this.contasPagarForm.controls['descricao'].setValue(this.sharedService.formataNome(this.contasPagarForm.controls['descricao'].value));
+    if (this.contasPagarForm.valid) {
+      // Objeto direto, sem "embrulho"
+      const dados = {
+        ...this.contasPagarForm.value,
+        descricao: this.sharedService.formataNome(this.contasPagarForm.value.descricao),
+        dataVencimento: this.contasPagarForm.value.dataVencimento, // Formato dd/MM/yyyy
+        pessoa: {
+          id: this.contasPagarForm.value.pessoaId // Garante o vínculo do ID
+        }
+      };
+      this.contasPagarService.create(dados)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            const qtd = dados.quantidadeParcelas || 1;
+            if (qtd > 1) {
+              const valorParcela = (dados.valor / qtd).toFixed(2);
+              this.toastr.success(`Geradas ${qtd} parcelas de R$ ${valorParcela}!`, 'Sucesso');
+            } else {
+              this.toastr.success('Salvo com sucesso!', 'Sucesso');
+            }
+            this.grid.reset();
+          }
+        });
+    }
+  }
 
-    const contasPagar: ContasPagarDTO = this.contasPagarForm.value;
-    contasPagar
-    console.log(contasPagar)
-    this.contasPagarService.create(contasPagar)
+  public confirmarPagamento() {
+    const payload: ContasPagarDTO = Object.assign(this.contasPagarForm.value);
+    payload.dataVencimento = this.sharedService.formataDataBR(this.contasPagarForm.controls['dataVencimento'].value);
+    const data = this.sharedService.formataDataBR(this.contasPagarForm.controls['dataPagamento'].value);
+    this.contasPagarService.baixarPagamento(payload.id, payload.dataPagamento, payload.valor.toString())
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
-        next: response => {
-          console.log(response)
-          // this.contasPagar.id = parseInt(this.extractId(response.headers.get('location'))); // Extrai o Id da URI retornada do banco      
-          // this.contasPagarService.getPageContasPagarFromIgreja(this.filtro)
-          // this.contasPagarForm.controls['nome'].setValue(null);
-          // this.contasPagarForm.controls['pessoaId'].setValue(0)
-          // this.contasPagarForm.controls['valor'].setValue(null)
-          this.toastr.success('Registro inserido com sucesso!', 'Contas a Pagar');
-          // this.loadContas();
+        next: () => {
+          this.toastr.success('Conta paga com sucesso!', 'Pagamento');
+          this.grid.reset();
         },
         error: () => { }
       })
   }
 
+  confirmarEstorno(conta: ContasPagarDTO) {
+    Swal.fire({
+      text: `Deseja desfazer o pagamento de ${conta.descricao}? O lançamento de caixa também será excluído.`,
+      icon: 'error',
+      showCloseButton: true,
+      showCancelButton: true,
+    }).then((willDelete) => {
+      if (willDelete.dismiss) {
+      } else {
+        this.contasPagarService.estornarPagamento(conta.id)
+          .subscribe({
+            next: () => {
+              this.toastr.success('Pagamento estornado com sucesso!', 'Sucesso');
+              this.grid.reset(); // Recarrega a lista
+            }
+          });
+      }
+    });
+  }
+
+
   public updateContasPagar() {
-    // this.contasPagarForm.controls['nome'].setValue(this.contasPagarForm.controls['nome'].value.toUpperCase());
-    this.contasPagarForm.controls['nome'].setValue(this.sharedService.formataNome(this.contasPagarForm.controls['nome'].value));
-
-    let value = this.contasPagarForm.controls['tipoContasPagar'].value
-    switch (value) {
-      case "Receita":
-        if (this.contasPagarForm.controls['valor'].value < 0) {
-          this.contasPagarForm.controls['valor'].setValue(this.contasPagarForm.controls['valor'].value * -1);
-        }
-        break;
-
-      case "Despesa":
-        if (this.contasPagarForm.controls['valor'].value > 0) {
-          this.contasPagarForm.controls['valor'].setValue(this.contasPagarForm.controls['valor'].value * -1);
-        }
-        break;
-
-      default:
-    }
-
     const contasPagar: ContasPagarDTO = Object.assign(this.contasPagarForm.value);
     this.contasPagarService.update(contasPagar)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: () => {
-          // this.contasPagarService.getPageContasPagarFromIgreja(this.filtro)
+          this.grid.reset();
           this.toastr.success('Registro atualizado com sucesso!', 'Atualização');
-          // this.loadContas();
         },
         error: () => { }
       })
@@ -565,157 +654,40 @@ export class ContasPagarListFormComponent implements OnInit {
       });
   }
 
-  getTotalCreditoSemTransferencia() {
-    this.filtro.tipoContasPagar = 'Receita'
-    if (this.rangeDates !== null) {
-      this.dtInicio = this.rangeDates[0];
-      this.dtFim = this.rangeDates[1];
-      if (this.dtInicio.length < 10 && this.dtFim.length < 10) {
-        this.dtInicio = this.rangeDates.substring(0, 10);
-        this.dtFim = this.rangeDates.substring(13, 23);
-      } else {
-        this.dtInicio = this.rangeDates[0];
-        this.dtFim = this.rangeDates[1];
-      }
-    }
-
-  }
-
-  getTotalGeralCredito() {
-    this.filtro.tipoContasPagar = 'Receita'
-    if (this.rangeDates !== null) {
-      this.dtInicio = this.rangeDates[0];
-      this.dtFim = this.rangeDates[1];
-      if (this.dtInicio.length < 10 && this.dtFim.length < 10) {
-        this.dtInicio = this.rangeDates.substring(0, 10);
-        this.dtFim = this.rangeDates.substring(13, 23);
-      } else {
-        this.dtInicio = this.rangeDates[0];
-        this.dtFim = this.rangeDates[1];
-      }
-    }
-  }
-
-  getTotalGeralDebito() {
-    this.filtro.tipoContasPagar = 'Despesa'
-    if (this.rangeDates !== null) {
-      this.dtInicio = this.rangeDates[0];
-      this.dtFim = this.rangeDates[1];
-      if (this.dtInicio.length < 10 && this.dtFim.length < 10) {
-        this.dtInicio = this.rangeDates.substring(0, 10);
-        this.dtFim = this.rangeDates.substring(13, 23);
-      } else {
-        this.dtInicio = this.rangeDates[0];
-        this.dtFim = this.rangeDates[1];
-      }
-    }
-  }
-
-  getTotalOfertas() {
-    this.filtro.tipoContasPagar = 'Receita'
-    if (this.rangeDates !== null) {
-      this.dtInicio = this.rangeDates[0];
-      this.dtFim = this.rangeDates[1];
-      if (this.dtInicio.length < 10 && this.dtFim.length < 10) {
-        this.dtInicio = this.rangeDates.substring(0, 10);
-        this.dtFim = this.rangeDates.substring(13, 23);
-      } else {
-        this.dtInicio = this.rangeDates[0];
-        this.dtFim = this.rangeDates[1];
-      }
-    }
-  }
-
-
-  getTotalMissoes() {
-    this.filtro.tipoContasPagar = 'Receita'
-    if (this.rangeDates !== null) {
-      this.dtInicio = this.rangeDates[0];
-      this.dtFim = this.rangeDates[1];
-      if (this.dtInicio.length < 10 && this.dtFim.length < 10) {
-        this.dtInicio = this.rangeDates.substring(0, 10);
-        this.dtFim = this.rangeDates.substring(13, 23);
-      } else {
-        this.dtInicio = this.rangeDates[0];
-        this.dtFim = this.rangeDates[1];
-      }
-    }
-
-    // this.contasPagarService.getTotalMissoesFromIgreja(this.filtro)
-    //   .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-    //   .subscribe({
-    //     next: response => {
-    //       response !== null ? this.totalMissoes = response : this.totalMissoes = 0.00;
-    //     }
-    //   }),
-    //   this.error; () => { }
-  }
-
-  // getTotalSaldoAnterior() {
-  //   this.contasPagarService.getTotalRDSaldoAnteriorFromIgreja(this.igrejaId, this.dataDiaAnterior)
-  //     .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-  //     .subscribe({
-  //       next: response => {
-  //         response !== null ? this.saldoAnterior = response : this.saldoAnterior = 0.00;
-  //       }
-  //     }),
-  //     this.error; () => { }
-  // }
-
-  // getTotalReceitaDizimoOferta() {
-  //   this.filtro.tipoContasPagar = 'Receita'
-  //   this.contasPagarService.getTotalReceitaDizimOfertaFromIgreja(this.igrejaId, this.dtInicio, this.dtFim)
-  //     .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-  //     .subscribe({
-  //       next: response => {
-  //         response !== null ? this.totalReceitaDizimOferta = response : this.totalReceitaDizimOferta = 0.00;
-  //       }
-  //     }),
-  //     this.error; () => { }
-  // }
-
-
   private loadPessoa(value) {
     this.pessoaService.getById(value)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
           this.pessoa = response;
-          this.pessoaId = this.pessoa.id
+          this.pessoaId = this.pessoa.id;
           this.contasPagarForm.controls['pessoaId'].setValue(this.pessoa.id);
           this.contasPagarForm.controls['nome'].setValue(this.pessoa.nome);
-          this.contasPagarForm.controls['tituloMin'].setValue(this.pessoa.tituloMin.trim());
+          if (this.pessoaId == null) {
+            this.contasPagarForm.controls['cadastrado'].setValue('nao');
+            this.cadastrado = 'nao';
+          } else {
+            this.contasPagarForm.controls['cadastrado'].setValue('sim');
+            this.cadastrado = 'sim';
+          }
         },
         error: () => { }
       });
   }
 
-  ///////////////////////////// Enentos DropDown   ///////////////////////////
+  ///////////////////////////// Eventos  ///////////////////////////
 
 
-  onChangeFrequencia(event) {
-    console.log(event.value)
-    // if (event.value !== "" && event.value > '0') {
-    //   this.filtro.contas = event.value.toString();
-    // }
-
-    // if (event.value == "") {
-    //   this.filtro.contas = this.contaIds;
-    // }
+  onChangeFrequenciaCP(event) {
+    this.contasPagarForm.controls['frequenciaCP'].setValue(String(event.value));
   }
 
-  onChangeContas(event) {
-    if (event.value !== "" && event.value > '0') {
-      this.filtro.contas = event.value.toString();
-    }
-
-    if (event.value == "") {
-
-    }
+  onChangeContaBanco(event) {
+    this.contasPagarForm.controls['contaBancoId'].setValue(event.value);
   }
 
   onChangeCategorias(event) {
-    
+
   }
 
   onChangeNomeHistorico(value) {
@@ -723,28 +695,16 @@ export class ContasPagarListFormComponent implements OnInit {
   }
 
   onChangeTransferenciaCategoria(value) {
-  
+
     this.contasPagarForm.controls['categoriaId'].setValue(value.value);
   }
 
-
-  onChangeTransferenciaOrigem(event) {
-    // this.contaBancoId = event.value;
-    // this.contasPagarIdOrigem = event.value;
-  }
-
-  onChangeTransferenciaDestino(event) {
-    
-  }
-
   onChangePessoa(event) {
-    this.contasPagarForm.controls['pessoaId'].setValue(event.value)
-
+    this.loadPessoa(event.value);
   }
 
   onChangeFormaPagamento(event) {
-     this.contasPagarForm.controls['formaPagamento'].setValue(event.value)
-
+    this.contasPagarForm.controls['formaId'].setValue(event.value)
   }
 
   private getCategoria(value) {
@@ -759,74 +719,35 @@ export class ContasPagarListFormComponent implements OnInit {
       });
   }
 
-  onChangeTPCategorias(tipo) {
-    this.getCategoria(tipo.value)
+
+  //EXCLUIR  
+  exclusaoContasPagar(contaPagar: ContasPagarDTO) {
+    Swal.fire({
+      text: 'Tem certeza que deseja excluir este registro?',
+      icon: 'error',
+      showCloseButton: true,
+      showCancelButton: true,
+    }).then((willDelete) => {
+      if (willDelete.dismiss) {
+        // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
+      } else {
+        console.log(contaPagar.id)
+        this.contasPagarService.delete(contaPagar.id)
+          .subscribe({
+            next: () => {
+              this.grid.reset();//atualiza a tabela do primeng
+              this.toastr.success(`Registro excluido com sucesso!`)
+            },
+            error: () => {
+              this.toastr.error(`Erro ao excluir registro!`)
+            },
+
+          });
+      }
+    })
   }
 
-  onChangeTPConta(event) {
-    this.getConta(event.value)
-  }
 
-  private getConta(value) {
-    // let conta_id = this.contas.filter(tc => tc.id == value); //Armazema todas as categorias de um tipo passado por parametro
-    // let tipo_conta = conta_id.map(tp => {
-    //   return tp.tipo; // Retorna uma string de ids do tipo passado no parametro.
-    // })
-    // this.contasPagarForm.controls['tipoConta'].setValue(tipo_conta.toString());
-  }
-
-  public doSelectTipoContasPagar = (value: any) => {
-    if (value === 'Padrao') {
-      this.contasPagarForm.controls['igrejaId'].setValue(null);
-    } else {
-      this.contasPagarForm.controls['igrejaId'].setValue(this.igrejaId);
-    }
-
-  }
-
-
-  //EXCLUIR LANÇAMENTOS 
-  exclusaoContasPagar(indexId, indexIdTransferencia) {
-
-    if (this.selectedContas == null || this.length() == 0 || undefined) {
-      Swal.fire('Lançamento | Seleção', 'Nenhum registro selecionado', 'info');
-    } else {
-      Swal.fire({
-        title: 'Exclusão',
-        text: 'Tem certeza que deseja excluir ' + this.length() + ' registro?',
-        icon: 'error',
-        showCloseButton: true,
-        showCancelButton: true,
-      }).then((willDelete) => {
-        if (willDelete.dismiss) {
-          this.selectedContas = [];
-          this.length.set(0);
-          // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
-        } else {
-          if (this.length() <= 1) {
-            if (this.indexId) { this.excluirContasPagar(indexId); }
-            if (this.indexIdTransferencia) { this.excluirSelectedContasPagar(indexIdTransferencia); }
-            this.toastr.success('Exclusão', 'Registro excluido com sucesso!');
-          }
-
-          // if (this.length() > 1) {
-          //   for (let index = 0; index < this.length(); index++) {
-          //     indexIdTransferencia = this.selectedContas[index].contasPagarIdTransferencia;
-          //     if (indexIdTransferencia) {
-          //       this.excluirSelectedContasPagar(indexIdTransferencia);
-          //     }
-          //     this.excluirContasPagar(this.selectedContas[index].id);
-          //   }
-          //   this.toastr.success('Exclusão', 'Registros excluidos com sucesso!');
-          // }
-          // this.loadContas();
-
-          this.grid.first = 0;
-        }
-      });
-    }
-
-  }
 
   excluirContasPagar(indexId) {
     this.contasPagarService.delete(indexId)
@@ -849,65 +770,24 @@ export class ContasPagarListFormComponent implements OnInit {
       .subscribe({
         next: () => {
           this.grid.reset();
-          // this.contasPagarService.getPageContasPagarFromIgreja(this.filtro)
-          // this.toastr.success('Exclusão', 'Registro excluido com sucesso!');
-          // this.messageService.add({ severity: 'success', summary: 'Successo', detail: 'Registro excluido com sucesso!' });
-          // this.loadContas();
         },
         error: () => { }
       })
   }
 
-
-  confirmarExclusaoContasPagarTransferencia(contasPagar: ContasPagarDTO): void {
-    this.confirmationService.confirm({
-      message: 'Tem certeza que deseja excluir este registro?',
-      accept: () => {
-        this.excluirContasPagarTransferencia(contasPagar);
-        this.grid.first = 0;
-      }
-    });
-  }
-
-  excluirContasPagarTransferencia(contasPagar: ContasPagarDTO) {
-    this.contasPagarService.delete(contasPagar.id)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-      .subscribe({
-        next: () => {
-          // this.contasPagarService.delete(contasPagar.contasPagarIdTransferencia)
-          //   .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-          //   .subscribe({
-          //     next: () => {
-          //       this.contasPagarService.getPageContasPagarFromIgreja(this.filtro)
-          //       this.toastr.success('Exclusão', 'Registro excluido com sucesso!');
-          //       this.loadContas();
-          //     },
-          //     error: () => { }
-          //   })
-        }
-      })
-  }
-
-  confirmarExclusaoContasPagarPermuta(contasPagar: ContasPagarDTO): void {
-    this.confirmationService.confirm({
-      message: 'Tem certeza que deseja excluir este registro?',
-      accept: () => {
-        this.grid.first = 0;
-      }
-    });
-  }
-
   resetModal() {
     this.contasPagarForm.reset();
-     this.isParcelamento = false;
+    this.contasPagarForm.controls['pessoaId'].setValue(null);
+    this.isParcelamento = false;
   }
-  setModalEdicao(value) {
-    if (value == 'Transferencia') {
-      value = 'Receita'
-    }
-    this.filtraCategorias(value);
-    this.pageTitle = "Editando Movimento".toUpperCase();
-    this.imodo.set(1);
+
+  setModalEdicao() {
+    this.pageTitle = "Editando Contas a Pagar".toUpperCase();
+    console.log(this.isParcelamento)
+  }
+
+  setModaPagar() {
+    this.pageTitle = "Pagando Contas".toUpperCase();
   }
 
   setModalInclusao() {
@@ -924,21 +804,19 @@ export class ContasPagarListFormComponent implements OnInit {
     this.contasPagarForm.controls['igrejaId'].setValue(this.igrejaId);
     this.contasPagarForm.controls['dataVencimento'].setValue(this.sharedService.dataAtualFormatada());
     this.contasPagarForm.controls['formaId'].setValue(this.formas[0].id);
-    this.contasPagarForm.controls['contaBancoId'].setValue(this.contasBanco[0].id);
     this.contasPagarForm.controls['descricao'].setValue('Despesa');
     this.contasPagarForm.controls['setorId'].setValue(this.setorId);
     this.contasPagarForm.controls['valor'].setValue(0.00);
-    this.contasPagarForm.controls['quantidadeParcelas'].setValue(2);
+    this.contasPagarForm.controls['frequenciaCP'].setValue('AVISTA');
+    this.contasPagarForm.controls['status'].setValue('PENDENTE');
+    this.contasPagarForm.controls['quantidadeParcelas'].setValue(1);
+    this.contasPagarForm.controls['pessoaId'].setValue(null);
+    this.contasPagarForm.controls['contaBancoId'].setValue(this.contasBanco[0].id);
   }
 
   filtraCategorias(value: string) {
     let cat1 = this.categorias.filter(cat => cat.tipo == value); //Armazema todas as categorias de um tipo passado por parametro
     this.categoriasFiltradas = cat1;
-  }
-
-  private extractId(location: string): string { // Extrai o Id da URL
-    let position = location.lastIndexOf('/');
-    return location.substring(position + 1, location.length);
   }
 
 

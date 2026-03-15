@@ -10,70 +10,66 @@
             </div>
         </nav>
 
+        <p-toolbar styleClass="border-0">
+            <ng-template #start>
+
+                <!-- Select de Filtro Rápido -->
+                <div class="flex justify-between ">
+                    <label class="mb-1">Contas a pagar</label>
+                    <p-select (onChange)="aplicarFiltroDatas()" [style]="{'width':'100%','height':'30px'}"
+                        class="w-full " [options]="opcoesFiltroDatas" [editable]="false" [filter]="true" filterBy="nome"
+                        [showClear]="false" optionLabel="label" [(ngModel)]="filtroSelecionado" resetFilterOnHide="true"
+                        dateFormat="dd/mm/yy" dropdownIcon="pi pi-chevron-up" [autofocus]="false" optionValue="value"
+                        placeholder="Filtrar por..." />
+                </div>
+
+                <!-- Periodo --> <!-- Campos de data que só aparecem no 'Personalizado' -->
+                @if(filtroSelecionado == 'Personalizado'){
+                <div class="flex justify-between mx-3">
+                    <label class="mb-1">Período de vencimentos </label>
+                    <p-datepicker (click)="periodo()" [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                        [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
+                        inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" [(ngModel)]="rangeDates"
+                        placeholder="dd/mm/aaaa" selectionMode="range" />
+                </div>
+                }
+
+                <!-- Busca  -->
+                @if(filtroSelecionado == 'Personalizado'){
+                <strong><button (click)="buscaContasPagar()" icon="pi pi-search" type="button" class=" mb-0 mx-2 mt-4"
+                        pButton pRipple label=""
+                        style=" height: 32px; background:primary ; font-size: small; border-radius: 5px; color: aliceblue;">
+                    </button></strong>
+                }
+
+            </ng-template>
+
+
+            <ng-template #center>
+            </ng-template>
+
+
+            <ng-template #end>
+                <span class="flex justify-between  mt-4">
+                    <label class="f-13 mb-1"> </label>
+                    <button (click)="visibleContasPagar = true;  setModalInclusao(); imodo.set(0)" icon="pi pi-plus"
+                        type="button" class="mb-0 float-end" pButton pRipple label="Adicionar"
+                        style="width: auto; height: 30px; background:green ; font-size: small; border-radius: 5px; color: aliceblue;">
+                    </button>
+                </span>
+            </ng-template>
+        </p-toolbar>
+
         <div class="form-group row col-md-12 mt-2 mb-2">
 
-            <!-- Periodo -->
-            <div class="col-sm-3 ">
-                <label class="mb-1">Período de vencimentos</label>
-                <p-datepicker (click)="periodo()" [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
-                    [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
-                    inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" [(ngModel)]="rangeDates"
-                    placeholder="dd/mm/aaaa" selectionMode="range" />
-            </div>
-
-            <!-- Status -->
-            <span class=" col-sm-3">
-                <label class="mb-1">Status</label>
-                <p-multiSelect class="mb-0"
-                    [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
-                    [options]="status" optionLabel="label" optionValue="label" placeholder="Todas"
-                    (onChange)="onChangeContas($event)" [showClear]="false" />
-            </span>
-
-            <!-- frequencia -->
-            <span class=" col-sm-3">
-                <label class="mb-1">Frequência</label>
-                <p-multiSelect class="mb-0"
-                    [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
-                    [options]="frequencia" optionLabel="label" optionValue="label" placeholder="Todas"
-                    (onChange)="onChangeContas($event)" [showClear]="false" />
-
-            </span>
-
-            <!-- forma de pagamento -->
-            <span class=" col-sm-3">
-                <label class="mb-1">forma de pagamento</label>
-                <p-multiSelect class="mb-0"
-                    [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
-                    [options]="formas" optionLabel="nome" optionValue="id" placeholder="Todas" [showClear]="false" />
-            </span>
-
-            <!-- Categorias -->
-            <div class="col-sm-5 mt-1">
-                <label class="mb-1">Categoria</label>
-                <p-multiSelect [filter]="true"
-                    [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
-                    [options]="categoriasFiltradas" optionLabel="nome" optionValue="id" placeholder="Todas"
-                    [showClear]="false" [autofocus]="false" display="chip" (onChange)="onChangeCategorias($event)" />
-            </div>
 
 
-            <!-- Forma de pagamento -->
-            <div class="col-sm-4 mt-1">
-                <label class=" mb-1">Conta</label>
-                <p-multiSelect
-                    [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
-                    [options]="contasBanco" optionLabel="nome" optionValue="id" placeholder="Todas"
-                    (onChange)="onChangeContas($event)"></p-multiSelect>
-            </div>
+            <!-- espaço -->
+            <span class="col-sm-3 mt-4 "></span>
+            @if(filtroSelecionado == 'Personalizado'){
+            <span class="col-sm-4 mt-4 "></span>
+            }
 
-            <span class="col-sm-3 mt-4 ">
-                <label class="f-13 mb-1"> </label>
-                <button (click)="visibleContasPagar = true;  setModalInclusao(); imodo.set(0)" icon="pi pi-plus"
-                    type="button" class=" mb-0 ml-3 m-t-5 float-end" pButton pRipple label="Adicionar"
-                    style="width: auto; height: 30px; background:green ; font-size: small; border-radius: 5px; color: aliceblue;">
-                </button>
-            </span>
         </div>
 
 
@@ -99,8 +95,8 @@
                 <!-- Pesquisa -->
                 <p-iconfield iconPosition="left">
                     <p-inputicon class="pi pi-search" />
-                    <input (input)="dtContasPagar.filterGlobal($event.target?.addEventListener, 'contains')" type="text"
-                        style="height: 32px; width:400px;" pInputText placeholder="Pesquisar " [(ngModel)]="descricao"
+                    <input (input)="dtcontaspagar.filterGlobal($event.target?.addEventListener, 'contains')" type="text"
+                        style="height: 32px; width:400px;" pInputText placeholder="Pesquisar " [(ngModel)]="nome"
                         [ngModelOptions]="{standalone: true}" />
                 </p-iconfield>
 
@@ -108,12 +104,6 @@
 
 
             <ng-template #end>
-                <!-- Busca  -->
-                <strong><button (click)="buscaLancamentos()" icon="pi pi-search" type="button" class=" mb-0 mx-3"
-                        pButton pRipple label="Buscar"
-                        style=" height: 32px; background:green ; font-size: small; border-radius: 5px; color: aliceblue;">
-                    </button></strong>
-
                 <p-splitButton class="float-end mr-0 mb-1" label="   Relatórios          " icon="pi pi-print"
                     [model]="printItems" [style]="{'height':'32px'}" outlined severity="contrast" />
 
@@ -123,13 +113,13 @@
 
         <div class="col-sm-12">
             <div class=" mb-0 ">
-                <p-table #dtContasPagar [value]="contasPagar"
-                    [globalFilterFields]="['descricao', 'contas-pagar.descricao', 'contas-pagar.valor']" [lazy]="true"
+                <p-table #dtcontaspagar [value]="contasPagar"
+                    [globalFilterFields]="['nome', 'contas-pagar.nome', 'contas-pagar.descricao']" [lazy]="true"
                     [rows]="linesPerPage" responsiveLayout="stack" (onLazyLoad)="loadContasPagarLazy($event)"
                     [showCurrentPageReport]="true" [totalRecords]="totalRegistros" showGridlines stripedRows
                     [rowsPerPageOptions]="[10, 20, 30, 50]" [tableStyle]="{ 'min-width': '30rem' }"
-                    currentPaportTemplate="Exibindo {first} a {last} de {totalRecords} registros " [paginator]="true"
-                    emptyMessage="Nenhum registro encontrado">
+                    currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros "
+                    [paginator]="true" emptyMessage="Nenhum registro encontrado">
 
                     <ng-template #header>
                         <tr>
@@ -163,7 +153,7 @@
                                 <b>Status</b>
                             </th>
 
-                            <th class="col-acoes-header py-2"
+                            <th class="col-acoes py-2"
                                 style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; ; border-top-right-radius: 5px">
                                 <b>Ações</b>
                             </th>
@@ -178,37 +168,53 @@
                             </td>
 
                             <td class="py-1" style=" font-size: 13px ">{{
-                                contaPagar.pessoaId }}</td>
+                                contaPagar.nome}}</td>
                             <td class="py-1" style=" font-size: 13px">{{
                                 contaPagar.descricao }}</td>
                             <td class="col-data-150 py-1" style=" font-size: 13px">{{
-                                contaPagar.frequencia }}<br>
+                                contaPagar.frequenciaCP=='AVISTA'? 'A vista' :
+                                contaPagar.frequenciaCP=='SEMANAL' ? 'Semanal' :
+                                contaPagar.frequenciaCP=='QUINZENAL'? 'Quinzenal' :
+                                contaPagar.frequenciaCP=='MENSAL'? 'Mensal' :
+                                contaPagar.frequenciaCP=='TRIMESTRAL'? 'Trimestral' :
+                                contaPagar.frequenciaCP=='ANUAL'? 'Anual' : '' }}<br>
                             </td>
                             <td class="col-data-150 py-1" style=" font-size: 13px;">{{
-                                contaPagar.valor }}<br>
+                                contaPagar.valor | currency:' ' }}<br>
                             </td>
-                            <td class="col-data-150 py-1" style=" font-size: 13px;">{{
-                                contaPagar.status }}<br>
+                            <td class="col-data-150 py-1" style=" font-size: 13px;" [style.color]="contaPagar.status === 'PAGO' ? 'green' : 
+                                (isAtrasado(contaPagar.dataVencimento) ? 'red' : 'orange')">
+                                {{ isAtrasado(contaPagar.dataVencimento) && contaPagar.status !== 'PAGO' ? 'Atrasado' :
+                                contaPagar.status == 'PENDENTE' ? 'Pendente' : contaPagar.status == 'PAGO' ? 'Pago' :
+                                contaPagar.status }}
+
                             </td>
 
                             <!-- Editar -->
-                            <td class="col-acoes-header py-1">
-                                <button (click)="visibleContasPagar = true; loadContasPagar(contasPagar)" type="button"
-                                    class="btn btn-icon  btn-outline-success p-1 mb-0 mt-0 "
-                                    [style]="{'margin-right': '10px','height': '26px', 'width': '26px'} "
+                            <td class="py-1 col-acoes" style="min-width:7rem;">
+
+                                <button
+                                    (click)="this.imodo.set(1); setModalEdicao(); loadContaPagar(contaPagar); visibleContasPagar = true"
+                                    type="button" class="btn btn-icon  btn-outline-primary p-1 mb-0 mt-0 "
+                                    [style]="{'height': '26px', 'width': '26px'} "
                                     [placement]="'top'" ngbTooltip="Editar">
                                     <i class="pi pi-pencil"></i>
                                 </button>
 
-                                <!-- Recibo -->
-                                <!-- @if(contasPagar.tipoLancamento == "Despesa" ){
-                                <button (click)="limpaCheckbox(); imprimirRecibo(contasPagar.id)" type="button"
-                                    class="btn btn-icon  btn-outline-primary p-1 mb-0 mt-0 "
+                                <button [disabled]="contaPagar.status !== 'PAGO'" (click)="confirmarEstorno(contaPagar)"
+                                    type="button" class="btn btn-icon  btn-outline-danger p-1 mb-0 mt-0 mx-2 "
                                     [style]="{'height': '26px', 'width': '26px'} " [placement]="'top'"
-                                    ngbTooltip="Recibo">
-                                    <i class="pi pi-print"></i>
+                                    ngbTooltip="Estornar">
+                                    <i class="pi pi-refresh"></i>
                                 </button>
-                                } -->
+
+                                <button (click)="exclusaoContasPagar(contaPagar)" type="button"
+                                    class="btn btn-icon btn-outline-danger p-1 mt-0 mb-0"
+                                    [style]="{'height': '25px', 'width': '25px'} " [placement]="'top'"
+                                    ngbTooltip="Excluir">
+                                    <i class="pi pi-trash"></i>
+                                </button>
+
                             </td>
                         </tr>
                     </ng-template>
@@ -216,29 +222,23 @@
             </div>
         </div>
 
-        <div class="col-md-4 float-end border border-top-0 mt-0 mb-2" style="background-color: #fafafa;">
+        <div class="col-12 float-end border border-top-0 mt-0 mb-2" style="background-color: #fafafa;">
             <span class="row mb-0 float-end">
 
-                <div class=" form-group col-sm-4 mt-0 mb-0 ">
-                    <label class="f-13 mt-1" style="width:100%; text-align:left">Crédito</label>
-                    <strong><label class="mb-0 mt-0 ml-0  text-success "
-                            style="width:100% ; height: 30px;  text-align:left; background:#fafafa ; border: 0px; font-size: 13px; border-radius: 6px;">
+                <div class=" form-group col-sm-5  mb-0 ">
+                    <label class="f-13 mt-1 mb-0" style="width:100%;  text-align:left">Pendente</label>
+                    <strong><label class="mb-0 ml-0 mt-0 text-c-yellow"
+                            style="width:100%; text-align:left; margin-right:5px;" style="width:100% ; height: 30px; text-align:left; background:#fafafa ;  border: 0px; font-size: 13px;
+                             border-radius: 6px; "><b>{{ resumo.totalPendente | currency:' ' }}</b>
                         </label></strong>
                 </div>
 
 
-                <div class=" form-group col-sm-4  mb-0 ">
-                    <label class="f-13 mt-1 mb-0" style="width:100%;  text-align:left">Débito</label>
-                    <strong><label class="mb-0 ml-0 mt-0 text-danger"
-                            style="width:100% ; height: 30px; text-align:left; background:#fafafa ;  border: 0px; font-size: 13px; border-radius: 6px; ">
-                        </label></strong>
-                </div>
-
-
-                <div class=" form-group  col-sm-4  mb-0 ">
-                    <label class="f-13  mt-1" style="width:100%;  text-align:left">Saldo</label>
-                    <strong><label class="mb-0 ml-0 text-primary"
-                            style="width:100% ; height: 30px; text-align:left; background:#fafafa ; border: 0px; font-size: 13px; border-radius: 6px;">
+                <div class=" form-group  col-sm-5  mb-0 ">
+                    <label class="f-13  mt-1" style="width:100%;  text-align:left">Atrasado</label>
+                    <strong><label class="mb-0 ml-0 text-danger " style="width:100%; text-align:left; margin-right:5px;"
+                            style="width:100% ; height: 30px; text-align:left; background:#fafafa ; border: 0px; font-size: 13px;
+                            border-radius: 6px;"><b>{{ resumo.totalAtrasado | currency:' ' }}</b>
 
                         </label></strong>
                 </div>
@@ -261,8 +261,8 @@
                 [style]="{width: '60vw', 'min-height': '30vh', height: 'auto'}" [closeOnEscape]="false"
                 [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false"
                 [contentStyle]="{ 'overflow': 'visible' }" [transitionOptions]="'500ms ease-out'">
-                <b>Origem
-                    <hr class="mt-1 mb-2 text-c-red">
+                <b class="mb-3 text-c-red">Origem
+                    <hr class="mb-2 text-c-red">
                 </b>
 
                 <!-- Modal Body Inicio -->
@@ -271,33 +271,32 @@
 
                     <div class=" form-group col-md-6  mb-2">
                         <div class="flex flex-wrap">
-                            <div class="flex align-items-center mb-0">
+                            <div class="flex align-items-center">
 
                                 <label class="text-dark mr-5">Pagar para:             </label>
-                                <p-radioButton (click)="cadastradoC()" value="sim" formControlName="cadastrado"
+                                <p-radioButton class="" (click)="cadastradoC()" value="sim" formControlName="cadastrado"
                                     inputId="cadastrado"></p-radioButton>
-                                <label for="cadastrado" class="ml-2 text-success"> Pessoas      </label>
+                                <label for="cadastrado" class="ml-2 text-success">  Pessoas      </label>
 
                                 <p-radioButton (click)="cadastradoNC()" value="nao" formControlName="cadastrado"
                                     inputId="naocadastrado"></p-radioButton>
 
-                                <label for="naocadastrado" class="ml-2 text-c-blue">  Fornecedores</label>
+                                <label for="naocadastrado" class="ml-2  text-c-blue">  Fornecedores</label>
 
                             </div>
-
                             @if(cadastrado == 'sim'){
                             <p-select (onChange)="onChangePessoa($event)" [style]="{'width':'100%','height':'30px'}"
-                                class="w-full md mb-3 " [options]="pessoas" [editable]="false" [filter]="true"
-                                filterBy="nome" formControlName="pessoaId" [showClear]="false" optionLabel="nome"
+                                class="w-full " [options]="pessoas" [editable]="false" [filter]="true" filterBy="nome"
+                                formControlName="pessoaId" [showClear]="false" optionLabel="nome"
                                 resetFilterOnHide="true" dateFormat="dd/mm/yy" dropdownIcon="pi pi-chevron-up"
                                 [autofocus]="false" optionValue="id" placeholder="Selecione ..." class="mt-2 " />
                             }
 
                             <!-- Para Pessoas e fornecedores -->
                             @if(cadastrado == 'nao'){
-                            <div class="form-group  mb-0">
+                            <div class="form-group  mt-2 mb-0">
                                 <input type="text" style="text-transform: uppercase" class="form-control mt-1"
-                                    formControlName="descricao">
+                                    formControlName="nome">
                             </div>
                             }
                         </div>
@@ -310,21 +309,20 @@
                         <input type="text" class="form-control mb-0" formControlName="descricao">
                     </div>
 
-                    <b>Pagamento
-                        <hr class="mt-1 mb-2 text-c-green">
+                    <b class="mb-3 text-success">Pagamento
+                        <hr class="mb-2 text-c-green">
                     </b>
 
-                    <!-- Forma de pagamento -->
-                    <!-- @if(isParcelamento){ -->
+                    <!-- Conta -->
                     <div class="col-sm-4 mb-2">
                         <label class=" mb-1">Conta</label>
                         <p-select formControlName="contaBancoId"
                             [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
                             [options]="contasBanco" optionLabel="nome" optionValue="id" placeholder=""
-                            (onChange)="onChangeContas($event)" [showClear]="false" [filter]="true">
+                            (onChange)="onChangeContaBanco($event)" [showClear]="false" [filter]="true">
                         </p-select>
                     </div>
-                    <!-- } -->
+
                     <!-- forma de pagamento -->
                     <span class=" col-sm-4 mb-3 float-end">
                         <label class="mb-1">forma de pagamento</label>
@@ -345,31 +343,6 @@
                             formControlName="dataVencimento" />
                     </div>
 
-                    <!-- espaço -->
-                    <div class="form-group col-md-8 mb-3 "></div>
-
-
-                    <!-- frequencia -->
-                    <div class="form-group col-md-4 ">
-                        <label class="font-bold">Frequência</label>
-                        <p-select class="mb-0 " [filter]="true" formControlName="frequencia"
-                            [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
-                            [options]="frequencia" optionLabel="label" optionValue="label" placeholder="Uma única vez"
-                            (onChange)="onChangeFrequencia($event)" [showClear]="false">
-                        </p-select>
-                    </div>
-
-                    <!-- espaço -->
-                    <div class="form-group col-md-8 mb-3 "></div>
-
-                    <!--Valor Se for parcelamento, o label muda para "Valor Total" -->
-                    <div class="form-group col-md-4 ">
-                        <label class="font-bold">{{ isParcelamento ? 'Valor Total' : 'Valor' }}</label>
-                        <p-inputnumber size="small" formControlName="valor" inputId="valor" mode="decimal"
-                            locale="pt-BR" class="mb-0" [minFractionDigits]="2"
-                            [style]="{'width':'100%','height':'30px'}" />
-                    </div>
-
                     <!-- Categorias -->
                     <div class="col-sm-6 mb-2">
                         <label class="mb-1 font-bold ">Categoria</label>
@@ -380,25 +353,23 @@
                             (onChange)="onChangeCategorias($event)">
                         </p-select>
                     </div>
+                    <!-- espaço -->
+                    <div class="form-group col-md-2 mb-3 "></div>
 
-                    <div class="form-group col-md-2 mb-0"></div>
-
-                    <!-- Quantidade de Parcelas (Só aparece se for  parcelar) -->
-                    @if(isParcelamento){
-                    <div class="form-group col-md-4 mb-0">
-                        <p-fluid>
-                            <div class="flex-auto">
-                                <label class="mb-1 block font-bold text-dark" for="horizontal">Quantidade de Parcelas</label>
-                                <p-inputnumber size="small" formControlName="quantidadeParcelas" [showButtons]="true"
-                                    buttonLayout="horizontal" inputId="horizontal" spinnerMode="horizontal" [min]="2"
-                                    [max]="180" mode="decimal" />
-                            </div>
-                        </p-fluid>
+                    <!-- frequencia -->
+                    @if(!isParcelamento){
+                    <div class="form-group col-md-4 ">
+                        <label class="font-bold">Frequência</label>
+                        <p-select class="mb-0 " [filter]="true" formControlName="frequenciaCP"
+                            [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                            [options]="frequenciaCP" optionLabel="nome" optionValue="nome" placeholder="Uma única vez"
+                            (onChange)="onChangeFrequenciaCP($event)" [showClear]="false">
+                        </p-select>
                     </div>
                     }
 
                     <!-- Centro de Custo -->
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-6 mb-2">
                         <label class="mb-1">Centro de Custo </label>
                         <p-select formControlName="centroCustoId" [style]="{'width':'100%','height':'30px'}"
                             class="w-full md " [options]="centroCustos" [editable]="false" [filter]="true"
@@ -408,16 +379,48 @@
                     </div>
 
                     <!-- espaço -->
-                    <!-- <div class="form-group col-md-4 ">
+                    <div class="form-group col-md-2 mb-2 "></div>
 
-                    </div> -->
+                    <!--Valor Se for parcelamento, o label muda para "Valor Total" -->
+                    <div class="form-group col-md-4 mb-2">
+                        <label class="font-bold mb-1">{{ isParcelamento ? 'Valor Total' : 'Valor' }}</label>
+                        <p-inputnumber size="small" formControlName="valor" inputId="valor" mode="decimal"
+                            locale="pt-BR" class="mb-0" [minFractionDigits]="2"
+                            [style]="{'width':'100%','height':'30px'}" />
+                    </div>
+
+                    <!-- espaço -->
+                    <div class="form-group col-md-8 mb-2"></div>
+
+                    <!-- Quantidade de Parcelas (Só aparece se for  parcelar) -->
+                    @if(isParcelamento){
+                    <div class="form-group col-md-4 mb-2">
+                        <p-fluid>
+                            <div class="flex-auto">
+                                <label class="mb-1 block font-bold text-dark" for="horizontal">Quantidade de
+                                    Parcelas</label>
+                                <p-inputnumber size="small" formControlName="quantidadeParcelas" [showButtons]="true"
+                                    buttonLayout="horizontal" inputId="horizontal" spinnerMode="horizontal" [min]="2"
+                                    [max]="180" mode="decimal" [style]="{'width':'100%','height':'30px'}" />
+                            </div>
+                        </p-fluid>
+                    </div>
+                    }
 
                     <hr class="mb-2">
                     <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
                     <div class="modal-footer" style="height: 38px;">
 
+                        <!-- Pagar -->
+                        @if(imodo() === 1 && contaPagar.status !== 'PAGO' ){
+                        <button type="button" class=" mx-3 mb-0 float-left text-white" pButton pRipple
+                            (click)=" visiblePagamento = true; setModaPagar()" label="Pagar" style="width: 7em; height: 30px; font-size: small;
+                                          border-radius: 6px; border: 0; background: #030303;" icon='pi pi-dollar'>
+                        </button>
+                        }
+
                         <!-- Parcelar -->
-                        @if(!isParcelamento){
+                        @if(imodo() === 0 ){
                         <button type="button" class=" mx-3 mb-0 float-left" pButton pRipple
                             (click)="isParcelamento = true; parcelar()" label="Parcelar" style="width: 7em; height: 30px; font-size: small;
                                       border-radius: 6px; border: 0; background: #c47d03;" icon='pi pi-list'>
@@ -443,12 +446,152 @@
                 </div>
 
             </p-dialog>
-            <div class="form-group ">
+            <!-- <div class="form-group ">
                 <pre> {{ contasPagarForm.value | json}} </pre>
-            </div>
+            </div> -->
         </div>
 
         <!-- FIM MODAL  contasPagar -->
+    </div>
+
+    <!-- INICIO MODAL  Pagamento -->
+    <div class="col-md-12 col-xl-12" data-backdrop="static">
+
+        <div class="card flex justify-center">
+            <p-dialog header="CONTAS A PAGAR - {{ pageTitle }}" [modal]="true" [(visible)]="visiblePagamento"
+                [position]="positionPagamento" [dismissableMask]="false"
+                [style]="{width: '60vw', 'min-height': '30vh', height: 'auto'}" [closeOnEscape]="false"
+                [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false"
+                [contentStyle]="{ 'overflow': 'visible' }" [transitionOptions]="'500ms ease-out'">
+                <b class="mb-2 text-danger">Pagamento
+                    <hr class="mt-1 mb-2 text-c-red">
+                </b>
+
+                <!-- Modal Body Inicio -->
+
+                <div class="col-sm-12">
+                    <div class="form-group row ">
+
+                        <!-- Conta -->
+                        <div class="col-sm-6 mb-2">
+                            <label class=" mb-1">Conta</label>
+                            <p-select formControlName="contaBancoId"
+                                [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                                [options]="contasBanco" optionLabel="nome" optionValue="id" placeholder=""
+                                (onChange)="onChangeContaBanco($event)" [showClear]="false" [filter]="true">
+                            </p-select>
+                        </div>
+
+                        <!-- Vencimento -->
+                        <div class="col-sm-6 mb-2">
+                            <label class=" mb-1">Vencimento</label>
+                            <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                                [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
+                                inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
+                                formControlName="dataVencimento" />
+                        </div>
+
+                        <!-- Nome/Fornecedor -->
+                        <div class="col-sm-10 mb-2">
+                            <label class=" mb-1">Nome</label>
+                            <input type="text" formControlName="nome" class="form-control" />
+                        </div>
+
+                        <!-- Parcela -->
+                        <div class="col-sm-2 mb-2">
+                            <label class=" mb-1">Parcelas</label>
+                            <input style="background-color: rgb(245, 245, 245)" type="number" readonly disabled
+                                size="small" formControlName="quantidadeParcelas" locale="pt-BR"
+                                class="mb-0 form-control" [style]="{'width':'100%','height':'30px'}" />
+                        </div>
+
+                        <!-- Descrição -->
+                        <div class="col-sm-12 mb-2">
+                            <label class=" mb-1">Descrição</label>
+                            <input type="text" formControlName="descricao" class="form-control" />
+                        </div>
+
+                        <!-- Categorias -->
+                        <div class="col-sm-4 mb-2">
+                            <label class=" mb-1">Categoria</label>
+                            <p-select [filter]="true" [filter]="true" formControlName="categoriaId"
+                                [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                                [options]="categoriasFiltradas" optionLabel="nome" optionValue="id" placeholder=""
+                                [showClear]="false" [autofocus]="false" display="chip"
+                                (onChange)="onChangeCategorias($event)">
+                            </p-select>
+                        </div>
+
+                        <!-- Centro de Custo -->
+                        <div class="col-sm-4 mb-2">
+                            <label class=" mb-1">Centro de custo</label>
+                            <p-select formControlName="centroCustoId" [style]="{'width':'100%','height':'30px'}"
+                                class="w-full md " [options]="centroCustos" [editable]="false" [filter]="true"
+                                filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
+                                dateFormat="dd/mm/yy" dropdownIcon="pi pi-check" [autofocus]="false" optionValue="id"
+                                placeholder="" />
+                        </div>
+
+                        <!-- Forma de pagamento -->
+                        <div class="col-sm-4 mb-2">
+                            <label class=" mb-1">Forma de pagamento</label>
+                            <p-select class="mb-1" [filter]="true" formControlName="formaId"
+                                [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                                [options]="formas" optionLabel="nome" optionValue="id" placeholder=""
+                                (onChange)="onChangeFormaPagamento($event)" [showClear]="false">
+                            </p-select>
+                        </div>
+
+                        <!--espaço -->
+                        <div class="col-sm-4 mb-2"></div>
+
+                        <!-- Data Pagamento -->
+                        <div class="col-sm-4 mb-2">
+                            <label class=" mb-1">Data pagamento</label>
+                            <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                                [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
+                                inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
+                                formControlName="dataPagamento" />
+                        </div>
+
+                        <!--Valor Se for parcelamento, o label muda para "Valor Total" -->
+                        <div class="col-sm-4 mb-2">
+                            <label class="font-bold">Valor</label>
+                            <p-inputnumber size="small" formControlName="valor" inputId="valor" mode="decimal"
+                                locale="pt-BR" class="mb-0" [minFractionDigits]="2"
+                                [style]="{'width':'100%','height':'30px'}" />
+                        </div>
+
+                    </div>
+
+                    <hr class="mb-2">
+                    <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
+                    <div class="modal-footer" style="height: 38px;">
+
+                        <!-- Cancelar -->
+                        <button type="button" class=" ml-4 mb-0" pButton pRipple (click)="visiblePagamento = false; "
+                            label="Cancelar" style="width: 7em; height: 30px; font-size: small;
+                                      border-radius: 6px; border: 0;background: #1a82ce;" icon='pi pi-wallet'>
+                        </button>
+
+                        <!-- Pagar -->
+                        <strong><button
+                                (click)="visiblePagamento = false; visibleContasPagar = false; confirmarPagamento()"
+                                [disabled]="contasPagarForm.invalid" type="button" class="mx-3 float-end mb-0" pButton
+                                pRipple label="Pagar"
+                                style="width: 7em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
+                                icon='pi pi-check'>
+                            </button></strong>
+                    </div>
+                    <hr class="mt-2">
+                </div>
+            </p-dialog>
+            <!-- <div class="form-group ">
+                <pre> {{ contasPagarForm.value | json}} </pre>
+            </div> -->
+        </div>
+
+        <!-- FIM MODAL  Pagamento -->
     </div>
 
 
