@@ -566,6 +566,7 @@ export class ContasPagarListFormComponent implements OnInit {
   // METODOS CONTA
   public createContasPagar() {
     this.contasPagarForm.controls['descricao'].setValue(this.sharedService.formataNome(this.contasPagarForm.controls['descricao'].value));
+    this.contasPagarForm.controls['nome'].setValue(this.sharedService.formataNome(this.contasPagarForm.controls['nome'].value));
     if (this.contasPagarForm.valid) {
       // Objeto direto, sem "embrulho"
       const dados = {
@@ -630,6 +631,7 @@ export class ContasPagarListFormComponent implements OnInit {
 
 
   public updateContasPagar() {
+    this.contasPagarForm.controls['nome'].setValue(this.sharedService.formataNome(this.contasPagarForm.controls['nome'].value));
     const contasPagar: ContasPagarDTO = Object.assign(this.contasPagarForm.value);
     this.contasPagarService.update(contasPagar)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
