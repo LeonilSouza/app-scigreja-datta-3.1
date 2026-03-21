@@ -30,8 +30,9 @@ export class ContasPagarService {
     )
   }
 
-   getResumoContasPagarFromIgreja(igrejaId, dtInicio, dtFim) {
+   getResumoContasPagarFromIgreja(igrejaId, nome, dtInicio, dtFim) {
     const params = new HttpParams()
+      .set('nome', nome)
       .set('dtInicio', dtInicio)
       .set('dtFim', dtFim);
 
@@ -86,11 +87,14 @@ export class ContasPagarService {
   }
 
 
-  delete(id: number): Observable<any> {
+  delete(id: number, apagarGrupo: boolean): Observable<any> {
+    const params = new HttpParams()
+      .set('apagarGrupo', apagarGrupo);
 
     const url = `${this.apiPath}/${id}`;
 
-    return this.http.delete(url).pipe(
+    return this.http.delete(url, { params })
+    .pipe(
       catchError(this.handleError),
       map(() => null)
     )

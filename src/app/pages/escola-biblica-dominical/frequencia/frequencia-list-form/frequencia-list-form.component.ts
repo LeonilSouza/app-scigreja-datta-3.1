@@ -301,7 +301,7 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
     this.updateDiarioClasse();
   }
 
-   ngOnDestroy() {
+  ngOnDestroy() {
     // console.log('Limpando recursos do componente de Frequência...');
     // Se você tiver alguma Subscription manual (this.subscription.unsubscribe())
     if (this.subscription) {
@@ -1034,6 +1034,15 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
         // Swal.fire('Atualização', 'Registro atualizado com sucesso!', 'success');
       }),
       (error: any) => (error);
+  }
+
+  updateDiarioClasseTemaLicao() {
+    const diarioClasse: DiarioClasseDTO = Object.assign(new DiarioClasseDTO(), this.diarioClasseForm.value);
+    this.diarioClasseService.updateTemaLicao(diarioClasse)
+     .subscribe(() => {
+      this.gridDiario.reset();//atualiza a tabela do primeng
+      this.toastr.success('Tema/Lição Atualizados com sucesso', 'Diario Classe');
+    });
   }
 
   // RELATORIOS ///////////////////////////////////////////

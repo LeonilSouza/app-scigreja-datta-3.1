@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable, throwError } from "rxjs";
 import { catchError, map } from 'rxjs/operators';
 import { API_CONFIG } from "src/app/app-config";
@@ -44,7 +44,7 @@ export class DiarioClasseService {
       .pipe(
         catchError(this.handleError)
       );
-  }''
+  } ''
 
   salvarDiarioClasse(diarioClasse: any[]): Observable<any> {
     // O Angular/HttpClient automaticamente serializa o array para JSON
@@ -63,6 +63,19 @@ export class DiarioClasseService {
       )
   }
 
+  updateTemaLicao(diarioClasse: DiarioClasseDTO): Observable<DiarioClasseDTO> {
+  const params = new HttpParams()
+    .set('tema', diarioClasse.tema)
+    .set('licao', diarioClasse.licao)
+    .set('data', diarioClasse.data);
+
+  // 2. A URL deve conter apenas o ID da igreja (se o seu Java usar @PathVariable)
+  // O segundo parâmetro do PUT é o "body" (corpo), como não temos, enviamos null ou {}
+  return this.http.put(`${API_CONFIG.baseUrl}/diarioclasses/tema-licao/${diarioClasse.igrejaId}`, {}, { params })
+    .pipe(
+      catchError(this.handleError)
+    );
+  }
 
   delete(id: number): Observable<any> {
 

@@ -199,7 +199,7 @@ export class AlunoListComponent implements OnInit, AfterContentChecked {
     Swal.fire({
       // title: 'Exclusão',
       text: 'Tem certeza que deseja excluir este registro?',
-      icon: 'error',
+       position: 'top',
       showCloseButton: true,
       showCancelButton: true,
     }).then((willDelete) => {

@@ -1,6 +1,7 @@
 export class ContasPagarDTO {
     constructor(
         public id?: number,
+        public uuidGrupo?: string,
         public descricao?: string,
         public nome?: string,
         public saldoResidual?: string,

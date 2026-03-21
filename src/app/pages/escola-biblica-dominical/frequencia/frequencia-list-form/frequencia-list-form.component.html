@@ -515,16 +515,16 @@
                             <div class="row ">
                                 <div class="form-group col-md-1 mb-0">
                                     <label class="text-danger mb-1">Nº Lição</label>
-                                    <input readonly
-                                        style="background-color: rgb(245, 246, 248); font-size: 12px; height: 32px;"
+                                    <input 
+                                        style="font-size: 12px; height: 32px;"
                                         type="text" class="form-control mb-0" formControlName="licao">
                                 </div>
 
                                 <!-- Tema da Lição -->
                                 <div class="form-group col-md-4 mb-0 ">
                                     <label class="text-success  mb-1">Tema da Lição</label>
-                                    <input readonly
-                                        style="background-color: rgb(245, 246, 248); text-transform: uppercase; font-size: 12px; height: 32px;"
+                                    <input 
+                                        style="text-transform: uppercase; font-size: 12px; height: 32px;"
                                         type="text" class="form-control mb-2" formControlName="tema">
                                 </div>
 
@@ -617,6 +617,12 @@
                             [style]="{'height':'32px', 'margin-right':'25px'}" size="small" severity="contrast"
                             label="Imprimir" class="float-end mb-1 m-t-0 " />
 
+                            <!-- Alterar Lição e tema -->
+                        @if(diarioClasse.tema || diarioClasse.licao){
+                        <p-button (click)="updateDiarioClasseTemaLicao(diarioClasse)" icon='pi pi-check'
+                            [style]="{'height':'32px', 'margin-right':'25px'}" size="small" severity="secondary"
+                            label="Alterar Tema | Lição" class="float-left mb-1 m-t-0 " />
+                        }
                     </div>
 
                 </div>

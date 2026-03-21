@@ -1353,9 +1353,9 @@ export class LancamentoListFormComponent implements OnInit {
       Swal.fire({
         title: 'Exclusão',
         text: 'Tem certeza que deseja excluir ' + this.length() + ' registro?',
-        icon: 'error',
         showCloseButton: true,
         showCancelButton: true,
+         position: 'top',
       }).then((willDelete) => {
         if (willDelete.dismiss) {
           this.selectedLancamentos = [];

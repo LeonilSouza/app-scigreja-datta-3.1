@@ -1,4 +1,9 @@
 <div class="col-md-12">
+    <!-- O componente que renderiza o alerta -->
+    <p-confirmDialog [style]="{width: '550px'}"></p-confirmDialog>
+
+    <!-- Se estiver usando mensagens flutuantes (Toast), adicione também: -->
+    <p-toast></p-toast>
     <app-card [hidHeader]="true" cardTitle="" cardClass="shadow" blockClass="pc-component">
 
         <!-- Barra filtros -->
@@ -14,14 +19,14 @@
             <ng-template #start>
 
                 <!-- Select de Filtro Rápido -->
-                <div class="flex justify-between ">
+                <span class="flex justify-between ">
                     <label class="mb-1">Contas a pagar</label>
-                    <p-select (onChange)="aplicarFiltroDatas()" [style]="{'width':'100%','height':'30px'}"
-                        class="w-full " [options]="opcoesFiltroDatas" [editable]="false" [filter]="true" filterBy="nome"
+                    <p-select (onChange)="aplicarFiltroDatas()" [style]="{'width':'100%','height':'30px'}" class=""
+                        [options]="opcoesFiltroDatas" [editable]="false" [filter]="true" filterBy="nome"
                         [showClear]="false" optionLabel="label" [(ngModel)]="filtroSelecionado" resetFilterOnHide="true"
                         dateFormat="dd/mm/yy" dropdownIcon="pi pi-chevron-up" [autofocus]="false" optionValue="value"
                         placeholder="Filtrar por..." />
-                </div>
+                </span>
 
                 <!-- Periodo --> <!-- Campos de data que só aparecem no 'Personalizado' -->
                 @if(filtroSelecionado == 'Personalizado'){
@@ -37,7 +42,7 @@
                 <!-- Busca  -->
                 @if(filtroSelecionado == 'Personalizado'){
                 <strong><button (click)="buscaContasPagar()" icon="pi pi-search" type="button" class=" mb-0 mx-2 mt-4"
-                        pButton pRipple label=""
+                        pButton pRipple label="Buscar"
                         style=" height: 32px; background:primary ; font-size: small; border-radius: 5px; color: aliceblue;">
                     </button></strong>
                 }
@@ -80,23 +85,33 @@
         <p-toolbar styleClass="border-0">
             <ng-template #start>
 
-                <!-- Botão reset window -->
+                <!-- Botão Pendente -->
                 <div class="flex justify-between">
-                    <p-button [style]="{'height':'32px', 'margin-right':'20px'}" [outlined]="true"
-                        icon="pi pi-filter-slash" label="Limpar" (click)="resetContasPagar()" />
+                    <label class="f-13">Pendente</label>
+                    <button type="button" class="mb-0" pButton pRipple
+                        style="width:100% ; height: 32px; background:#eda909 ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
+                        <b>{{ resumo.totalPendente | currency:' ' }}</b></button>
                 </div>
 
-                <!-- Fim Ação Selecionados -->
+
+                <!-- Botão Atrasado -->
+                <div class="flex justify-between">
+                    <label class="f-13">      Atrasado</label>
+                    <button type="button" class="mb-0" pButton pRipple
+                        style="margin-left: 20px ; width:100% ; height: 32px; background:#fa0000 ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
+                        <b>{{ resumo.totalAtrasado | currency:' ' }}</b></button>
+                </div>
+
             </ng-template>
 
 
             <ng-template #center>
 
                 <!-- Pesquisa -->
-                <p-iconfield iconPosition="left">
+                <p-iconfield iconPosition="left" class="mt-3 mb-0">
                     <p-inputicon class="pi pi-search" />
                     <input (input)="dtcontaspagar.filterGlobal($event.target?.addEventListener, 'contains')" type="text"
-                        style="height: 32px; width:400px;" pInputText placeholder="Pesquisar " [(ngModel)]="nome"
+                        style="height: 32px; width:350px;" pInputText placeholder="Pesquisar " [(ngModel)]="nome"
                         [ngModelOptions]="{standalone: true}" />
                 </p-iconfield>
 
@@ -104,7 +119,7 @@
 
 
             <ng-template #end>
-                <p-splitButton class="float-end mr-0 mb-1" label="   Relatórios          " icon="pi pi-print"
+                <p-splitButton class="float-end mr-0 mt-3 mb-0" label="   Relatórios          " icon="pi pi-print"
                     [model]="printItems" [style]="{'height':'32px'}" outlined severity="contrast" />
 
 
@@ -153,7 +168,7 @@
                                 <b>Status</b>
                             </th>
 
-                            <th class="col-acoes py-2"
+                            <th class="col-acoes-header py-2"
                                 style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; ; border-top-right-radius: 5px">
                                 <b>Ações</b>
                             </th>
@@ -191,27 +206,20 @@
                             </td>
 
                             <!-- Editar -->
-                            <td class="py-1 col-acoes" style="min-width:7rem;">
+                            <td class="py-1 col-acoes-header">
 
                                 <button
                                     (click)="this.imodo.set(1); setModalEdicao(); loadContaPagar(contaPagar); visibleContasPagar = true"
-                                    type="button" class="btn btn-icon  btn-outline-primary p-1 mb-0 mt-0 "
-                                    [style]="{'height': '26px', 'width': '26px'} "
-                                    [placement]="'top'" ngbTooltip="Editar">
-                                    <i class="pi pi-pencil"></i>
-                                </button>
-
-                                <button [disabled]="contaPagar.status !== 'PAGO'" (click)="confirmarEstorno(contaPagar)"
-                                    type="button" class="btn btn-icon  btn-outline-danger p-1 mb-0 mt-0 mx-2 "
+                                    type="button" class="btn btn-icon  btn-outline-primary p-1 mb-0 mt-0  "
                                     [style]="{'height': '26px', 'width': '26px'} " [placement]="'top'"
-                                    ngbTooltip="Estornar">
-                                    <i class="pi pi-refresh"></i>
+                                    ngbTooltip="Editar">
+                                    <i class="pi pi-pencil"></i>
                                 </button>
 
                                 <button (click)="exclusaoContasPagar(contaPagar)" type="button"
                                     class="btn btn-icon btn-outline-danger p-1 mt-0 mb-0"
-                                    [style]="{'height': '25px', 'width': '25px'} " [placement]="'top'"
-                                    ngbTooltip="Excluir">
+                                    [style]="{'margin-left': '10px','height': '25px', 'width': '25px'} "
+                                    [placement]="'top'" ngbTooltip="Excluir">
                                     <i class="pi pi-trash"></i>
                                 </button>
 
@@ -221,34 +229,10 @@
                 </p-table>
             </div>
         </div>
-
-        <div class="col-12 float-end border border-top-0 mt-0 mb-2" style="background-color: #fafafa;">
-            <span class="row mb-0 float-end">
-
-                <div class=" form-group col-sm-5  mb-0 ">
-                    <label class="f-13 mt-1 mb-0" style="width:100%;  text-align:left">Pendente</label>
-                    <strong><label class="mb-0 ml-0 mt-0 text-c-yellow"
-                            style="width:100%; text-align:left; margin-right:5px;" style="width:100% ; height: 30px; text-align:left; background:#fafafa ;  border: 0px; font-size: 13px;
-                             border-radius: 6px; "><b>{{ resumo.totalPendente | currency:' ' }}</b>
-                        </label></strong>
-                </div>
-
-
-                <div class=" form-group  col-sm-5  mb-0 ">
-                    <label class="f-13  mt-1" style="width:100%;  text-align:left">Atrasado</label>
-                    <strong><label class="mb-0 ml-0 text-danger " style="width:100%; text-align:left; margin-right:5px;"
-                            style="width:100% ; height: 30px; text-align:left; background:#fafafa ; border: 0px; font-size: 13px;
-                            border-radius: 6px;"><b>{{ resumo.totalAtrasado | currency:' ' }}</b>
-
-                        </label></strong>
-                </div>
-            </span>
-        </div>
         <!-- Contas Pagar Fim -->
 
     </app-card>
 </div>
-
 
 <form [formGroup]="contasPagarForm" autocomplete="off">
 
@@ -257,21 +241,24 @@
 
         <div class="card flex justify-center">
             <p-dialog header="CONTAS A PAGAR - {{ pageTitle }}" [modal]="true" [(visible)]="visibleContasPagar"
-                [position]="positionContasPagar" [dismissableMask]="false"
-                [style]="{width: '60vw', 'min-height': '30vh', height: 'auto'}" [closeOnEscape]="false"
-                [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false"
-                [contentStyle]="{ 'overflow': 'visible' }" [transitionOptions]="'500ms ease-out'">
+                [position]="positionContasPagar" 
+                [draggable]="false" 
+                [resizable]="false"
+                [breakpoints]="{'960px': '95vw', '640px': '100vw'}" 
+                [style]="{width: '60vw'}"
+                [contentStyle]="{'max-height': '80vh', 'overflow': 'auto'}"
+                appendTo="body" [dismissableMask]="false">
                 <b class="mb-3 text-c-red">Origem
                     <hr class="mb-2 text-c-red">
                 </b>
 
                 <!-- Modal Body Inicio -->
 
-                <div class="row col-12">
+                <div class="row col-12 md:col-6">
 
-                    <div class=" form-group col-md-6  mb-2">
-                        <div class="flex flex-wrap">
-                            <div class="flex align-items-center">
+                    <div class=" col-md-6  mb-2">
+                        <div class="">
+                            <div class=" align-items-center">
 
                                 <label class="text-dark mr-5">Pagar para:             </label>
                                 <p-radioButton class="" (click)="cadastradoC()" value="sim" formControlName="cadastrado"
@@ -285,11 +272,12 @@
 
                             </div>
                             @if(cadastrado == 'sim'){
-                            <p-select (onChange)="onChangePessoa($event)" [style]="{'width':'100%','height':'30px'}"
-                                class="w-full " [options]="pessoas" [editable]="false" [filter]="true" filterBy="nome"
+                            <p-select (onChange)="onChangePessoa($event)" 
+                                [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                                class="mt-2 " [options]="pessoas" [editable]="false" [filter]="true" filterBy="nome"
                                 formControlName="pessoaId" [showClear]="false" optionLabel="nome"
                                 resetFilterOnHide="true" dateFormat="dd/mm/yy" dropdownIcon="pi pi-chevron-up"
-                                [autofocus]="false" optionValue="id" placeholder="Selecione ..." class="mt-2 " />
+                                [autofocus]="false" optionValue="id" placeholder="Selecione ..." />
                             }
 
                             <!-- Para Pessoas e fornecedores -->
@@ -357,7 +345,7 @@
                     <div class="form-group col-md-2 mb-3 "></div>
 
                     <!-- frequencia -->
-                    @if(!isParcelamento){
+                    @if((!isParcelamento && imodo()==0) || (contaPagar.uuidGrupo==null && !isParcelamento)) {
                     <div class="form-group col-md-4 ">
                         <label class="font-bold">Frequência</label>
                         <p-select class="mb-0 " [filter]="true" formControlName="frequenciaCP"
@@ -369,9 +357,10 @@
                     }
 
                     <!-- Centro de Custo -->
-                    <div class="form-group col-md-6 mb-2">
+                    <div class="form-group col-md-6 mb-5">
                         <label class="mb-1">Centro de Custo </label>
-                        <p-select formControlName="centroCustoId" [style]="{'width':'100%','height':'30px'}"
+                        <p-select formControlName="centroCustoId" 
+                            [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
                             class="w-full md " [options]="centroCustos" [editable]="false" [filter]="true"
                             filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
                             dateFormat="dd/mm/yy" dropdownIcon="pi pi-check" [autofocus]="false" optionValue="id"
@@ -379,10 +368,10 @@
                     </div>
 
                     <!-- espaço -->
-                    <div class="form-group col-md-2 mb-2 "></div>
+                    <div class="form-group col-md-2 mb-5 "></div>
 
                     <!--Valor Se for parcelamento, o label muda para "Valor Total" -->
-                    <div class="form-group col-md-4 mb-2">
+                    <div class="form-group col-md-4 mb-5">
                         <label class="font-bold mb-1">{{ isParcelamento ? 'Valor Total' : 'Valor' }}</label>
                         <p-inputnumber size="small" formControlName="valor" inputId="valor" mode="decimal"
                             locale="pt-BR" class="mb-0" [minFractionDigits]="2"
@@ -393,7 +382,7 @@
                     <div class="form-group col-md-8 mb-2"></div>
 
                     <!-- Quantidade de Parcelas (Só aparece se for  parcelar) -->
-                    @if(isParcelamento){
+                    @if(isParcelamento && imodo()==0){
                     <div class="form-group col-md-4 mb-2">
                         <p-fluid>
                             <div class="flex-auto">
@@ -461,15 +450,17 @@
             <p-dialog header="CONTAS A PAGAR - {{ pageTitle }}" [modal]="true" [(visible)]="visiblePagamento"
                 [position]="positionPagamento" [dismissableMask]="false"
                 [style]="{width: '60vw', 'min-height': '30vh', height: 'auto'}" [closeOnEscape]="false"
-                [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false"
-                [contentStyle]="{ 'overflow': 'visible' }" [transitionOptions]="'500ms ease-out'">
+                [breakpoints]="{'960px': '95vw', '640px': '100vw'}"  
+                [draggable]="false"
+                [resizable]="false"
+                [contentStyle]="{ 'overflow': 'auto' }" [transitionOptions]="'500ms ease-out'">
                 <b class="mb-2 text-danger">Pagamento
                     <hr class="mt-1 mb-2 text-c-red">
                 </b>
 
                 <!-- Modal Body Inicio -->
 
-                <div class="col-sm-12">
+                <div class="col-12 md:col-6">
                     <div class="form-group row ">
 
                         <!-- Conta -->
