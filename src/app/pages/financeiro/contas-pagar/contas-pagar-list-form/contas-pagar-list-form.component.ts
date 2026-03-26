@@ -86,6 +86,9 @@ export class ContasPagarListFormComponent implements OnInit {
 
   contaPagarId: number;
 
+  mes: string;
+  mesNovo: string;
+
   length = signal(0);
 
   @ViewChild('dtcontaspagar') grid!: Table;
@@ -181,8 +184,14 @@ export class ContasPagarListFormComponent implements OnInit {
       this.contasPagarForm.get('dataVencimento')!.valueChanges,
       this.contasPagarForm.get('quantidadeParcelas')!.valueChanges
     ).subscribe(() => {
-      //  console.log(this.contasPagarForm.get('dataVencimento')?.value);
-      // const valor = this.contasPagarForm.get('valor')?.value;
+      const dataBRString = this.contaPagar.dataVencimento;
+      const dataBRStringNovo = this.contasPagarForm.get('dataVencimento')?.value;
+      const partes = dataBRString.split('/');
+      const partesNovo = dataBRStringNovo.split('/');
+
+      // Pega apenas o mes 
+      this.mes = `${partes[1]}`
+      this.mesNovo = `${partesNovo[1]}`
     });
   };
 
@@ -586,17 +595,45 @@ export class ContasPagarListFormComponent implements OnInit {
 
 
   public updateContasPagar() {
-    this.contasPagarForm.controls['nome'].setValue(this.sharedService.formataNome(this.contasPagarForm.controls['nome'].value));
-    const contasPagar: ContasPagarDTO = Object.assign(this.contasPagarForm.value);
-    this.contasPagarService.update(contasPagar)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-      .subscribe({
-        next: () => {
-          this.grid.reset();
-          this.toastr.success('Registro atualizado com sucesso!', 'Atualização');
-        },
-        error: () => { }
-      })
+    if ((this.mes !== this.mesNovo) && this.contaPagar.uuidGrupo ) {
+      Swal.fire({
+        // title: 'Exclusão',
+        text: 'Deseja alterar a data? Todos as parcelas seguirão esta data.',
+        position: 'top',
+        showCloseButton: true,
+        showCancelButton: true,
+      }).then((willDelete) => {
+        if (willDelete.dismiss) {
+        } else {
+          this.contasPagarForm.controls['nome'].setValue(this.sharedService.formataNome(this.contasPagarForm.controls['nome'].value));
+          const contasPagar: ContasPagarDTO = Object.assign(this.contasPagarForm.value);
+          this.contasPagarService.update(contasPagar)
+            .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+            .subscribe({
+              next: () => {
+                this.grid.reset();
+                this.toastr.success('Registro atualizado com sucesso!', 'Atualização');
+              },
+              error: () => { }
+            })
+
+        }
+      });
+
+    } else {
+      this.contasPagarForm.controls['nome'].setValue(this.sharedService.formataNome(this.contasPagarForm.controls['nome'].value));
+      const contasPagar: ContasPagarDTO = Object.assign(this.contasPagarForm.value);
+      this.contasPagarService.update(contasPagar)
+        .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+        .subscribe({
+          next: () => {
+            this.grid.reset();
+            this.toastr.success('Registro atualizado com sucesso!', 'Atualização');
+          },
+          error: () => { }
+        })
+
+    }
   }
 
   loadPessoas() {
@@ -671,7 +708,7 @@ export class ContasPagarListFormComponent implements OnInit {
         confirmButtonText: 'Apagar APENAS esta?',
         denyButtonText: `Apagar TODO o grupo?`,
         cancelButtonText: 'Cancelar!',
-        
+
       }).then((result) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
@@ -730,7 +767,7 @@ export class ContasPagarListFormComponent implements OnInit {
   }
 
   resetModal() {
-    this.contasPagarForm.reset();
+    // this.contasPagarForm.reset();
     this.contasPagarForm.controls['pessoaId'].setValue(null);
     this.isParcelamento = false;
   }
