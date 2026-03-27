@@ -19,7 +19,7 @@
                     <p-multiSelect class="mb-0"
                         [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
                         [options]="contas" formControlName="selectedContas" optionLabel="nome" optionValue="id"
-                        placeholder="Todas" (onChange)="onChangeContas($event)" [showClear]="false">
+                        placeholder="Todas" (onChange)="onChangeContas($event)" [showClear]="false" appendTo="body">
                     </p-multiSelect>
                 </form>
             </span>
@@ -31,7 +31,7 @@
                 <p-datepicker (click)="periodo()" [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
                     [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
                     inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" [(ngModel)]="rangeDates"
-                    placeholder="dd/mm/aaaa" selectionMode="range" />
+                    placeholder="dd/mm/aaaa" selectionMode="range" appendTo="body" />
             </div>
 
             <!-- Natureza -->
@@ -40,7 +40,7 @@
                 <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangeCategoriasFiltradas($event)"
                     class="w-full md  " [options]="tpLancamento" [editable]="false" [filter]="false" filterBy="nome"
                     [showClear]="false" optionLabel="nome" resetFilterOnHide="true" dateFormat="dd/mm/yy"
-                    dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="nome" placeholder="Todas" />
+                    dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="nome" placeholder="Todas" appendTo="body"/>
             </div>
 
             <!-- Categorias -->
@@ -60,7 +60,7 @@
                         [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
                         [options]="categoriasFiltradas" formControlName="selectedCategorias" optionLabel="nome"
                         optionValue="id" placeholder="Todas" [showClear]="false" [autofocus]="false" display="chip"
-                        (onChange)="onChangeCategorias($event)">
+                        (onChange)="onChangeCategorias($event)" appendTo="body">
                     </p-multiSelect>
                 </form>
             </div>
@@ -73,7 +73,7 @@
                     <p-multiSelect
                         [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
                         [options]="formas" formControlName="selectedFormas" optionLabel="nome" optionValue="id"
-                        placeholder="Todas" (onChange)="onChangeFormas($event)" [showClear]="false">
+                        placeholder="Todas" (onChange)="onChangeFormas($event)" [showClear]="false" appendTo="body">
                     </p-multiSelect>
                 </form>
             </div>
@@ -451,7 +451,7 @@
                         <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
                             [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
                             inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
-                            formControlName="data" />
+                            formControlName="data" appendTo="body" />
                     </div>
 
                     <div class="row form-group col-md-6  mb-2">
@@ -474,7 +474,7 @@
                                 [editable]="false" [filter]="true" filterBy="nome" [showClear]="false"
                                 optionLabel="nome" resetFilterOnHide="true" dateFormat="dd/mm/yy"
                                 dropdownIcon="pi pi-users" [autofocus]="false" optionValue="id"
-                                placeholder="Selecione um provedor" class="mt-1 " />
+                                placeholder="Selecione um provedor" class="mt-1 " appendTo="body"/>
                             }
 
                             <!-- Nome/Histórico Não Cadastrado -->
@@ -513,7 +513,7 @@
                             class="w-full md  " [options]="formas" [editable]="false" [filter]="false" filterBy="nome"
                             [showClear]="false" optionLabel="nome" resetFilterOnHide="false" dateFormat="dd/mm/yy"
                             dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id"
-                            placeholder="Selecione..." />
+                            placeholder="Selecione..." appendTo="body"/>
 
                     </div>
 
@@ -537,7 +537,7 @@
                             (onChange)="onChangeTPConta($event)" class="w-full md   mb-0" [options]="contas"
                             [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
                             resetFilterOnHide="true" dateFormat="dd/mm/yy" dropdownIcon="pi pi-users"
-                            [autofocus]="false" optionValue="id" placeholder="Selecione uma categoriar" />
+                            [autofocus]="false" optionValue="id" placeholder="Selecione uma categoriar" appendTo="body"/>
 
                     </div>
 
@@ -548,7 +548,7 @@
                             formControlName="categoriaId" class="w-full md  mb-1" [options]="categoriasFiltradas"
                             [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
                             resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
-                            [autofocus]="false" optionValue="id" placeholder="Selecione uma categoria" />
+                            [autofocus]="false" optionValue="id" placeholder="Selecione uma categoria" appendTo="body"/>
                     </div>
 
                     <!-- Centro de Custo -->
@@ -558,7 +558,7 @@
                             class="w-full md  mb-1" [options]="centroCustos" [editable]="false" [filter]="true"
                             filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
                             dateFormat="dd/mm/yy" dropdownIcon="pi pi-check" [autofocus]="false" optionValue="id"
-                            placeholder="Selecione um centro de custo" />
+                            placeholder="Selecione um centro de custo" appendTo="body"/>
                     </div>
 
                     <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
@@ -628,7 +628,7 @@
                         <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
                             [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
                             inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
-                            formControlName="data" />
+                            formControlName="data" appendTo="body"/>
                     </div>
 
                     <!--  Origem da Transferencia-->
@@ -640,7 +640,7 @@
                             class="w-full md  mb-2" [options]="contas" [editable]="false" [filter]="false"
                             filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
                             dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id"
-                            placeholder="Selecione..." />
+                            placeholder="Selecione..." appendTo="body"/>
                     </div>
                     }
 
@@ -655,7 +655,7 @@
                             class="w-full md  mb-2" [options]="contasTransferencia" [editable]="false" [filter]="false"
                             filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
                             dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id"
-                            placeholder="Selecione..." />
+                            placeholder="Selecione..." appendTo="body"/>
 
 
                         @if(lancamentoForm.controls['contaId'].value ==
@@ -736,7 +736,7 @@
                 [position]="positionModalPermuta" [dismissableMask]="false"
                 [style]="{width: '60vw', 'min-height': '30vh', height: 'auto'}" [closeOnEscape]="false"
                 [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false"
-                [contentStyle]="{ 'overflow': 'visible' }" [transitionOptions]="'500ms ease-out'">
+                [contentStyle]="{ 'overflow': 'auto' }" [transitionOptions]="'500ms ease-out'">
                 <hr class="mt-1 mb-2">
 
                 <!-- Modal Body Inicio -->
@@ -749,7 +749,7 @@
                         <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
                             [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
                             inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
-                            formControlName="data" />
+                            formControlName="data" appendTo="body"/>
 
                     </div>
 
@@ -761,7 +761,7 @@
                             formControlName="formaIdTransferencia" class="w-full md  mb-2" [options]="formasPermuta"
                             [editable]="false" [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
                             resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
-                            [autofocus]="false" optionValue="formaIdTransferencia" placeholder="Selecione..." />
+                            [autofocus]="false" optionValue="formaIdTransferencia" placeholder="Selecione..." appendTo="body" />
 
                         @if(lancamentoForm.controls['formaId'].value ==
                         lancamentoForm.controls['formaIdTransferencia'].value){
@@ -779,7 +779,7 @@
                             formControlName="formaId" class="w-full md  mb-2" [options]="formas" [editable]="false"
                             [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
                             resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
-                            [autofocus]="false" readonly="true" optionValue="id" placeholder="Selecione..." />
+                            [autofocus]="false" readonly="true" optionValue="id" placeholder="Selecione..." appendTo="body"/>
 
                     </div>
                     }
