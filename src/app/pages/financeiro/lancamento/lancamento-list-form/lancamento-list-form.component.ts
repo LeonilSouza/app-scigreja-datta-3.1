@@ -142,8 +142,12 @@ export class LancamentoListFormComponent implements OnInit {
     { nome: "Mês Anterior" }
 
   ]
-  // Valor Desconsiderando Permuta e Transferencia
+  // Valor Desconsiderando Permuta e Transferencia Alçadas
   total_creditos_sem_transferencias: number = 0;
+
+  // Ofertas Alcada 1 e 2 
+  total_ofertas_alcadas: number = 0;
+
 
   // Valor Considerando Permuta e Transferencia
   total_geral_creditos: number = 0;
@@ -506,6 +510,7 @@ export class LancamentoListFormComponent implements OnInit {
           this.getPrinters();
           // this.getSelecionadosItems();
           this.getTotalCreditoSemTransferencia();
+          this.getTotalOfertasAlcadas();
           this.getTotalGeralCredito()
           this.getTotalGeralDebito();
           this.getTotalOfertas();
@@ -1076,6 +1081,29 @@ export class LancamentoListFormComponent implements OnInit {
       .subscribe({
         next: response => {
           response !== null ? this.total_creditos_sem_transferencias = response : this.total_creditos_sem_transferencias = 0.00;
+        }
+      }),
+      this.error; () => { }
+  }
+
+  getTotalOfertasAlcadas() {
+    this.filtro.tipoLancamento = 'Receita'
+    if (this.rangeDates !== null) {
+      this.dtInicio = this.rangeDates[0];
+      this.dtFim = this.rangeDates[1];
+      if (this.dtInicio.length < 10 && this.dtFim.length < 10) {
+        this.dtInicio = this.rangeDates.substring(0, 10);
+        this.dtFim = this.rangeDates.substring(13, 23);
+      } else {
+        this.dtInicio = this.rangeDates[0];
+        this.dtFim = this.rangeDates[1];
+      }
+    }
+    this.lancamentoService.getTotalOfertasAlcadas(this.filtro)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .subscribe({
+        next: response => {
+          response !== null ? this.total_ofertas_alcadas = response : this.total_ofertas_alcadas = 0.00;
         }
       }),
       this.error; () => { }

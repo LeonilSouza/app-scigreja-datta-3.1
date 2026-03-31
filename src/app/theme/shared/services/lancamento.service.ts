@@ -78,6 +78,27 @@ export class LancamentoService {
       );
   }
 
+  getTotalOfertasAlcadas(filtro: LancamentoFiltro) {
+    const headers = new HttpHeaders()
+    let params = new HttpParams()
+      .set('page', filtro.page)
+      .set('linesPerPage', filtro.linesPerPage);
+
+    if (filtro.nome) { params = params.set('nome', filtro.nome); }
+    if (filtro.igrejaId) { params = params.set('igreja', filtro.igrejaId); }
+    if (filtro.contas) { params = params.set('contas', filtro.contas); }
+    if (filtro.formas) { params = params.set('formas', filtro.formas); }
+    if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
+    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
+    if (filtro.dtInicio) { params = params.set('dtinicio', filtro.dtInicio); }
+    if (filtro.dtFim) { params = params.set('dtfim', filtro.dtFim); }
+
+    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/soma-oferta-alcadas`, { headers, params })
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
   getTotalDespesaFromIgreja(filtro: LancamentoFiltro) {
     const headers = new HttpHeaders()
     let params = new HttpParams()

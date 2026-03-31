@@ -82,7 +82,7 @@
         <div class="form-group row col-md-12 mt-2 mb-0">
 
             <div class=" form-group col-sm-2 float-end mb-0 ">
-                <label class="f-13">Receitas | Dízimo</label>
+                <label class="f-13">Receita | Dízimo</label>
                 <strong><button type="button" class="mb-0 ml-0" pButton pRipple
                         style="width:100% ; height: 30px; background:rgb(49, 170, 49) ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
                         {{ total_creditos_sem_transferencias | currency:'BRL' }}</button></strong>
@@ -148,6 +148,13 @@
         </div>
 
         <div class="form-group row col-md-12 mb-0 " style="align-items: center;">
+
+            <div class=" form-group col-sm-2 float-end mb-0 ">
+                <label class="f-13">Ofertas Alçadas</label>
+                <strong><button type="button" class="mb-0 ml-0" pButton pRipple
+                        style="width:100% ; height: 30px; background:rgb(4, 143, 182) ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
+                        {{ total_ofertas_alcadas | currency:'BRL' }}</button></strong>
+            </div>
 
             <!-- Espaço -->
             <div class=" form-group col-sm-9 mb-0 "></div>
