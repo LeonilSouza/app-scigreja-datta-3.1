@@ -193,8 +193,8 @@ export class LancamentoService {
       );
   }
 
-  getTotalReceitaDizimOfertaFromIgreja(igrejaId, dtinicio, dtfim) {
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/receitadizimoferta?igreja=${igrejaId}&dtinicio=${dtinicio}&dtfim=${dtfim}`)
+  getTotalReceitaDizimoFromIgreja(igrejaId, dtinicio, dtfim) {
+    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/receitadizimo?igreja=${igrejaId}&dtinicio=${dtinicio}&dtfim=${dtfim}`)
       .pipe(
         catchError(this.handleError)
       );

@@ -77,9 +77,9 @@ export class LancamentoListFormComponent implements OnInit {
   positionModalTransferencia: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
   positionModalPermuta: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
 
-  visibleLancamento: boolean = false; 
-  visibleModalTransferencia: boolean = false; 
-  visibleModalPermuta: boolean = false; 
+  visibleLancamento: boolean = false;
+  visibleModalTransferencia: boolean = false;
+  visibleModalPermuta: boolean = false;
 
   private destroyRef = inject(DestroyRef); // 1. Injete a referência de destruição
 
@@ -93,7 +93,7 @@ export class LancamentoListFormComponent implements OnInit {
   nomeUsuario = nomeUsuarioSignal();
   setorId = setorIdSignal();
 
-   imodo = signal<number>(0);
+  imodo = signal<number>(0);
   // private destroy$: Subject<void> = new Subject<void>();
 
   filtro = new LancamentoFiltro();
@@ -154,7 +154,7 @@ export class LancamentoListFormComponent implements OnInit {
   totalDizimos: number = 0;
   totalMissoes: number = 0;
   totalOfertas: number = 0;
-  totalReceitaDizimOferta: number = 0;
+  totalReceitaDizimo: number = 0;
 
   saldoAnterior: number = 0;
   saldoFinalContas: number;
@@ -292,10 +292,10 @@ export class LancamentoListFormComponent implements OnInit {
     this.filtro.linesPerPage = event.rows;
     if (!this.pesquisa) {
       this.loadFormas(); // loadFormas() --> Carrega formas depois categorias depois contas que chama loadLancamentos() na inicialização.
-      this.getTotalReceitaDizimoOferta();
+      this.getTotalReceitaDizimo();
     } else {
       this.buscaLancamentos();
-      this.getTotalReceitaDizimoOferta();
+      this.getTotalReceitaDizimo();
     }
   }
 
@@ -415,7 +415,7 @@ export class LancamentoListFormComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
-          this.centroCustos = response;    
+          this.centroCustos = response;
         },
         error: () => { }
       })
@@ -428,7 +428,7 @@ export class LancamentoListFormComponent implements OnInit {
       this.createLancamento();
     else
       this.updateLancamento();
-    
+
   }
 
   limpaCheckbox() {
@@ -553,15 +553,51 @@ export class LancamentoListFormComponent implements OnInit {
       {
         label: 'Livro caixa - Mensal Simplificado',
         icon: 'pi pi-calendar',
-        target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/despesas/?nome=livro-caixa-mensal-simplificado&igreja=${this.igrejaId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}&saldo_anterior=${this.saldoAnterior || 0}&total_receita=${this.totalReceitaDizimOferta || 0}`)
+        command: () => {
+          // Montamos a URL com os valores ATUAIS das variáveis
+          const url = `${API_CONFIG.baseUrl}/relatorios/despesas/?nome=livro-caixa-mensal-simplificado` +
+            `&igreja=${this.igrejaId}` +
+            `&dt_inicio=${this.dtInicio}` +
+            `&dt_fim=${this.dtFim}` +
+            `&saldo_anterior=${this.saldoAnterior || 0}` +
+            `&total_dizimo=${this.totalReceitaDizimo || 0}` +
+            `&total_oferta=${this.totalOfertas || 0}`;
+
+          // Abre em uma nova aba
+          window.open(url, '_blank');
+        }
       },
       { separator: true },
       {
         label: 'Livro caixa - Mensal Detalhado',
         icon: 'pi pi-calendar',
-        target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/despesas/?nome=livro-caixa-mensal-detalhado&igreja=${this.igrejaId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}&saldo_anterior=${this.saldoAnterior || 0}&total_receita=${this.totalReceitaDizimOferta || 0}`)
+        command: () => {
+          // Montamos a URL com os valores ATUAIS das variáveis
+          const url = `${API_CONFIG.baseUrl}/relatorios/despesas/?nome=livro-caixa-mensal-detalhado` +
+            `&igreja=${this.igrejaId}` +
+            `&dt_inicio=${this.dtInicio}` +
+            `&dt_fim=${this.dtFim}` +
+            `&saldo_anterior=${this.saldoAnterior || 0}` +
+            `&total_dizimo=${this.totalReceitaDizimo || 0}` +
+            `&total_oferta=${this.totalOfertas || 0}`;
+
+          // Abre em uma nova aba
+          window.open(url, '_blank');
+        }
+      },
+      {
+        label: 'Ofertas - Alçadas',
+        icon: 'pi pi-dollar',
+        command: () => {
+          // Montamos a URL com os valores ATUAIS das variáveis
+          const url = `${API_CONFIG.baseUrl}/relatorios/entradas/?nome=ofertas-alcadas` +
+            `&igreja=${this.igrejaId}` +
+            `&dt_inicio=${this.dtInicio}` +
+            `&dt_fim=${this.dtFim}`;
+
+          // Abre em uma nova aba
+          window.open(url, '_blank');
+        }
       },
       { separator: true },
       {
@@ -625,6 +661,7 @@ export class LancamentoListFormComponent implements OnInit {
       this.dtFim = this.dtInicio;
       this.filtro.dtFim = this.dtInicio;
     }
+    console.log(this.rangeDates)
   }
 
   loadLancamento(lancamento: LancamentoDTO) {
@@ -713,7 +750,7 @@ export class LancamentoListFormComponent implements OnInit {
     this.rangeDates = this.dtInicio + " - " + this.dtFim;
 
     this.loadLancamentos(this.page);
-    this.getTotalReceitaDizimoOferta(); //Busca apenas o total de receitas do periodo para  entrada no "Livro Caixa"
+    this.getTotalReceitaDizimo(); //Busca apenas o total de receitas do periodo para  entrada no "Livro Caixa"
 
     // Data do dia anterior
     const data_americana = this.sharedService.formataDataUS(this.dtInicio);
@@ -1150,13 +1187,13 @@ export class LancamentoListFormComponent implements OnInit {
       this.error; () => { }
   }
 
-  getTotalReceitaDizimoOferta() {
+  getTotalReceitaDizimo() {
     this.filtro.tipoLancamento = 'Receita'
-    this.lancamentoService.getTotalReceitaDizimOfertaFromIgreja(this.igrejaId, this.dtInicio, this.dtFim)
+    this.lancamentoService.getTotalReceitaDizimoFromIgreja(this.igrejaId, this.dtInicio, this.dtFim)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
-          response !== null ? this.totalReceitaDizimOferta = response : this.totalReceitaDizimOferta = 0.00;
+          response !== null ? this.totalReceitaDizimo = response : this.totalReceitaDizimo = 0.00;
         }
       }),
       this.error; () => { }
@@ -1355,7 +1392,7 @@ export class LancamentoListFormComponent implements OnInit {
         text: 'Tem certeza que deseja excluir ' + this.length() + ' registro?',
         showCloseButton: true,
         showCancelButton: true,
-         position: 'top',
+        position: 'top',
       }).then((willDelete) => {
         if (willDelete.dismiss) {
           this.selectedLancamentos = [];
@@ -1483,8 +1520,8 @@ export class LancamentoListFormComponent implements OnInit {
     this.crtCategoria = 3;
   }
   setModalEdicao(value) {
-    if (value == 'Transferencia') { 
-      value = 'Receita' 
+    if (value == 'Transferencia') {
+      value = 'Receita'
     }
     this.filtraCategorias(value);
     this.pageTitle = "Editando Movimento".toUpperCase();
@@ -1493,7 +1530,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   setModalInclusao(value) {
     this.resetModal();
-     this.imodo.set(0);
+    this.imodo.set(0);
 
     switch (value) {
       case "Receita":
