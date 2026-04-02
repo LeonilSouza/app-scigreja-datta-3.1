@@ -552,25 +552,20 @@ export class CadastroListComponent implements OnInit {
       if (willDelete.dismiss) {
         // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
       } else {
-        this.excluirConta(conta);
-        Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
+        this.contaService.delete(conta.id)
+          .subscribe({
+            next: () => {
+              this.contas = this.contas.filter(element => element != this.conta.id)
+              this.gridConta.reset();//atualiza a tabela do primeng
+            },
+            error: (err) => {
+              // 'err.error' contém o JSON que vem do banco
+              Swal.fire(err.error, err.message, 'warning');
+            }
+          });
       }
     });
   }
-
-  excluirConta(conta: any) {
-    this.contaService.delete(conta.id)
-      .subscribe({
-        next: () => {
-          this.contas = this.contas.filter(element => element != this.conta.id)
-          this.gridConta.reset();//atualiza a tabela do primeng
-        },
-        error: () => { },
-      });
-  }
-
-
-
 
   // EXCLUIR CATEGORIA
   exclusaoCategoria(categoria: CategoriaDTO) {
@@ -584,21 +579,19 @@ export class CadastroListComponent implements OnInit {
       if (willDelete.dismiss) {
         // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
       } else {
-        this.excluirCategoria(categoria);
-        Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
+        this.categoriaService.delete(categoria.id)
+          .subscribe({
+            next: () => {
+              this.categorias = this.categorias;
+              this.gridCategoria.reset();//atualiza a tabela do primeng
+            },
+            error: (err) => {
+              // 'err.error' contém o JSON que vem do banco
+              Swal.fire(err.error, err.message, 'warning');
+            }
+          });
       }
     });
-  }
-
-  excluirCategoria(categoria: any) {
-    this.categoriaService.delete(categoria.id)
-      .subscribe({
-        next: () => {
-          this.categorias = this.categorias;
-          this.gridCategoria.reset();//atualiza a tabela do primeng
-        },
-        error: () => { },
-      });
   }
 
   // EXCLUIR CENTROCUSTO
@@ -613,26 +606,24 @@ export class CadastroListComponent implements OnInit {
       if (willDelete.dismiss) {
         // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
       } else {
-        this.excluirCentro(centroCusto);
-        Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
+        this.centroCustoService.delete(centroCusto.id)
+          .subscribe({
+            next: () => {
+              this.centroCustos = this.centroCustos;
+              this.gridCentro.reset();//atualiza a tabela do primeng
+            },
+            error: (err) => {
+              // 'err.error' contém o JSON que vem do banco
+              Swal.fire(err.error, err.message, 'warning');
+            }
+          });
       }
     });
   }
 
-  excluirCentro(centroCusto: any) {
-    this.centroCustoService.delete(centroCusto.id)
-      .subscribe({
-        next: () => {
-          this.centroCustos = this.centroCustos;
-          this.gridCentro.reset();//atualiza a tabela do primeng
-        },
-        error: () => { },
-      });
-  }
-
 
   // EXCLUIR FORMA
- exclusaoForma(forma: FormaDTO) {
+  exclusaoForma(forma: FormaDTO) {
     Swal.fire({
       title: 'Exclusão',
       text: 'Tem certeza que deseja excluir este registro?',
@@ -643,24 +634,20 @@ export class CadastroListComponent implements OnInit {
       if (willDelete.dismiss) {
         // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
       } else {
-        this.excluirForma(forma);
-        Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
+        this.formaService.delete(forma.id)
+          .subscribe({
+            next: () => {
+              this.formas = this.formas;
+              this.gridForma.reset();//atualiza a tabela do primeng
+            },
+            error: (err) => {
+              // 'err.error' contém o JSON que vem do banco
+              Swal.fire(err.error, err.message, 'warning');
+            }
+          });
       }
     });
   }
-
-  excluirForma(forma: any) {
-    this.formaService.delete(forma.id)
-      .subscribe({
-        next: () => {
-          this.formas = this.formas;
-          this.gridForma.reset();//atualiza a tabela do primeng
-        },
-        error: () => { },
-      });
-  }
-
-
 
   resetModalConta() {
     this.contaForm.reset();

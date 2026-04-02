@@ -177,7 +177,7 @@ export class ProfessorListComponent implements OnInit, AfterContentChecked {
     this.professorService.getByPageProfessorFromIgreja(igrejaId, classeId, nome, page, linesPerPage)
       .subscribe({
         next: (response) => {
-          this.professores = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
+          this.professores = response['content'];
           this.totalRegistros = response.totalElements;
 
         },

@@ -180,7 +180,7 @@ export class AlunoListComponent implements OnInit, AfterContentChecked {
     this.alunoService.getByPageAlunoFromIgreja(igrejaId, classeId, nome, page, linesPerPage)
       .subscribe({
         next: (response) => {
-          this.alunos = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
+          this.alunos = response['content'];
           this.totalRegistros = response.totalElements;
 
         },
