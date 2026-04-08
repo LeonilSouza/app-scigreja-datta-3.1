@@ -309,7 +309,7 @@ export class AlunoListComponent implements OnInit, AfterContentChecked {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          this.classes = response;
+          this.classes = response.filter((ativo: { status: string; }) => ativo.status == 'Ativo');
           this.classeId = this.classes[0].id ?? 0;
           this.nomeClasse = this.classes[0].nome!;
           this.loadAlunos(this.igrejaId, this.classeId, this.nome, this.page, this.linesPerPage);

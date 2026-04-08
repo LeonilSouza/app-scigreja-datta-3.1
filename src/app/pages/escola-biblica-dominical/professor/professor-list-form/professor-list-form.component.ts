@@ -302,7 +302,7 @@ export class ProfessorListComponent implements OnInit, AfterContentChecked {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          this.classes = response;
+          this.classes = response.filter((ativo: { status: string; }) => ativo.status == 'Ativo');
           this.classeId = this.classes[0].id!;
           this.nomeClasse = this.classes[0].nome!;
           this.loadProfessores(this.igrejaId, this.classeId, this.nome, this.page, this.linesPerPage);
