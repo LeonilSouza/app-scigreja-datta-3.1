@@ -71,10 +71,6 @@
 
                 <ng-template #header>
                     <tr>
-                        <th class="col-data-100"
-                            style="background: rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-left-radius: 5px;">
-                            <b>Código</b>
-                        </th>
                         <th class="col-data-content-5"
                             style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
                             <b>Nome</b>
@@ -97,8 +93,6 @@
 
                 <ng-template #body let-aluno>
                     <tr>
-                        <td class="col-data-100 py-1" style=" font-size: 13px">{{ aluno.id }}
-                        </td>
                         <td class="col-data-content-5 py-1" style=" font-size: 13px">{{ aluno.nome
                             }}</td>
                         <td class="col-data-content-4 py-1" style=" font-size: 13px">{{ aluno.classe }}

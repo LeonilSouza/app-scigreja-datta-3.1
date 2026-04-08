@@ -52,10 +52,6 @@
 
                 <ng-template #header>
                     <tr>
-                        <th class="col-data-100"
-                            style="background: rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-left-radius: 5px;">
-                            <b>Código</b>
-                        </th>
                         <th class="col-data-content-4"
                             style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
                             <b>Nome</b>
@@ -67,6 +63,11 @@
                         <th class="col-data-content-2"
                             style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
                             <b>Faixa Etária</b>
+                        </th>
+
+                        <th class="col-data-150"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                            <b>Status</b>
                         </th>
                         <th class="col-acoes-header"
                             style="font-size: 13px; background-color: rgb(77, 83, 90); color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-right-radius: 5px;">
@@ -80,11 +81,11 @@
                     @if(perfil !== 'ADMIN' && (classe.igrejaId == igrejaId ||
                     classe.igrejaId == null)){
                     <tr>
-                        <td class="col-data-100 py-1" style=" font-size: 13px">{{ classe.id }}
-                        </td>
                         <td class="col-data-content-4 py-1" style=" font-size: 13px">{{ classe.nome }}</td>
                         <td class="col-data-content-4 py-1" style=" font-size: 13px">{{ classe.classificacao }}</td>
                         <td class="col-data-content-4 py-1" style=" font-size: 13px">{{ classe.faixaEtaria }}</td>
+                        <td class="col-data-150 py-1" style=" font-size: 13px"
+                            [style.color]="classe.status === 'Ativo' ? 'green' : 'red'">{{ classe.status }}</td>
                         <td class="col-acoes-header py-1">
 
                             @if(perfil !== 'ADMIN' && (classe.igrejaId == igrejaId )){
@@ -100,11 +101,11 @@
 
                     @if(perfil == 'ADMIN'){
                     <tr>
-                        <td class="col-data-100 py-1" style=" font-size: 13px">{{ classe.id }}
-                        </td>
                         <td class="col-data-content-4 py-1" style=" font-size: 13px">{{ classe.nome }}</td>
                         <td class="col-data-content-4 py-1" style=" font-size: 13px">{{ classe.classificacao }}</td>
                         <td class="col-data-content-4 py-1" style=" font-size: 13px">{{ classe.faixaEtaria }}</td>
+                        <td class="col-data-150 py-1" style=" font-size: 13px"
+                            [style.color]="classe.status === 'Ativo' ? 'green' : 'red'">{{ classe.status }}</td>
                         <td class="col-acoes-header py-1">
 
                             <button (click)=" imodo=1; modalClasse.show(); loadClasse(classe) " type="button"
@@ -158,10 +159,11 @@
                         <!-- Classificação -->
                         <div class="form-group col-md-4">
                             <label>Classificação</label>
-                            <p-select [style]="{'width':'100%','height':'35px'}" class="w-full md  mb-2" formControlName="classificacao" [options]="classificacao"
-                                [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
-                                optionLabel="nome" resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down"
-                                [autofocus]="false" optionValue="nome" placeholder="Selecione uma Classificação">
+                            <p-select [style]="{'width':'100%','height':'35px'}" class="w-full md  mb-2"
+                                formControlName="classificacao" [options]="classificacao" [editable]="false"
+                                [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
+                                resetFilterOnHide="true" dropdownIcon="pi pi-chevron-down" [autofocus]="false"
+                                optionValue="nome" placeholder="Selecione uma Classificação">
                             </p-select>
                         </div>
 

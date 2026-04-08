@@ -152,6 +152,10 @@
           </th>
 
           <th
+            style="background: rgb(77, 83, 90);  font-size: 12px ;color: aliceblue;  padding-top: 0px; padding-bottom: 0px;">
+            <b>Disciplina</b>
+          </th>
+          <th
             style="background: rgb(77, 83, 90); color: aliceblue; font-size: 12px; padding-top: 6px; padding-bottom: 6px;"
             class="col-data-150">
             Situação</th>
@@ -179,11 +183,11 @@
           <td class="py-1">
             <!-- Quando tem foto -->
             @if(caso?.fotoPessoa){
-              <div class="flex items-center gap-2 ">
-                <img src="data:image/jpg;base64,{{ caso?.fotoPessoa }}" [class]="'flag flag-' "
-                  class=" img-radius align-center " [routerLink]="[caso.id, 'edit']" [style]="{'cursor':'pointer'}"
-                  alt="user image" />
-              </div>
+            <div class="flex items-center gap-2 ">
+              <img src="data:image/jpg;base64,{{ caso?.fotoPessoa }}" [class]="'flag flag-' "
+                class=" img-radius align-center " [routerLink]="[caso.id, 'edit']" [style]="{'cursor':'pointer'}"
+                alt="user image" />
+            </div>
             }
 
             <!-- Quando não tem foto -->
@@ -197,6 +201,10 @@
 
           <td [routerLink]="[caso.id, 'edit']" class="m-r-15 py-1" style=" cursor: pointer; font-size: 12px;">{{
             caso.nome }}
+          </td>
+
+          <td [routerLink]="[caso.id, 'edit']" class="m-r-15 py-1" style=" cursor: pointer; font-size: 12px;">{{
+            caso.disciplinaAplicada }}
           </td>
 
           <td class="col-data-header col-data-150 py-1">
