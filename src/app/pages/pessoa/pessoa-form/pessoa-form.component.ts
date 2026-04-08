@@ -746,7 +746,7 @@ export class PessoaFormComponent implements OnInit, OnDestroy {
 
     this.filhoForm.controls['nome'].setValue(filho[0].nome);
     this.filhoForm.controls['sexo'].setValue(filho[0].sexo);
-    this.filhoForm.controls['dataNascimento'].setValue(filho[0]['dataNascimento']);
+    this.filhoForm.controls['dataNascimento'].setValue((filho[0] as any)['dataNascimento']);
     this.createFilho();
 
   }

@@ -43,8 +43,8 @@ export class CargoListComponent implements OnInit {
 
   @ViewChild('dtcargo') grid!: Table;
 
-  totalCargosSistema: number;
-  totalCargosIgreja: number;
+  totalCargosSistema!: number;
+  totalCargosIgreja!: number;
 
   totalRegistros: number = 0;
 
@@ -68,12 +68,12 @@ export class CargoListComponent implements OnInit {
     this.loadCargos(this.igrejaId, this.nome.toLowerCase(), page, this.linesPerPage);
   }
 
-  loadCargos(igrejaId, nome, page, linesPerPage) {
+  loadCargos(igrejaId: number, nome: string, page: number, linesPerPage: number) {
     this.cargoService
       .getPageCargoFromIgreja(igrejaId, nome, page, linesPerPage)
       .subscribe(
         (response) => {
-          this.cargos = response['content'].sort((a, b) => b.id - a.id);
+          this.cargos = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
           this.totalRegistros = response.totalElements;
         },
         (error) => {

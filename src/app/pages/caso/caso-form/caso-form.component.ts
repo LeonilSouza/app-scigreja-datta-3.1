@@ -79,9 +79,9 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
 
   controle: boolean = false;
 
-  subscription: Subscription;
+  subscription: Subscription = new Subscription;
 
-  disciplinaCaso: string;
+  disciplinaCaso!: string;
 
   activeTab: string;
 
@@ -104,31 +104,31 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
   ];
 
   /*  Referente a CasoDTO */
-  currentAction: string;
-  casoForm: FormGroup;
-  pageTitle: string;
-  pageTitleAcao: string;
-  serverErrorMessages: string[] = null;
+  currentAction!: string;
+  casoForm!: FormGroup;
+  pageTitle!: string;
+  pageTitleAcao!: string;
+  serverErrorMessages: string[] = [];
   submittingForm: boolean = false;
   submittingFormParticipante: boolean = false;
 
-  igreja: IgrejaDTO;
-  pessoa: PessoaDTO[];
-  pessoas: PessoaDTO[];
+  igreja!: IgrejaDTO;
+  pessoa!: PessoaDTO[];
+  pessoas!: PessoaDTO[];
 
-  obreiros: PessoaDTO[];
-  disciplina: DisciplinaDTO[];
+  obreiros!: PessoaDTO[];
+  disciplina!: DisciplinaDTO[];
   tipoFalta: TipoFaltaDTO[] = [];
-  cargo: CargoDTO[];
+  cargo!: CargoDTO[];
   tipoFaltas: TipoFaltaDTO[] = [];
   disciplinas: DisciplinaDTO[] = [];
 
   caso: CasoDTO = new CasoDTO();
-  id: number;
+  id!: number;
 
-  PageTitleModal: string
+  PageTitleModal!: string;
 
-  controleAlteracao: string;
+  controleAlteracao!: string;
 
   valorSN: any = 's';
   jwtHelperService: JwtHelperService = new JwtHelperService();
@@ -342,18 +342,18 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
               this.caso = response; // binds loaded caso
               this.casoForm.patchValue(this.caso)   // binds loaded caso data to CasoForm
               this.casoForm.controls['igrejaId'].setValue(this.igrejaId);
-              this.casoForm.controls['tipoMembro'].setValue(this.caso['pessoa'].tipoMembro); //Esta campo o build não carrega.  
+              this.casoForm.controls['tipoMembro'].setValue((this.caso as any)['pessoa'].tipoMembro); //Esta campo o build não carrega.  
 
-              this.foto = this.caso['pessoa'].foto;
+              this.foto = (this.caso as any)['pessoa'].foto;
 
-              this.pessoa = (this.caso['pessoa']); // binds loaded pais
-              this.casoForm.controls['pessoaId'].setValue(this.caso['pessoa'].id)
+              this.pessoa = ((this.caso as any)['pessoa']); // binds loaded pais
+              this.casoForm.controls['pessoaId'].setValue((this.caso as any)['pessoa'].id)
 
-              this.disciplina = (this.caso['disciplina']); // binds loaded disciplina
-              this.casoForm.controls['disciplinaId'].setValue(this.caso['disciplina'].id)
+              this.disciplina = ((this.caso as any)['disciplina']); // binds loaded disciplina
+              this.casoForm.controls['disciplinaId'].setValue((this.caso as any)['disciplina'].id)
 
-              this.tipoFalta = (this.caso['tipoFalta']); // binds loaded tipoFalta
-              this.casoForm.controls['tipoFaltaId'].setValue(this.caso['tipoFalta'].id)
+              this.tipoFalta = ((this.caso as any)['tipoFalta']); // binds loaded tipoFalta
+              this.casoForm.controls['tipoFaltaId'].setValue((this.caso as any)['tipoFalta'].id)
 
             },
             (error) => this.showError())
@@ -425,7 +425,7 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
     this.casoService.create(caso)
       .subscribe(
         caso => {
-          this.id = parseInt(this.extractId(caso.headers.get('location'))); // Extrai o Id da URI retornada do banco
+          this.id = parseInt(this.extractId(caso.headers.get('location')!)); // Extrai o Id da URI retornada do banco
           this.caso.id = this.id;
           this.actionsForSuccess(this.caso)
 
@@ -504,7 +504,7 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
   }
   //Fim moment
 
-  resultadoProva(resultado) {
+  resultadoProva(resultado: string) {
     if (resultado === "Passou pela prova") {
       this.casoForm.controls['dataArquivamento'].setValue(this.dataAtualFormatada());
       this.casoForm.controls['situacao'].setValue('Comunhão');
@@ -524,10 +524,10 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
   }
 
 
-  dataAddMes(inicioProva, qtdMes) { //Salvou minha vida// Adiciona mes em qualquer data.// Ate Formatada
+  dataAddMes(inicioProva: string | moment.Moment, qtdMes: number) { //Salvou minha vida// Adiciona mes em qualquer data.// Ate Formatada
     var dia;
     var mes
-    var data = inicioProva.split("/");
+    var data = (inicioProva as any).split("/");
     var hj1 = data[2] + "-" + data[1] + "-" + data[0];
     var dtat = new Date(hj1);
     dtat.setDate(dtat.getDate());
@@ -539,15 +539,15 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
     return (dia + "/" + mes + "/" + ano);
   }
 
-  private dataAddMesDataAtual(mes) { // Retorna a data Atual "Apenas" mais meses// Outras datas não funciona
+  private dataAddMesDataAtual(mes: moment.DurationInputArg1) { // Retorna a data Atual "Apenas" mais meses// Outras datas não funciona
     return this.dataAtual.add(mes, 'month').format('L');
   }
 
-  private dataAddDia(dias) { // Retorna a data Atual mais dias
+  private dataAddDia(dias: moment.DurationInputArg1) { // Retorna a data Atual mais dias
     return this.dataAtual.add(dias, 'days').format('DD/MM/YYYY');
   }
 
-  private dataAddAno(ano) { // Retorna a data Atual mais anos
+  private dataAddAno(ano: moment.DurationInputArg1) { // Retorna a data Atual mais anos
     return this.dataAtual.add(ano, 'years').format('DD/MM/YYYY');
   }
 
@@ -561,7 +561,7 @@ export class CasoFormComponent implements OnInit, AfterContentChecked {
 
 
 
-  private actionsForError(error) {
+  private actionsForError(error: { status: number; _body: string; }) {
     this.showError();
 
     this.submittingForm = false;

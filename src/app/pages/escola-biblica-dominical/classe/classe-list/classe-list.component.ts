@@ -204,7 +204,7 @@ export class ClasseListComponent implements OnInit, AfterContentChecked {
 
   loadClasse(classe: ClasseDTO) {
     if (this.imodo == 1) {
-      this.classeId = classe.id;
+      this.classeId = classe.id ?? 0;
       this.classeService.findById(this.classeId).subscribe(
         (response) => {
           this.classe = response;

@@ -29,7 +29,7 @@ export class CentroCustoService {
         )
       }
 
-      getByPageCentroCustoFromIgreja(igrejaId, nome, page, linesPerPage) {
+      getByPageCentroCustoFromIgreja(igrejaId: number, nome: string, page: number, linesPerPage: number) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/centrocustos/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
           .pipe(
@@ -37,7 +37,7 @@ export class CentroCustoService {
         );
       }
 
-      getByPageCentroCustoFromTipo(igrejaId, nome, page, linesPerPage) {
+      getByPageCentroCustoFromTipo(igrejaId: any, nome: any, page: any, linesPerPage: any) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/centrocustos/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
           .pipe(
@@ -45,7 +45,7 @@ export class CentroCustoService {
         );
       }
 
-      getListCentroCustoFromIgreja(igrejaId) {
+      getListCentroCustoFromIgreja(igrejaId: number) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/centrocustos/list/?igreja=${igrejaId}`)
           .pipe(

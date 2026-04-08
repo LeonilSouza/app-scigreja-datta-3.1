@@ -26,7 +26,7 @@ export class IgrejaService {
   }
 
 
-  getPageFromIgreja(nome, setor, page, linesPerPage) {
+  getPageFromIgreja(nome: string, setor: number, page: number, linesPerPage: any) {
 
     return this.http.get(`${API_CONFIG.baseUrl}/igrejas/page/?nome=${nome}&setor=${setor}&page=${page}&linesPerPage=${linesPerPage}`)
       .pipe(

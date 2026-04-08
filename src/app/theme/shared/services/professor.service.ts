@@ -28,7 +28,7 @@ export class ProfessorService {
     )
   }
 
-  getByPageProfessorFromIgreja(igrejaId, classeId, nome, page, linesPerPage) {
+  getByPageProfessorFromIgreja(igrejaId: number, classeId: number, nome: string, page: number, linesPerPage: number) {
 
     return this.http.get(`${API_CONFIG.baseUrl}/professores/page/?igreja=${igrejaId}&classe=${classeId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
       .pipe(
@@ -36,7 +36,7 @@ export class ProfessorService {
       );
   }
 
-  getByPageProfessorFromTipo(igrejaId, nome, page, linesPerPage) {
+  getByPageProfessorFromTipo(igrejaId: any, nome: any, page: any, linesPerPage: any) {
 
     return this.http.get(`${API_CONFIG.baseUrl}/professores/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
       .pipe(
@@ -44,7 +44,7 @@ export class ProfessorService {
       );
   }
 
-  getListProfessorFromIgreja(igrejaId) {
+  getListProfessorFromIgreja(igrejaId: number) {
 
     return this.http.get(`${API_CONFIG.baseUrl}/professores/list/?igreja=${igrejaId}`)
       .pipe(

@@ -84,7 +84,7 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
     showCropper = false;
     containWithinAspectRatio = false;
     transform: ImageTransform = {};
-    usuarioFoto: UsuarioDTO;
+    usuarioFoto!: UsuarioDTO;
 
     // cropper
     error = '';
@@ -94,31 +94,31 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
     public maskCelularArea = ['(', /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]; // Celular
     public maskFixoArea = ['(', /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]; // Telefone Fixo
 
-    subscription: Subscription;
+    subscription!: Subscription;
 
     public activeTab: string;
 
-    currentAction: string;
-    usuarioForm: FormGroup;
-    setorForm: FormGroup;
-    acessoForm: FormGroup;
-    igrejaForm: FormGroup;
-    serverErrorMessages: string[] = null;
-    pageTitle: string;
+    currentAction!: string;
+    usuarioForm!: FormGroup;
+    setorForm!: FormGroup;
+    acessoForm!: FormGroup;
+    igrejaForm!: FormGroup;
+    serverErrorMessages: string[] = [];
+    pageTitle!: string;
     submittingForm: boolean = false;
-    igrejas: IgrejaDTO[];
-    igrejasSetor: IgrejaDTO[];
+    igrejas!: IgrejaDTO[];
+    igrejasSetor!: IgrejaDTO[];
     igreja: IgrejaDTO = new IgrejaDTO();
     usuario: UsuarioDTO = new UsuarioDTO();
     acesso: AcessoDTO = new AcessoDTO();
-    id: number;
-    usuarioId: number;
-    perfis: number;
-    PageTitleModal: string;
+    id!: number;
+    usuarioId!: number;
+    perfis!: number;
+    PageTitleModal!: string;
     acessos: AcessoDTO[] = [];
     setores: SetorDTO[] = [];
 
-    setor: string;
+    setor!: string;
 
 
     jwtHelperService: JwtHelperService = new JwtHelperService();
@@ -232,12 +232,12 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
     }
 
     setIgrejaAnfitria(acesso: AcessoDTO) {
-        this.usuarioForm.controls['igrejaIdHome'].setValue(acesso['igreja'].id);
-        this.usuarioForm.controls['setorIdHome'].setValue(acesso['igreja'].setor.id);
+        this.usuarioForm.controls['igrejaIdHome'].setValue((acesso as any)['igreja'].id);
+        this.usuarioForm.controls['setorIdHome'].setValue((acesso as any)['igreja'].setor.id);
         this.usuarioForm.controls['igrejaNomeHome'].setValue(acesso.nomeIgreja);
 
-        this.usuarioForm.controls['igrejaAtivaId'].setValue(acesso['igreja'].id);
-        this.usuarioForm.controls['igrejaAtivaNome'].setValue(acesso.nomeIgreja);
+        this.usuarioForm.controls['igrejaAtivaId'].setValue((acesso as any)['igreja'].id);
+        this.usuarioForm.controls['igrejaAtivaNome'].setValue((acesso as any).nomeIgreja);
         this.updateAcessoAnfitria();
     }
 
@@ -281,8 +281,8 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
                             this.usuario = response;
                             this.usuarioForm.patchValue(this.usuario)   // binds loaded usuario data to UsuarioForm
                             this.acessoForm.controls['usuarioId'].setValue(this.usuario.id);
-                            this.perfis = response['perfis']
-                            this.acessos = response['acesso']
+                            this.perfis = (response as any)['perfis'];
+                            this.acessos = (response as any)['acesso'];
                         },
                         error: (error) => {
                             this.error = error;
@@ -298,7 +298,7 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
             .findAll()
             .subscribe({
                 next: (response) => {
-                    this.setores = response['content'];
+                    this.setores = (response as any)['content'];
                 },
                 error: (error) => {
                     this.error = error;
@@ -308,9 +308,9 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
 
     }
 
-    updateIgrejas(setor) {
+    updateIgrejas(setor: number | undefined) {
         this.igrejaService
-            .getByIgrejaFromSetor(setor)
+            .getByIgrejaFromSetor(setor ?? 0)
             .subscribe({
                 next: (response) => {
                     this.igrejasSetor = response['content'];
@@ -348,7 +348,7 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
             .create(usuario)
             .subscribe({
                 next: (usuario) => {
-                    this.id = parseInt(this.extractId(usuario.headers.get('location'))); // Extrai o Id da URI retornada do banco
+                    this.id = parseInt(this.extractId(usuario.headers.get('location')!)); // Extrai o Id da URI retornada do banco
                     this.usuario.id = this.id;
                     Swal.fire('Cadastro', 'Usuário cadastrado com sucesso!', 'success');
                 },
@@ -441,7 +441,7 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
     }
 
     excluirUsuario(usuario: UsuarioDTO) {
-        this.usuarioService.delete(usuario.id)
+        this.usuarioService.delete(usuario.id ?? 0)
             .subscribe({
                 next: (): void => {
                     this.router.navigate(['/usuarios'])
@@ -473,7 +473,7 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
                                 .create(this.acesso)
                                 .subscribe({
                                     next: (acesso) => {
-                                        this.id = parseInt(this.extractId(acesso.headers.get('location'))); // Extrai o Id da URI retornada do banco
+                                        this.id = parseInt(this.extractId(acesso.headers.get('location')!)); // Extrai o Id da URI retornada do banco
                                         this.acesso.id = this.id;
                                         Swal.fire('Cadastro', 'Acesso inserido com sucesso', 'success');
                                         this.loadAcesso();
@@ -555,7 +555,7 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
     //         () => this.router.navigate([path, usuario.id, 'edit']))
     // }
 
-    private showError(error) {
+    private showError(error: { message: any; }) {
         this.submittingForm = false;
         this.messageService.add({ severity: 'error', summary: 'Erro', detail: error.message });
     }
@@ -684,7 +684,7 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
 
             const base64 = this.croppedImage.substr(N, this.croppedImage.length); //Retira estes dados da imagem "data:image/png;base64"
             const nome = this.usuarioFoto.name;
-            const nome_sem_espacos = nome.replace(/ /g, "_"); // regex que substitui todos os espaços por _
+            const nome_sem_espacos = nome?.replace(/ /g, "_"); // regex que substitui todos os espaços por _
 
             const imageName = (nome_sem_espacos + '.jpeg'); // Tanto faz jpeg ou jpg
             const imageBlob = this.dataURItoBlob(base64);
@@ -709,7 +709,7 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
         }
     }
 
-    dataURItoBlob(dataURI) {
+    dataURItoBlob(dataURI: string) {
         const byteString = window.atob(dataURI);
         const arrayBuffer = new ArrayBuffer(byteString.length);
         const int8Array = new Uint8Array(arrayBuffer);
@@ -724,7 +724,7 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
 
     // Converter imagem  de PNG para Jpeg/Jpg
 
-    convertPngToJpeg(imagePNG) {
+    convertPngToJpeg(imagePNG: string) {
 
         let maxWidth = 10000;
         let source_img_obj = new Image;
@@ -743,7 +743,7 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
         let cvs = document.createElement('canvas');
         cvs.width = natW;
         cvs.height = natH;
-        let ctx = cvs.getContext("2d").drawImage(source_img_obj, 0, 0, natW, natH);
+        let ctx = cvs.getContext("2d")?.drawImage(source_img_obj, 0, 0, natW, natH);
         let newImageData = cvs.toDataURL(mime_type, 0.4);
         let result_image_obj = new Image();
         result_image_obj.src = newImageData;
@@ -761,7 +761,7 @@ export class UsuarioFormComponent implements OnInit, AfterContentChecked, OnDest
 
     // FIM FOTO
 
-    private actionsForError(error) {
+    private actionsForError(error: { status: number; _body: string; }) {
         this.submittingForm = false;
 
         if (error.status === 422) {

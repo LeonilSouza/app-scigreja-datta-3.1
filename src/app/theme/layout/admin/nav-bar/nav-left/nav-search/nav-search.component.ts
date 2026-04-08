@@ -12,9 +12,9 @@ import { SharedModule } from 'src/app/theme/shared/shared.module';
 })
 export class NavSearchComponent {
   // public props
-  searchInterval;
+  searchInterval: number | undefined;
   searchWidth: number;
-  searchWidthString: string;
+  searchWidthString: string | undefined;
 
   // constructor
   constructor() {
@@ -23,7 +23,7 @@ export class NavSearchComponent {
 
   // public method
   searchOn() {
-    document.querySelector('#main-search').classList.add('open');
+    document.querySelector('#main-search')?.classList.add('open');
     this.searchInterval = setInterval(() => {
       if (this.searchWidth >= 170) {
         clearInterval(this.searchInterval);
@@ -37,7 +37,7 @@ export class NavSearchComponent {
   searchOff() {
     this.searchInterval = setInterval(() => {
       if (this.searchWidth <= 0) {
-        document.querySelector('#main-search').classList.remove('open');
+        document.querySelector('#main-search')?.classList.remove('open');
         clearInterval(this.searchInterval);
         // return false;
       }

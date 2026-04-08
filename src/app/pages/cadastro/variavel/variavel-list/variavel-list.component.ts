@@ -77,11 +77,11 @@ export class VariavelListComponent implements OnInit {
   }
 
 
-  loadVariaveis(variavel, page, linesPerPage) {
+  loadVariaveis(variavel: string, page: number, linesPerPage: number) {
     this.variavelService.getByPageVariavel(variavel, page, linesPerPage)
       .subscribe({
         next: (response) => {
-          this.variaveis = response['content'].sort((a, b) => b.id - a.id)
+          this.variaveis = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id)
           this.totalRegistros = response.totalElements
 
         },

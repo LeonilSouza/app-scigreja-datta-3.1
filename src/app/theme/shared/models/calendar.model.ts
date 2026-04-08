@@ -1,7 +1,7 @@
 import { formatDate } from '@angular/common';
 export class Calendar {
-  id: number;
-  igrajaId: number;
+  id?: number;
+  igrajaId?: number;
   title: string;
   category: string;
   startDate: string;
@@ -12,7 +12,7 @@ export class Calendar {
     calendar: Calendar
     ) {
     {
-      this.id = calendar.id || null;
+      this.id! = calendar.id ?? 0;
       this.title = calendar.title || '';
       this.category = calendar.category || '';
       this.startDate = formatDate(new Date(), 'yyyy-MM-dd', 'en') || '';

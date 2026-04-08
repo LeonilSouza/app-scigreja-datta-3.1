@@ -21,7 +21,7 @@ export class AnimationModalComponent {
   readonly contentClass = input<string>();
   readonly modalID = input<string>();
   readonly backDrop = input(false);
-  isDarkTheme: string;
+  isDarkTheme: string | undefined;
 
   // constructor
   constructor() {
@@ -42,7 +42,7 @@ export class AnimationModalComponent {
     }
   }
 
-  close(event) {
+  close(event: string | KeyboardEvent) {
     (document.querySelector('#' + event) as HTMLElement).classList.remove('md-show');
   }
 }

@@ -39,17 +39,17 @@ export class VariavelFormComponent implements OnInit, AfterContentChecked, OnDes
     nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
     nomeIgreja = nomeIgrejaSignal();
 
-    subscription: Subscription;
+    subscription: Subscription = new Subscription;
 
     /*  Referente a VariavelDTO */
-    currentAction: string;
-    variavelForm: FormGroup;
-    pageTitle: string;
-    serverErrorMessages: string[] = null;
+    currentAction!: string;
+    variavelForm!: FormGroup;
+    pageTitle!: string;
+    serverErrorMessages: string[] = [];
     submittingForm: boolean = false;
 
     variavel: VariavelDTO = new VariavelDTO();
-    id: number;
+    id!: number;
 
     constructor(
         private route: ActivatedRoute,
@@ -141,7 +141,7 @@ export class VariavelFormComponent implements OnInit, AfterContentChecked, OnDes
         this.variavelService.create(variavel)
             .subscribe(
                 variavel => {
-                    this.id = parseInt(this.extractId(variavel.headers.get('location'))); // Extrai o Id da URI retornada do banco
+                    this.id = parseInt(this.extractId(variavel.headers.get('location')!)); // Extrai o Id da URI retornada do banco
                     this.variavel.id = this.id;
                     this.actionsForSuccess(this.variavel)
 
@@ -207,7 +207,7 @@ export class VariavelFormComponent implements OnInit, AfterContentChecked, OnDes
     }
 
 
-    private actionsForError(error) {
+    private actionsForError(error: { status: number; _body: string; }) {
         this.submittingForm = false;
 
         if (error.status === 422) {

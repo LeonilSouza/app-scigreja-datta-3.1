@@ -73,15 +73,15 @@ export class UsuarioListComponent implements OnInit {
   }
 
 
-  loadUsuarios(name, page, linesPerPage) {
+  loadUsuarios(name: string, page: number, linesPerPage: number) {
     this.usuarioService
       .getPageFromUsuario(name, page, linesPerPage)
       .subscribe(
         response => {
-          this.usuarios = response['content'].sort((a, b) => b.id - a.id)
+          this.usuarios = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id)
           this.totalRegistros = response.totalElements
         }),
-      error => {
+      (      error: { status: number; }) => {
         if (error.status == 403) {
           this.router.navigate(['auth/signin'])
 

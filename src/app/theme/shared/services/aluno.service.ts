@@ -29,7 +29,7 @@ export class AlunoService {
     )
   }
 
-  getByPageAlunoFromIgreja(igrejaId, classeId, nome, page, linesPerPage) {
+  getByPageAlunoFromIgreja(igrejaId: number, classeId: number, nome: string, page: number, linesPerPage: number) {
 
     return this.http.get(`${API_CONFIG.baseUrl}/alunos/page/?igreja=${igrejaId}&classe=${classeId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
       .pipe(
@@ -37,7 +37,7 @@ export class AlunoService {
       );
   }
 
-  getByPageAlunoFromTipo(igrejaId, nome, page, linesPerPage) {
+  getByPageAlunoFromTipo(igrejaId: any, nome: any, page: any, linesPerPage: any) {
 
     return this.http.get(`${API_CONFIG.baseUrl}/alunos/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
       .pipe(
@@ -45,7 +45,7 @@ export class AlunoService {
       );
   }
 
-  getListAlunoFromIgreja(igrejaId) {
+  getListAlunoFromIgreja(igrejaId: number) {
 
     return this.http.get(`${API_CONFIG.baseUrl}/alunos/list/?igreja=${igrejaId}`)
       .pipe(

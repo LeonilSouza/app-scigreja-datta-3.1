@@ -50,8 +50,8 @@ export class TipoFaltaListComponent implements OnInit {
 
   @ViewChild('dttipoFalta') grid!: Table;
 
-  totalSistema: number;
-  totalIgreja: number;
+  totalSistema!: number;
+  totalIgreja!: number;
 
   totalRegistros: number = 0
 
@@ -79,11 +79,11 @@ export class TipoFaltaListComponent implements OnInit {
   }
 
 
-  loadTipoFaltas(igrejaId, nome, page, linesPerPage) {
+  loadTipoFaltas(igrejaId: number, nome: string, page: number, linesPerPage: number) {
     this.tipoFaltaService.getByPageTipoFaltaFromIgreja(igrejaId, nome, page, linesPerPage)
       .subscribe(
         response => {
-          this.tipoFaltas = response['content'].sort((a, b) => b.id - a.id);
+          this.tipoFaltas = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
           this.totalRegistros = response.totalElements
         },
         (error) => {

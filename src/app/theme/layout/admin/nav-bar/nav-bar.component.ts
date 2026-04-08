@@ -45,8 +45,8 @@ export class NavBarComponent {
   }
 
   closeMenu() {
-    if (document.querySelector('app-navigation.pcoded-navbar').classList.contains('mob-open')) {
-      document.querySelector('app-navigation.pcoded-navbar').classList.remove('mob-open');
+    if (document.querySelector('app-navigation.pcoded-navbar')?.classList.contains('mob-open')) {
+      document.querySelector('app-navigation.pcoded-navbar')?.classList.remove('mob-open');
     }
   }
 }

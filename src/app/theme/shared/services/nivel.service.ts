@@ -1,9 +1,8 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { API_CONFIG } from "../config/api-config";
 import { Observable, throwError } from "rxjs";
 import { catchError, map } from 'rxjs/operators';
-import { NivelDTO } from "../models/nivel.dto";
+import { API_CONFIG } from "src/app/app-config";
 
 @Injectable()
 export class NivelService {
@@ -13,13 +12,13 @@ export class NivelService {
     constructor(public http: HttpClient) {
     }
 
-    findAll(): Observable<NivelDTO> {
-        return this.http.get<NivelDTO>(this.apiPath)
+    findAll() {
+        return this.http.get(this.apiPath)
         .pipe(
           catchError(this.handleError));
       }
 
-    findById(id: number): Observable<NivelDTO> {
+    findById(id: number) {
 
         const url = `${this.apiPath}/${id}`;
 
@@ -29,7 +28,7 @@ export class NivelService {
         )
       }
 
-      getByPageNivelFromIgreja(igrejaId, nome, page, linesPerPage) {
+      getByPageNivelFromIgreja(igrejaId: any, nome: any, page: any, linesPerPage: any) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/niveis/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
           .pipe(
@@ -37,7 +36,7 @@ export class NivelService {
         );
       }
 
-      getListNivelFromIgreja(igrejaId) {
+      getListNivelFromIgreja(igrejaId: any) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/niveis/?igreja=${igrejaId}`)
           .pipe(
@@ -46,7 +45,7 @@ export class NivelService {
       }
 
 
-     create(nivel : NivelDTO) {
+     create(nivel: any) {
       return this.http.post(this.apiPath,
         nivel,
           {
@@ -56,7 +55,7 @@ export class NivelService {
         );
      }
 
-      update(nivel: NivelDTO): Observable<NivelDTO> {
+      update(nivel: any): Observable<any> {
         const url = `${this.apiPath}/${nivel.id}`;
 
         return this.http.put(url, nivel)
@@ -80,8 +79,8 @@ export class NivelService {
       }
 
 
-      private jsonDataToNivel(jsonData: any): NivelDTO {
-        return (new NivelDTO(), jsonData);
+      private jsonDataToNivel(jsonData: any): any {
+        return ( jsonData);
       }
 
       private handleError(error: any): Observable<any>{

@@ -51,7 +51,7 @@ export class NavRightComponent implements DoCheck, OnInit, OnDestroy {
   nomeUsuario = nomeUsuarioSignal();
 
 
-  private subscription: Subscription;
+  private subscription: Subscription = new Subscription;
 
   authenticationService = inject(AuthenticationService);
   private translate = inject(TranslateService);
@@ -71,7 +71,7 @@ export class NavRightComponent implements DoCheck, OnInit, OnDestroy {
   // public props
   visibleUserList: boolean;
   chatMessage: boolean;
-  friendId: boolean;
+  friendId: boolean = false;
   config;
 
   // constructor
@@ -112,7 +112,7 @@ export class NavRightComponent implements DoCheck, OnInit, OnDestroy {
             this.fotoUsuario = this.usuario.foto;
             this.perfis0 = response['perfis'][0]
             this.perfis1 = response['perfis'][1]
-            this.nomeUsuarioSignal.update(() => this.usuario.name);
+            this.nomeUsuarioSignal.update(() => this.usuario.name!);
             this.perfis();
           },
           error: () => { }
@@ -131,17 +131,17 @@ export class NavRightComponent implements DoCheck, OnInit, OnDestroy {
   }
 
   // public method
-  onChatToggle(friend_id) {
+  onChatToggle(friend_id: boolean) {
     this.friendId = friend_id;
     this.chatMessage = !this.chatMessage;
   }
 
   // life cycle event
   ngDoCheck() {
-    if (document.querySelector('body').classList.contains('datta-rtl')) {
-      this.config['rtl-layout'] = true;
+    if (document.querySelector('body')!.classList.contains('datta-rtl')) {
+      (this.config as any)['rtl-layout'] = true;
     } else {
-      this.config['rtl-layout'] = false;
+      (this.config as any)['rtl-layout'] = false;
     }
   }
 

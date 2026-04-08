@@ -30,7 +30,7 @@ export class TipoFaltaService {
         )
       }
 
-      getByPageTipoFaltaFromIgreja(igrejaId, nome, page, linesPerPage) {
+      getByPageTipoFaltaFromIgreja(igrejaId: number, nome: string, page: number, linesPerPage: number) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/tipofaltas/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
           .pipe(
@@ -38,7 +38,7 @@ export class TipoFaltaService {
         );
       }
 
-      getPageTipoFaltaFromTipo(igrejaId, tipo, nome, page, linesPerPage) {
+      getPageTipoFaltaFromTipo(igrejaId: any, tipo: any, nome: any, page: any, linesPerPage: any) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/tipofaltas/page/?igreja=${igrejaId}&tipo=${tipo}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
           .pipe(
@@ -46,7 +46,7 @@ export class TipoFaltaService {
         );
       }
 
-      getListTipoFaltaFromIgreja(igrejaId) {
+      getListTipoFaltaFromIgreja(igrejaId: number) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/tipofaltas/list/?igreja=${igrejaId}`)
           .pipe(

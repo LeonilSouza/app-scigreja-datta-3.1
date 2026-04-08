@@ -26,14 +26,14 @@ export class UsuarioService {
       )
   }
 
-  getUsuarioFromEmail(email): Observable<any> {
+  getUsuarioFromEmail(email: string): Observable<any> {
     return this.http.get(`${API_CONFIG.baseUrl}/usuarios/email?value=${email}`)
       .pipe(
         catchError(this.handleError)
     );
   }
 
-  getPageFromUsuario(name, page, linesPerPage) {
+  getPageFromUsuario(name: string, page: number, linesPerPage: number) {
 
     return this.http.get(`${API_CONFIG.baseUrl}/usuarios/page/?name=${name}&page=${page}&linesPerPage=${linesPerPage}`)
       .pipe(
@@ -78,7 +78,7 @@ export class UsuarioService {
   }
 
 
-  delete(id: number): Observable<UsuarioDTO> {
+  delete(id: number) {
 
     const url = `${this.apiPath}/${id}`;
 

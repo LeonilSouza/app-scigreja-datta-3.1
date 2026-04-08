@@ -27,14 +27,14 @@ export class CartaService {
         )
       }
 
-      countEntradasFromIgreja(igrejaId, tipoCarta) {
+      countEntradasFromIgreja(igrejaId: number, tipoCarta: string) {
         return this.http.get(`${API_CONFIG.baseUrl}/pessoas/count/?igreja=${igrejaId}&tipoCarta=${tipoCarta}`)
           .pipe(
             catchError(this.handleError)
         );
       }
 
-      countSaidasFromIgreja(igrejaId, tipoCarta) {
+      countSaidasFromIgreja(igrejaId: any, tipoCarta: any) {
         return this.http.get(`${API_CONFIG.baseUrl}/pessoas/count/?igreja=${igrejaId}&tipoCarta=${tipoCarta}`)
           .pipe(
             catchError(this.handleError)
@@ -42,7 +42,7 @@ export class CartaService {
       }
     
 
-      getByPageCartaFromIgreja(igrejaId, nomeMembro, page, linesPerPage) {
+      getByPageCartaFromIgreja(igrejaId: number, nomeMembro: string, page: number, linesPerPage: number) {
         return this.http.get(`${API_CONFIG.baseUrl}/cartas/?igreja=${igrejaId}&nomeMembro=${nomeMembro}&page=${page}&linesPerPage=${linesPerPage}`)
           .pipe(
             catchError(this.handleError)

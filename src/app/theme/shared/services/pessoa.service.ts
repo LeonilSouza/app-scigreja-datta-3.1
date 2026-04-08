@@ -17,7 +17,7 @@ export class PessoaService {
     public http: HttpClient  ) { }
 
   // Page
-  getByPagePessoasFromIgreja(igrejaId, nomeSemAcento, situacaoCadastral, page, linesPerPage) {
+  getByPagePessoasFromIgreja(igrejaId: number, nomeSemAcento: string, situacaoCadastral: string, page: number, linesPerPage: any) {
 
     return this.http.get(`${API_CONFIG.baseUrl}/pessoas/?igreja=${igrejaId}&nomeSemAcento=${nomeSemAcento}&situacaoCadastral=${situacaoCadastral}&page=${page}&linesPerPage=${linesPerPage}`)
       .pipe(
@@ -25,7 +25,7 @@ export class PessoaService {
       );
   }
 
-  getByListaObreirosAtivosFromIgreja(igrejaId) {
+  getByListaObreirosAtivosFromIgreja(igrejaId: number) {
     const tipoMembro = 'Obreiro';
     const situacaoCadastral = 'Ativo';
     return this.http.get(`${API_CONFIG.baseUrl}/pessoas/obreiros/?igreja=${igrejaId}&situacaoCadastral=${situacaoCadastral}&tipoMembro=${tipoMembro}`)
@@ -34,7 +34,7 @@ export class PessoaService {
     );
   }
 
-  getPessoasAtivasFromIgreja(igrejaId, situacaoCadastral) {
+  getPessoasAtivasFromIgreja(igrejaId: number, situacaoCadastral: string) {
 
     return this.http.get(`${API_CONFIG.baseUrl}/pessoas/list/?igreja=${igrejaId}&situacaoCadastral=${situacaoCadastral}`)
       .pipe(
@@ -42,7 +42,7 @@ export class PessoaService {
     );
   }
 
-  getPessoasAtivasTransferidasIgreja(igrejaId, situacaoCadastral) {
+  getPessoasAtivasTransferidasIgreja(igrejaId: number, situacaoCadastral: string) {
 
     return this.http.get(`${API_CONFIG.baseUrl}/pessoas/ativo_transferido/?igreja=${igrejaId}&situacaoCadastral=${situacaoCadastral}`)
       .pipe(
@@ -76,29 +76,29 @@ export class PessoaService {
     return this.http.get(`${API_CONFIG.baseUrl}/reports/?igreja=${id}`)
 }
 
-y
-  countMembrosAtivosFromIgreja(igrejaId, situacaoCadastral,  tipoMembro) {
+y: any
+  countMembrosAtivosFromIgreja(igrejaId: number, situacaoCadastral: string,  tipoMembro: string) {
     return this.http.get(`${API_CONFIG.baseUrl}/pessoas/count/?igreja=${igrejaId}&situacaoCadastral=${situacaoCadastral}&tipoMembro=${tipoMembro}`)
       .pipe(
         catchError(this.handleError)
     );
   }
 
-  countObreirosAtivosFromIgreja(igrejaId, situacaoCadastral, tipoMembro) {
+  countObreirosAtivosFromIgreja(igrejaId: any, situacaoCadastral: any, tipoMembro: any) {
     return this.http.get(`${API_CONFIG.baseUrl}/pessoas/count/?igreja=${igrejaId}&situacaoCadastral=${situacaoCadastral}&tipoMembro=${tipoMembro}`)
       .pipe(
         catchError(this.handleError)
       );
   }
 
-  countNovos(igrejaId, situacaoCadastral) {
+  countNovos(igrejaId: number, situacaoCadastral: string) {
     return this.http.get(`${API_CONFIG.baseUrl}/pessoas/novos/?igreja=${igrejaId}&situacaoCadastral=${situacaoCadastral}`)
       .pipe(
         catchError(this.handleError)
       );
   }
 
-  countCongregadosAtivosFromIgreja(igrejaId, situacaoCadastral,  tipoMembro) {
+  countCongregadosAtivosFromIgreja(igrejaId: any, situacaoCadastral: any,  tipoMembro: any) {
     return this.http.get(`${API_CONFIG.baseUrl}/pessoas/count/?igreja=${igrejaId}&situacaoCadastral=${situacaoCadastral}&tipoMembro=${tipoMembro}`)
       .pipe(
         catchError(this.handleError)
@@ -149,7 +149,7 @@ y
     )
   }
 
-  getListDocumentosFromIgreja(igrejaId, pessoaId, name) {
+  getListDocumentosFromIgreja(igrejaId: any, pessoaId: any, name: any) {
 
     return this.http.get(`${API_CONFIG.baseUrl}/documentos/list/?igreja=${igrejaId}&pessoa=${pessoaId}&name=${name}`)
       .pipe(

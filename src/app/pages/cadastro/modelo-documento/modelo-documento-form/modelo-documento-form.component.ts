@@ -75,7 +75,7 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
     totalRegistros: number = 0
     variaveis: VariavelDTO[] = [];
 
-    public conteudo: string;
+    public conteudo!: string;
 
     public variavel = '';
 
@@ -91,25 +91,25 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
     // cropper
     imageChangedEvent: any = '';
     croppedImage: any = '';
-    modeloDocumentoLogo: ModeloDocumentoDTO;
+    modeloDocumentoLogo!: ModeloDocumentoDTO;
 
     public activeTab: string;
 
-    subscription: Subscription;
+    subscription!: Subscription;
 
     // @ViewChild('dtdocumento') grid!: Table;
 
     /*  Referente a ModeloDocumentoDTO */
-    currentAction: string;
-    modeloDocumentoForm: FormGroup;
-    pageTitle: string;
-    serverErrorMessages: string[] = null;
+    currentAction!: string;
+    modeloDocumentoForm!: FormGroup;
+    pageTitle!: string;
+    serverErrorMessages: string[] = [];
     submittingForm: boolean = false;
 
     modeloDocumento: ModeloDocumentoDTO = new ModeloDocumentoDTO();
     filiais: ModeloDocumentoDTO = new ModeloDocumentoDTO();
-    pessoas: PessoaListDTO[];
-    id: number;
+    pessoas!: PessoaListDTO[];
+    id!: number;
 
     public ckeditorContent: string;
     public config: any;
@@ -174,14 +174,14 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
         // Linha que remove o cabeçalho e o rodape do previw da impressão 
         let estilo = "<style>@media print {@page { size:  auto; margin: 5mm; margin-right: 100px }}</style>";
         let win = window.open('', '', 'height=1080, width=2648');
-        win.document.write('<html><head>');
-        win.document.write('<title></title>');
-        win.document.write('</head><body>');
-        win.document.write(this.ckeditorContent);
-        win.document.write(estilo);
-        win.document.write('</body></html>');
-        win.print();
-        win.close();
+        win?.document.write('<html><head>');
+        win?.document.write('<title></title>');
+        win?.document.write('</head><body>');
+        win?.document.write(this.ckeditorContent);
+        win?.document.write(estilo);
+        win?.document.write('</body></html>');
+        win?.print();
+        win?.close();
     }
 
     // Carrega lista das Variaveis
@@ -191,12 +191,12 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
     }
 
 
-    loadVariaveis(variavel, page, linesPerPage) {
+    loadVariaveis(variavel: string, page: number, linesPerPage: number) {
 
         this.variavelService.getByPageVariavel(variavel, page, linesPerPage)
             .subscribe({
                 next: (response) => {
-                    this.variaveis = response['content'].sort((a, b) => b.id - a.id)
+                    this.variaveis = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id)
                     this.totalRegistros = response.totalElements
 
                 },
@@ -269,7 +269,7 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
 
     // cropped
 
-    fileChangeEvent(event: any, ModeloDocumentoDTO): void {
+    fileChangeEvent(event: any, ModeloDocumentoDTO: ModeloDocumentoDTO): void {
         this.imageChangedEvent = event;
         this.modeloDocumentoLogo = ModeloDocumentoDTO;
     }
@@ -292,7 +292,7 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
 
     //cropper - cortar imagem
 
-    uploadLogo(ModeloDocumentoDTO) {
+    uploadLogo(ModeloDocumentoDTO: ModeloDocumentoDTO) {
         if (this.croppedImage) {// Imagem base64 no formato png 
             this.convertPngToJpeg(this.croppedImage); // Enviada para ser convertida em para o formato jpeg ou jpg. Formatos diferentes somente no nome 
             let numero = 'data:image/jpeg;base64,';
@@ -300,7 +300,7 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
 
             const base64 = this.croppedImage.substr(N, this.croppedImage.length); //Retira estes dados da imagem "data:image/png;base64"
             const nome = this.modeloDocumentoLogo.nome;
-            const nome_sem_espacos = nome.replace(/ /g, "_"); // regex que substitui todos os espaços por _
+            const nome_sem_espacos = nome?.replace(/ /g, "_"); // regex que substitui todos os espaços por _
 
             const imageName = (nome_sem_espacos + '.jpeg'); // Tanto faz jpeg ou jpg
             const imageBlob = this.dataURItoBlob(base64);
@@ -326,7 +326,7 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
         }
     }
 
-    dataURItoBlob(dataURI) {
+    dataURItoBlob(dataURI: string) {
         const byteString = window.atob(dataURI);
         const arrayBuffer = new ArrayBuffer(byteString.length);
         const int8Array = new Uint8Array(arrayBuffer);
@@ -341,7 +341,7 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
 
     // Converter imagem  de PNG para Jpeg/Jpg
 
-    convertPngToJpeg(imagePNG) {
+    convertPngToJpeg(imagePNG: string) {
 
         let maxWidth = 10000;
         let source_img_obj = new Image;
@@ -360,7 +360,7 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
         let cvs = document.createElement('canvas');
         cvs.width = natW;
         cvs.height = natH;
-        let ctx = cvs.getContext("2d").drawImage(source_img_obj, 0, 0, natW, natH);
+        let ctx = cvs.getContext("2d")?.drawImage(source_img_obj, 0, 0, natW, natH);
         let newImageData = cvs.toDataURL(mime_type, 0.4);
         let result_image_obj = new Image();
         result_image_obj.src = newImageData;
@@ -369,7 +369,7 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
 
     }
 
-    removerLogo(modeloDocumento) {
+    removerLogo(modeloDocumento: { logo: null; }) {
         modeloDocumento.logo = null;
         this.modeloDocumentoForm.controls['logo'].setValue(null);
         this.croppedImage = null;
@@ -431,7 +431,7 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
         this.modeloDocumentoService.create(modeloDocumento)
             .subscribe(
                 modeloDocumento => {
-                    this.id = parseInt(this.extractId(modeloDocumento.headers.get('location'))); // Extrai o Id da URI retornada do banco
+                    this.id = parseInt(this.extractId(modeloDocumento.headers.get('location')!)); // Extrai o Id da URI retornada do banco
                     this.modeloDocumento.id = this.id;
                     this.actionsForSuccess(this.modeloDocumento)
 
@@ -507,7 +507,7 @@ export class ModeloDocumentoFormComponent implements OnInit, AfterContentChecked
             () => this.router.navigate([path, modeloDocumento.id, 'edit']))
     }
 
-    private actionsForError(error) {
+    private actionsForError(error: { status: number; _body: string; }) {
         this.submittingForm = false;
 
         if (error.status === 422) {

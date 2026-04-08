@@ -40,12 +40,12 @@ export class AulaService {
     const url = `${this.apiPath}/${id}`;
 
     return this.http.get(url).pipe(
-      catchError(this.handleError),
+      (catchError as any)(this.handleError),
       //  map(this.jsonDataToAula)
     )
   }
 
-  checkDataFromAula(igrejaId, data) { // Verifica se a data já foi lançada retorna true| false
+  checkDataFromAula(igrejaId: number, data: string) { // Verifica se a data já foi lançada retorna true| false
     return this.http.get(`${API_CONFIG.baseUrl}/aulas/verificarData/?igreja=${igrejaId}&data=${data}`)
       .pipe(
         catchError(this.handleError)
@@ -60,7 +60,7 @@ export class AulaService {
 //       );
 //   }
 
-  getByPageAulaFromTipo(igrejaId, nome, page, linesPerPage) {
+  getByPageAulaFromTipo(igrejaId: any, nome: any, page: any, linesPerPage: any) {
 
     return this.http.get(`${API_CONFIG.baseUrl}/aulas/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
       .pipe(
@@ -68,7 +68,7 @@ export class AulaService {
       );
   }
 
-  getListAulaFromIgreja(igrejaId) {
+  getListAulaFromIgreja(igrejaId: any) {
 
     return this.http.get(`${API_CONFIG.baseUrl}/aulas/list/?igreja=${igrejaId}`)
       .pipe(

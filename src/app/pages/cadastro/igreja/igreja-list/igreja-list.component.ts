@@ -87,7 +87,7 @@ export class IgrejaListComponent implements OnInit {
     }
   }
 
-  loadIgrejas(nome, setor, page, linesPerPage) {
+  loadIgrejas(nome: string, setor: number, page: number, linesPerPage: any) {
     if (this.perfil === 'ADMIN') {
       // Se for Admin Buasca todas as igrejas de todos os setores
       setor = 0; //Para pegar todas as igrejas
@@ -95,7 +95,7 @@ export class IgrejaListComponent implements OnInit {
         .getPageFromIgreja(nome, setor, page, linesPerPage)
         .subscribe({
           next: (response) => {
-            this.igrejas = response['content'].sort((a, b) => b.id - a.id);
+            this.igrejas = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
             this.totalRegistros = response.totalElements;
           },
           error: (error) => {
@@ -112,7 +112,7 @@ export class IgrejaListComponent implements OnInit {
         .getPageFromIgreja(nome, this.setor, page, linesPerPage)
         .subscribe({
           next: (response) => {
-            this.igrejas = response['content'].sort((a, b) => b.id - a.id);
+            this.igrejas = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
             this.totalRegistros = response.totalElements;
           },
             error: (error) => {

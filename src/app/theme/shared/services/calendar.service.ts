@@ -31,13 +31,13 @@ export class CalendarService {
     return this.dialogData;
   }
 
-  getAllCalendars(igreja): Observable<EventInput[]> {
+  getAllCalendars(igreja: number): Observable<EventInput[]> {
     return this.http.get<EventInput[]>(`${API_CONFIG.baseUrl}/eventos/?igreja=${igreja}`)
       .pipe(catchError(this.handleError));
   }
 
 
-  updateCalendar(calendar) {
+  updateCalendar(calendar: any) {
     const url = `${this.apiPath}/${calendar.id}`;
     return this.http.put(url, calendar)
       .pipe(
@@ -45,7 +45,7 @@ export class CalendarService {
       )
   }
 
-  addCalendar(calendar){
+  addCalendar(calendar: any){
     return this.http.post(this.apiPath,
       calendar,
       {

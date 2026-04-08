@@ -29,7 +29,7 @@ export class DepartamentoService {
         )
       }
 
-      getByPageDepartamentoFromIgreja(igrejaId, nome, page, linesPerPage) {
+      getByPageDepartamentoFromIgreja(igrejaId: number, nome: string, page: number, linesPerPage: number) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/departamentos/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
           .pipe(
@@ -37,7 +37,7 @@ export class DepartamentoService {
         );
       }
 
-      getByPageDepartamentoFromTipo(igrejaId, nome, page, linesPerPage) {
+      getByPageDepartamentoFromTipo(igrejaId: any, nome: any, page: any, linesPerPage: any) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/departamentos/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
           .pipe(
@@ -45,7 +45,7 @@ export class DepartamentoService {
         );
       }
 
-      getListDepartamentoFromIgreja(igrejaId) {
+      getListDepartamentoFromIgreja(igrejaId: number) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/departamentos/list/?igreja=${igrejaId}`)
           .pipe(

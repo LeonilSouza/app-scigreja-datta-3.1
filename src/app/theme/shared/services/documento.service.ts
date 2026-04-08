@@ -25,25 +25,25 @@ export class DocumentoService {
     )
   }
 
-  getDocumentos(igrejaId, pessoaId) {
+  getDocumentos(igrejaId: any, pessoaId: any) {
     return this.http.get(`${API_CONFIG.baseUrl}/documentos/?igreja=${igrejaId}&pessoa=${pessoaId}`)
       .pipe(
         catchError(this.handleError)
       );
   }
 
-  upload(files: Set<File>, igrejaId, pessoaId) {
+  upload(files: Set<File>, igrejaId: string | number | Blob, pessoaId: string | Blob) {
     const formData = new FormData();
     files.forEach(file => {
       formData.append('file', file, file.name),
-        formData.append('igreja', igrejaId),
+        formData.append('igreja', (igrejaId as any)),
         formData.append('pessoa', pessoaId)
     });
     const request = new HttpRequest('POST', this.apiPath, formData);
     return this.http.request((request));
   }
 
-  download(documento) {
+  download(documento: { nomeArquivo?: string; id?: any; }) {
     const url = `${this.apiPath}/${documento.id}`;
     return this.http.get(url, {
       responseType: 'blob' as 'json'
@@ -51,7 +51,7 @@ export class DocumentoService {
   }
 
   // Para Downlod de aquivos
-  handleFile(res: any, fileName: string, documento) {
+  handleFile(res: any, fileName: string, documento: { nomeArquivo: any; }) {
     const file = new Blob([res], {
       type: res.type
     });
@@ -82,7 +82,7 @@ export class DocumentoService {
 
   }
 
-  getFileExtension(filename) {
+  getFileExtension(filename: string) {
     return filename.split('/').pop();
   }
 

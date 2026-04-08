@@ -11,11 +11,11 @@ import { CommonModule } from '@angular/common';
 })
 export class AlertComponent {
   // public props
-  readonly type = input<string>(undefined);
-  readonly dismiss = input<string>(undefined);
+  readonly type = input<string>(undefined!);
+  readonly dismiss = input<string>(undefined!);
 
   // public method
-  dismissAlert(element) {
+  dismissAlert(element: { remove: () => void; }) {
     element.remove();
   }
 }

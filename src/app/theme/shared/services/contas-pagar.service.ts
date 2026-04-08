@@ -30,11 +30,13 @@ export class ContasPagarService {
     )
   }
 
-   getResumoContasPagarFromIgreja(igrejaId, nome, dtInicio, dtFim) {
+   getResumoContasPagarFromIgreja(igrejaId: number, nome: string | number | boolean | undefined, dtInicio: string | number | boolean, dtFim: string | number | boolean) {
     const params = new HttpParams()
-      .set('nome', nome)
+      .set('nome', nome!)
       .set('dtInicio', dtInicio)
       .set('dtFim', dtFim);
+
+      console.log(params)
 
     return this.http.get(`${API_CONFIG.baseUrl}/contas-pagar/resumo/?igreja=${igrejaId}`, { params })
       .pipe(
@@ -42,7 +44,7 @@ export class ContasPagarService {
       );
   }
 
-  getByPageContasPagarFromIgreja(igrejaId, nome, dtInicio, dtFim, page, linesPerPage) {
+  getByPageContasPagarFromIgreja(igrejaId: number, nome: string | number | boolean, dtInicio: string | number | boolean, dtFim: string | number | boolean, page: string | number | boolean, linesPerPage: string | number | boolean) {
     const params = new HttpParams()
       .set('nome', nome)
       .set('dataInicio', dtInicio)
@@ -73,7 +75,7 @@ export class ContasPagarService {
     const params = data ? { params: { dataPagamento: data,  valorPago: valor }  } : {};
 
     console.log(params)
-    return this.http.put(url, {}, params);
+    return this.http.put(url, {}, (params as any));
   }
 
   update(contasPagar: ContasPagarDTO): Observable<ContasPagarDTO> {

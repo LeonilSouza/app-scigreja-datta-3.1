@@ -100,19 +100,19 @@ export class LancamentoListFormComponent implements OnInit {
 
   pesquisa?: boolean = false;
 
-  descricao: string;
+  descricao: string = '';
 
-  indexId: number;
-  indexIdTransferencia: number;
+  indexId!: number;
+  indexIdTransferencia!: number;
 
   length = signal(0);
 
-  transf: number;
+  transf!: number;
 
   @ViewChild('dtlancamento') grid!: Table;
 
   // Mes atual
-  rangeDates: String;
+  rangeDates!: string;
   dtInicio: string = "";
   dtFim: string = "";
 
@@ -123,9 +123,9 @@ export class LancamentoListFormComponent implements OnInit {
   transferenciaCategoriaId: number = 1;
 
   pessoaId: number = 0;
-  contaForm: FormGroup;
-  formaForm: FormGroup;
-  categoriaForm: FormGroup;
+  contaForm!: FormGroup;
+  formaForm!: FormGroup;
+  categoriaForm!: FormGroup;
 
   dataAtual: any = moment();
 
@@ -161,7 +161,7 @@ export class LancamentoListFormComponent implements OnInit {
   totalReceitaDizimo: number = 0;
 
   saldoAnterior: number = 0;
-  saldoFinalContas: number;
+  saldoFinalContas!: number;
 
   crtSaldoFinal: boolean = false;
   membroCadastrado: boolean = true;
@@ -169,21 +169,21 @@ export class LancamentoListFormComponent implements OnInit {
   totalRegistros: number = 0
   totalRegistrosConta: number = 0
 
-  contaId: number;
-  contaIdTransferencia: number;
-  formaIdTransferencia: number;
-  formaId: number;
-  categoriaId: number;
-  contaIds: string;
-  contaIdsAux: string;
-  contaIdsAux1: string;
-  formasIds: string;
-  formaIdsAux: string;
-  categoriaFiltrada: string;
+  contaId!: number;
+  contaIdTransferencia!: number;
+  formaIdTransferencia!: number;
+  formaId!: number;
+  categoriaId!: number;
+  contaIds!: string;
+  contaIdsAux!: string;
+  contaIdsAux1!: string;
+  formasIds!: string;
+  formaIdsAux!: string;
+  categoriaFiltrada!: string;
 
-  categoriaIds: string;
+  categoriaIds!: string;
   tipoLancamento: string = "".toLowerCase();
-  categoriaIdsAux: string;
+  categoriaIdsAux!: string;
   crtCategoria: number = 3; //Para controlar: Todas, Receita e Despesa em categorias
 
   lancamentos!: LancamentoDTO[];
@@ -200,10 +200,10 @@ export class LancamentoListFormComponent implements OnInit {
 
   error = '';
 
-  lancamentoId: number;
+  lancamentoId!: number;
 
-  lancamentoIdOrigem: number;
-  lancamentoIdTransferencia: number;
+  lancamentoIdOrigem!: number;
+  lancamentoIdTransferencia!: number;
 
   public page = 0;
 
@@ -211,12 +211,12 @@ export class LancamentoListFormComponent implements OnInit {
   public activeTab: string;
 
   lancamentoNome: string = "";
-  subscription: Subscription;
-  lancamentoForm: FormGroup;
+  subscription!: Subscription;
+  lancamentoForm!: FormGroup;
   lancamento: LancamentoDTO = new LancamentoDTO();
   pessoa: PessoaDTO = new PessoaDTO();
   categoria: CategoriaDTO = new CategoriaDTO();
-  pageTitle: string;
+  pageTitle!: string;
   submittingForm: boolean = false;
 
   imaskConfig = {
@@ -228,10 +228,10 @@ export class LancamentoListFormComponent implements OnInit {
     radix: ','
   };
 
-  printItems: MenuItem[];
+  printItems!: MenuItem[];
 
-  selecaoItemsIndividual: MenuItem[];
-  selecaoItemsMultiplos: MenuItem[];
+  selecaoItemsIndividual!: MenuItem[];
+  selecaoItemsMultiplos!: MenuItem[];
 
   constructor(
     private lancamentoService: LancamentoService,
@@ -293,7 +293,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   aoMudarPagina(event: LazyLoadEvent) { // Metodo será chamado toda vez que mudar de pagina ou houver necessidade de dados novos
     this.page = event!.first! / event!.rows!;
-    this.filtro.linesPerPage = event.rows;
+    this.filtro.linesPerPage = event.rows!;
     if (!this.pesquisa) {
       this.loadFormas(); // loadFormas() --> Carrega formas depois categorias depois contas que chama loadLancamentos() na inicialização.
       this.getTotalReceitaDizimo();
@@ -303,7 +303,7 @@ export class LancamentoListFormComponent implements OnInit {
     }
   }
 
-  linhasSelecionada(event): void {
+  linhasSelecionada(event: string | any[]): void {
     this.length.set(event.length);
     if (event.length >= 1) {
       this.indexId = event[0].id;
@@ -333,7 +333,7 @@ export class LancamentoListFormComponent implements OnInit {
         next: response => {
           this.formas = response;
           this.loadFormasPermuta();
-          let ids = response.map(f => {
+          let ids = response.map((f: { id: any; }) => {
             return (f.id).toString();
           })
           this.formasIds = ids.toString();
@@ -351,9 +351,9 @@ export class LancamentoListFormComponent implements OnInit {
       .subscribe({
         next: response => {
           this.categorias = response; // Armazena todas as categorias de Receitas e Despesa para serem filtradas
-          let cat1 = this.categorias.filter(cat => cat.id.toString());
+          let cat1 = this.categorias.filter(cat => cat.id?.toString());
           let cat2 = cat1.map(c => {
-            return c.id.toString(); // Retorna nova string de todos os ids de categorias. Necessario para o Backend
+            return c.id?.toString(); // Retorna nova string de todos os ids de categorias. Necessario para o Backend
           })
           this.categoriaIds = cat2.toString();
           this.categoriaIdsAux = cat2.toString();
@@ -377,12 +377,12 @@ export class LancamentoListFormComponent implements OnInit {
             this.contas = response;
             this.loadContasTransferencia();
             this.contasTransferencia = response;
-            response.map(t => {
+            response.map((t: { totalConta: number; }) => {
               total += t.totalConta;
               this.saldoFinalContas = total;
             })
 
-            let ids = response.map(c => {
+            let ids = response.map((c: { id: any; }) => {
               return (c.id).toString();
             })
             this.contaIds = ids.toString();
@@ -505,7 +505,7 @@ export class LancamentoListFormComponent implements OnInit {
       // .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
-          this.lancamentos = response['content'].sort((a, b) => b.id - a.id);
+          this.lancamentos = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
           this.totalRegistros = response.totalElements;
           this.getPrinters();
           // this.getSelecionadosItems();
@@ -523,7 +523,7 @@ export class LancamentoListFormComponent implements OnInit {
         }
       });
   }
-  imprimirRecibo(id) {
+  imprimirRecibo(id: any) {
     if (!id) {
       Swal.fire('Exclusão', 'Nenhum registro encontrado', 'info');
     } else {
@@ -670,29 +670,29 @@ export class LancamentoListFormComponent implements OnInit {
   }
 
   loadLancamento(lancamento: LancamentoDTO) {
-    this.lancamentoId = lancamento.id;
+    this.lancamentoId = lancamento.id ?? 0;
     this.lancamentoService.findById(this.lancamentoId)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
-        next: response => {
+        next: (response ) => {
           this.lancamento = response;
           this.lancamentoForm.patchValue(this.lancamento)   // binds loaded  
-          this.contaId = response['conta'].id;
-          this.formaId = response['forma'].id;
-          this.contaIdTransferencia = response.contaIdTransferencia;
-          this.formaIdTransferencia = response.formaIdTransferencia;
-          this.categoriaId = response['categoria'].id;
+          this.contaId = (response as any)['conta'].id;
+          this.contaId = (response as any)['forma'].id;
+          this.contaIdTransferencia = response.contaIdTransferencia ?? 0;
+          this.formaIdTransferencia = response.formaIdTransferencia ?? 0;
+          this.contaId = (response as any)['categoria'].id; 
           this.lancamentoForm.controls['igrejaId'].setValue(this.igrejaId);
           this.lancamentoForm.controls['pessoaId'].setValue(this.lancamento.pessoaId);
-          this.lancamentoForm.controls['categoriaId'].setValue(response['categoria'].id);
-          this.lancamentoForm.controls['contaId'].setValue(response['conta'].id);
-          this.lancamentoForm.controls['formaId'].setValue(response['forma'].id)
+          this.lancamentoForm.controls['categoriaId'].setValue((response as any) ['categoria'].id);
+          this.lancamentoForm.controls['contaId'].setValue((response as any)['conta'].id);
+          this.lancamentoForm.controls['formaId'].setValue((response as any)['forma'].id)
           this.lancamentoForm.controls['valor'].setValue(Math.abs(this.lancamentoForm.controls['valor'].value));
 
-          if (response.valor > '0' && (response.nome == 'Transferencia' || response.nome == 'Permuta')) {
+          if (response.valor! > '0' && (response.nome == 'Transferencia' || response.nome == 'Permuta')) {
             //Conta  
             this.lancamentoForm.controls['contaId'].setValue(response.contaIdTransferencia);
-            this.lancamentoForm.controls['contaIdTransferencia'].setValue(response['conta'].id);
+            this.lancamentoForm.controls['contaIdTransferencia'].setValue((response as any)['conta'].id);
 
             // Forma
             // this.lancamentoForm.controls['formaId'].setValue(response.formaIdTransferencia); 
@@ -702,21 +702,21 @@ export class LancamentoListFormComponent implements OnInit {
             this.lancamentoForm.controls['valor'].setValue(response.valor);
           }
 
-          this.lancamentoForm.controls['centroCustoId'].setValue(response['centroCusto'].id);
+          this.lancamentoForm.controls['centroCustoId'].setValue((response as any)['centroCusto'].id);
           // this.lancamentoForm.controls['valor'].setValue(Math.abs(this.lancamentoForm.controls['valor'].value));// Mostra o numero negativo sem o sinal. Valor absoluto
           this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value);
 
           //Para Despesa
-          if (response.valor < '0') {
+          if (response.valor! < '0') {
             this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value * -1);
           }
 
-          this.lancamentoNome = lancamento.nome;
+          this.lancamentoNome = lancamento.nome!;
 
-          if (response.pessoaId > 0) {
+          if (response.pessoaId! > 0) {
             this.lancamentoForm.controls['cadastrado'].setValue('sim');
             this.lancamentoForm.controls['pessoaId'].setValue(response.pessoaId);
-            this.pessoaId = response.pessoaId;
+            this.pessoaId = response.pessoaId ?? 0;
           }
           if (response.pessoaId == 0) {
             this.lancamentoForm.controls['cadastrado'].setValue('nao');
@@ -739,8 +739,8 @@ export class LancamentoListFormComponent implements OnInit {
       this.dtInicio = this.rangeDates[0];
       this.filtro.dtInicio = this.rangeDates[0];
       if (this.dtInicio.length < 10) {
-        this.dtInicio = this.rangeDates.substring(0, 10);
-        this.filtro.dtInicio = this.rangeDates.substring(0, 10);
+        this.dtInicio = (this.rangeDates as string).substring(0, 10);
+        this.filtro.dtInicio = (this.rangeDates as string).substring(0, 10);
       } else {
         this.dtInicio = this.rangeDates[0];
         this.filtro.dtInicio = this.rangeDates[0];
@@ -797,7 +797,7 @@ export class LancamentoListFormComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
-          this.lancamento.id = parseInt(this.extractId(response.headers.get('location'))); // Extrai o Id da URI retornada do banco      
+          this.lancamento.id = parseInt(this.extractId((response as any).headers.get('location'))); // Extrai o Id da URI retornada do banco      
           this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
           this.lancamentoForm.controls['nome'].setValue(null);
           this.lancamentoForm.controls['pessoaId'].setValue(0)
@@ -851,7 +851,7 @@ export class LancamentoListFormComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
-          this.lancamentoIdOrigem = parseInt(this.extractId(response.headers.get('location'))); // Extrai o Id da URI retornada do banco 
+          this.lancamentoIdOrigem = parseInt(this.extractId((response as any).headers.get('location'))); // Extrai o Id da URI retornada do banco 
 
           this.lancamentoForm.controls['contaId'].setValue(this.contaIdTransferencia);
           lancamento.contaIdTransferencia = this.contaId;
@@ -865,7 +865,7 @@ export class LancamentoListFormComponent implements OnInit {
             .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
             .subscribe({
               next: response => {
-                this.lancamentoIdTransferencia = parseInt(this.extractId(response.headers.get('location'))); // Extrai o Id da URI retornada do banco 
+                this.lancamentoIdTransferencia = parseInt(this.extractId((response as any).headers.get('location'))); // Extrai o Id da URI retornada do banco 
 
                 // Atualiza o campo lancamentoIdOrigem com os ids dos lançamentos de transferencia
 
@@ -958,7 +958,7 @@ export class LancamentoListFormComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
-          this.lancamentoIdOrigem = parseInt(this.extractId(response.headers.get('location'))); // Extrai o Id da URI retornada do banco 
+          this.lancamentoIdOrigem = parseInt(this.extractId((response as any).headers.get('location'))); // Extrai o Id da URI retornada do banco 
 
           this.lancamentoForm.controls['formaId'].setValue(this.formaIdTransferencia);
           lancamento.formaIdTransferencia = this.formaId;
@@ -972,7 +972,7 @@ export class LancamentoListFormComponent implements OnInit {
             .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
             .subscribe({
               next: response => {
-                this.lancamentoIdTransferencia = parseInt(this.extractId(response.headers.get('location'))); // Extrai o Id da URI retornada do banco 
+                this.lancamentoIdTransferencia = parseInt(this.extractId((response as any).headers.get('location'))); // Extrai o Id da URI retornada do banco 
 
                 // Atualiza o campo lancamentoIdOrigem com os ids dos lançamentos de transferencia
 
@@ -1240,7 +1240,7 @@ export class LancamentoListFormComponent implements OnInit {
     if (value !== 'Todas') {
       let cat1 = this.categorias.filter(cat => cat.tipo == value); //Armazema todas as categorias de um tipo passado por parametro
       let cat2 = cat1.map(c => {
-        return c.id.toString(); // Retorna uma string de ids do tipo passado no parametro.
+        return c.id?.toString(); // Retorna uma string de ids do tipo passado no parametro.
       })
       this.categoriaFiltrada = value;
       this.filtro.tipoLancamento = value;
@@ -1256,16 +1256,16 @@ export class LancamentoListFormComponent implements OnInit {
 
   }
 
-  private loadPessoa(value) {
+  private loadPessoa(value: number) {
     this.pessoaService.getById(value)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
           this.pessoa = response;
-          this.pessoaId = this.pessoa.id
+          this.pessoaId = this.pessoa.id ?? 0;
           this.lancamentoForm.controls['pessoaId'].setValue(this.pessoa.id);
           this.lancamentoForm.controls['nome'].setValue(this.pessoa.nome);
-          this.lancamentoForm.controls['tituloMin'].setValue(this.pessoa.tituloMin.trim());
+          this.lancamentoForm.controls['tituloMin'].setValue(this.pessoa.tituloMin?.trim());
         },
         error: () => { }
       });
@@ -1273,7 +1273,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   ///////////////////////////// Enentos DropDown   ///////////////////////////
 
-  onChangeFormas(event) {
+  onChangeFormas(event: { value: string | number; }) {
     // DEIXEI AQUI PARA USO FUTURO
     //Array convertida em uma lista de string
     let length = event.value.toString();
@@ -1294,7 +1294,7 @@ export class LancamentoListFormComponent implements OnInit {
     }
   }
 
-  onChangeContas(event) {
+  onChangeContas(event: { value: string | number; }) {
     if (event.value !== "" && event.value > '0') {
       this.filtro.contas = event.value.toString();
     }
@@ -1304,7 +1304,7 @@ export class LancamentoListFormComponent implements OnInit {
     }
   }
 
-  onChangeCategorias(event) {
+  onChangeCategorias(event: { value: string | number; }) {
     if (event.value !== "" && event.value > '0') {
       this.filtro.categorias = event.value.toString();
     }
@@ -1314,38 +1314,38 @@ export class LancamentoListFormComponent implements OnInit {
     }
   }
 
-  onChangeNomeHistorico(value) {
+  onChangeNomeHistorico(value: { value: any; }) {
     this.loadPessoa(value.value);
   }
 
-  onChangeTransferenciaCategoria(value) {
+  onChangeTransferenciaCategoria(value: { value: number; }) {
     this.transferenciaCategoriaId = value.value
     this.lancamentoForm.controls['categoriaId'].setValue(value.value);
   }
 
 
-  onChangeTransferenciaOrigem(event) {
+  onChangeTransferenciaOrigem(event: { value: number; }) {
     this.contaId = event.value;
     this.lancamentoIdOrigem = event.value;
   }
 
-  onChangeTransferenciaDestino(event) {
+  onChangeTransferenciaDestino(event: { value: number; }) {
     this.contaIdTransferencia = event.value;
     this.lancamentoIdTransferencia = event.value;
   }
 
-  onChangePermutaOrigem(event) {
+  onChangePermutaOrigem(event: { value: number; }) {
     this.formaId = event.value;
     this.lancamentoIdOrigem = event.value;
   }
 
-  onChangePermutaDestino(event) {
+  onChangePermutaDestino(event: { value: number; }) {
     this.lancamentoForm.controls['categoriaId'].setValue(1);
     this.formaIdTransferencia = event.value;
     this.lancamentoIdTransferencia = event.value;
   }
 
-  private getCategoria(value) {
+  private getCategoria(value: number) {
     this.categoriaService.findById(value)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
@@ -1357,15 +1357,15 @@ export class LancamentoListFormComponent implements OnInit {
       });
   }
 
-  onChangeTPCategorias(tipo) {
+  onChangeTPCategorias(tipo: { value: any; }) {
     this.getCategoria(tipo.value)
   }
 
-  onChangeTPConta(event) {
+  onChangeTPConta(event: { value: any; }) {
     this.getConta(event.value)
   }
 
-  private getConta(value) {
+  private getConta(value: number | undefined) {
     let conta_id = this.contas.filter(tc => tc.id == value); //Armazema todas as categorias de um tipo passado por parametro
     let tipo_conta = conta_id.map(tp => {
       return tp.tipo; // Retorna uma string de ids do tipo passado no parametro.
@@ -1374,7 +1374,7 @@ export class LancamentoListFormComponent implements OnInit {
   }
 
 
-  onChangeCategoriasFiltradas(tipo) {
+  onChangeCategoriasFiltradas(tipo: { value: string | undefined; }) {
     if (tipo.value !== 'Todas') {
       // this.ctr_receita = true; 
       this.total_creditos_sem_transferencias = 0.00;
@@ -1389,11 +1389,11 @@ export class LancamentoListFormComponent implements OnInit {
     // }
 
     tipo.value !== "Todas" ? this.filtro.tipoLancamento = tipo.value : this.filtro.tipoLancamento = "";
-    tipo.value !== "Todas" ? this.tipoLancamento = tipo.value : this.tipoLancamento = "";
-    this.filtraCategoriaIds(tipo.value)
-    tipo.value !== "Todas" ? this.categoriaFiltrada = tipo.value : this.categoriaFiltrada = "";
+    tipo.value !== "Todas" ? this.tipoLancamento = tipo.value! : this.tipoLancamento = "";
+    this.filtraCategoriaIds(tipo.value!);
+    tipo.value !== "Todas" ? this.categoriaFiltrada = tipo.value! : this.categoriaFiltrada = "";
 
-    this.filtraCategorias(tipo.value)
+    this.filtraCategorias(tipo.value!)
     this.filtro.tipoLancamento = this.categoriaFiltrada;
     this.tipoLancamento = this.categoriaFiltrada
 
@@ -1410,7 +1410,7 @@ export class LancamentoListFormComponent implements OnInit {
 
 
   //EXCLUIR LANÇAMENTOS 
-  exclusaoLancamento(indexId, indexIdTransferencia) {
+  exclusaoLancamento(indexId: number, indexIdTransferencia: number | undefined) {
 
     if (this.selectedLancamentos == null || this.length() == 0 || undefined) {
       Swal.fire('Lançamento | Seleção', 'Nenhum registro selecionado', 'info');
@@ -1429,7 +1429,7 @@ export class LancamentoListFormComponent implements OnInit {
         } else {
           if (this.length() <= 1) {
             if (this.indexId) { this.excluirLancamento(indexId); }
-            if (this.indexIdTransferencia) { this.excluirSelectedLancamento(indexIdTransferencia); }
+            if (this.indexIdTransferencia) { this.excluirSelectedLancamento(indexIdTransferencia ?? 0); }
             this.toastr.success('Exclusão', 'Registro excluido com sucesso!');
           }
 
@@ -1452,22 +1452,22 @@ export class LancamentoListFormComponent implements OnInit {
 
   }
 
-  excluirLancamento(indexId) {
-    this.lancamentoService.delete(indexId)
+  excluirLancamento(indexId: number | undefined) {
+    this.lancamentoService.delete(indexId ?? 0)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: () => {
           this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
           this.loadContas();
           this.grid.reset();
-          this.selectedLancamentos = null;
+          this.selectedLancamentos = null!;
         },
         error: () => { }
       })
   }
 
 
-  excluirSelectedLancamento(indexIdTransferencia) {
+  excluirSelectedLancamento(indexIdTransferencia: number) {
     this.lancamentoService.delete(indexIdTransferencia)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
@@ -1494,11 +1494,11 @@ export class LancamentoListFormComponent implements OnInit {
   }
 
   excluirLancamentoTransferencia(lancamento: LancamentoDTO) {
-    this.lancamentoService.delete(lancamento.id)
+    this.lancamentoService.delete(lancamento.id ?? 0)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: () => {
-          this.lancamentoService.delete(lancamento.lancamentoIdTransferencia)
+          this.lancamentoService.delete(lancamento.lancamentoIdTransferencia!)
             .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
             .subscribe({
               next: () => {
@@ -1523,11 +1523,11 @@ export class LancamentoListFormComponent implements OnInit {
   }
 
   excluirLancamentoPermuta(lancamento: LancamentoDTO) {
-    this.lancamentoService.delete(lancamento.id)
+    this.lancamentoService.delete(lancamento.id ?? 0)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: () => {
-          this.lancamentoService.delete(lancamento.lancamentoIdTransferencia)
+          this.lancamentoService.delete(lancamento.lancamentoIdTransferencia!)
             .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
             .subscribe({
               next: () => {
@@ -1547,7 +1547,7 @@ export class LancamentoListFormComponent implements OnInit {
     this.filtraCategorias(""); // Para deixar o combo de Categorias de Receitas de despesas vazia quando retorna da edição de lançamentos
     this.crtCategoria = 3;
   }
-  setModalEdicao(value) {
+  setModalEdicao(value: string) {
     if (value == 'Transferencia') {
       value = 'Receita'
     }
@@ -1556,7 +1556,7 @@ export class LancamentoListFormComponent implements OnInit {
     this.imodo.set(1);
   }
 
-  setModalInclusao(value) {
+  setModalInclusao(value: any) {
     this.resetModal();
     this.imodo.set(0);
 
@@ -1629,7 +1629,7 @@ export class LancamentoListFormComponent implements OnInit {
         this.lancamentoForm.controls['data'].setValue(this.sharedService.dataAtualFormatada());
         this.lancamentoForm.controls['competencia'].setValue(this.sharedService.mesAno());
         this.lancamentoForm.controls['contaId'].setValue(this.contas[0].id);// Conta de Origem
-        this.contaId = this.contas[0].id;
+        this.contaId = this.contas[0].id ?? 0;
         this.lancamentoForm.controls['centroCustoId'].setValue(1);
         this.lancamentoForm.controls['formaId'].setValue(1);
         this.lancamentoForm.controls['documento'].setValue(this.sharedService.mesAno());
@@ -1649,7 +1649,7 @@ export class LancamentoListFormComponent implements OnInit {
         this.lancamentoForm.controls['data'].setValue(this.sharedService.dataAtualFormatada());
         this.lancamentoForm.controls['competencia'].setValue(this.sharedService.mesAno());
         this.lancamentoForm.controls['contaId'].setValue(this.contas[0].id);// Conta de Origem
-        this.formaId = this.formas[0].id;
+        this.formaId = this.formas[0].id ?? 0;
         this.lancamentoForm.controls['formaIdTransferencia'].setValue('Selecione ....');
         this.lancamentoForm.controls['centroCustoId'].setValue(1);
         this.lancamentoForm.controls['formaId'].setValue(1);
@@ -1677,7 +1677,7 @@ export class LancamentoListFormComponent implements OnInit {
   }
 
 
-  private showError(error) {
+  private showError(error: { message: any; }) {
     this.messageService.add({ severity: 'error', summary: 'Erro', detail: error.message });
   }
 

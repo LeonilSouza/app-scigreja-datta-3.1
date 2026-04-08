@@ -21,21 +21,21 @@ export class CasoService {
         ) {
     }
 
-    countCasoAtivoFromIgreja(igrejaId, situacao) {
+    countCasoAtivoFromIgreja(igrejaId: number, situacao: string) {
       return this.http.get(`${API_CONFIG.baseUrl}/casos/count/?igreja=${igrejaId}&situacao=${situacao}`)
         .pipe(
           catchError(this.handleError)
       );
     }
     
-    countProvaVencidaFromIgreja(igrejaId, situacao) {
+    countProvaVencidaFromIgreja(igrejaId: number, situacao: string) {
       return this.http.get(`${API_CONFIG.baseUrl}/casos/count/vencidas?igreja=${igrejaId}&situacao=${situacao}`)
         .pipe(
           catchError(this.handleError)
       );
     }
 
-    getByCasosFromIgreja(igrejaId, nome, situacao , page, linesPerPage) {
+    getByCasosFromIgreja(igrejaId: number, nome: string, situacao: string , page: number, linesPerPage: number) {
 
       return this.http.get(`${API_CONFIG.baseUrl}/casos/?igreja=${igrejaId}&nome=${nome}&situacao=${situacao}&page=${page}&linesPerPage=${linesPerPage}`)
         .pipe(
@@ -43,7 +43,7 @@ export class CasoService {
       );
     }
 
-    getProvasVencidasFromIgreja(igrejaId, nome, situacao,  page, linesPerPage) {
+    getProvasVencidasFromIgreja(igrejaId: number, nome: string, situacao: string,  page: number, linesPerPage: number) {
 
       return this.http.get(`${API_CONFIG.baseUrl}/casos/vencidas?igreja=${igrejaId}&nome=${nome}&situacao=${situacao}&page=${page}&linesPerPage=${linesPerPage}`)
         .pipe(
@@ -51,7 +51,7 @@ export class CasoService {
       );
     }
 
-    getArquivadosFromIgreja(igrejaId, nome, page, linesPerPage) {
+    getArquivadosFromIgreja(igrejaId: number, nome: string, page: number, linesPerPage: number) {
 
       return this.http.get(`${API_CONFIG.baseUrl}/casos/arquivados?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
         .pipe(

@@ -30,7 +30,7 @@ export class  TituloMinisterialService {
         )
       }
 
-      getByPageTituloMinisterialFromIgreja(igrejaId, nome, page, linesPerPage) {
+      getByPageTituloMinisterialFromIgreja(igrejaId: number, nome: string, page: number, linesPerPage: number) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/titulos/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
           .pipe(
@@ -38,7 +38,7 @@ export class  TituloMinisterialService {
         );
       }
 
-      getPageTituloMinisterialFromTipo(igrejaId, nome, page, linesPerPage) {
+      getPageTituloMinisterialFromTipo(igrejaId: any, nome: any, page: any, linesPerPage: any) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/titulos/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
           .pipe(
@@ -46,7 +46,7 @@ export class  TituloMinisterialService {
         );
       }
 
-      getListTituloMinisterialFromIgreja(igrejaId) { // Lista tosdos os  s ministeriais padrão do sistema, mais os criados pela usuario
+      getListTituloMinisterialFromIgreja(igrejaId: number) { // Lista tosdos os  s ministeriais padrão do sistema, mais os criados pela usuario
 
         return this.http.get(`${API_CONFIG.baseUrl}/titulos/list/?igreja=${igrejaId}`)
           .pipe(

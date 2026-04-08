@@ -23,7 +23,7 @@ export class CargoService {
         )
       }
 
-      getPageCargoFromIgreja(igrejaId, nome, page, linesPerPage) {
+      getPageCargoFromIgreja(igrejaId: number, nome: string, page: number, linesPerPage: number) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/cargos/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
           .pipe(
@@ -31,7 +31,7 @@ export class CargoService {
         );
       }
 
-      getPageCargoFromTipo(igrejaId, nome, page, linesPerPage) {
+      getPageCargoFromTipo(igrejaId: any, nome: any, page: any, linesPerPage: any) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/cargos/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
           .pipe(
@@ -39,7 +39,7 @@ export class CargoService {
         );
       }
 
-      getListCargoFromIgreja(igrejaId) {
+      getListCargoFromIgreja(igrejaId: number) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/cargos/?igreja=${igrejaId}`)
           .pipe(

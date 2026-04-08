@@ -109,12 +109,12 @@ export class ProfessorListComponent implements OnInit, AfterContentChecked {
   professores: ProfessorDTO[] = [];
   pessoas: PessoaDTO[] = [];
   pessoa: PessoaDTO = new PessoaDTO();
-  pessoaId: number;
+  pessoaId!: number;
 
   classes: ClasseDTO[] = [];
   classe: ClasseDTO = new ClasseDTO();
   classeId: number = 0;
-  nomeClasse: string;
+  nomeClasse!: string;
   error = '';
 
   public page = 0;
@@ -242,27 +242,27 @@ export class ProfessorListComponent implements OnInit, AfterContentChecked {
     }
   }
 
-  onChangeSelecaoClasses(id) {
+  onChangeSelecaoClasses(id: { value: number; }) {
     this.classeId = id.value;
     this.loadProfessores(this.igrejaId, this.classeId, this.nome, this.page, this.linesPerPage);
     this.loadClasse(id.value)
   }
 
-  onChangeProfessor(id) {
+  onChangeProfessor(id: { value: any; }) {
     this.loadPessoa(id.value)
   }
 
-  onChangeClasse(id) {
+  onChangeClasse(id: { value: any; }) {
     this.loadClasse(id.value)
   }
 
-  private loadPessoa(id) {
+  private loadPessoa(id: number) {
     this.pessoaService.getById(id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           this.pessoa = response;
-          this.professorForm.controls['nome'].setValue(this.sharedService.formataNome(this.pessoa.nome)); // Aqui formata o nome em Camel Case completo 
+          this.professorForm.controls['nome'].setValue(this.sharedService.formataNome(this.pessoa.nome!)); // Aqui formata o nome em Camel Case completo 
           this.professorForm.controls['dtNascimento'].setValue(this.pessoa.dataNascimento);
           this.professorForm.controls['telefone'].setValue(this.pessoa.celular1);
         },
@@ -270,7 +270,7 @@ export class ProfessorListComponent implements OnInit, AfterContentChecked {
       });
   }
 
-  private loadClasse(id) {
+  private loadClasse(id: number) {
     this.classeService.findById(id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -279,7 +279,7 @@ export class ProfessorListComponent implements OnInit, AfterContentChecked {
           this.professorForm.controls['nomeClasse'].setValue(this.classe.nome);
           this.professorForm.controls['faixaEtaria'].setValue(this.classe.faixaEtaria);
            this.professorForm.controls['classificacao'].setValue(this.classe.classificacao);
-          this.nomeClasse = this.classe.nome;
+          this.nomeClasse = this.classe.nome!;
         },
         error: () => { }
       });
@@ -303,8 +303,8 @@ export class ProfessorListComponent implements OnInit, AfterContentChecked {
       .subscribe({
         next: (response) => {
           this.classes = response;
-          this.classeId = this.classes[0].id;
-          this.nomeClasse = this.classes[0].nome;
+          this.classeId = this.classes[0].id!;
+          this.nomeClasse = this.classes[0].nome!;
           this.loadProfessores(this.igrejaId, this.classeId, this.nome, this.page, this.linesPerPage);
         },
         error: () => { }

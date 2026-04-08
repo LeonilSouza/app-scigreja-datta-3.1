@@ -102,7 +102,7 @@ export class LancamentoCargoListFormComponent implements OnInit, OnDestroy {
 
   submittingForm: boolean = false;
   pageTitle!: string;
-  lancamentoCargo: LancamentoCargoDTO[];
+  lancamentoCargo: LancamentoCargoDTO[] = [];
   id!: number;
 
   imodo: number = 0;
@@ -126,7 +126,7 @@ export class LancamentoCargoListFormComponent implements OnInit, OnDestroy {
   pessoas = signal<PessoaDTO[]>([]);
   departamentos = signal<DepartamentoDTO[]>([]);
   pessoa: PessoaDTO = new PessoaDTO();
-  pessoaId: number;
+  pessoaId: number | undefined;
 
   professores: ProfessorDTO[] = [];
 
@@ -134,7 +134,7 @@ export class LancamentoCargoListFormComponent implements OnInit, OnDestroy {
 
   error = '';
 
-  printItems: MenuItem[];
+  printItems: MenuItem[] = [];
 
   public page = 0;
   public pageModal = 0;
@@ -212,39 +212,8 @@ export class LancamentoCargoListFormComponent implements OnInit, OnDestroy {
     });
   }
 
-  // loadLancamentoCargos() {
-  //   if (!this.data) {
-  //     this.data = this.sharedService.dataAtualFormatada(); // Substituir pelo ID da aula selecionada
-  //   }
-  //   this.classeService.getListClasseFromIgreja(this.igrejaId)
-  //     .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-  //     .subscribe({
-  //       next: (response) => {
-  //         this.totalRegistros = response.length;
-  //         if (response.length > 0 && !this.classeId()) {
-  //           this.classes = response;
-  //           this.classeId.set(this.classes[0].id);
-  //           this.nomeClasse = this.classes[0].nome;
-  //         }
-  //         this.listaLancamentoCargos(this.igrejaId, this.classeId(), this.data);
-  //       }
-  //     });
-  // }
-
   // Busca lancamentoCargos selecionadas
-  listaLancamentoCargos(igrejaId, classeId, data) {
-    // this.lancamentoCargoService.getByListLancamentoCargoFromIgreja(igrejaId, classeId, data)
-    //   .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-    //   .subscribe({
-    //     next: (response) => {
-    //       this.lancamentoCargos.set([...response.sort((a: { id: number; }, b: { id: number; }) => b.id - a.id)]);
-    //       this.totalRegistros = response.length;
-
-    //     },
-    //     error: (error) => {
-    //       this.error = error;
-    //     }
-    //   });
+  listaLancamentoCargos(igrejaId: any, classeId: any, data: any) {
   }
 
   // Carrega classes na grade da modal

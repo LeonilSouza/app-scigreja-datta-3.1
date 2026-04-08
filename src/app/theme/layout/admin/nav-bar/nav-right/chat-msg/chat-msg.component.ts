@@ -20,11 +20,11 @@ export class ChatMsgComponent implements OnInit {
   readonly friendId = input(undefined);
   ChatToggle = output();
   readonly newChat = viewChild('newChat', { read: ElementRef });
-  friendsList: object;
-  userChat: object;
-  message: string;
-  message_error: boolean;
-  friendWriting: boolean;
+  friendsList!: object;
+  userChat!: object;
+  message!: string;
+  message_error!: boolean;
+  friendWriting!: boolean;
   newReplay: string | undefined;
   // eslint-disable-next-line
   chatMessage: any;
@@ -48,7 +48,7 @@ export class ChatMsgComponent implements OnInit {
   }
 
   // public method
-  sentMsg(flag) {
+  sentMsg(flag: number) {
     if (this.message === '' || this.message === undefined) {
       this.message_error = true;
     } else {
@@ -108,10 +108,10 @@ export class ChatMsgComponent implements OnInit {
   }
 }
 
-function findObjectByKeyValue(array, key, value) {
-  for (let i = 0; i < array.length; i++) {
-    if (array[i][key] === value) {
-      return array[i];
+function findObjectByKeyValue(array: string | object, key: string, value: undefined) {
+  for (let i = 0; i < (array as any).length; i++) {
+    if ((array as any)[i][key] === value) {
+      return (array as any)[i];
     }
   }
   return false;

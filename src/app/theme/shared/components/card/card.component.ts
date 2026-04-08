@@ -56,7 +56,7 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 export class CardComponent implements OnInit {
   // public props
   @Input() cardTitle: string;
-  @Input() cardClass: string;
+  @Input() cardClass: string | undefined;
   blockClass = input<string>();
   headerClass = input<string>();
   @Input() options: boolean;
@@ -65,7 +65,7 @@ export class CardComponent implements OnInit {
   footerClass = input<string>();
   footerTemplate = contentChild<TemplateRef<ElementRef>>('footerTemplate');
 
-  animation: string;
+  animation!: string;
   fullIcon: string;
   isAnimating: boolean;
   collapsedCard: string;
@@ -113,9 +113,9 @@ export class CardComponent implements OnInit {
     setTimeout(() => {
       this.cardClass = animation === 'zoomOut' ? '' : this.cardClass;
       if (this.cardClass === 'full-card') {
-        document.querySelector('body').style.overflow = 'hidden';
+        document.querySelector('body')!.style.overflow = 'hidden';
       } else {
-        document.querySelector('body').removeAttribute('style');
+        document.querySelector('body')!.removeAttribute('style');
       }
     }, 500);
   }
@@ -128,7 +128,7 @@ export class CardComponent implements OnInit {
   cardRefresh() {
     this.loadCard = true;
     this.cardClass = 'card-load';
-    document.querySelector('body').removeAttribute('style');
+    document.querySelector('body')!.removeAttribute('style');
     setTimeout(() => {
       this.loadCard = false;
       this.cardClass = 'expanded';

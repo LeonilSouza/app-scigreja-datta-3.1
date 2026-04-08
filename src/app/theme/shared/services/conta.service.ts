@@ -29,7 +29,7 @@ export class ContaService {
         )
       }
 
-      getByPageContaFromIgreja(igrejaId, nome, page, linesPerPage) {
+      getByPageContaFromIgreja(igrejaId: number, nome: string, page: number, linesPerPage: number) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/contas/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
           .pipe(
@@ -38,7 +38,7 @@ export class ContaService {
       }
 
 
-      getListContaFromIgreja(igrejaId) {
+      getListContaFromIgreja(igrejaId: number) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/contas/list/?igreja=${igrejaId}`)
           .pipe(

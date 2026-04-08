@@ -63,18 +63,18 @@ export class CargoFormComponent implements OnInit, AfterContentChecked {
 
   currentAction!: string;
   cargoForm!: FormGroup;
-  serverErrorMessages: string[] = null;
+  serverErrorMessages: string[] = [];
   submittingForm: boolean = false;
-  pageTitle: string;
+  pageTitle!: string;
   cargo: CargoDTO = new CargoDTO();
-  id: number;
+  id!: number;
 
-  separacaoId: number;
+  separacaoId!: number;
 
-  tipoCargo: number = null;
-  cargoId: number;
+  tipoCargo!: number;
+  cargoId!: number;
 
-  subscription: Subscription;
+  subscription!: Subscription;
 
   constructor() { }
 
@@ -139,7 +139,8 @@ export class CargoFormComponent implements OnInit, AfterContentChecked {
   }
 
   excluir(cargo: CargoDTO) {
-    this.cargoService.delete(cargo.id).subscribe(
+    this.cargoService.delete(cargo.id!)
+    .subscribe(
       () => {
         this.router.navigate(['/cargos']);
       },
@@ -179,7 +180,7 @@ export class CargoFormComponent implements OnInit, AfterContentChecked {
     const cargo: CargoDTO = this.cargoForm.value;
     this.cargoService.create(cargo).subscribe(
       (cargo) => {
-        this.id = parseInt(this.extractId(cargo.headers.get('location'))); // Extrai o Id da URI retornada do banco
+        this.id = parseInt(this.extractId(cargo.headers.get('location')!)); // Extrai o Id da URI retornada do banco
         this.cargo.id = this.id;
         this.actionsForSuccess();
         Swal.fire('Cadastro', 'Registro inserido com sucesso!', 'success');
@@ -221,7 +222,7 @@ export class CargoFormComponent implements OnInit, AfterContentChecked {
     this.router.navigateByUrl(path);
   }
 
-  private actionsForError(error) {
+  private actionsForError(error: { status: number; _body: string; }) {
     this.showError();
 
     this.submittingForm = false;

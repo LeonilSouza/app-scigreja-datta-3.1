@@ -82,19 +82,19 @@ export class ContasPagarListFormComponent implements OnInit {
   imodo = signal<number>(0);
   nome?: string = ''.toLowerCase();
 
-  descricao: string;
+  descricao!: string;
 
-  contaPagarId: number;
+  contaPagarId!: number;
 
-  mes: string;
-  mesNovo: string;
+  mes!: string;
+  mesNovo!: string;
 
   length = signal(0);
 
   @ViewChild('dtcontaspagar') grid!: Table;
 
   // Mes atual
-  rangeDates: String;
+  rangeDates!: String;
   dtInicio: string = "";
   dtFim: string = "";
   hoje: string = "";
@@ -124,9 +124,9 @@ export class ContasPagarListFormComponent implements OnInit {
 
   totalRegistros: number = 0;
 
-  contasPagarId: number;
+  contasPagarId!: number;
   cadastrado: string = 'sim';
-  categoriaFiltrada: string;
+  categoriaFiltrada!: string;
 
   contasBanco!: ContaDTO[];
   selectedContas!: ContaDTO[];
@@ -143,15 +143,15 @@ export class ContasPagarListFormComponent implements OnInit {
   public page = 0;
   public linesPerPage: any = 10;
 
-  subscription: Subscription;
-  contasPagarForm: FormGroup;
+  subscription!: Subscription;
+  contasPagarForm!: FormGroup;
   pessoa: PessoaDTO = new PessoaDTO();
   categoria: CategoriaDTO = new CategoriaDTO();
   contaPagar: ContasPagarDTO = new ContasPagarDTO;
-  pageTitle: string;
+  pageTitle!: string;
   submittingForm: boolean = false;
 
-  printItems: MenuItem[];
+  printItems!: MenuItem[];
 
   constructor(
     private contasPagarService: ContasPagarService,
@@ -186,11 +186,11 @@ export class ContasPagarListFormComponent implements OnInit {
     ).subscribe(() => {
       const dataBRString = this.contaPagar.dataVencimento;
       const dataBRStringNovo = this.contasPagarForm.get('dataVencimento')?.value;
-      const partes = dataBRString.split('/');
+      const partes = dataBRString?.split('/');
       const partesNovo = dataBRStringNovo.split('/');
 
       // Pega apenas o mes 
-      this.mes = `${partes[1]}`
+      this.mes = `${partes![1]}`
       this.mesNovo = `${partesNovo[1]}`
     });
   };
@@ -205,7 +205,7 @@ export class ContasPagarListFormComponent implements OnInit {
   loadContasPagarLazy(event: any) {
     this.page = event!.first! / event!.rows!;
     this.linesPerPage = event.rows;
-    this.loadContasPagar(this.igrejaId, this.nome.toLowerCase(), this.dtInicio, this.dtFim, this.page, this.linesPerPage);
+    this.loadContasPagar(this.igrejaId, (this.nome as any).toLowerCase(), this.dtInicio, this.dtFim, this.page, this.linesPerPage);
   }
 
   aplicarFiltroDatas() {
@@ -226,33 +226,33 @@ export class ContasPagarListFormComponent implements OnInit {
         const dtFim = dataLimite.toLocaleDateString('pt-BR');
         this.dtInicio = dtInicio;
         this.dtFim = dtFim;
-        this.loadContasPagar(this.igrejaId, this.nome, this.dtInicio, this.dtFim, this.page, this.linesPerPage);
+        this.loadContasPagar(this.igrejaId, (this.nome as any), this.dtInicio, this.dtFim, this.page, this.linesPerPage);
         break;
 
       case 'Mês Atual':
         this.dtInicio = this.sharedService.primeiroDiaMes();
         this.dtFim = this.sharedService.ultimoDiaMes();
-        this.loadContasPagar(this.igrejaId, this.nome, this.dtInicio, this.dtFim, this.page, this.linesPerPage);
+        this.loadContasPagar(this.igrejaId, (this.nome as any), this.dtInicio, this.dtFim, this.page, this.linesPerPage);
         break;
 
       case 'Todas':
         this.dtInicio = '01/01/2000';
         this.dtFim = '01/01/2999';
-        this.loadContasPagar(this.igrejaId, this.nome, this.dtInicio, this.dtFim, this.page, this.linesPerPage);
+        this.loadContasPagar(this.igrejaId, (this.nome as any), this.dtInicio, this.dtFim, this.page, this.linesPerPage);
         return;
 
       case 'Personalizado':
         this.filtroSelecionado = 'Personalizado';
         this.dtInicio = this.sharedService.primeiroDiaMes();
         this.dtFim = this.sharedService.ultimoDiaMes();
-        this.loadContasPagar(this.igrejaId, this.nome, this.dtInicio, this.dtFim, this.page, this.linesPerPage);
+        this.loadContasPagar(this.igrejaId, (this.nome as any), this.dtInicio, this.dtFim, this.page, this.linesPerPage);
         return; // Abre os campos de data (Calendar) na tela
     }
 
     if (this.rangeDates == null) {
       this.dtInicio = this.rangeDates[0];
       if (this.dtInicio.length < 10) {
-        this.dtInicio = this.rangeDates.substring(0, 10);
+        this.dtInicio = (this.rangeDates as any).substring(0, 10);
       } else {
         this.dtInicio = this.rangeDates[0];;
       }
@@ -263,7 +263,7 @@ export class ContasPagarListFormComponent implements OnInit {
     }
     this.rangeDates = this.dtInicio + " - " + this.dtFim;
 
-    this.loadContasPagar(this.igrejaId, this.nome, this.dtInicio, this.dtFim, this.page, this.linesPerPage);
+    this.loadContasPagar(this.igrejaId, (this.nome as any), this.dtInicio, this.dtFim, this.page, this.linesPerPage);
   }
 
   loadCategorias() {
@@ -271,7 +271,7 @@ export class ContasPagarListFormComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
-          this.categoriasFiltradas = response.filter(cat => cat.tipo == 'Despesa'); // Armazena todas as categorias de Despesa
+          this.categoriasFiltradas = response.filter((cat: { tipo: string; }) => cat.tipo == 'Despesa'); // Armazena todas as categorias de Despesa
           this.contasPagarForm.controls['categoriaId'].setValue(this.categoriasFiltradas[0].id)
         }
       }),
@@ -407,14 +407,14 @@ export class ContasPagarListFormComponent implements OnInit {
   }
 
   loadContaPagar(contaPagar: ContasPagarDTO) {
-    this.contaPagarId = contaPagar.id;
+    this.contaPagarId = contaPagar.id!;
     this.contasPagarService.findById(this.contaPagarId)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
           this.contaPagar = response;
           this.contasPagarForm.patchValue(this.contaPagar)   // binds loaded  
-          this.pessoaId = response['pessoa'].id;
+          this.pessoaId = (response as any)['pessoa'].id;
           this.contasPagarForm.controls['pessoaId'].setValue(this.pessoaId);
           this.contasPagarForm.controls['dataPagamento'].setValue(this.sharedService.dataAtualFormatada());
           if (this.pessoaId == 0) {
@@ -576,9 +576,9 @@ export class ContasPagarListFormComponent implements OnInit {
 
   public confirmarPagamento() {
     const payload: ContasPagarDTO = Object.assign(this.contasPagarForm.value);
-    payload.dataVencimento = this.sharedService.formataDataBR(this.contasPagarForm.controls['dataVencimento'].value);
+    payload.dataVencimento = this.sharedService?.formataDataBR(this.contasPagarForm.controls['dataVencimento'].value)!;
     const data = this.sharedService.formataDataBR(this.contasPagarForm.controls['dataPagamento'].value);
-    this.contasPagarService.baixarPagamento(payload.id, payload.dataPagamento, payload.valor.toString())
+    this.contasPagarService.baixarPagamento(payload.id!, payload.dataPagamento, payload.valor?.toString())
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: () => {
@@ -590,7 +590,7 @@ export class ContasPagarListFormComponent implements OnInit {
   }
 
   buscaContasPagar() {
-    this.loadContasPagar(this.igrejaId, this.nome.toLowerCase(), this.dtInicio, this.dtFim, this.page, this.linesPerPage);
+    this.loadContasPagar(this.igrejaId, (this.nome as any).toLowerCase(), this.dtInicio, this.dtFim, this.page, this.linesPerPage);
   }
 
 
@@ -648,13 +648,13 @@ export class ContasPagarListFormComponent implements OnInit {
       });
   }
 
-  private loadPessoa(value) {
+  private loadPessoa(value: number) {
     this.pessoaService.getById(value)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
           this.pessoa = response;
-          this.pessoaId = this.pessoa.id;
+          this.pessoaId = this.pessoa.id!;
           this.contasPagarForm.controls['pessoaId'].setValue(this.pessoa.id);
           this.contasPagarForm.controls['nome'].setValue(this.pessoa.nome);
           if (this.pessoaId == null) {
@@ -672,27 +672,27 @@ export class ContasPagarListFormComponent implements OnInit {
   ///////////////////////////// Eventos  ///////////////////////////
 
 
-  onChangeFrequenciaCP(event) {
+  onChangeFrequenciaCP(event: { value: any; }) {
     this.contasPagarForm.controls['frequenciaCP'].setValue(String(event.value));
   }
 
-  onChangeContaBanco(event) {
+  onChangeContaBanco(event: { value: any; }) {
     this.contasPagarForm.controls['contaBancoId'].setValue(event.value);
   }
 
-  onChangeCategorias(event) {
+  onChangeCategorias(event: any) {
 
   }
 
-  onChangeNomeHistorico(value) {
+  onChangeNomeHistorico(value: { value: any; }) {
     this.loadPessoa(value.value);
   }
 
-  onChangePessoa(event) {
+  onChangePessoa(event: { value: any; }) {
     this.loadPessoa(event.value);
   }
 
-  onChangeFormaPagamento(event) {
+  onChangeFormaPagamento(event: { value: any; }) {
     this.contasPagarForm.controls['formaId'].setValue(event.value)
   }
 
@@ -713,7 +713,7 @@ export class ContasPagarListFormComponent implements OnInit {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
           // Chama o delete com apagarGrupo = false
-          this.contasPagarService.delete(contaPagar.id, false)
+          this.contasPagarService.delete(contaPagar.id!, false)
             .subscribe({
               next: () => {
                 this.grid.reset();//atualiza a tabela do primeng
@@ -725,7 +725,7 @@ export class ContasPagarListFormComponent implements OnInit {
             });
         } else if (result.isDenied) {
           // Chama o delete com apagarGrupo = true
-          this.contasPagarService.delete(contaPagar.id, true)
+          this.contasPagarService.delete(contaPagar.id!, true)
             .subscribe({
               next: () => {
                 this.grid.reset();//atualiza a tabela do primeng
@@ -749,7 +749,7 @@ export class ContasPagarListFormComponent implements OnInit {
       }).then((willDelete) => {
         if (willDelete.dismiss) {
         } else {
-          this.contasPagarService.delete(contaPagar.id, false)
+          this.contasPagarService.delete(contaPagar.id!, false)
             .subscribe({
               next: () => {
                 this.grid.reset();//atualiza a tabela do primeng
@@ -810,7 +810,7 @@ export class ContasPagarListFormComponent implements OnInit {
   }
 
 
-  private showError(error) {
+  private showError(error: { message: any; }) {
     this.messageService.add({ severity: 'error', summary: 'Erro', detail: error.message });
   }
 

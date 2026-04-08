@@ -49,15 +49,15 @@ export class CartaListComponent implements OnInit {
   private destroy$: Subject<void> = new Subject<void>();
   @ViewChild('dtcarta') grid!: Table;
 
-  totalEntradas: number;
-  totalSaidas: number;
+  totalEntradas!: number;
+  totalSaidas!: number;
 
 
   totalRegistros: number = 0
 
   cartas: CartaDTO[] = [];
 
-  printItems: MenuItem[];
+  printItems!: MenuItem[];
 
   public page = 0;
   public linesPerPage = 6;
@@ -79,7 +79,7 @@ export class CartaListComponent implements OnInit {
 
   loadCartasLazy(event: LazyLoadEvent) {
     const page = event!.first! / event!.rows!; // divisão para encontrar a paginações
-    this.linesPerPage = event.rows;
+    this.linesPerPage = event.rows!;
     this.loadCartas(this.nome.toLocaleLowerCase(), page, this.linesPerPage);
   }
 
@@ -94,7 +94,7 @@ export class CartaListComponent implements OnInit {
   ];
 
 
-  loadCartas(nome, page, linesPerPage) {
+  loadCartas(nome: string, page: number, linesPerPage: number) {
     this.cartaService.getByPageCartaFromIgreja(this.igrejaId, nome, page, linesPerPage)
       .subscribe({
         next: (response) => {

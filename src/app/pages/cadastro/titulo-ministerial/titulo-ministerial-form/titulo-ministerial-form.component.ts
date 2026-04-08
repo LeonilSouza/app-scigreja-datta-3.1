@@ -46,17 +46,17 @@ export class TituloMinisterialFormComponent implements OnInit, AfterContentCheck
   setorId = setorIdSignal();
 
   tipos = [{ nome: 'Padrao' }, { nome: 'Igreja' }]; // Tipo padrão é o tipo que grava null no igrejaId do Banco, tadas a Igreja podem ver. Igreja grava o id da igreja do usuario, outras igreja não pode ver.
-  currentAction: string;
-  tituloMinisterialForm: FormGroup;
-  serverErrorMessages: string[] = null;
+  currentAction!: string;
+  tituloMinisterialForm!: FormGroup;
+  serverErrorMessages: string[] = [];
   submittingForm: boolean = false;
-  pageTitle: string;
+  pageTitle!: string;
   tituloMinisterial: TituloMinisterialDTO = new TituloMinisterialDTO();
-  id: number;
+  id!: number;
 
-  tituloMinisterialId: number;
+  tituloMinisterialId!: number;
 
-  subscription: Subscription;
+  subscription!: Subscription;
 
   constructor(
     public tituloMinisterialService: TituloMinisterialService,
@@ -175,7 +175,7 @@ export class TituloMinisterialFormComponent implements OnInit, AfterContentCheck
     this.tituloMinisterialService.create(tituloMinisterial)
       .subscribe(
         tituloMinisterial => {
-          this.id = parseInt(this.extractId(tituloMinisterial.headers.get('location'))); // Extrai o Id da URI retornada do banco
+          this.id = parseInt(this.extractId(tituloMinisterial.headers.get('location')!)); // Extrai o Id da URI retornada do banco
           this.tituloMinisterial.id = this.id;
           this.actionsForSuccess();
           Swal.fire('Cadastro', 'Registro inserido com sucesso!', 'success');
@@ -210,7 +210,7 @@ export class TituloMinisterialFormComponent implements OnInit, AfterContentCheck
     this.router.navigateByUrl(path)
   }
 
-  private actionsForError(error) {
+  private actionsForError(error: { status: number; _body: string; }) {
     this.showError();
 
 

@@ -30,7 +30,7 @@ export class DiarioClasseService {
     )
   }
 
-  getListDiarioClasseFromIgreja(igrejaId, data) {
+  getListDiarioClasseFromIgreja(igrejaId: any, data: any) {
 
     return this.http.get(`${API_CONFIG.baseUrl}/diarioclasses/?igreja=${igrejaId}&data=${data}`)
       .pipe(
@@ -38,13 +38,13 @@ export class DiarioClasseService {
       );
   }
 
-  getByPageDiarioClasseFromIgreja(igrejaId, data, page, linesPerPage) {
+  getByPageDiarioClasseFromIgreja(igrejaId: number, data: string, page: number, linesPerPage: number) {
 
     return this.http.get(`${API_CONFIG.baseUrl}/diarioclasses/page/?igreja=${igrejaId}&data=${data}&page=${page}&linesPerPage=${linesPerPage}`)
       .pipe(
         catchError(this.handleError)
       );
-  } ''
+  } 
 
   salvarDiarioClasse(diarioClasse: any[]): Observable<any> {
     // O Angular/HttpClient automaticamente serializa o array para JSON
@@ -65,9 +65,9 @@ export class DiarioClasseService {
 
   updateTemaLicao(diarioClasse: DiarioClasseDTO): Observable<DiarioClasseDTO> {
   const params = new HttpParams()
-    .set('tema', diarioClasse.tema)
-    .set('licao', diarioClasse.licao)
-    .set('data', diarioClasse.data);
+    .set('tema', diarioClasse.tema!)
+    .set('licao', diarioClasse.licao!)
+    .set('data', diarioClasse.data!);
 
   // 2. A URL deve conter apenas o ID da igreja (se o seu Java usar @PathVariable)
   // O segundo parâmetro do PUT é o "body" (corpo), como não temos, enviamos null ou {}

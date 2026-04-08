@@ -101,25 +101,25 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
   public nome = '';
   public tipoDocumento = 'Carta'; // Campo deve ser setado de acordo com o documento
 
-  subscription: Subscription;
-  conteudoHTML;
+  subscription!: Subscription;
+  conteudoHTML: any;
   cartaId: number = 0;
-  nomeMembro: string;
+  nomeMembro: string | undefined;
 
-  currentAction: string;
-  cartaForm: FormGroup;
-  pessoaForm: FormGroup;
+  currentAction!: string;
+  cartaForm!: FormGroup;
+  pessoaForm!: FormGroup;
 
-  pageTitle: string;
+  pageTitle!: string;
   submittingForm: boolean = false;
-  id: number;
+  id!: number;
   qtde: number = 0;
 
-  modeloDocId: number;
+  modeloDocId!: number;
   dataAtual = moment();
 
-  hoje: string;
-  nomeCidade: string;
+  hoje!: string;
+  nomeCidade!: string;
 
   // Consulta Estados
 
@@ -138,7 +138,7 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
 
 
   paises: PaisDTO[] = [];
-  obreiros: PessoaDTO[];
+  obreiros!: PessoaDTO[];
   pessoas: PessoaDTO[] = [];
   pessoasNomeConjugeFilhos: PessoaDTO[] = [];
   filhos: PessoaDTO[] = [];
@@ -148,9 +148,9 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
   estados: EstadoDTO[] = [];
   modeloDocumentos: ModeloDocumentoDTO[] = [];
   documentosAux: ModeloDocumentoDTO[] = [];
-  serverErrorMessages: string[] = null;
-  modeloDocumentoId: number;
-  pessoaId: number;
+  serverErrorMessages: string[] = [];
+  modeloDocumentoId!: number;
+  pessoaId!: number;
 
   // VARIAVEIS DE CONTROLE
   familia: boolean = false;
@@ -162,16 +162,16 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
   estadual: boolean = false;
   territorial: boolean = false;
 
-  estadoDestinoEx: string;
+  estadoDestinoEx!: string;
 
   observacao: boolean = true;
 
   ctr_update: boolean = false;
 
-  obs: string;
-  win;
+  obs!: string;
+  win: any;
 
-  public ckeditorContent: string;
+  public ckeditorContent!: string;
   public config;
   visualizar: boolean = false;
 
@@ -242,7 +242,7 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
 
 
   // ckeDITOR
-  onChange(event) {
+  onChange(event: string) {
     this.ckeditorContent = event;
   }
 
@@ -290,7 +290,7 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
   }
 
   // Busca documento
-  onChangeTipoCarta(event) {
+  onChangeTipoCarta(event: { value: number | undefined; }) {
     this.modelo = this.modeloDocumentos.filter(modelo => modelo.id == event.value);
     this.cartaForm.controls['modeloCarta'].setValue(this.modelo[0].tipo);
 
@@ -306,47 +306,47 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
   }
 
 
-  onChangePessoa(id) {
+  onChangePessoa(id: { value: any; }) {
     this.loadPessoa(id.value)
   }
 
-  onChangeFilho1(id) {
+  onChangeFilho1(id: { value: number | undefined; }) {
     const filho = this.pessoasNomeConjugeFilhos.filter(f => (f.id == id.value))
     this.cartaForm.controls['filho1'].setValue(filho[0].nome)// 
     this.cartaForm.controls['idFilho1'].setValue(id.value)// 
   }
 
-  onChangeFilho2(id) {
+  onChangeFilho2(id: { value: number | undefined; }) {
     const filho = this.pessoasNomeConjugeFilhos.filter(f => (f.id == id.value))
     this.cartaForm.controls['filho2'].setValue(filho[0].nome)// 
     this.cartaForm.controls['idFilho2'].setValue(id.value)// 
   }
 
-  onChangeFilho3(id) {
+  onChangeFilho3(id: { value: number | undefined; }) {
     const filho = this.pessoasNomeConjugeFilhos.filter(f => (f.id == id.value))
     this.cartaForm.controls['filho3'].setValue(filho[0].nome)// 
     this.cartaForm.controls['idFilho3'].setValue(id.value)// 
   }
 
-  onChangeFilho4(id) {
+  onChangeFilho4(id: { value: number | undefined; }) {
     const filho = this.pessoasNomeConjugeFilhos.filter(f => (f.id == id.value))
     this.cartaForm.controls['filho4'].setValue(filho[0].nome)// 
     this.cartaForm.controls['idFilho4'].setValue(id.value)// 
   }
 
-  onChangeResponsavel(id) {
+  onChangeResponsavel(id: { value: any; }) {
     this.loadResponsavel(id.value)
   }
 
-  onChangeSecretario(id) {
+  onChangeSecretario(id: { value: number; }) {
     this.loadSecretario(id.value)
   }
 
-  onChangeConjuge(id) {
+  onChangeConjuge(id: { value: any; }) {
     this.loadConjuge(id.value)
   }
 
-  onChangeQtde(id) {
+  onChangeQtde(id: { value: number; }) {
     this.qtde = id.value
     this.cartaForm.controls['qtde'].setValue(id.value)
     if (this.qtde == 1) {
@@ -365,7 +365,7 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
   }
 
 
-  onChangeEstado(event) {
+  onChangeEstado(event: { value: any; }) {
     this.estadual = true;
     this.cartaForm.controls['congregacaoDestino'].setValue('POR ONDE PASSAR');
     if (this.cartaForm.controls['paisDestino'].value == 'Brasil') {
@@ -765,7 +765,7 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
               this.cartaForm.patchValue(this.carta)   // binds loaded carta data to cartaForm
 
               // ModeloDocumento
-              this.modeloDocumento = (response['modeloDocumento'])
+              this.modeloDocumento = ((response as any)['modeloDocumento'])
               this.cartaForm.controls['tipoCarta'].setValue(this.modeloDocumento.nome)//
               this.cartaForm.controls['modeloDocumentoId'].setValue(this.modeloDocumento.id)//
 
@@ -779,8 +779,8 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
               // FIM - ModeloDocumento
 
               //Seta os Ids
-              this.pessoaId = response['pessoa'].id;
-              this.cartaForm.controls['modeloDocumentoId'].setValue(response['modeloDocumento'].id); //Guarda o Id do ModeloDoc atual
+              this.pessoaId = (response as any)['pessoa'].id;
+              this.cartaForm.controls['modeloDocumentoId'].setValue((response as any)['modeloDocumento'].id); //Guarda o Id do ModeloDoc atual
               this.cartaForm.controls['pessoaId'].setValue(this.pessoaId)
               this.cartaForm.controls['tituloMin2'].setValue(this.pessoa.tituloMin)//
               this.cartaForm.controls['idCidadeDestino'].setValue(this.carta.idCidadeDestino);//Dropdown só aceita inteiro no id
@@ -793,7 +793,7 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
                 this.esposa = true;
                 this.familia = false;
                 this.filho = true;
-                this.qtde = this.carta.qtde;
+                this.qtde = this.carta.qtde!;
                 //
               }
 
@@ -809,7 +809,7 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
                 this.esposa = false;
                 this.familia = true;
                 this.filho = false;
-                this.qtde = this.carta.qtde;
+                this.qtde = this.carta.qtde!;
                 //
                 // this.cartaForm.controls['familia'].setValue(true)
               }
@@ -865,7 +865,7 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
               }
             }
           }),
-          (error) => {
+          (error: string) => {
             this.error = error;
             this.showError(error)
           }
@@ -892,7 +892,7 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (carta) => {
-          this.id = parseInt(this.extractId(carta.headers.get('location'))); // Extrai o Id da URI retornada do banco
+          this.id = parseInt(this.extractId((carta as any).headers.get('location'))); // Extrai o Id da URI retornada do banco
           this.carta.id = this.id;
           this.actionsForSuccess(this.carta);
         },
@@ -984,13 +984,13 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
       });
   }
 
-  private loadPessoa(id) {
+  private loadPessoa(id: number) {
     this.pessoaService.getById(id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           this.pessoa = response;
-          this.pessoaId = this.pessoa.id;
+          this.pessoaId = this.pessoa.id!;
           this.nomeMembro = this.pessoa.nome;
           this.cartaForm.controls['nomeMembro'].setValue(this.pessoa.nome); //  
           this.cartaForm.controls['tituloMin'].setValue(this.pessoa.tituloMin); //  
@@ -1019,13 +1019,13 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
       });
   }
 
-  private loadResponsavel(id) {
+  private loadResponsavel(id: number) {
     this.pessoaService.getById(id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           this.responsavel = response;
-          const nome = this.responsavel.nome.toUpperCase();
+          const nome  = this.responsavel.nome?.toUpperCase();
           this.cartaForm.controls['nomeResponsavel'].setValue(nome); // 
           this.cartaForm.controls['cargoResponsavel'].setValue(this.responsavel.cargoPrincipal);// Cargo especificado no Módulo de Pessoa. Usado para assinatura de cartas  
           this.cartaForm.controls['tituloResponsavel'].setValue(this.responsavel.tituloMin); // Título Ministerial do Responsável
@@ -1051,7 +1051,7 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
       });
   }
 
-  private loadConjuge(id) {
+  private loadConjuge(id: number) {
     this.pessoaService.getById(id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -1067,12 +1067,12 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
 
 
 
-  loadModeloDocumentos(igrejaId, nome) {
+  loadModeloDocumentos(igrejaId: number, nome: string) {
     this.documentoService.getByListModeloDocumentoFromIgreja(igrejaId, nome)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          this.modeloDocumentos = response.filter(modelo => (modelo.tipo == 'Recomendação' || modelo.tipo == 'Mudança' || modelo.tipo == 'Apresentação'));
+          this.modeloDocumentos = response.filter((modelo: { tipo: string; }) => (modelo.tipo == 'Recomendação' || modelo.tipo == 'Mudança' || modelo.tipo == 'Apresentação'));
           this.modeloDocumentoId = response[0].id;
         },
         error: (error): void => {
@@ -1124,7 +1124,7 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
     this.pageTitle = "Emitindo carta.:   " + pessoaName.toUpperCase();
   }
 
-  loadCidades(cidade) {
+  loadCidades(cidade: string) {
     this.cidadeService.getListaCidadesUfEstados(cidade)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -1138,7 +1138,7 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
 
   loadEstados() {
     this.sharedService.getDataEstados()
-      .then(async (response) => {
+      .then(async (response: { json: () => EstadoDTO[] | PromiseLike<EstadoDTO[]>; }) => {
         this.estados = await response.json();
         //
       },
@@ -1147,9 +1147,9 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
 
   }
 
-  loadEstado(id) {
+  loadEstado(id: any) {
     this.sharedService.getDataEstado(id)
-      .then(async (response) => {
+      .then(async (response: { json: () => EstadoDTO | PromiseLike<EstadoDTO>; }) => {
         this.estado = await response.json();
         const nome = this.estado.nome;
         const uf = this.estado.sigla;
@@ -1162,7 +1162,7 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
   }
 
 
-  onChangePaisDestino(id) {
+  onChangePaisDestino(id: { value: any; }) {
     this.cartaForm.controls['idPaisDestino'].setValue(id.value);
     this.cartaForm.controls['idPais'].setValue(id.value);
 
@@ -1197,7 +1197,7 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
       });
   }
 
-  loadPaisDestino(id) {
+  loadPaisDestino(id: number | undefined) {
     this.pais = this.paises.filter(p => p.id === id)
     this.cartaForm.controls['paisDestino'].setValue(this.pais[0].nome);
     this.cartaForm.controls['siglaPais'].setValue(this.pais[0].sigla);
@@ -1238,7 +1238,7 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
     return location.substring(position + 1, location.length);
   }
 
-  private actionsForError(error) {
+  private actionsForError(error: { status: number; _body: string; }) {
     this.submittingForm = false;
 
     if (error.status === 422) {
@@ -1251,7 +1251,7 @@ export class CartaFormComponent implements OnInit, OnDestroy, AfterContentChecke
     }
   }
 
-  private showError(error) {
+  private showError(error: any) {
     // this.messageService.add({ severity: 'error', summary: 'Erro', detail: error.message });
   }
 

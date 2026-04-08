@@ -87,12 +87,12 @@ export class CadastroListComponent implements OnInit {
     { nome: 'Banco' }
   ];
 
-  totalRegistrosCategoria: number;
-  totalRegistrosCentroCusto: number;
-  totalRegistrosConta: number;
-  totalRegistrosForma: number;
-  totalCadastrosSistema: number;
-  totalCadastrosIgreja: number;
+  totalRegistrosCategoria!: number;
+  totalRegistrosCentroCusto!: number;
+  totalRegistrosConta!: number;
+  totalRegistrosForma!: number;
+  totalCadastrosSistema!: number;
+  totalCadastrosIgreja!: number;
 
 
 
@@ -103,10 +103,10 @@ export class CadastroListComponent implements OnInit {
 
   error = '';
 
-  contaId: number;
-  categoriaId: number;
-  centroCustoId: number;
-  formaId: number;
+  contaId!: number;
+  categoriaId!: number;
+  centroCustoId!: number;
+  formaId!: number;
 
   public pageConta = 0;
   public pageCategoria = 0;
@@ -123,17 +123,17 @@ export class CadastroListComponent implements OnInit {
   public nomeCentroCusto = '';
   public nomeForma = '';
 
-  contaForm: FormGroup;
-  categoriaForm: FormGroup;
-  centroCustoForm: FormGroup;
-  formaForm: FormGroup;
+  contaForm!: FormGroup;
+  categoriaForm!: FormGroup;
+  centroCustoForm!: FormGroup;
+  formaForm!: FormGroup;
 
   conta: ContaDTO = new ContaDTO();
   categoria: CategoriaDTO = new CategoriaDTO();
   centroCusto: CentroCustoDTO = new CentroCustoDTO();
   forma: FormaDTO = new FormaDTO();
 
-  pageTitle: string;
+  pageTitle!: string;
 
   imodo: number = 0;
 
@@ -264,12 +264,12 @@ export class CadastroListComponent implements OnInit {
     });
   }
 
-  loadContas(igrejaId, nomeConta, pageConta, linesPerPageConta) {
+  loadContas(igrejaId: number, nomeConta: string, pageConta: number, linesPerPageConta: number) {
     this.contaService.getByPageContaFromIgreja(igrejaId, nomeConta, pageConta, linesPerPageConta)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          this.contas = response['content'].sort((a, b) => a.id - b.id);
+          this.contas = response['content'].sort((a: { id: number; }, b: { id: number; }) => a.id - b.id);
           this.totalRegistrosConta = response.totalElements
         },
         error: (error) => {
@@ -279,12 +279,12 @@ export class CadastroListComponent implements OnInit {
       });
   }
 
-  loadCategorias(igrejaId, nomeCategoria, pageCategoria, linesPerPageCategoria) {
+  loadCategorias(igrejaId: number, nomeCategoria: string, pageCategoria: number, linesPerPageCategoria: number) {
     this.categoriaService.getByPageCategoriaFromIgreja(igrejaId, nomeCategoria, pageCategoria, linesPerPageCategoria)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          this.categorias = response['content'].sort((a, b) => a.id - b.id);
+          this.categorias = response['content'].sort((a: { id: number; }, b: { id: number; }) => a.id - b.id);
           this.totalRegistrosCategoria = response.totalElements
         },
         error: (error) => {
@@ -294,12 +294,12 @@ export class CadastroListComponent implements OnInit {
       });
   }
 
-  loadCentroCustos(igrejaId, nomeCentroCusto, pageCentroCusto, linesPerPageCentroCusto) {
+  loadCentroCustos(igrejaId: number, nomeCentroCusto: string, pageCentroCusto: number, linesPerPageCentroCusto: number) {
     this.centroCustoService.getByPageCentroCustoFromIgreja(igrejaId, nomeCentroCusto, pageCentroCusto, linesPerPageCentroCusto)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          this.centroCustos = response['content'].sort((a, b) => a.id - b.id);
+          this.centroCustos = response['content'].sort((a: { id: number; }, b: { id: number; }) => a.id - b.id);
           this.totalRegistrosCentroCusto = response.totalElements
         },
         error: (error) => {
@@ -309,12 +309,12 @@ export class CadastroListComponent implements OnInit {
       });
   }
 
-  loadFormas(igrejaId, nomeForma, pageForma, linesPerPageForma) {
+  loadFormas(igrejaId: number, nomeForma: string, pageForma: number, linesPerPageForma: number) {
     this.formaService.getByPageFormaFromIgreja(igrejaId, nomeForma, pageForma, linesPerPageForma)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          this.formas = response['content'].sort((a, b) => a.id - b.id);
+          this.formas = response['content'].sort((a: { id: number; }, b: { id: number; }) => a.id - b.id);
           this.totalRegistrosForma = response.totalElements
         },
         error: (error) => {
@@ -331,7 +331,7 @@ export class CadastroListComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         conta => {
-          this.conta.id = parseInt(this.extractId(conta.headers.get('location'))); // Extrai o Id da URI retornada do banco
+          this.conta.id = parseInt(this.extractId(conta.headers.get('location')!)); // Extrai o Id da URI retornada do banco
           // this.conta.id = this.contaId;       
           this.loadContas(this.igrejaId, this.nomeConta, this.pageConta, this.linesPerPageConta)
           Swal.fire('Cadastro', 'Registro inserido com sucesso!', 'success');
@@ -358,7 +358,7 @@ export class CadastroListComponent implements OnInit {
   }
 
   loadConta(conta: ContaDTO) {
-    this.contaId = conta.id;
+    this.contaId = conta.id!;
     this.contaService.findById(this.contaId)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
@@ -371,7 +371,7 @@ export class CadastroListComponent implements OnInit {
   }
 
   loadCategoria(categoria: CategoriaDTO) {
-    this.categoriaId = categoria.id;
+    this.categoriaId = categoria.id!;
     this.categoriaService.findById(this.categoriaId)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
@@ -384,7 +384,7 @@ export class CadastroListComponent implements OnInit {
   }
 
   loadCentroCusto(centroCusto: CentroCustoDTO) {
-    this.centroCustoId = centroCusto.id;
+    this.centroCustoId = centroCusto.id!;
     this.centroCustoService.findById(this.centroCustoId)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
@@ -397,7 +397,7 @@ export class CadastroListComponent implements OnInit {
   }
 
   loadForma(forma: FormaDTO) {
-    this.formaId = forma.id;
+    this.formaId = forma.id!;
     this.formaService.findById(this.formaId)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
@@ -416,7 +416,7 @@ export class CadastroListComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         categoria => {
-          this.categoriaId = parseInt(this.extractId(categoria.headers.get('location'))); // Extrai o Id da URI retornada do banco
+          this.categoriaId = parseInt(this.extractId(categoria.headers.get('location')!)); // Extrai o Id da URI retornada do banco
           this.categoria.id = this.categoriaId;
           this.loadCategorias(this.igrejaId, this.nomeCategoria, this.pageCategoria, this.linesPerPageCategoria)
           Swal.fire('Cadastro', 'Registro inserido com sucesso!', 'success');
@@ -449,7 +449,7 @@ export class CadastroListComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         centroCusto => {
-          this.centroCustoId = parseInt(this.extractId(centroCusto.headers.get('location'))); // Extrai o Id da URI retornada do banco
+          this.centroCustoId = parseInt(this.extractId(centroCusto.headers.get('location')!)); // Extrai o Id da URI retornada do banco
           this.centroCusto.id = this.centroCustoId;
           this.loadCentroCustos(this.igrejaId, this.nomeCentroCusto, this.pageCentroCusto, this.linesPerPageCentroCusto)
           Swal.fire('Cadastro', 'Registro inserido com sucesso!', 'success');
@@ -481,7 +481,7 @@ export class CadastroListComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         forma => {
-          this.formaId = parseInt(this.extractId(forma.headers.get('location'))); // Extrai o Id da URI retornada do banco
+          this.formaId = parseInt(this.extractId(forma.headers.get('location')!)); // Extrai o Id da URI retornada do banco
           this.forma.id = this.formaId;
 
           this.loadFormas(this.igrejaId, this.nomeForma, this.pageForma, this.linesPerPageForma)
@@ -510,11 +510,11 @@ export class CadastroListComponent implements OnInit {
 
 
   ///////////////////////////// Tipo   ///////////////////////////
-  onChangeTipoConta(value) {
+  onChangeTipoConta(value: any) {
     this.contaForm.controls['igrejaId'].setValue(this.igrejaId)
   }
 
-  onChangeTipoCategoria(value) {
+  onChangeTipoCategoria(value: { value: string; }) {
     if (value.value === 'Padrao') {
       this.categoriaForm.controls['igrejaId'].setValue(null);
     } else {
@@ -522,7 +522,7 @@ export class CadastroListComponent implements OnInit {
     }
   }
 
-  onChangeTipoCentroCusto(value) {
+  onChangeTipoCentroCusto(value: { value: string; }) {
     if (value.value === 'Padrao') {
       this.centroCustoForm.controls['igrejaId'].setValue(null);
     } else {
@@ -531,7 +531,7 @@ export class CadastroListComponent implements OnInit {
 
   }
 
-  onChangeTipoForma(value) {
+  onChangeTipoForma(value: { value: string; }) {
     if (value.value === 'Padrao') {
       this.formaForm.controls['igrejaId'].setValue(null);
     } else {
@@ -552,7 +552,7 @@ export class CadastroListComponent implements OnInit {
       if (willDelete.dismiss) {
         // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
       } else {
-        this.contaService.delete(conta.id)
+        this.contaService.delete(conta.id!)
           .subscribe({
             next: () => {
               this.contas = this.contas.filter(element => element != this.conta.id)
@@ -579,7 +579,7 @@ export class CadastroListComponent implements OnInit {
       if (willDelete.dismiss) {
         // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
       } else {
-        this.categoriaService.delete(categoria.id)
+        this.categoriaService.delete(categoria.id!)
           .subscribe({
             next: () => {
               this.categorias = this.categorias;
@@ -606,7 +606,7 @@ export class CadastroListComponent implements OnInit {
       if (willDelete.dismiss) {
         // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
       } else {
-        this.centroCustoService.delete(centroCusto.id)
+        this.centroCustoService.delete(centroCusto.id!)
           .subscribe({
             next: () => {
               this.centroCustos = this.centroCustos;
@@ -634,7 +634,7 @@ export class CadastroListComponent implements OnInit {
       if (willDelete.dismiss) {
         // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
       } else {
-        this.formaService.delete(forma.id)
+        this.formaService.delete(forma.id!)
           .subscribe({
             next: () => {
               this.formas = this.formas;
@@ -723,7 +723,7 @@ export class CadastroListComponent implements OnInit {
   }
 
 
-  private showError(error) {
+  private showError(error: { message: any; }) {
     this.messageService.add({ severity: 'error', summary: 'Erro', detail: error.message });
   }
 

@@ -46,7 +46,7 @@ export class AdminComponent {
 
   // public method
   navMobClick() {
-    if (this.navCollapsedMob && !document.querySelector('app-navigation.pcoded-navbar').classList.contains('mob-open')) {
+    if (this.navCollapsedMob && !document.querySelector('app-navigation.pcoded-navbar')!.classList.contains('mob-open')) {
       this.navCollapsedMob = !this.navCollapsedMob;
       setTimeout(() => {
         this.navCollapsedMob = !this.navCollapsedMob;
@@ -64,8 +64,8 @@ export class AdminComponent {
   }
 
   closeMenu() {
-    if (document.querySelector('app-navigation.pcoded-navbar').classList.contains('mob-open')) {
-      document.querySelector('app-navigation.pcoded-navbar').classList.remove('mob-open');
+    if (document.querySelector('app-navigation.pcoded-navbar')!.classList.contains('mob-open')) {
+      document.querySelector('app-navigation.pcoded-navbar')!.classList.remove('mob-open');
     }
   }
 }

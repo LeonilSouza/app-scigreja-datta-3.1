@@ -22,26 +22,26 @@ export class ConfigurationComponent implements OnInit {
   private themeService = inject(ThemeService);
 
   // public props
-  styleSelectorToggle: boolean; // open configuration menu
-  isThemeLayout: string;
-  isDarkMode: string; // layout type
-  pre_layout: string; // layout type
-  rtlLayout: boolean; // rtl type
-  headerFixedLayout: boolean; // header fixed flag
-  boxLayout: boolean; // box layout flag
-  isColoredIcon: boolean; // menu icon color
-  headerBackgroundColor: string; // header background color
-  navbarBackgroundColor: string; // navbar background color
-  brandBackgroundColor: string; // brand/logo background color
-  navBackgroundImage: boolean; // navbar background image
-  menuDropdownIcon: string; // navbar background image
-  menuListIcon: string; // navbar background image
-  navActiveColor: string;
-  navTitleColor: string;
-  menuTitleHide: boolean;
-  headerBackColor: string;
-  configurationShow: boolean;
-  layout6Background: string;
+  styleSelectorToggle!: boolean; // open configuration menu
+  isThemeLayout!: string;
+  isDarkMode!: string; // layout type
+  pre_layout!: string; // layout type
+  rtlLayout!: boolean; // rtl type
+  headerFixedLayout!: boolean; // header fixed flag
+  boxLayout!: boolean; // box layout flag
+  isColoredIcon!: boolean; // menu icon color
+  headerBackgroundColor!: string; // header background color
+  navbarBackgroundColor!: string; // navbar background color
+  brandBackgroundColor!: string; // brand/logo background color
+  navBackgroundImage!: boolean; // navbar background image
+  menuDropdownIcon!: string; // navbar background image
+  menuListIcon!: string; // navbar background image
+  navActiveColor!: string;
+  navTitleColor!: string;
+  menuTitleHide!: boolean;
+  headerBackColor!: string;
+  configurationShow!: boolean;
+  layout6Background!: string;
   direction: string = 'ltr';
 
   // constructor
@@ -203,20 +203,20 @@ export class ConfigurationComponent implements OnInit {
 
   setPreBuildLayout(pre_layout: string) {
     if (pre_layout === 'layout-6') {
-      document.querySelector('.pcoded-navbar').classList.add('menupos-static');
+      document.querySelector('.pcoded-navbar')!.classList.add('menupos-static');
       this.headerBackColor = ThemeConfig.layout_6_Background;
       this.setHeaderBackColor(this.headerBackColor);
     }
 
     if (pre_layout !== 'layout-6' && pre_layout !== 'layout-8') {
       this.configurationShow = false;
-      document.querySelector('.pcoded-navbar').classList.add(pre_layout);
+      document.querySelector('.pcoded-navbar')!.classList.add(pre_layout);
     } else {
-      document.querySelector('body').classList.add(pre_layout);
+      document.querySelector('body')!.classList.add(pre_layout);
     }
   }
 
-  setHeaderBackColor(color) {
+  setHeaderBackColor(color: string) {
     this.headerBackColor = color;
     (document.querySelector('body') as HTMLElement).style.background = color;
   }
@@ -226,11 +226,11 @@ export class ConfigurationComponent implements OnInit {
     this.configurationShow = true;
     this.setNavbarBackground(ThemeConfig.navBackColor);
     this.setBrandBackground(ThemeConfig.navBrandColor);
-    document.querySelector('.pcoded-navbar').classList.remove('menu-light');
-    document.querySelector('.pcoded-navbar').classList.remove('menu-dark');
-    document.querySelector('.pcoded-navbar').classList.remove('navbar-dark');
-    document.querySelector('.pcoded-navbar').classList.remove('brand-dark');
-    document.querySelector('body').classList.remove('datta-dark');
+    document.querySelector('.pcoded-navbar')!.classList.remove('menu-light');
+    document.querySelector('.pcoded-navbar')!.classList.remove('menu-dark');
+    document.querySelector('.pcoded-navbar')!.classList.remove('navbar-dark');
+    document.querySelector('.pcoded-navbar')!.classList.remove('brand-dark');
+    document.querySelector('body')!.classList.remove('datta-dark');
     document.querySelector('html')?.classList.remove('dark');
     this.setHeaderBackground('header-default');
 
@@ -238,11 +238,11 @@ export class ConfigurationComponent implements OnInit {
     if (layout === 'menu-light') {
       this.setNavbarBackground(this.navbarBackgroundColor);
       this.setBrandBackground(this.brandBackgroundColor);
-      document.querySelector('.pcoded-navbar').classList.add(layout);
+      document.querySelector('.pcoded-navbar')!.classList.add(layout);
     }
     if (layout === 'dark') {
-      document.querySelector('.pcoded-navbar').classList.add('navbar-dark');
-      document.querySelector('.pcoded-navbar').classList.add('brand-dark');
+      document.querySelector('.pcoded-navbar')!.classList.add('navbar-dark');
+      document.querySelector('.pcoded-navbar')!.classList.add('brand-dark');
       this.setNavbarBackground('navbar-dark');
       this.setBrandBackground('brand-dark');
 
@@ -250,7 +250,7 @@ export class ConfigurationComponent implements OnInit {
         this.setHeaderBackground('header-dark');
       }
 
-      document.querySelector('body').classList.add('datta-dark');
+      document.querySelector('body')!.classList.add('datta-dark');
       document.querySelector('html')?.classList.add('dark');
     }
     if (layout === 'reset') {
@@ -260,177 +260,177 @@ export class ConfigurationComponent implements OnInit {
   }
 
   reset() {
-    document.querySelector('.pcoded-navbar').classList.remove('icon-colored');
+    document.querySelector('.pcoded-navbar')!.classList.remove('icon-colored');
     this.ngOnInit();
   }
 
-  setColoredIcon(e) {
+  setColoredIcon(e: { target: { checked: any; }; }) {
     const flag = !!e.target.checked;
     this.changeIconColor(flag);
   }
 
   changeIconColor(flag: boolean) {
     if (flag) {
-      document.querySelector('.pcoded-navbar').classList.add('icon-colored');
+      document.querySelector('.pcoded-navbar')!.classList.add('icon-colored');
     } else {
-      document.querySelector('.pcoded-navbar').classList.remove('icon-colored');
+      document.querySelector('.pcoded-navbar')!.classList.remove('icon-colored');
     }
   }
 
-  setRtlLayout(e) {
+  setRtlLayout(e: { target: { checked: any; }; }) {
     const flag = !!e.target.checked;
     this.changeRtlLayout(flag);
   }
 
   changeRtlLayout(flag: boolean) {
     if (flag) {
-      document.querySelector('body').classList.add('datta-rtl');
+      document.querySelector('body')!.classList.add('datta-rtl');
       this.direction = 'rtl';
     } else {
-      document.querySelector('body').classList.remove('datta-rtl');
+      document.querySelector('body')!.classList.remove('datta-rtl');
       this.direction = 'ltr';
     }
     this.themeService.isRtlTheme.set(flag);
   }
 
-  setHeaderFixedLayout(e) {
+  setHeaderFixedLayout(e: { target: { checked: any; }; }) {
     const flag = !!e.target.checked;
     this.changeHeaderFixedLayout(flag);
   }
 
   changeHeaderFixedLayout(flag: boolean) {
     if (flag) {
-      document.querySelector('.pcoded-header').classList.add('headerpos-fixed');
-      document.querySelector('.pcoded-header').classList.add('header-blue');
+      document.querySelector('.pcoded-header')!.classList.add('headerpos-fixed');
+      document.querySelector('.pcoded-header')!.classList.add('header-blue');
     } else {
-      document.querySelector('.pcoded-header').classList.remove('headerpos-fixed');
+      document.querySelector('.pcoded-header')!.classList.remove('headerpos-fixed');
     }
   }
 
-  setBoxLayout(e) {
+  setBoxLayout(e: { target: { checked: any; }; }) {
     const flag = !!e.target.checked;
     this.changeBoxLayout(flag);
   }
 
   changeBoxLayout(flag: boolean) {
     if (flag) {
-      document.querySelector('body').classList.add('container');
-      document.querySelector('body').classList.add('box-layout');
+      document.querySelector('body')!.classList.add('container');
+      document.querySelector('body')!.classList.add('box-layout');
     } else {
-      document.querySelector('body').classList.remove('box-layout');
-      document.querySelector('body').classList.remove('container');
+      document.querySelector('body')!.classList.remove('box-layout');
+      document.querySelector('body')!.classList.remove('container');
     }
     this.themeService.isBoxTheme.set(flag);
   }
 
-  hideMenuTitle(e) {
+  hideMenuTitle(e: { target: { checked: any; }; }) {
     const flag = !!e.target.checked;
     this.changeMenuTitle(flag);
   }
 
   changeMenuTitle(flag: boolean) {
     if (flag) {
-      document.querySelector('.pcoded-navbar').classList.add('caption-hide');
+      document.querySelector('.pcoded-navbar')!.classList.add('caption-hide');
     } else {
-      document.querySelector('.pcoded-navbar').classList.remove('caption-hide');
+      document.querySelector('.pcoded-navbar')!.classList.remove('caption-hide');
     }
   }
 
   setHeaderBackground(background: string) {
     this.headerBackgroundColor = background;
-    document.querySelector('.pcoded-header').classList.remove('header-blue');
-    document.querySelector('.pcoded-header').classList.remove('header-red');
-    document.querySelector('.pcoded-header').classList.remove('header-purple');
-    document.querySelector('.pcoded-header').classList.remove('header-lightblue');
-    document.querySelector('.pcoded-header').classList.remove('header-dark');
+    document.querySelector('.pcoded-header')!.classList.remove('header-blue');
+    document.querySelector('.pcoded-header')!.classList.remove('header-red');
+    document.querySelector('.pcoded-header')!.classList.remove('header-purple');
+    document.querySelector('.pcoded-header')!.classList.remove('header-lightblue');
+    document.querySelector('.pcoded-header')!.classList.remove('header-dark');
     if (background !== 'header-default') {
-      document.querySelector('.pcoded-header').classList.add(background);
+      document.querySelector('.pcoded-header')!.classList.add(background);
     }
   }
 
   setNavbarBackground(background: string) {
     this.setBackgroundImage(ThemeConfig.navBackImage);
     this.navbarBackgroundColor = background;
-    document.querySelector('.pcoded-navbar').classList.remove('navbar-blue');
-    document.querySelector('.pcoded-navbar').classList.remove('navbar-red');
-    document.querySelector('.pcoded-navbar').classList.remove('navbar-purple');
-    document.querySelector('.pcoded-navbar').classList.remove('navbar-lightblue');
-    document.querySelector('.pcoded-navbar').classList.remove('navbar-dark');
+    document.querySelector('.pcoded-navbar')!.classList.remove('navbar-blue');
+    document.querySelector('.pcoded-navbar')!.classList.remove('navbar-red');
+    document.querySelector('.pcoded-navbar')!.classList.remove('navbar-purple');
+    document.querySelector('.pcoded-navbar')!.classList.remove('navbar-lightblue');
+    document.querySelector('.pcoded-navbar')!.classList.remove('navbar-dark');
 
     // add default menu brand background color
-    document.querySelector('.pcoded-navbar').classList.add('brand-default');
+    document.querySelector('.pcoded-navbar')!.classList.add('brand-default');
     if (background !== 'navbar-default') {
-      document.querySelector('.pcoded-navbar').classList.add(background);
+      document.querySelector('.pcoded-navbar')!.classList.add(background);
     }
   }
 
   setBrandBackground(background: string) {
     this.brandBackgroundColor = background;
-    document.querySelector('.pcoded-navbar').classList.remove('brand-default');
-    document.querySelector('.pcoded-navbar').classList.remove('brand-blue');
-    document.querySelector('.pcoded-navbar').classList.remove('brand-red');
-    document.querySelector('.pcoded-navbar').classList.remove('brand-purple');
-    document.querySelector('.pcoded-navbar').classList.remove('brand-lightblue');
-    document.querySelector('.pcoded-navbar').classList.remove('brand-dark');
-    document.querySelector('.pcoded-navbar').classList.add(background);
+    document.querySelector('.pcoded-navbar')!.classList.remove('brand-default');
+    document.querySelector('.pcoded-navbar')!.classList.remove('brand-blue');
+    document.querySelector('.pcoded-navbar')!.classList.remove('brand-red');
+    document.querySelector('.pcoded-navbar')!.classList.remove('brand-purple');
+    document.querySelector('.pcoded-navbar')!.classList.remove('brand-lightblue');
+    document.querySelector('.pcoded-navbar')!.classList.remove('brand-dark');
+    document.querySelector('.pcoded-navbar')!.classList.add(background);
   }
 
-  setBackgroundImage(image) {
-    document.querySelector('.pcoded-navbar').classList.remove('navbar-image-1');
-    document.querySelector('.pcoded-navbar').classList.remove('navbar-image-2');
-    document.querySelector('.pcoded-navbar').classList.remove('navbar-image-3');
-    document.querySelector('.pcoded-navbar').classList.remove('navbar-image-4');
-    document.querySelector('.pcoded-navbar').classList.remove('navbar-image-5');
+  setBackgroundImage(image: string | boolean) {
+    document.querySelector('.pcoded-navbar')!.classList.remove('navbar-image-1');
+    document.querySelector('.pcoded-navbar')!.classList.remove('navbar-image-2');
+    document.querySelector('.pcoded-navbar')!.classList.remove('navbar-image-3');
+    document.querySelector('.pcoded-navbar')!.classList.remove('navbar-image-4');
+    document.querySelector('.pcoded-navbar')!.classList.remove('navbar-image-5');
     if (image) {
-      this.navBackgroundImage = image;
-      document.querySelector('.pcoded-navbar').classList.add(image);
+      this.navBackgroundImage = (image as any);
+      document.querySelector('.pcoded-navbar')?.classList.add(image as any);
     }
   }
 
   setMenuDropdownIcon(icon: string) {
-    document.querySelector('.pcoded-navbar').classList.remove('drp-icon-style1');
-    document.querySelector('.pcoded-navbar').classList.remove('drp-icon-style2');
-    document.querySelector('.pcoded-navbar').classList.remove('drp-icon-style3');
+    document.querySelector('.pcoded-navbar')?.classList.remove('drp-icon-style1');
+    document.querySelector('.pcoded-navbar')?.classList.remove('drp-icon-style2');
+    document.querySelector('.pcoded-navbar')?.classList.remove('drp-icon-style3');
     if (icon !== 'style1') {
-      document.querySelector('.pcoded-navbar').classList.add('drp-icon-' + icon);
+      document.querySelector('.pcoded-navbar')?.classList.add('drp-icon-' + icon);
     }
   }
 
-  setMenuListIcon(icon) {
-    document.querySelector('.pcoded-navbar').classList.remove('menu-item-icon-style1');
-    document.querySelector('.pcoded-navbar').classList.remove('menu-item-icon-style2');
-    document.querySelector('.pcoded-navbar').classList.remove('menu-item-icon-style3');
-    document.querySelector('.pcoded-navbar').classList.remove('menu-item-icon-style4');
-    document.querySelector('.pcoded-navbar').classList.remove('menu-item-icon-style5');
-    document.querySelector('.pcoded-navbar').classList.remove('menu-item-icon-style6');
+  setMenuListIcon(icon: string) {
+    document.querySelector('.pcoded-navbar')?.classList.remove('menu-item-icon-style1');
+    document.querySelector('.pcoded-navbar')?.classList.remove('menu-item-icon-style2');
+    document.querySelector('.pcoded-navbar')?.classList.remove('menu-item-icon-style3');
+    document.querySelector('.pcoded-navbar')?.classList.remove('menu-item-icon-style4');
+    document.querySelector('.pcoded-navbar')?.classList.remove('menu-item-icon-style5');
+    document.querySelector('.pcoded-navbar')?.classList.remove('menu-item-icon-style6');
     if (icon !== 'style1') {
-      document.querySelector('.pcoded-navbar').classList.add('menu-item-icon-' + icon);
+      document.querySelector('.pcoded-navbar')?.classList.add('menu-item-icon-' + icon);
     }
   }
 
-  setNavActiveColor(style) {
+  setNavActiveColor(style: string) {
     this.navActiveColor = style;
-    document.querySelector('.pcoded-navbar').classList.remove('active-default');
-    document.querySelector('.pcoded-navbar').classList.remove('active-blue');
-    document.querySelector('.pcoded-navbar').classList.remove('active-red');
-    document.querySelector('.pcoded-navbar').classList.remove('active-purple');
-    document.querySelector('.pcoded-navbar').classList.remove('active-lightblue');
-    document.querySelector('.pcoded-navbar').classList.remove('active-dark');
+    document.querySelector('.pcoded-navbar')?.classList.remove('active-default');
+    document.querySelector('.pcoded-navbar')?.classList.remove('active-blue');
+    document.querySelector('.pcoded-navbar')?.classList.remove('active-red');
+    document.querySelector('.pcoded-navbar')?.classList.remove('active-purple');
+    document.querySelector('.pcoded-navbar')?.classList.remove('active-lightblue');
+    document.querySelector('.pcoded-navbar')?.classList.remove('active-dark');
     if (style !== 'active-default') {
-      document.querySelector('.pcoded-navbar').classList.add(style);
+      document.querySelector('.pcoded-navbar')?.classList.add(style);
     }
   }
 
-  setNavTitleColor(style) {
+  setNavTitleColor(style: string) {
     this.navTitleColor = style;
-    document.querySelector('.pcoded-navbar').classList.remove('title-default');
-    document.querySelector('.pcoded-navbar').classList.remove('title-blue');
-    document.querySelector('.pcoded-navbar').classList.remove('title-red');
-    document.querySelector('.pcoded-navbar').classList.remove('title-purple');
-    document.querySelector('.pcoded-navbar').classList.remove('title-lightblue');
-    document.querySelector('.pcoded-navbar').classList.remove('title-dark');
+    document.querySelector('.pcoded-navbar')?.classList.remove('title-default');
+    document.querySelector('.pcoded-navbar')?.classList.remove('title-blue');
+    document.querySelector('.pcoded-navbar')?.classList.remove('title-red');
+    document.querySelector('.pcoded-navbar')?.classList.remove('title-purple');
+    document.querySelector('.pcoded-navbar')?.classList.remove('title-lightblue');
+    document.querySelector('.pcoded-navbar')?.classList.remove('title-dark');
     if (style !== 'title-default') {
-      document.querySelector('.pcoded-navbar').classList.add(style);
+      document.querySelector('.pcoded-navbar')?.classList.add(style);
     }
   }
 

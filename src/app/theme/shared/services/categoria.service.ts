@@ -29,7 +29,7 @@ export class CategoriaService {
         )
       }
 
-      getByPageCategoriaFromIgreja(igrejaId, nome, page, linesPerPage) {
+      getByPageCategoriaFromIgreja(igrejaId: number, nome: string, page: number, linesPerPage: number) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/categorias/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
           .pipe(
@@ -37,7 +37,7 @@ export class CategoriaService {
         );
       }
 
-      getListCategoriaFromIgreja(igrejaId) {
+      getListCategoriaFromIgreja(igrejaId: number) {
         return this.http.get(`${API_CONFIG.baseUrl}/categorias/list/?igreja=${igrejaId}`)
           .pipe(
             catchError(this.handleError)

@@ -52,7 +52,7 @@ export class AcessoService {
         )
       }
 
-      getByBuscaFromIgrejaUsuario(igrejaId, usuario_id) {
+      getByBuscaFromIgrejaUsuario(igrejaId: number, usuario_id: number | undefined) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/acessos/busca/?igreja=${igrejaId}&usuario=${usuario_id}`)
           .pipe(

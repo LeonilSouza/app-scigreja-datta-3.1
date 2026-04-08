@@ -36,9 +36,9 @@ export class IgrejaAtivaComponent implements OnInit {
 
   igrejas: IgrejaAtivaDTO[] = [];
 
-  igreja: IgrejaAtivaDTO;
+  igreja!: IgrejaAtivaDTO;
 
-  usuario: UsuarioDTO;
+  usuario!: UsuarioDTO;
 
   @ViewChild('dtIgrejaAtiva') grid!: Table;
 
@@ -74,7 +74,7 @@ export class IgrejaAtivaComponent implements OnInit {
       this.usuarioService.getUsuarioFromEmail(email)
         .subscribe(
           response => {
-            this.igrejas = response['igrejas'].sort((b, a) => b.id - a.id)
+            this.igrejas = response['igrejas'].sort((b: { id: number; }, a: { id: number; }) => b.id - a.id)
             this.totalRegistros = this.igrejas.length;
             this.usuario = response;
           },
@@ -87,21 +87,12 @@ export class IgrejaAtivaComponent implements OnInit {
     this.toastr.success('', 'Igreja ativada com sucesso! ' + (this.nomeIgreja) + '', { timeOut: 3000 });
   }
 
-  trocaIgreja(igreja) {
+  trocaIgreja(igreja: any) {
     this.nomeIgrejaSignal.update(() => igreja.nome);
     this.igrejaIdSignal.update(() => igreja.id);
     this.setorIdSignal.update(() => igreja['setor'].id);
     this.nomeIgreja = igreja.nome,
 
-      // this.nomeIgrejaSignal.set(this.nomeIgreja); //Signal
-      // this.setorIdSignal.set(igreja['setor'].id); //Signal
-      // this.igrejaIdSignal.set(igreja.id); //Signal
-
-      // this.sharedService.setNomeIgreja(igreja.nome);
-      // this.sharedService.setSetorId(igreja['setor'].id);
-
-      // Grava a última igreja Ativada
-      // Grava igrejaAtivaId e igrejaAtivaNome no banco
     this.usuario.igrejaAtivaId = igreja.id;
     this.usuario.igrejaAtivaNome = igreja.nome;
     const usuario: UsuarioDTO = Object.assign(new UsuarioDTO(), this.usuario);

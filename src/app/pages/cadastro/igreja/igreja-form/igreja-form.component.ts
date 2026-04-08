@@ -93,7 +93,7 @@ export class IgrejaFormComponent
   // cropper
   imageChangedEvent: any = "";
   croppedImage: any = "";
-  igrejaLogo: IgrejaDTO;
+  igrejaLogo!: IgrejaDTO;
 
   public activeTab: string;
 
@@ -101,20 +101,20 @@ export class IgrejaFormComponent
   public maskCelularArea = ["(", /\d/, /\d/, ")", " ", /\d/, /\d/, /\d/, /\d/, /\d/, "-", /\d/, /\d/, /\d/, /\d/,]; // Celular
   public maskFixoArea = ["(", /\d/, /\d/, ")", " ", /\d/, /\d/, /\d/, /\d/, "-", /\d/, /\d/, /\d/, /\d/,]; // Telefone Fixo
 
-  subscription: Subscription;
+  subscription!: Subscription;
 
 
   // @ViewChild('dtigreja') grid!: Table;
 
   /*  Referente a IgrejaDTO */
-  currentAction: string;
-  igrejaForm: FormGroup;
-  pageTitle: string;
-  serverErrorMessages: string[] = null;
+  currentAction!: string;
+  igrejaForm!: FormGroup;
+  pageTitle!: string;
+  serverErrorMessages: string[] = [];
   submittingForm: boolean = false;
 
-  setores: SetorDTO[];
-  cargos: CargoDTO[];
+  setores!: SetorDTO[];
+  cargos!: CargoDTO[];
   setor: SetorDTO = new SetorDTO();
 
 
@@ -133,10 +133,10 @@ export class IgrejaFormComponent
   igreja: IgrejaDTO = new IgrejaDTO();
   filiais: IgrejaDTO = new IgrejaDTO();
 
-  id: number;
+  id!: number;
 
-  setorId: number;
-  paisId: number;
+  setorId!: number;
+  paisId!: number;
 
   modo: number = 0;
 
@@ -145,7 +145,7 @@ export class IgrejaFormComponent
   tipo = [{ nome: "Sede" }, { nome: "Subsede" }, { nome: "Subcongregação" }]; //PrimeNG
   status = [{ nome: "Ativa" }, { nome: "Inativa" }]; //PrimeNG
 
-  PageTitleModal: string;
+  PageTitleModal!: string;
   /*  Referente a ABA SeparacaoDTO */
 
   jwtHelperService: JwtHelperService = new JwtHelperService();
@@ -192,7 +192,7 @@ export class IgrejaFormComponent
     }
   }
 
-  novaIgrejaUsuario(setorId) {
+  novaIgrejaUsuario(setorId: number) {
     this.currentAction = "new";
     this.buildIgrejaForm();
     this.setorId = setorId;
@@ -309,7 +309,7 @@ export class IgrejaFormComponent
   }
 
   // Consulta CEP
-  consultaCep(value) {
+  consultaCep(value: string) {
     if (value.length == 8) {
       this.sharedService.getDataCep(value).then(async (dadosCep: any) => {
         this.dataCep = await dadosCep.json();
@@ -337,7 +337,7 @@ export class IgrejaFormComponent
 
   // cropped
 
-  fileChangeEvent(event: any, IgrejaDTO): void {
+  fileChangeEvent(event: any, IgrejaDTO: IgrejaDTO): void {
     this.imageChangedEvent = event;
     this.igrejaLogo = IgrejaDTO;
   }
@@ -357,7 +357,7 @@ export class IgrejaFormComponent
 
   //cropper - cortar imagem
 
-  uploadLogo(IgrejaDTO) {
+  uploadLogo(IgrejaDTO: IgrejaDTO) {
     if (this.croppedImage) {
       // Imagem base64 no formato png
       this.convertPngToJpeg(this.croppedImage); // Enviada para ser convertida em para o formato jpeg ou jpg. Formatos diferentes somente no nome
@@ -366,7 +366,7 @@ export class IgrejaFormComponent
 
       const base64 = this.croppedImage.substr(N, this.croppedImage.length); //Retira estes dados da imagem "data:image/png;base64"
       const nome = this.igrejaLogo.nome;
-      const nome_sem_espacos = nome.replace(/ /g, "_"); // regex que substitui todos os espaços por _
+      const nome_sem_espacos = nome?.replace(/ /g, "_"); // regex que substitui todos os espaços por _
 
       const imageName = nome_sem_espacos + ".jpeg"; // Tanto faz jpeg ou jpg
       const imageBlob = this.dataURItoBlob(base64);
@@ -396,7 +396,7 @@ export class IgrejaFormComponent
     }
   }
 
-  dataURItoBlob(dataURI) {
+  dataURItoBlob(dataURI: string) {
     const byteString = window.atob(dataURI);
     const arrayBuffer = new ArrayBuffer(byteString.length);
     const int8Array = new Uint8Array(arrayBuffer);
@@ -410,7 +410,7 @@ export class IgrejaFormComponent
 
   // Converter imagem  de PNG para Jpeg/Jpg
 
-  convertPngToJpeg(imagePNG) {
+  convertPngToJpeg(imagePNG: string) {
     let maxWidth = 10000;
     let source_img_obj = new Image();
     source_img_obj.src = imagePNG;
@@ -428,7 +428,7 @@ export class IgrejaFormComponent
     let cvs = document.createElement("canvas");
     cvs.width = natW;
     cvs.height = natH;
-    let ctx = cvs.getContext("2d").drawImage(source_img_obj, 0, 0, natW, natH);
+    let ctx = cvs.getContext("2d")?.drawImage(source_img_obj, 0, 0, natW, natH);
     let newImageData = cvs.toDataURL(mime_type, 0.4);
     let result_image_obj = new Image();
     result_image_obj.src = newImageData;
@@ -436,7 +436,7 @@ export class IgrejaFormComponent
     this.croppedImage = newImageData; // Retorna da imagem convertida para Jpeg/Jpg 10 vezes menor que PNG
   }
 
-  removerLogo(igreja) {
+  removerLogo(igreja: { logo: null; }) {
     igreja.logo = null;
     this.igrejaForm.controls["logo"].setValue(null);
     this.croppedImage = null;
@@ -457,7 +457,7 @@ export class IgrejaFormComponent
         this.toastr.success("Registro excluido com sucesso", "Exclusão");
       },
       error: () => {
-        (error) => this.actionsForError(error);
+        (error: any) => this.actionsForError(error);
       },
     });
   }
@@ -496,7 +496,7 @@ export class IgrejaFormComponent
 
   // EVENTOS DO NGX-SELECT-EX eprimeNG
 
-  onChangeTipo(event) {
+  onChangeTipo(event: { value: string; }) {
     if (event.value == "Sede") {
       this.igrejaForm.controls["nivel"].setValue(1);
     }
@@ -534,7 +534,7 @@ export class IgrejaFormComponent
             this.setor = response["setor"];
             this.igrejaForm.controls["setorId"].setValue(this.setor.id);
 
-            this.setorId = this.setor.id;
+            this.setorId = this.setor.id ?? 0;
             this.loadSetorIgreja();
           },
           error: () => {
@@ -551,7 +551,7 @@ export class IgrejaFormComponent
     if (this.perfil == "ADMIN" && this.currentAction == "new") {
       this.setorService.findSetorIgrejaNewAdmin().subscribe({
         next: (response) => {
-          this.setores = response["content"];
+          this.setores = (response as any)["content"];
         },
         error: () => {
           () => { };
@@ -560,7 +560,7 @@ export class IgrejaFormComponent
     } else if (this.perfil === "ADMIN" && this.currentAction == "edit") {
       this.setorService.findSetorIgrejaEditAdmin().subscribe({
         next: (response) => {
-          this.setores = response["content"];
+          this.setores = (response as any)["content"];
           this.igrejaForm.controls["setorId"].setValue(this.setor.id);
         },
         error: () => {
@@ -570,7 +570,7 @@ export class IgrejaFormComponent
     } else if (this.perfil !== "ADMIN" && this.currentAction == "new") {
       this.setorService.findSetorIgrejaNewUsuario(this.setor.id).subscribe({
         next: (response) => {
-          this.setores = response["content"];
+          this.setores = (response as any)["content"];
         },
         error: () => {
           () => { };
@@ -579,7 +579,7 @@ export class IgrejaFormComponent
     } else if (this.perfil !== "ADMIN" && this.currentAction == "edit") {
       this.setorService.findSetorIgrejaEditUsuario(this.setor.id).subscribe({
         next: (response) => {
-          this.setores = response["content"];
+          this.setores = (response as any)["content"];
           this.igrejaForm.controls["setorId"].setValue(this.setor.id);
         },
         error: () => {
@@ -613,14 +613,14 @@ export class IgrejaFormComponent
     const igreja: IgrejaDTO = this.igrejaForm.value;
     this.igrejaService.create(igreja).subscribe({
       next: (igreja) => {
-        this.id = parseInt(this.extractId(igreja.headers.get("location"))); // Extrai o Id da URI retornada do banco
-        this.igreja.id = this.id;
+        this.id = parseInt(this.extractId(igreja.headers.get("location")!)); // Extrai o Id da URI retornada do banco
+        this.igreja.id = this.id ?? 0;
         this.actionsForSuccess(this.igreja);
 
         Swal.fire("Cadastro", "Registro inserido com sucesso!", "success");
       },
       error: () => {
-        (error) => this.actionsForError(error);
+        (error: any) => this.actionsForError(error);
       },
     });
   }
@@ -650,7 +650,7 @@ export class IgrejaFormComponent
         Swal.fire("Atualização", "Registro atualizado com sucesso!", "success");
       },
       error: () => {
-        (error) => this.actionsForError(error);
+        (error: any) => this.actionsForError(error);
       },
     });
   }
@@ -693,7 +693,7 @@ export class IgrejaFormComponent
       .then(() => this.router.navigate([path, igreja.id, "edit"]));
   }
 
-  private actionsForError(error) {
+  private actionsForError(error: { status: number; _body: string; }) {
     this.submittingForm = false;
 
     if (error.status === 422) {

@@ -29,7 +29,7 @@ export class FormaService {
         )
       }
 
-      getByPageFormaFromIgreja(igrejaId, nome, page, linesPerPage) {
+      getByPageFormaFromIgreja(igrejaId: number, nome: string, page: number, linesPerPage: number) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/formas/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
           .pipe(
@@ -37,7 +37,7 @@ export class FormaService {
         );
       }
 
-      getByPageFormaFromTipo(igrejaId, nome, page, linesPerPage) {
+      getByPageFormaFromTipo(igrejaId: any, nome: any, page: any, linesPerPage: any) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/formas/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
           .pipe(
@@ -45,7 +45,7 @@ export class FormaService {
         );
       }
 
-      getListFormaFromIgreja(igrejaId) {
+      getListFormaFromIgreja(igrejaId: number) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/formas/list/?igreja=${igrejaId}`)
           .pipe(

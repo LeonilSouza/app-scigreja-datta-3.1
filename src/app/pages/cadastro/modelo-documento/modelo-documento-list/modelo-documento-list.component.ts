@@ -82,12 +82,12 @@ export class ModeloDocumentoListComponent implements OnInit {
   }
 
 
-  loadModeloDocumentos(igrejaId, nome, tipo, page, linesPerPage) {
+  loadModeloDocumentos(igrejaId: number, nome: string, tipo: string, page: number, linesPerPage: number) {
     // Carrega modeloDocumentoDepartamentos
     this.modeloDocumentoService.getByPageModeloDocumentoFromIgreja(igrejaId, nome, tipo, page, linesPerPage)
       .subscribe({
         next: (response) => {
-          this.modeloDocumentos = response['content'].sort((b, a) => b.id - a.id)
+          this.modeloDocumentos = response['content'].sort((b: { id: number; }, a: { id: number; }) => b.id - a.id)
           this.totalRegistros = response.totalElements
 
         },

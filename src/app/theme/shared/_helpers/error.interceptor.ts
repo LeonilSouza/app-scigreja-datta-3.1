@@ -67,39 +67,39 @@ intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>{
                 })) as any;
 }
 
-handle400(errorObj) {
+handle400(errorObj: { message: any; error: any; }) {
     const error = errorObj.message
     this.messageService.add({severity:'error', summary: errorObj.error, detail: errorObj.message});
 }
 
-handle401(errorObj) {
+handle401(errorObj: { error: string; message: string; }) {
     const error = errorObj.error + ' - ' + errorObj.message
     this.messageService.add({severity:'error', summary: errorObj.error, detail: errorObj.message});
 }
 
-handle403(errorObj) {
+handle403(errorObj: { message: any; }) {
     const error = errorObj.message
-    this.storage.setLocalUser(null);
-    this.storage.setLocalToken(null);
-    this.storage.setLocalIgreja(null);
+    this.storage.setLocalUser(null!);
+    this.storage.setLocalToken(null!);
+    this.storage.setLocalIgreja(null!);
     this.router.navigate(['/login'])
     this.toastr.error(error);
 
 }
 
-handle404(errorObj) {
+handle404(errorObj: { message: any; }) {
     const error = errorObj.message
     this.toastr.info(error);
     // Swal.fire('', (error), 'info');
 }
 
 
-handle422(errorObj) {
+handle422(errorObj: { message: any; }) {
     const error = errorObj.message
     this.toastr.error(error);
 }
 
-handleDefaultEror(errorObj) {
+handleDefaultEror(errorObj: { message: any; }) {
     const error = errorObj.message
     this.toastr.error(error);
 }

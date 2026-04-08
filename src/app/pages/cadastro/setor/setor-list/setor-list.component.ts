@@ -48,8 +48,8 @@ export class SetorListComponent implements OnInit {
 
   @ViewChild('dtsetor') grid!: Table;
 
-  totalSetores: number;
-  total: number;
+  totalSetores!: number;
+  total!: number;
 
   totalRegistros = 0
 
@@ -77,12 +77,12 @@ export class SetorListComponent implements OnInit {
   }
 
 
-  loadSetores(nome, page, linesPerPage) {
+  loadSetores(nome: string, page: number, linesPerPage: number) {
       this.setorService
         .getPageSetor(nome, page, linesPerPage)
         .subscribe({
           next: (response) => {
-            this.setores = response['content'].sort((a, b) => b.id - a.id);
+            this.setores = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
             this.totalRegistros = response.totalElements;
           },
           error: (error) => {

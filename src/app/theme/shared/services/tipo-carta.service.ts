@@ -20,7 +20,7 @@ export class TipoCartaService {
   }
 
 
-  getPageTipoCarta(nome, page, linesPerPage) { 
+  getPageTipoCarta(nome: any, page: any, linesPerPage: any) { 
     return this.http.get(`${API_CONFIG.baseUrl}/tipocartas/?nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
       .pipe(
         catchError(this.handleError)

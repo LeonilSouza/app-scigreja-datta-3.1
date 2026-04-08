@@ -29,7 +29,7 @@ export class LancamentoCargoService {
         )
       }
 
-      getByPageLancamentoCargoDeptoFromIgreja(igrejaId, nomePessoa, pageSize, limit) {
+      getByPageLancamentoCargoDeptoFromIgreja(igrejaId: any, nomePessoa: any, pageSize: any, limit: any) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/lancamentocargodeptos/?igreja=${igrejaId}&nomePessoa=${nomePessoa}&pageSize=${pageSize}&limit=${limit}`)
           .pipe(

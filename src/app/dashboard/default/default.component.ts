@@ -158,7 +158,7 @@ export class DefaultComponent implements OnInit {
           next: (response) => {
             this.usuario = response;
 
-            this.igrejaIdSignal.update(() => this.usuario.igrejaIdHome);
+            this.igrejaIdSignal.update(() => this.usuario.igrejaIdHome!);
             this.igrejaId = igrejaIdSignal();
 
             this.carregarOnInit();

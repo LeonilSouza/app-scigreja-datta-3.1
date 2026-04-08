@@ -48,8 +48,8 @@ export class TituloMinisterialListComponent implements OnInit {
 
   @ViewChild('dttitulo') grid!: Table;
 
-  totalMinisterioSistema: number;
-  totalMinisterioIgreja: number;totalRegistros: number = 0
+  totalMinisterioSistema!: number;
+  totalMinisterioIgreja!: number;totalRegistros: number = 0
   tituloMinisteriais: TituloMinisterialDTO[] = [];
 
   error = '';
@@ -76,11 +76,11 @@ export class TituloMinisterialListComponent implements OnInit {
     this.loadTituloMinisteriais(this.igrejaId, this.nome.toLocaleLowerCase(), page, this.linesPerPage);
   }
 
-  loadTituloMinisteriais(igrejaId, nome, page, linesPerPage) {
+  loadTituloMinisteriais(igrejaId: number, nome: string, page: number, linesPerPage: number) {
     this.tituloMinisterialService.getByPageTituloMinisterialFromIgreja(igrejaId, nome, page, linesPerPage)
       .subscribe({
         next: (response) => {
-          this.tituloMinisteriais = response['content'].sort((a, b) => b.id - a.id);
+          this.tituloMinisteriais = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
           this.totalRegistros = response.totalElements
         },
         error: (error) => {
@@ -90,7 +90,7 @@ export class TituloMinisterialListComponent implements OnInit {
       });
   }
 
-  private showError(error) {
+  private showError(error: { message: any; }) {
     this.messageService.add({ severity: 'error', summary: 'Erro', detail: error.message });
   }
 

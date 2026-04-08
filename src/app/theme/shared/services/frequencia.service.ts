@@ -19,7 +19,7 @@ export class FrequenciaService {
   }
 
 
-  getByListFrequenciaFromIgreja(igrejaId, classeId, data) {
+  getByListFrequenciaFromIgreja(igrejaId: number, classeId: number, data: string) {
 
     return this.http.get(`${API_CONFIG.baseUrl}/frequencias/lista/?igreja=${igrejaId}&classe=${classeId}&data=${data}`)
       .pipe(

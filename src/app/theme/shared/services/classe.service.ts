@@ -29,7 +29,7 @@ export class ClasseService {
         )
       }
 
-      getByPageClasseFromIgreja(igrejaId, nome, page, linesPerPage) {
+      getByPageClasseFromIgreja(igrejaId: number, nome: string, page: number, linesPerPage: number) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/classes/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
           .pipe(
@@ -37,7 +37,7 @@ export class ClasseService {
         );
       }
 
-      getByPageClasseFromTipo(igrejaId, nome, page, linesPerPage) {
+      getByPageClasseFromTipo(igrejaId: any, nome: any, page: any, linesPerPage: any) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/classes/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
           .pipe(
@@ -45,7 +45,7 @@ export class ClasseService {
         );
       }
 
-      getListClasseFromIgreja(igrejaId) {
+      getListClasseFromIgreja(igrejaId: number) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/classes/list/?igreja=${igrejaId}`)
           .pipe(

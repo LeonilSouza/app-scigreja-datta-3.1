@@ -31,11 +31,11 @@ export class AuthenticationService {
 
   jwtHelperService: JwtHelperService = new JwtHelperService();
   user: UserDTO = {};
-  usuario: UsuarioDTO;
+  usuario!: UsuarioDTO;
   user$ = (new BehaviorSubject<UserDTO>(this.user));
 
-  perfis0: string;
-  perfis1: string;
+  perfis0!: string;
+  perfis1!: string;
 
   constructor(
     public http: HttpClient,
@@ -68,7 +68,7 @@ export class AuthenticationService {
 
     const user: LocalUser = {
       email: this.jwtHelperService.decodeToken(tok).sub,
-      name: this.user.name,
+      name: this.user.name!,
       perfil: this.perfil,
       imageUrl: ''
     };
@@ -81,15 +81,15 @@ export class AuthenticationService {
         .subscribe({
           next: (response) => {
             this.usuario = response;
-            this.perfis0 = response['perfis'][0]
-            this.perfis1 = response['perfis'][1]
+            this.perfis0 = (response as any)['perfis'][0];
+            this.perfis1 = (response as any)['perfis'][1];
             this.perfils();
 
             const user: LocalUser = {
-              email: this.usuario.email,
-              name: this.usuario.name,
-              perfil: this.perfil,
-              imageUrl: this.usuario.imageUrl
+              email: this.usuario.email!,
+              name: this.usuario.name!,
+              perfil: this.perfil!,
+              imageUrl: this.usuario.imageUrl!
             };
             this.user = user;
             this.storage.setLocalUser(user);
@@ -126,9 +126,9 @@ export class AuthenticationService {
   }
 
   logout() {
-    this.storage.setLocalToken(null);
-    this.storage.setLocalUser(null);
-    this.storage.setLocalIgreja(null);
+    this.storage.setLocalToken(null!);
+    this.storage.setLocalUser(null!);
+    this.storage.setLocalIgreja(null!);
 
     // Atualiza o signal
     this.igrejaIdSignal.update(() => 0);

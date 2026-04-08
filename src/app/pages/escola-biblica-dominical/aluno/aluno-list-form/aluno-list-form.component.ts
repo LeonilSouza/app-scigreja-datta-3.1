@@ -110,12 +110,12 @@ export class AlunoListComponent implements OnInit, AfterContentChecked {
   alunos: AlunoDTO[] = [];
   pessoas: PessoaDTO[] = [];
   pessoa: PessoaDTO = new PessoaDTO();
-  pessoaId: number;
+  pessoaId!: number;
 
   classes: ClasseDTO[] = [];
   classe: ClasseDTO = new ClasseDTO();
   classeId: number = 0;
-  nomeClasse: string;
+  nomeClasse!: string;
   error = '';
 
   public page = 0;
@@ -212,7 +212,7 @@ export class AlunoListComponent implements OnInit, AfterContentChecked {
   }
 
   excluir(aluno: AlunoDTO) {
-    this.alunoService.delete(aluno.id)
+    this.alunoService.delete(aluno.id ?? 0)
       .subscribe({
         next: () => {
           this.grid.reset();//atualiza a tabela do primeng
@@ -249,27 +249,27 @@ export class AlunoListComponent implements OnInit, AfterContentChecked {
     }
   }
 
-  onChangeSelecaoClasses(id) {
+  onChangeSelecaoClasses(id: { value: number; }) {
     this.classeId = id.value;
     this.loadAlunos(this.igrejaId, this.classeId, this.nome, this.page, this.linesPerPage);
     this.loadClasse(id.value)
   }
 
-  onChangeAluno(id) {
+  onChangeAluno(id: { value: any; }) {
     this.loadPessoa(id.value)
   }
 
-  onChangeClasse(id) {
+  onChangeClasse(id: { value: any; }) {
     this.loadClasse(id.value)
   }
 
-  private loadPessoa(id) {
+  private loadPessoa(id: number) {
     this.pessoaService.getById(id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           this.pessoa = response;
-          this.alunoForm.controls['nome'].setValue(this.sharedService.formataNome(this.pessoa.nome)); // Aqui formata o nome em Camel Case completo 
+          this.alunoForm.controls['nome'].setValue(this.sharedService.formataNome(this.pessoa.nome!)); // Aqui formata o nome em Camel Case completo 
           this.alunoForm.controls['dtNascimento'].setValue(this.pessoa.dataNascimento);
           this.alunoForm.controls['telefone'].setValue(this.pessoa.celular1);
         },
@@ -277,7 +277,7 @@ export class AlunoListComponent implements OnInit, AfterContentChecked {
       });
   }
 
-  private loadClasse(id) {
+  private loadClasse(id: number) {
     this.classeService.findById(id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -286,7 +286,7 @@ export class AlunoListComponent implements OnInit, AfterContentChecked {
           this.alunoForm.controls['classe'].setValue(this.classe.nome);
           this.alunoForm.controls['faixaEtaria'].setValue(this.classe.faixaEtaria);
           this.alunoForm.controls['classificacao'].setValue(this.classe.classificacao);
-          this.nomeClasse = this.classe.nome;
+          this.nomeClasse = this.classe.nome!;
         },
         error: () => { }
       });
@@ -310,8 +310,8 @@ export class AlunoListComponent implements OnInit, AfterContentChecked {
       .subscribe({
         next: (response) => {
           this.classes = response;
-          this.classeId = this.classes[0].id;
-          this.nomeClasse = this.classes[0].nome;
+          this.classeId = this.classes[0].id ?? 0;
+          this.nomeClasse = this.classes[0].nome!;
           this.loadAlunos(this.igrejaId, this.classeId, this.nome, this.page, this.linesPerPage);
         },
         error: () => { }
@@ -324,7 +324,7 @@ export class AlunoListComponent implements OnInit, AfterContentChecked {
       .create(aluno)
       .subscribe({
         next: (response) => {
-          this.id = parseInt(this.extractId(response.headers.get('location'))); // Extrai o Id da URI retornada do banco
+          this.id = parseInt(this.extractId(response.headers.get('location')!)); // Extrai o Id da URI retornada do banco
           this.aluno.id = this.id;
           this.grid.reset();//atualiza a tabela do primeng
           this.actionsForSuccess();

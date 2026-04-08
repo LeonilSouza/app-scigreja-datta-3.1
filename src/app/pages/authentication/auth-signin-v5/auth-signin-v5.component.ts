@@ -53,13 +53,13 @@ export class AuthSigninV5Component {
 
 
   usuario: UsuarioDTO = new UsuarioDTO();
-  toggler: string;
-  nome: string;
-  email: string;
-  acessoId: number;
+  toggler!: string;
+  nome!: string;
+  email!: string;
+  acessoId!: number;
   // setorId: number;
-  perfis0: string;
-  perfis1: string;
+  perfis0!: string;
+  perfis1!: string;
 
   // public method
   showPassword: boolean = false;
@@ -118,7 +118,7 @@ export class AuthSigninV5Component {
       .pipe(first())
       .subscribe({
         next: (response): void => {
-          this.authenticationService.successfulLogin(response.headers.get('Authorization'));
+          this.authenticationService.successfulLogin(response.headers.get('Authorization')!);
           this.checkAcesso();
           this.router.navigate(['/dashboard/default']);
         },
@@ -143,33 +143,33 @@ export class AuthSigninV5Component {
             this.usuario.igrejaAtivaId = this.usuario.igrejaIdHome;
             this.usuario.igrejaAtivaNome = this.usuario.igrejaNomeHome;
 
-            this.setorId = this.usuario.setorIdHome;
+            this.setorId = this.usuario.setorIdHome ?? 0;
             this.perfis0 = response['perfis'][0]
             this.perfis1 = response['perfis'][1]
-            this.nome = this.usuario.name;
-            this.email = this.usuario.email;
+            this.nome = this.usuario.name!;
+            this.email = this.usuario.email!;
 
             this.perfils();
 
             // Atualiza o signal para Igreja Padrão do Usuario
-            this.nomeIgrejaSignal.update(() => this.usuario.igrejaNomeHome);
-            this.igrejaIdSignal.update(() => this.usuario.igrejaIdHome);
-            this.setorIdSignal.update(() => this.usuario.setorIdHome);
-            this.nomeUsuarioSignal.update(() => this.usuario.name);
+            this.nomeIgrejaSignal.update(() => this.usuario.igrejaNomeHome!);
+            this.igrejaIdSignal.update(() => this.usuario.igrejaIdHome!);
+            this.setorIdSignal.update(() => this.usuario.setorIdHome!);
+            this.nomeUsuarioSignal.update(() => this.usuario.name!);
             this.perfilSignal.update(() => this.perfil);
 
-            this.nomeUsuario = this.usuario.name;
-            this.igrejaId = this.usuario.igrejaIdHome;
-            this.setorId = this.usuario.setorIdHome;
-            this.nomeIgreja = this.usuario.igrejaNomeHome;
+            this.nomeUsuario = this.usuario.name!;
+            this.igrejaId = this.usuario.igrejaIdHome ?? 0;
+            this.setorId = this.usuario.setorIdHome ?? 0;
+            this.nomeIgreja = this.usuario.igrejaNomeHome!;
 
 
             // Objeto locaStorage - Os dados são atualizados para o Usuario e Igreja Padão
             const igr: LocalIgreja = {
-              igrejaId: this.usuario.igrejaIdHome,
-              setorId: this.usuario.setorIdHome,
-              nomeIgreja: this.usuario.igrejaNomeHome,
-              nomeUser: this.usuario.name,
+              igrejaId: this.usuario.igrejaIdHome  ?? 0,
+              setorId: this.usuario.setorIdHome  ?? 0,
+              nomeIgreja: this.usuario.igrejaNomeHome!,
+              nomeUser: this.usuario.name!,
               perfil: this.perfil
             };
 

@@ -68,13 +68,13 @@ export class CasoListComponent implements OnInit {
 
   dataAtual = moment();
 
-  subscription: Subscription;
+  subscription: Subscription = new Subscription;
 
   //Necessario apenas para uso da dataAta
-  casoListForm: FormGroup;
+  casoListForm!: FormGroup;
 
-  totalCasosAtivo: number;
-  totalProvasVencida: number;
+  totalCasosAtivo!: number;
+  totalProvasVencida!: number;
 
   situacao: string = 'Prova';
 
@@ -88,7 +88,7 @@ export class CasoListComponent implements OnInit {
   public linesPerPage = 6;
   public nome = '';
 
-  printItems: MenuItem[];
+  printItems: MenuItem[] = [];
 
   // VARIAVEIS DE CONTROLE
   casosAtivos: boolean = true;
@@ -114,15 +114,15 @@ export class CasoListComponent implements OnInit {
   loadCasosLazy(event: LazyLoadEvent) {
     if (this.vencidas) {
       const page = event!.first! / event!.rows!; // divisão para encontrar a paginações
-      this.linesPerPage = event.rows;
+      this.linesPerPage = event.rows!;
       this.loadProvasVencidas(this.nome.toLocaleLowerCase(), this.situacao, page, this.linesPerPage);
     } else if (this.arquivados) {
       const page = event!.first! / event!.rows!; // divisão para encontrar a paginações
-      this.linesPerPage = event.rows;
+      this.linesPerPage = event.rows!;
       this.loadTodasProvas(this.nome.toLocaleLowerCase(), page, this.linesPerPage);
     } else {
       const page = event!.first! / event!.rows!; // divisão para encontrar a paginações
-      this.linesPerPage = event.rows;
+      this.linesPerPage = event.rows!;
       this.loadCasos(this.nome.toLocaleLowerCase(), this.situacao, page, this.linesPerPage);
     }
   }
@@ -155,11 +155,11 @@ export class CasoListComponent implements OnInit {
 
   }
 
-  loadCasos(nome, situacao, page, linesPerPage): void {
+  loadCasos(nome: string, situacao: string, page: number, linesPerPage: number): void {
     this.casoService.getByCasosFromIgreja(this.igrejaId, nome, situacao, page, linesPerPage)
       .subscribe(
         response => {
-          this.casos = response['content'].sort((a, b) => b.id - a.id)
+          this.casos = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id)
           this.totalRegistros = response.totalElements
         },
         error => {
@@ -172,11 +172,11 @@ export class CasoListComponent implements OnInit {
         });
   }
 
-  loadProvasVencidas(nome, situacao, page, linesPerPage) {
+  loadProvasVencidas(nome: string, situacao: string, page: number, linesPerPage: number) {
     this.casoService.getProvasVencidasFromIgreja(this.igrejaId, nome, situacao, page, linesPerPage)
       .subscribe(
         response => {
-          this.casos = response['content'].sort((a, b) => b.id - a.id)
+          this.casos = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id)
           this.totalRegistros = response.totalElements
         },
         error => {
@@ -189,11 +189,11 @@ export class CasoListComponent implements OnInit {
         });
   }
 
-  loadTodasProvas(nome, page, linesPerPage) {
+  loadTodasProvas(nome: string, page: number, linesPerPage: number) {
     this.casoService.getArquivadosFromIgreja(this.igrejaId, nome, page, linesPerPage)
       .subscribe(
         response => {
-          this.casos = response['content'].sort((a, b) => b.id - a.id)
+          this.casos = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id)
           this.totalRegistros = response.totalElements
 
         },

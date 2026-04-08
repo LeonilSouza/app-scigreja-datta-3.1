@@ -34,7 +34,7 @@ export class ModeloDocumentoService {
         return this.http.put(url, formData, { responseType : 'blob' });
       }
 
-      getByPageModeloDocumentoFromIgreja(igrejaId, nome: any, tipo: any, page: any, linesPerPage: any) {
+      getByPageModeloDocumentoFromIgreja(igrejaId: number, nome: any, tipo: any, page: any, linesPerPage: any) {
 
         return this.http.get(`${API_CONFIG.baseUrl}/modelodocumentos/page/?igreja=${igrejaId}&nome=${nome}&tipo=${tipo}&page=${page}&linesPerPage=${linesPerPage}`)
           .pipe(
@@ -43,7 +43,7 @@ export class ModeloDocumentoService {
       }
       
 
-      getByListModeloDocumentoFromIgreja(igrejaId, nome)  {//Lista por Igreja e tipoDocumento
+      getByListModeloDocumentoFromIgreja(igrejaId: number, nome: string)  {//Lista por Igreja e tipoDocumento
 
         return this.http.get(`${API_CONFIG.baseUrl}/modelodocumentos/list/?igreja=${igrejaId}&nome=${nome}`)
           .pipe(

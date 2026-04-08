@@ -13,7 +13,7 @@ import { SharedModule } from 'src/app/theme/shared/shared.module';
 })
 export class NavLogoComponent {
   // public props
-  @Input() navCollapsed: boolean;
+  @Input() navCollapsed: boolean | undefined;
   readonly NavCollapse = output();
   windowWidth = window.innerWidth;
 

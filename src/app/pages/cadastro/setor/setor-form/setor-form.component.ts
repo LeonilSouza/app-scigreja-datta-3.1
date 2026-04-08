@@ -52,16 +52,16 @@ export class SetorFormComponent implements OnInit, AfterContentChecked {
 
     setores: SetorDTO[] = [];
 
-    currentAction: string;
-    setorForm: FormGroup;
-    pageTitle: string;
+    currentAction!: string;
+    setorForm!: FormGroup;
+    pageTitle!: string;
     submittingForm = false;
     setor: SetorDTO = new SetorDTO();
-    id: number;
-    perfis: number;
-    setor_id: number;
+    id!: number;
+    perfis!: number;
+    setor_id!: number;
 
-    subscription: Subscription;
+    subscription!: Subscription;
 
     constructor(
         public setorService: SetorService,
@@ -172,7 +172,7 @@ export class SetorFormComponent implements OnInit, AfterContentChecked {
         this.setorService.create(setor)
             .subscribe({
                 next: (setor) => {
-                    this.id = parseInt(this.extractId(setor.headers.get('location'))); // Extrai o Id da URI retornada do banco
+                    this.id = parseInt(this.extractId(setor.headers.get('location')!)); // Extrai o Id da URI retornada do banco
                     this.setor.id = this.id;
                     Swal.fire('Cadastro', 'Setor cadastrado com sucesso', 'success');
                     this.actionsForSuccess()
@@ -207,7 +207,7 @@ export class SetorFormComponent implements OnInit, AfterContentChecked {
         this.router.navigateByUrl(path)
     }
 
-    private showError(error) {
+    private showError(error: { message: any; }) {
         this.messageService.add({ severity: 'error', summary: 'Erro', detail: error.message });
         this.submittingForm = false;
     }

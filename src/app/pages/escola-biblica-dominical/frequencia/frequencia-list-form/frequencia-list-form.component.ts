@@ -82,13 +82,13 @@ import { DatasDTO } from 'src/app/theme/shared/models/datas.dto';
 })
 export class FrequenciaListFormComponent implements OnInit, OnDestroy {
 
-  @ViewChild('meuInput') totalMatriculados: ElementRef;
+  @ViewChild('meuInput') totalMatriculados: ElementRef | undefined;
 
   // Acionamento da modal no HTML  aqui pelo componente (#modalFrequencia)
-  @ViewChild('modalFrequencia') public modalFrequencia: UiModalComponent;
+  @ViewChild('modalFrequencia') public modalFrequencia: UiModalComponent | undefined;
 
   // Acionamento da modal no HTML  aqui pelo componente (#modalFrequencia)
-  @ViewChild('modalEbd') public modalEbd: UiModalComponent;
+  @ViewChild('modalEbd') public modalEbd: UiModalComponent | undefined;
 
   @ViewChild('dtfrequencia') grid!: Table;
 
@@ -125,7 +125,7 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
   ano = new Date().getFullYear();
   trimestre = this.getTrimestreAtual();
   // classeSelecionada: number | null = null;
-  classeSelecionada = signal<number>(null); // Inicializa explicitamente com null
+  classeSelecionada = signal<number>(null!); // Inicializa explicitamente com null
 
   dataSelecionada = signal<Date>(new Date());
 
@@ -175,7 +175,7 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
 
   submittingForm: boolean = false;
   pageTitle!: string;
-  frequencia: FrequenciaDTO[];
+  frequencia: FrequenciaDTO[] | undefined;
   id!: number;
 
   imodo: number = 0;
@@ -198,7 +198,7 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
   // pessoas: PessoaDTO[] = [];
   pessoas = signal<PessoaDTO[]>([]);
   pessoa: PessoaDTO = new PessoaDTO();
-  pessoaId: number;
+  pessoaId!: number;
 
   data!: string;
 
@@ -216,13 +216,13 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
 
   classe: ClasseDTO = new ClasseDTO();
 
-  nomeClasse: string;
+  nomeClasse!: string;
 
-  faixaEtaria: string;
+  faixaEtaria!: string;
 
   error = '';
 
-  printItems: MenuItem[];
+  printItems!: MenuItem[];
 
   public page = 0;
   public pageModal = 0;
@@ -274,7 +274,7 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
     this.pageTitle = "Diario de Classe";
   }
 
-  setPageTitleModalEbd(value) {
+  setPageTitleModalEbd(value: string) {
     this.pageTitle = value;
   }
 
@@ -432,7 +432,7 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
   //////////////////////////////////////////////////
 
   //  ROTINA PARA CALCULAR DOMINGOS NO TRIMESTRE - USANDO A MESMA TABELA DATA 
-  getDomingosDotrimestre(data) { // ano
+  getDomingosDotrimestre(data: Date) { // ano
     const ano = data.getFullYear();
 
     // Recebe o numero do trimestre (0: Jan-Mar, 1: Abr-Jun, 2: Jul-Set, 3: Out-Dez)
@@ -574,11 +574,13 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
-          this.totalRegistros = response.length;
-          if (response.length > 0 && !this.classeId()) {
-            this.classes = response;
-            this.classeId.set(this.classes[0].id);
-            this.nomeClasse = this.classes[0].nome;
+          const registros = response.length;
+          if (registros > 0 && !this.classeId()) {
+            this.classes = response.filter((ativo: { status: string; }) => ativo.status == 'Ativo');
+            this.totalRegistros = this.classes.length;
+            
+            this.classeId.set(this.classes[0].id!);
+            this.nomeClasse = this.classes[0].nome!;
           }
           this.listaFrequencias(this.igrejaId, this.classeId(), this.data);
         }
@@ -586,7 +588,7 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
   }
 
   // Busca frequencias selecionadas
-  listaFrequencias(igrejaId, classeId, data) {
+  listaFrequencias(igrejaId: number, classeId: number, data: string) {
     this.frequenciaService.getByListFrequenciaFromIgreja(igrejaId, classeId, data)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
@@ -614,8 +616,8 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
-          this.classesModal = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
-          this.totalRegistrosModalClasse = response.totalElements
+          this.classesModal = response['content'].filter((ativo: { status: string; }) => ativo.status == 'Ativo').sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
+          this.totalRegistrosModalClasse = this.classesModal.length;
         },
         error: (error) => {
           this.error = error;
@@ -685,8 +687,8 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
   // Função que chamada ao selecionar uma classe na impressão de Escala
   onClasseSelecionadaEscala(event: any) {
     let classe = this.classes.filter(c => (c.id === event.value))
-    this.nomeClasse = classe[0].nome;
-    this.faixaEtaria = classe[0].faixaEtaria;
+    this.nomeClasse = classe[0].nome!;
+    this.faixaEtaria = classe[0].faixaEtaria!;
     this.frequenciaForm.controls['classeId'].setValue(event.value);
     this.classeId.set(event.value);
     this.first.set(0); // Volta para a página 1 sempre que trocar de classe
@@ -704,8 +706,8 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
   // Função que chamada ao selecionar uma classe na impressão de Chamada de Alunos Trimestral
   onClasseSelecionadaChamada(event: any) {
     let classe = this.classes.filter(c => (c.id === event.value))
-    this.nomeClasse = classe[0].nome;
-    this.faixaEtaria = classe[0].faixaEtaria;
+    this.nomeClasse = classe[0].nome!;
+    this.faixaEtaria = classe[0].faixaEtaria!;
     this.classeId.set(event.value);
     this.classeSelecionada.set(event.value);
 
@@ -852,21 +854,21 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
     this.listaFrequencias(this.igrejaId, this.classeId(), this.data);
   }
 
-  onCloseData(data) {
+  onCloseData(data: string) {
     this.data = data
     this.trimestre = this.sharedService.retornaTrimestre(data);
     this.ano = JSON.parse(this.sharedService.anoDataString(data));
     this.listaFrequencias(this.igrejaId, this.classeId(), this.data);
   }
 
-  onCloseDataModal(data) {
+  onCloseDataModal(data: string) {
     this.data = data;
     this.trimestre = (this.sharedService.retornaTrimestre(data));
     this.ano = JSON.parse(this.sharedService.anoDataString(data));
     this.checkDataFromAula();
   }
 
-  onCloseDataModalEscala(data) {
+  onCloseDataModalEscala(data: number) {
     const ano: number = data;
     const dataBase = new Date(ano, 0, 1);
     const dataMontada = formatDate(dataBase, 'dd/MM/yyyy', 'pt-BR');
@@ -875,21 +877,21 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
     this.ano = ano;
   }
 
-  onCloseDataModalChamada(data) {
+  onCloseDataModalChamada(data: any) {
     //Está no dataUs do botão imprimir
   }
 
-  onCloseDataModalEbd(data) {
+  onCloseDataModalEbd(data: string) {
     this.data = data;
 
   }
 
 
-  onChangeClasse(id) {
+  onChangeClasse(id: { value: any; }) {
     this.loadClasse(id.value)
   }
 
-  private loadClasse(id) {
+  private loadClasse(id: number) {
     this.classeService.findById(id)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
@@ -898,7 +900,7 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
           this.frequenciaForm.controls['nomeClasse'].setValue(this.classe.nome);
           this.frequenciaForm.controls['faixaEtaria'].setValue(this.classe.faixaEtaria);
           this.frequenciaForm.controls['classificacao'].setValue(this.classe.classificacao);
-          this.nomeClasse = this.classe.nome;
+          this.nomeClasse = this.classe.nome!;
         },
         error: () => { }
       });
@@ -908,7 +910,7 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
     this.linhaSelecionada = diarioClasse.id;
   }
 
-  loadDiarioClasse(diarioClasse) {    // Recebendo item do ngFor do Html passado como parametro no evento (click)="loadMinisterio(item)"
+  loadDiarioClasse(diarioClasse: { id: any; }) {    // Recebendo item do ngFor do Html passado como parametro no evento (click)="loadMinisterio(item)"
     this.diarioClasse = this.diarioClasses.filter(diario =>
       diario.id == diarioClasse.id)[0];
     this.diarioClasseForm.patchValue(this.diarioClasse)
@@ -961,7 +963,7 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
 
           // 3. Preparar Totais do Diário
           const contagemPorClasse = this.alunos().reduce((acc, aluno) => {
-            acc[aluno.classeId] = (acc[aluno.classeId] || 0) + 1;
+            acc[aluno.classeId!] = (acc[aluno.classeId!] || 0) + 1;
             return acc;
           }, {} as Record<number, number>);
 
@@ -973,7 +975,7 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
             classificacao: classe.classificacao,
             licao: this.aulaForm.controls['licao'].value,
             tema: this.aulaForm.controls['tema'].value,
-            totalMatriculados: contagemPorClasse[classe.id] || 0,
+            totalMatriculados: contagemPorClasse[classe.id!] || 0,
             totalOfertas: 0,
             totalPresentes: 0,
             totalAusentes: 0
@@ -993,9 +995,9 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
             .subscribe({
               next: () => {
                 // Povoa agrade após a geração de frequencias
-                this.classeId.set(this.classes[0].id);
+                this.classeId.set(this.classes[0].id!);
 
-                this.nomeClasse = this.classes[0].nome;
+                this.nomeClasse = this.classes[0].nome!;
                 this.listaFrequencias(this.igrejaId, this.classeId(), this.data);
 
                 this.grid.reset();
@@ -1039,10 +1041,10 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
   updateDiarioClasseTemaLicao() {
     const diarioClasse: DiarioClasseDTO = Object.assign(new DiarioClasseDTO(), this.diarioClasseForm.value);
     this.diarioClasseService.updateTemaLicao(diarioClasse)
-     .subscribe(() => {
-      this.gridDiario.reset();//atualiza a tabela do primeng
-      this.toastr.success('Tema/Lição Atualizados com sucesso', 'Diario Classe');
-    });
+      .subscribe(() => {
+        this.gridDiario.reset();//atualiza a tabela do primeng
+        this.toastr.success('Tema/Lição Atualizados com sucesso', 'Diario Classe');
+      });
   }
 
   // RELATORIOS ///////////////////////////////////////////
@@ -1063,8 +1065,8 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
         this.aulaForm.controls['classeId'].setValue(null);
         this.aulaForm.controls['ano'].setValue(this.sharedService.anoDataString(this.data));
         this.aulaForm.controls['trimestre'].setValue(this.trimestre);
-        this.classeSelecionada.set(null);
-        this.classeId.set(null);
+        this.classeSelecionada.set(null!);
+        this.classeId.set(null!);
         this.positionChamadaAluno = 'top';
         this.visibleChamadaAluno = true; // Abre a modal
       }
@@ -1107,34 +1109,7 @@ export class FrequenciaListFormComponent implements OnInit, OnDestroy {
     },
     {
       separator: true,
-    },
-    // {
-    //   label: 'Lista de Membros',
-    //   icon: 'fas fa-users',
-    //   command: () => {
-    //     // alert('')
-    //   },
-    //   // target: '_blank',
-    //   // url: `${API_CONFIG.baseUrl}/relatorios/list/?nome=chamada-de-obreiros&igreja=${this.igrejaId}`
-
-    // },
-    // {
-    //   separator: true,
-    // },
-    // {
-    //   label: 'Ficha de membros',
-    //   icon: 'fas fa-clipboard-list',
-    //   // target: '_blank',
-    //   // url: `${API_CONFIG.baseUrl}/relatorios/list/?nome=ficha-de-membros&igreja=${this.igrejaId}`
-
-    // },
-    // {
-    //   label: 'Ficha em branco',
-    //   icon: 'fas fa-book-reader',
-    //   // target: '_blank',
-    //   // url: `${API_CONFIG.baseUrl}/relatorios/list/?nome=ficha-branco&igreja=${this.igrejaId}`
-
-    // }
+    }
   ];
 
   // FIM  RELATORIOS ///////////////////////////////////////////

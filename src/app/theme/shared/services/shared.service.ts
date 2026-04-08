@@ -34,7 +34,7 @@ export class SharedService {
 
 
 
-  formataDataUS(data) { // Data a converter = "dd/mm/yyyy" Retorna data formatada "yyyy-mm-dd"
+  formataDataUS(data: string) { // Data a converter = "dd/mm/yyyy" Retorna data formatada "yyyy-mm-dd"
     let data_americana = data.split('/').reverse().join('-');
     return data_americana;
   }
@@ -44,7 +44,7 @@ export class SharedService {
   //   return data_brasileira;
   // }
 
-  dataSubDay(data, day) { //Subtrae um dia na data - Metodo exclusivo para pegar o dia anterior as 23h:59m
+  dataSubDay(data: string, day: number) { //Subtrae um dia na data - Metodo exclusivo para pegar o dia anterior as 23h:59m
     const strinDate = data + 'T23:59:00'
     const date = new Date(strinDate);
     date.setDate(date.getDate() - day)
@@ -52,7 +52,7 @@ export class SharedService {
   }
 
 
-  calcularIdade(aniversario) {
+  calcularIdade(aniversario: string) {
     var nascimento = aniversario.split("/");
     var dataNascimento = new Date(parseInt(nascimento[2], 10),
       parseInt(nascimento[1], 10) - 1,
@@ -150,7 +150,7 @@ export class SharedService {
     return `${mes}/${ano}`;
   }
 
-  anoDataString(dataString) { // Retorna ano da data passada
+  anoDataString(dataString: string) { // Retorna ano da data passada
     const dataBRString = dataString;
     const partes = dataBRString.split('/'); // ["15", "08", "2024"]
 
@@ -165,7 +165,7 @@ export class SharedService {
   }
 
   // Função auxiliar para formatar a data como YYYY-MM-DD
-  formatarDataUSString(dataBR) { // Recebe dd/mm/yyyy (Brasileira) e retorna yyyy-mm-dd (Americana)
+  formatarDataUSString(dataBR: string) { // Recebe dd/mm/yyyy (Brasileira) e retorna yyyy-mm-dd (Americana)
     const partes = dataBR.split('/'); // ["15", "08", "2024"]
 
     // Reorganiza para YYYY/MM/DD/
@@ -175,7 +175,7 @@ export class SharedService {
   }
 
 
-  retornaTrimestre(dataString) { // Retorna trimestre do ano passado
+  retornaTrimestre(dataString: string) { // Retorna trimestre do ano passado
     const dataBRString = dataString;
     const partes = dataBRString.split('/'); // ["15", "08", "2024"]
 
@@ -217,7 +217,7 @@ export class SharedService {
     };
   }
 
-  retornaMes(dataString) { // Retorna Mes da data passada
+  retornaMes(dataString: any) { // Retorna Mes da data passada
     const dataBRString = dataString;
     const partes = dataBRString.split('/'); // ["15", "08", "2024"]
 
@@ -232,7 +232,7 @@ export class SharedService {
     return mes;
   }
 
-  retornaAno(dataString) { // Retorna o Ano da data passada
+  retornaAno(dataString: any) { // Retorna o Ano da data passada
     const dataBRString = dataString;
     const partes = dataBRString.split('/'); // ["15", "08", "2024"]
 
@@ -247,7 +247,7 @@ export class SharedService {
     return ano;
   }
 
-  retornaDia(dataString) { // Retorna Dia da data passada
+  retornaDia(dataString: any) { // Retorna Dia da data passada
     const dataBRString = dataString;
     const partes = dataBRString.split('/'); // ["15", "08", "2024"]
 
@@ -286,7 +286,7 @@ export class SharedService {
     return nome.toLowerCase().replace(/(?:^|\s)(?!da |de |do |das |dos)\S/g, l => l.toUpperCase());
   };
 
-  formatCnpjCpf(value) {
+  formatCnpjCpf(value: string) {
     const cnpjCpf = value.replace(/\D/g, '');
 
     if (cnpjCpf.length === 11) {
@@ -300,24 +300,24 @@ export class SharedService {
 
   //  METODOS AUXILIARES PARA DATAS
   // Adiciona um dia na data passada como parametro ESTE É PARA E DATA E HORA JUNTOS
-  addDays(data, dias) {
+  addDays(data: moment.MomentInput, dias: moment.DurationInputArg1) {
     data = moment(data).add(dias, 'days').format("YYYY-MM-DDTHH:MM");
     return data;
   }
 
   // Subtrae um dia da data passada como parametro ESTE É PARA E DATA E HORA JUNTOS
-  subDays(data, dias) {
+  subDays(data: moment.MomentInput, dias: moment.DurationInputArg1) {
     data = moment(data).subtract(dias, 'days').format("YYYY-MM-DDTHH:MM");
     return data;
   }
 
-  subDays2(data, dias) {
+  subDays2(data: moment.MomentInput, dias: moment.DurationInputArg1) {
     moment.locale('pt-BR');
     data = moment(data).subtract(dias, 'days').format("DD/MM/YYYY");
     return data;
   }
 
-  dataSubDays(data, days) {
+  dataSubDays(data: any, days: any) {
     const strinDate = '2024-09-20T00:00:00'
     const date = new Date(strinDate);
     date.setDate(date.getDate() - 1)
@@ -325,7 +325,7 @@ export class SharedService {
 
   }
 
-  dataAddMes(dt, qtdMes) { //Salvou minha vida// Adiciona mes em qualquer data.// Ate Formatada
+  dataAddMes(dt: string, qtdMes: number) { //Salvou minha vida// Adiciona mes em qualquer data.// Ate Formatada
     var dia;
     var mes
     var data = dt.split("/");
@@ -341,15 +341,15 @@ export class SharedService {
   }
 
 
-  private dataAddDia(dias) { // Retorna a data Atual mais dias
+  private dataAddDia(dias: any) { // Retorna a data Atual mais dias
     return this.dataAtual.add(dias, 'days').format('L');
   }
 
-  private dataAddMesDataAtual(mes) { // Retorna a data Atual "Apenas" mais meses// Outras datas não funciona
+  private dataAddMesDataAtual(mes: any) { // Retorna a data Atual "Apenas" mais meses// Outras datas não funciona
     return this.dataAtual.add(mes, 'month').format('L');
   }
 
-  private dataAddAno(ano) { // Retorna a data Atual mais anos
+  private dataAddAno(ano: any) { // Retorna a data Atual mais anos
     return this.dataAtual.add(ano, 'years').format('L');
   }
 
@@ -357,7 +357,7 @@ export class SharedService {
 
 
   // Pesquisa CEP
-  getDataCep(cep): any {
+  getDataCep(cep: string): any {
     let url: string = `https://viacep.com.br/ws/${cep}/json/`;
     return fetch(url)
       .then(this.handleErrors);
@@ -370,7 +370,7 @@ export class SharedService {
       .then(this.handleErrors);
   }
 
-  getDataEstado(id): any {
+  getDataEstado(id: any): any {
     let url: string = `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${id}`;
     return fetch(url)
       .then(this.handleErrors);
@@ -384,16 +384,20 @@ export class SharedService {
   }
 
   // remove acentos e trasforma em minusculas
-  removerAcentos(s) {
-    var map = { "â": "a", "Â": "A", "à": "a", "À": "A", "á": "a", "Á": "A", "ã": "a", "Ã": "A", "ê": "e", "Ê": "E", "è": "e", "È": "E", "é": "e", "É": "E", "î": "i", "Î": "I", "ì": "i", "Ì": "I", "í": "i", "Í": "I", "õ": "o", "Õ": "O", "ô": "o", "Ô": "O", "ò": "o", "Ò": "O", "ó": "o", "Ó": "O", "ü": "u", "Ü": "U", "û": "u", "Û": "U", "ú": "u", "Ú": "U", "ù": "u", "Ù": "U", "ç": "c", "Ç": "C" };
+  removerAcentos(s: string) {
+    // Adicione o tipo Record aqui:
+    const map: Record<string, string> = { "â": "a", "Â": "A", "à": "a", "À": "A", "á": "a", "Á": "A", "ã": "a", "Ã": "A", "ê": "e", "Ê": "E", "è": "e", "È": "E", "é": "e", "É": "E", "î": "i", "Î": "I", "ì": "i", "Ì": "I", "í": "i", "Í": "I", "õ": "o", "Õ": "O", "ô": "o", "Ô": "O", "ò": "o", "Ò": "O", "ó": "o", "Ó": "O", "ü": "u", "Ü": "U", "û": "u", "Û": "U", "ú": "u", "Ú": "U", "ù": "u", "Ù": "U", "ç": "c", "Ç": "C" };
 
-    return s.replace(/[\W\[\] ]/g, function (a) { return map[a] || a }).toLowerCase()
-  };
+    // Removi o "number" do tipo de 'a', pois o replace em string sempre retorna string
+    return s.replace(/[\W\[\] ]/g, function (a: string) { 
+      return map[a] || a; 
+    }).toLowerCase();
+}
 
 
   // Valida CPF
 
-  validaCPF(cpf) {
+  validaCPF(cpf: any) {
     var Soma = 0
     var Resto
 

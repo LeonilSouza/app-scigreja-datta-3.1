@@ -83,14 +83,14 @@ export class NavCollapseComponent implements OnInit {
 
     let first_parent = parent.parentElement;
     let pre_parent = ((parent as HTMLElement).parentElement as HTMLElement).parentElement as HTMLElement;
-    if (first_parent.classList.contains('pcoded-hasmenu')) {
+    if (first_parent?.classList.contains('pcoded-hasmenu')) {
       do {
         first_parent.classList.add('pcoded-trigger');
         first_parent = ((first_parent as HTMLElement).parentElement as HTMLElement).parentElement as HTMLElement;
       } while (first_parent.classList.contains('pcoded-hasmenu'));
     } else if (pre_parent.classList.contains('pcoded-submenu')) {
       do {
-        pre_parent.parentElement.classList.add('pcoded-trigger');
+        pre_parent.parentElement?.classList.add('pcoded-trigger');
         pre_parent = (((pre_parent as HTMLElement).parentElement as HTMLElement).parentElement as HTMLElement).parentElement as HTMLElement;
       } while (pre_parent.classList.contains('pcoded-submenu'));
     }

@@ -36,7 +36,7 @@ export class StorageService {
     getLocalToken(): string {
         let tok = localStorage.getItem(STORAGE_KEYS.localToken);
         if (tok === null) {
-            return null;
+            return null!;
         }
         else {
             return JSON.parse(tok);
@@ -57,7 +57,7 @@ export class StorageService {
     getLocalUser(): LocalUser { // Obter um usuario que está no localUser
         let user = localStorage.getItem(STORAGE_KEYS.localUser);
         if (user === null) {
-            return null;
+            return null!;
         }
         else {
             return JSON.parse(user);
@@ -77,7 +77,7 @@ export class StorageService {
     getLocalIgreja(): LocalIgreja { // Obter um id da igreja que está no localIgreja
         let igr = localStorage.getItem(STORAGE_KEYS.localIgreja);
         if (igr === null) {
-            return null;
+            return null!;
         }
         else {
             return JSON.parse(igr);

@@ -1,6 +1,6 @@
 export class ThemeConfig {
   static layout = 'vertical'; // vertical, Horizontal
-  static pre_layout: string = null; // null, layout-2, layout-2-2, layout-3, layout-4, layout-4-2, layout-6, layout-8
+  static pre_layout: string = null!; // null, layout-2, layout-2-2, layout-3, layout-4, layout-4-2, layout-6, layout-8
   static isCollapseMenu = false; // true, false
   static isDarkMode = 'menu-light'; // menu-dark, menu-light, dark,
   static isNavIconColor = true; // true, false

@@ -60,7 +60,7 @@ export class PessoaListComponent implements OnInit {
   visibleChamadaObreiro: boolean = false;
 
   // Acionamento da modal no HTML  aqui pelo componente (#modalFrequencia)
-  @ViewChild('modalChamada') public modalChamada: UiModalComponent;
+  @ViewChild('modalChamada') public modalChamada: UiModalComponent | undefined;
 
   igrejaIdSignal = igrejaIdSignal;
   perfilSignal = perfilSignal;
@@ -196,7 +196,7 @@ export class PessoaListComponent implements OnInit {
   }
 
   //  ROTINA PARA CALCULAR DIAS DE CULTO DOM-TER-QUI | DOM-QUA-SEX
-  getDiasDaSemanaNoMes(ano, mes) {
+  getDiasDaSemanaNoMes(ano: number, mes: number) {
     const weekdays = [];
     const startDate = new Date(ano, mes, 1);
     const endDate = new Date(ano, mes + 1, 1);

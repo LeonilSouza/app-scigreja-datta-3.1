@@ -207,28 +207,28 @@ export class LancamentoService {
       );
   }
 
-  getTotalRDSaldoAnteriorFromIgreja(igrejaId, data) {
+  getTotalRDSaldoAnteriorFromIgreja(igrejaId: number, data: string) {
     return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/saldoanterior?igreja=${igrejaId}&data=${data}`)
       .pipe(
         catchError(this.handleError)
       );
   }
 
-  getTotalReceitaDizimoFromIgreja(igrejaId, dtinicio, dtfim) {
+  getTotalReceitaDizimoFromIgreja(igrejaId: number, dtinicio: string, dtfim: string) {
     return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/receitadizimo?igreja=${igrejaId}&dtinicio=${dtinicio}&dtfim=${dtfim}`)
       .pipe(
         catchError(this.handleError)
       );
   }
 
-  getSaldoFinalContasFromIgreja(igrejaId) {
+  getSaldoFinalContasFromIgreja(igrejaId: any) {
     return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/saldocontas/?igreja=${igrejaId}`)
       .pipe(
         catchError(this.handleError)
       );
   }
 
-  getListLancamentoFromIgreja(igrejaId) {
+  getListLancamentoFromIgreja(igrejaId: any) {
 
     return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/list/?igreja=${igrejaId}`)
       .pipe(

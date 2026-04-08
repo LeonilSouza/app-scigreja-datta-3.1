@@ -53,17 +53,17 @@ export class TipoFaltaFormComponent implements OnInit, AfterContentChecked {
 
   tipos = [{ nome: 'Padrao' }, { nome: 'Igreja' }]; // Tipo padrão é o tipo que grava null no igrejaId do Banco, tadas a Igreja podem ver. Igreja grava o id da igreja do usuario, outras igreja não pode ver.
 
-  currentAction: string;
-  tipoFaltaForm: FormGroup;
-  serverErrorMessages: string[] = null;
+  currentAction!: string;
+  tipoFaltaForm!: FormGroup;
+  serverErrorMessages: string[] = [];
   submittingForm: boolean = false;
-  pageTitle: string;
+  pageTitle!: string;
   tipoFalta: TipoFaltaDTO = new TipoFaltaDTO();
-  id: number;
+  id!: number;
 
-  tipoFaltaId: number;
+  tipoFaltaId!: number;
 
-  subscription: Subscription;
+  subscription!: Subscription;
 
   constructor(
     public tipoFaltaService: TipoFaltaService,
@@ -179,7 +179,7 @@ export class TipoFaltaFormComponent implements OnInit, AfterContentChecked {
     this.tipoFaltaService.create(tipoFalta)
       .subscribe(
         tipoFalta => {
-          this.id = parseInt(this.extractId(tipoFalta.headers.get('location'))); // Extrai o Id da URI retornada do banco
+          this.id = parseInt(this.extractId(tipoFalta.headers.get('location')!)); // Extrai o Id da URI retornada do banco
           this.tipoFalta.id = this.id;
           this.actionsForSuccess(this.tipoFalta),
            Swal.fire('Inclusão', 'Registro inserido com sucesso', 'success');
@@ -223,7 +223,7 @@ export class TipoFaltaFormComponent implements OnInit, AfterContentChecked {
     // )
   }
 
-  private actionsForError(error) {
+  private actionsForError(error: { status: number; _body: string; }) {
     this.showError();
 
 

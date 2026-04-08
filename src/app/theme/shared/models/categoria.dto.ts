@@ -1,6 +1,6 @@
 export class CategoriaDTO {
-    value: string;
-  selected: boolean;
+    value!: string;
+  selected!: boolean;
     constructor(
         public id?: number,
         public nome?: string,

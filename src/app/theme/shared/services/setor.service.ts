@@ -20,7 +20,7 @@ export class SetorService {
   }
 
   //Igual o findAll só que paginado / os dois usa o mesmo metodo no banco
-  getPageSetor(nome, page, linesPerPage) { 
+  getPageSetor(nome: string, page: number, linesPerPage: number) { 
     return this.http.get(`${API_CONFIG.baseUrl}/setores/?nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
       .pipe(
         catchError(this.handleError)
@@ -52,13 +52,13 @@ export class SetorService {
   }
 
   // Usuario
-  findSetorIgrejaNewUsuario(setorId): Observable<SetorDTO> { // Busca setor da Igreja
+  findSetorIgrejaNewUsuario(setorId: number | undefined): Observable<SetorDTO> { // Busca setor da Igreja
     return this.http.get(`${API_CONFIG.baseUrl}/setores/?setorId=${setorId}`)
       .pipe(
         catchError(this.handleError));
   }
 
-  findSetorIgrejaEditUsuario(setorId): Observable<SetorDTO> { // Busca setor da Igreja
+  findSetorIgrejaEditUsuario(setorId: number | undefined): Observable<SetorDTO> { // Busca setor da Igreja
     return this.http.get(`${API_CONFIG.baseUrl}/setores/?setorId=${setorId}`)
       .pipe(
         catchError(this.handleError));
