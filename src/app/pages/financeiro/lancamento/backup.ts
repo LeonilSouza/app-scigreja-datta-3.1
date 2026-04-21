@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { ConfirmationService, LazyLoadEvent, MenuItem, MessageService } from 'primeng/api';
-import { Subscription, forkJoin } from 'rxjs';
+import { Subscription } from 'rxjs';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import { ButtonModule } from 'primeng/button';
@@ -31,17 +31,17 @@ import { Table } from 'primeng/table';
 
 
 export class LancamentoFiltro {
-  igrejaId: number = igrejaIdSignal();
+  igrejaId?: number = igrejaIdSignal();
   setorId?: number = setorIdSignal();
-  nome: string = '';
-  dtinicio: string = ''; // No Java usamos @Param("dtinicio")
-  dtfim: string = '';    // No Java usamos @Param("dtfim")
+  nome?: string = ''.toLowerCase();
+  dtInicio?: string = '';
+  dtFim?: string = '';
   page: number = 0;
   linesPerPage: number = 10;
-  contas: string = "";
-  categorias: string = "";
-  formas: string = "";
-  tipoLancamento: string = ""; // Inicie com um padrão
+  contas?: string = "";
+  categorias?: string = "";
+  formas?: string = "";
+  tipoLancamento?: string = "";
 }
 
 @Component({
@@ -52,10 +52,14 @@ export class LancamentoFiltro {
   imports: [
     RouterModule,
     DatePicker,
+    // InputGroup,
     ButtonModule,
     RouterLink,
     SharedModule,
-    InputNumberModule
+    InputNumberModule,
+    // InputGroup,
+    // ConfirmDialog,
+    // Dialog
   ],
   providers: [
     LancamentoService,
@@ -109,8 +113,8 @@ export class LancamentoListFormComponent implements OnInit {
 
   // Mes atual
   rangeDates!: string;
-  dtinicio: string = "";
-  dtfim: string = "";
+  dtInicio: string = "";
+  dtFim: string = "";
 
   // Saldo dia anterior
   dataDiaAnterior: string = ""; // Data para pegar o saldo anterior
@@ -147,8 +151,7 @@ export class LancamentoListFormComponent implements OnInit {
   // Valor desconsiderando o debito de Permuta
   totalDebitos: number = 0;
 
-  totalDiversos: number = 0;
-  
+  // totalDizimos: number = 0;
   totalMissoes: number = 0;
   totalOfertas: number = 0;
   totalReceitaDizimo: number = 0;
@@ -246,23 +249,21 @@ export class LancamentoListFormComponent implements OnInit {
 
   ngOnInit() {
     this.buildLancamentoForm();
-    this.periodo();
-    this.inicializarDados();
     this.loadCentroCustos();
     this.loadPessoas();
     this.periodo();
     this.rangeDates = this.sharedService.rangeMesAtual();
-    this.dtinicio = this.sharedService.primeiroDiaMes();
-    this.dtfim = this.sharedService.ultimoDiaMes();
+    this.dtInicio = this.sharedService.primeiroDiaMes();
+    this.dtFim = this.sharedService.ultimoDiaMes();
 
-    this.filtro.dtinicio = this.sharedService.primeiroDiaMes();
-    this.filtro.dtfim = this.sharedService.ultimoDiaMes();
+    this.filtro.dtInicio = this.sharedService.primeiroDiaMes();
+    this.filtro.dtFim = this.sharedService.ultimoDiaMes();
 
     // Data um dia anterior
-    const data_americana = this.sharedService.formataDataUS(this.dtinicio);
+    const data_americana = this.sharedService.formataDataUS(this.dtInicio);
     const data_subtraida = this.sharedService.dataSubDay(data_americana, 1);
     this.dataDiaAnterior = data_subtraida;
-    // this.getTotalSaldoAnterior(); HOJE
+    this.getTotalSaldoAnterior();
 
     this.contaForm = new FormGroup({
       selectedContas: new FormControl<ContaDTO[] | null>(null)
@@ -278,123 +279,24 @@ export class LancamentoListFormComponent implements OnInit {
   };
 
   ngOnDestroy() {
+    // console.log('Limpando recursos do componente de Frequência...');
+    // Se você tiver alguma Subscription manual (this.subscription.unsubscribe())
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
 
+
   aoMudarPagina(event: LazyLoadEvent) { // Metodo será chamado toda vez que mudar de pagina ou houver necessidade de dados novos
-    this.filtro.page = event!.first! / event!.rows!;
+    this.page = event!.first! / event!.rows!;
     this.filtro.linesPerPage = event.rows!;
-
-    // SÓ dispara a busca se o usuário já tiver clicado no botão "Filtrar" 
-    // ou se for apenas uma mudança de página de uma busca que já existe.
-    if (this.pesquisa) {
-      this.refreshAll();
+    if (!this.pesquisa) {
+      this.loadFormas(); // loadFormas() --> Carrega formas depois categorias depois contas que chama loadLancamentos() na inicialização.
+      this.getTotalReceitaDizimo();
+    } else {
+      this.buscaLancamentos();
+      this.getTotalReceitaDizimo();
     }
-  }
-
-  inicializarDados() {
-    // Carrega tudo em paralelo. Só prossegue quando todos terminarem.
-    forkJoin({
-      formas: this.formaService.getListFormaFromIgreja(this.igrejaId),
-      categorias: this.categoriaService.getListCategoriaFromIgreja(this.igrejaId),
-      contas: this.contaService.getListContaFromIgreja(this.igrejaId)
-    })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(res => {
-
-        //////////////////// formas
-        this.formas = res.formas;
-        let ids = res.formas.map((c: { id: any; }) => c.id).join(',');
-        this.formasIds = ids;
-        this.formaIdsAux = ids;
-
-        /////////////////// Fim formas
-
-        ////////////////// categorias
-        this.categorias = res.categorias;
-        let cat1 = this.categorias.filter(cat => cat.id?.toString());
-        let cat2 = cat1.map(c => {
-          return c.id?.toString(); // Retorna nova string de todos os ids de categorias. Necessario para o Backend
-        })
-        this.categoriaIds = cat2.toString();
-        this.categoriaIdsAux = cat2.toString();
-        this.filtro.categorias = cat2.toString();
-
-        //////////////// Fim categorias
-
-        /////////// contas
-        let total = 0;
-        if (res.contas.length == 0) {
-          Swal.fire('Atenção !!!', 'Nenhuma conta encontrada. Cadastre uma conta', 'warning');
-        } else {
-          this.contas = res.contas;
-          this.loadContasTransferencia();
-          this.contasTransferencia = res.contas;
-          res.contas.map((t: { totalConta: number; }) => {
-            total += t.totalConta;
-            this.saldoFinalContas = total;
-          })
-
-          let ids = res.contas.map((c: { id: any; }) => c.id).join(',');
-          this.contaIds = ids;
-          this.filtro.contas = ids;
-          this.contaIdsAux = ids;
-
-          ///////////// Fim contas
-
-          // Agora que temos os dados, montamos as strings de IDs iniciais
-          this.filtro.formas = res.formas.map((f: { id: any; }) => f.id).join(',');
-          this.filtro.categorias = res.categorias.map((c: { id: any; }) => c.id).join(',');
-          this.filtro.contas = res.contas.map((c: { id: any; }) => c.id).join(',');
-          this.getTotalGeralCredito();
-
-          // Só agora disparamos a primeira busca
-          this.refreshAll();
-        }
-      });
-  }
-
-  // Método centralizador para atualizar Grid + Totais
-  refreshAll() {
-    this.loadLancamentos();      // Atualiza a Grid
-    this.getTotalizacoes();      // Chama todos os seus métodos de soma
-  }
-
-  getTotalizacoes() {
-    // Total Dízimo (Usando a Categoria 1 fixa que definimos no Java)
-    this.lancamentoService.getTotalReceitaDizimoFromIgreja(this.filtro
-    ).subscribe(total => total !== null && this.filtro.tipoLancamento !== 'Despesa' ? this.totalReceitaDizimo = total : 0.00);
-
-    // Soma Geral (Para nova query dinâmica com Specification no java)
-    this.lancamentoService.getTotalGeralCreditoFromIgreja(this.filtro)
-      .subscribe(total => total !== null && this.filtro.tipoLancamento !== 'Despesa' ? this.totalCreditos = total : 0.00);
-
-    // Saldo Anterior
-    this.lancamentoService.getTotalRDSaldoAnteriorFromIgreja(this.igrejaId, this.filtro.dtinicio!)
-      .subscribe(saldo => this.saldoAnterior = saldo);
-
-    // Total Ofertas
-    this.lancamentoService.getTotalOfertasFromIgreja(this.filtro)
-      .subscribe(total => total !== null && this.filtro.tipoLancamento !== 'Despesa' ? this.totalOfertas = total : 0.00);
-
-    // Ofertas Alçadas
-    this.lancamentoService.getTotalOfertasAlcadas(this.filtro)
-      .subscribe(total => total !== null && this.filtro.tipoLancamento !== 'Despesa' ? this.total_ofertas_alcadas = total : 0.00);
-
-    // Total Geral Debito
-    this.lancamentoService.getTotalGeralDebitoFromIgreja(this.filtro)
-      .subscribe(total =>
-        total !== null && this.filtro.tipoLancamento !== 'Receita' ? this.totalDebitos = total * -1 : 0.00);
-
-    // Total Missões
-    this.lancamentoService.getTotalMissoesFromIgreja(this.filtro)
-      .subscribe(total => total !== null && this.filtro.tipoLancamento !== 'Despesa' ? this.totalMissoes = total : 0.00);
-
-     // Total Diversos
-    this.lancamentoService.getTotalDiversosFromIgreja(this.filtro)
-      .subscribe(total =>  total !== null && this.filtro.tipoLancamento !== 'Despesa' ? this.totalDiversos = total : 0.00);
   }
 
   linhasSelecionada(event: string | any[]): void {
@@ -419,6 +321,75 @@ export class LancamentoListFormComponent implements OnInit {
     this.exclusaoLancamento(this.indexId, this.indexIdTransferencia);
   }
 
+
+  loadFormas() {
+    this.formaService.getListFormaFromIgreja(this.igrejaId)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .subscribe({
+        next: response => {
+          this.formas = response;
+          this.loadFormasPermuta();
+          let ids = response.map((f: { id: any; }) => {
+            return (f.id).toString();
+          })
+          this.formasIds = ids.toString();
+          this.filtro.formas = ids.toString();
+
+          this.loadCategorias()
+        },
+        error: () => { }
+      })
+  }
+
+  loadCategorias() {
+    this.categoriaService.getListCategoriaFromIgreja(this.igrejaId)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .subscribe({
+        next: response => {
+          this.categorias = response; // Armazena todas as categorias de Receitas e Despesa para serem filtradas
+          let cat1 = this.categorias.filter(cat => cat.id?.toString());
+          let cat2 = cat1.map(c => {
+            return c.id?.toString(); // Retorna nova string de todos os ids de categorias. Necessario para o Backend
+          })
+          this.categoriaIds = cat2.toString();
+          this.categoriaIdsAux = cat2.toString();
+          this.filtro.categorias = cat2.toString();
+
+          this.loadContas();
+        }
+      }),
+      this.error; () => { }
+  }
+
+  loadContas() {
+    let total = 0;
+    this.contaService.getListContaFromIgreja(this.igrejaId)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .subscribe({
+        next: response => {
+          if (response.length == 0) {
+            Swal.fire('Atenção !!!', 'Nenhuma conta encontrada. Cadastre uma conta', 'warning');
+          } else {
+            this.contas = response;
+            this.loadContasTransferencia();
+            this.contasTransferencia = response;
+            response.map((t: { totalConta: number; }) => {
+              total += t.totalConta;
+              this.saldoFinalContas = total;
+            })
+
+            let ids = response.map((c: { id: any; }) => {
+              return (c.id).toString();
+            })
+            this.contaIds = ids.toString();
+            this.filtro.contas = ids.toString();
+
+            this.loadLancamentos(this.page);
+          }
+        },
+        error: () => { }
+      })
+  }
 
   loadContasTransferencia() {
     this.contasTransferencia = this.contas.map(c => {
@@ -523,15 +494,23 @@ export class LancamentoListFormComponent implements OnInit {
 
   }
 
-  loadLancamentos() {
+  loadLancamentos(page: number = 0) {
+    this.filtro.page = page;
+    this.pesquisa ? this.filtro.tipoLancamento : this.filtro.tipoLancamento = "";
     this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      // .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
           this.lancamentos = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
-          this.totalRegistros = response.totalElements; 
-          this.pesquisa = true; // Para permitir a paginação na primeira carga
+          this.totalRegistros = response.totalElements;
           this.getPrinters();
+          // this.getSelecionadosItems();
+          this.getTotalGeralCredito();
+          this.getTotalOfertasAlcadas();
+          this.getTotalGeralDebito();
+          this.getTotalOfertas();
+          this.getTotalMissoes();
+
         },
         error: (error) => {
           this.error = error;
@@ -539,24 +518,6 @@ export class LancamentoListFormComponent implements OnInit {
         }
       });
   }
-
-  //O Angular vai chamar a mesma URL, com os mesmos parâmetros que usa para a grid, 
-  // e a única diferença é que o navegador vai tratar a resposta como um arquivo (PDF) em vez de um JSON.
-  imprimirLancamentos() {
-    this.lancamentoService.gerarRelatorioPdf(this.filtro).subscribe({
-      next: (blob) => {
-        // Cria um link na memória do navegador para o arquivo recebido
-        const url = window.URL.createObjectURL(blob);
-        // Abre o PDF em uma nova aba
-        window.open(url, '_blank');
-      },
-      error: (err) => {
-        this.toastr.error('Erro ao gerar o relatório PDF');
-        console.error(err);
-      }
-    });
-  }
-
   imprimirRecibo(id: any) {
     if (!id) {
       Swal.fire('Exclusão', 'Nenhum registro encontrado', 'info');
@@ -572,21 +533,21 @@ export class LancamentoListFormComponent implements OnInit {
         label: 'Entradas',
         icon: 'pi pi-dollar',
         target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/?nome=entrada-dizimo-oferta&igreja=${this.igrejaId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`)
+        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/?nome=entrada-dizimo-oferta&igreja=${this.igrejaId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
       },
       { separator: true },
       {
         label: 'Dízimo de obreiros',
         icon: 'pi pi-dollar',
         target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/?nome=entrada-dizimo-obreiros&igreja=${this.igrejaId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`)
+        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/?nome=entrada-dizimo-obreiros&igreja=${this.igrejaId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
       },
       { separator: true },
       {
         label: 'Livro caixa - Diário',
         icon: 'pi pi-dollar',
         target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/?nome=livro-caixa-diario&igreja=${this.igrejaId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`)
+        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/?nome=livro-caixa-diario&igreja=${this.igrejaId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
       },
       { separator: true },
       {
@@ -596,12 +557,11 @@ export class LancamentoListFormComponent implements OnInit {
           // Montamos a URL com os valores ATUAIS das variáveis
           const url = `${API_CONFIG.baseUrl}/relatorios/despesas/?nome=livro-caixa-mensal-simplificado` +
             `&igreja=${this.igrejaId}` +
-            `&dt_inicio=${this.dtinicio}` +
-            `&dt_fim=${this.dtfim}` +
+            `&dt_inicio=${this.dtInicio}` +
+            `&dt_fim=${this.dtFim}` +
             `&saldo_anterior=${this.saldoAnterior || 0}` +
             `&total_dizimo=${this.totalReceitaDizimo || 0}` +
-            `&total_oferta=${this.totalOfertas || 0}` +
-            `&total_receitas_diversas=${this.totalDiversos || 0}`;
+            `&total_oferta=${this.totalOfertas || 0}`;
 
           // Abre em uma nova aba
           window.open(url, '_blank');
@@ -615,12 +575,11 @@ export class LancamentoListFormComponent implements OnInit {
           // Montamos a URL com os valores ATUAIS das variáveis
           const url = `${API_CONFIG.baseUrl}/relatorios/despesas/?nome=livro-caixa-mensal-detalhado` +
             `&igreja=${this.igrejaId}` +
-            `&dt_inicio=${this.dtinicio}` +
-            `&dt_fim=${this.dtfim}` +
+            `&dt_inicio=${this.dtInicio}` +
+            `&dt_fim=${this.dtFim}` +
             `&saldo_anterior=${this.saldoAnterior || 0}` +
             `&total_dizimo=${this.totalReceitaDizimo || 0}` +
-            `&total_oferta=${this.totalOfertas || 0}` +
-            `&total_receitas_diversas=${this.totalDiversos || 0}`;
+            `&total_oferta=${this.totalOfertas || 0}`;
 
           // Abre em uma nova aba
           window.open(url, '_blank');
@@ -633,8 +592,8 @@ export class LancamentoListFormComponent implements OnInit {
           // Montamos a URL com os valores ATUAIS das variáveis
           const url = `${API_CONFIG.baseUrl}/relatorios/entradas/?nome=ofertas-alcadas` +
             `&igreja=${this.igrejaId}` +
-            `&dt_inicio=${this.dtinicio}` +
-            `&dt_fim=${this.dtfim}`;
+            `&dt_inicio=${this.dtInicio}` +
+            `&dt_fim=${this.dtFim}`;
 
           // Abre em uma nova aba
           window.open(url, '_blank');
@@ -645,62 +604,62 @@ export class LancamentoListFormComponent implements OnInit {
         label: 'Demostrativo de Receitas e Permutas - CONGREGAÇÃO',
         icon: 'pi pi-dollar',
         target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/?nome=relacao-entradas-dizimo-transferencias-congregacao&igreja=${this.igrejaId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`)
+        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/?nome=relacao-entradas-dizimo-transferencias-congregacao&igreja=${this.igrejaId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
       },
       { separator: true },
       {
         label: 'Transferências - SETOR',
         icon: 'pi pi-dollar',
         target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=relacao-entradas-dizimo-transferencias-setor&setor=${this.setorId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`)
+        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=relacao-entradas-dizimo-transferencias-setor&setor=${this.setorId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
       },
       { separator: true },
       {
         label: 'Resumo - SETOR', // O percentualMaior e o percentualMenor o jasper repassa de cada igreja do relatorio principal para o sub relatorio
         icon: 'pi pi-dollar',
         target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/resumo/?nome=resumo-entradas-setor&setor=${this.setorId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`)
+        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/resumo/?nome=resumo-entradas-setor&setor=${this.setorId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
       },
       { separator: true },
       {
         label: 'Relatório - SETOR',
         icon: 'pi pi-dollar',
         target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=relatorio-entradas-setor-quadro&setor=${this.setorId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`)
+        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=relatorio-entradas-setor-quadro&setor=${this.setorId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
       },
       { separator: true },
       {
         label: 'Fechamento - SETOR',
         icon: 'pi pi-dollar',
         target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=fechamento-setor&setor=${this.setorId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`)
+        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=fechamento-setor&setor=${this.setorId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
       },
     ];
   }
 
   periodo() {
     if (this.rangeDates == null) {
-      this.dtinicio = this.sharedService.dataAtualFormatada();
-      this.rangeDates = this.dtinicio + " - " + this.dtinicio;
-      this.filtro.dtinicio = this.dtinicio;
+      this.dtInicio = this.sharedService.dataAtualFormatada();
+      this.rangeDates = this.dtInicio + " - " + this.dtInicio;
+      this.filtro.dtInicio = this.dtInicio;
     } else {
-      this.dtinicio = this.rangeDates[0];
-      this.dtfim = this.rangeDates[1];
-      if (this.dtinicio.length < 10 && this.dtfim.length < 10) {
-        this.dtinicio = this.rangeDates.substring(0, 10);
-        this.dtfim = this.rangeDates.substring(13, 23);
-        this.filtro.dtinicio = this.rangeDates.substring(0, 10);
-        this.filtro.dtfim = this.rangeDates.substring(13, 23);
+      this.dtInicio = this.rangeDates[0];
+      this.dtFim = this.rangeDates[1];
+      if (this.dtInicio.length < 10 && this.dtFim.length < 10) {
+        this.dtInicio = this.rangeDates.substring(0, 10);
+        this.dtFim = this.rangeDates.substring(13, 23);
+        this.filtro.dtInicio = this.rangeDates.substring(0, 10);
+        this.filtro.dtFim = this.rangeDates.substring(13, 23);
       } else {
-        this.dtinicio = this.rangeDates[0];
-        this.dtfim = this.rangeDates[1];
-        this.filtro.dtinicio = this.rangeDates[0];
-        this.filtro.dtfim = this.rangeDates[1];
+        this.dtInicio = this.rangeDates[0];
+        this.dtFim = this.rangeDates[1];
+        this.filtro.dtInicio = this.rangeDates[0];
+        this.filtro.dtFim = this.rangeDates[1];
       }
     }
-    if (this.dtfim == null) {
-      this.dtfim = this.dtinicio;
-      this.filtro.dtfim = this.dtinicio;
+    if (this.dtFim == null) {
+      this.dtFim = this.dtInicio;
+      this.filtro.dtFim = this.dtInicio;
     }
   }
 
@@ -729,11 +688,16 @@ export class LancamentoListFormComponent implements OnInit {
             this.lancamentoForm.controls['contaId'].setValue(response.contaIdTransferencia);
             this.lancamentoForm.controls['contaIdTransferencia'].setValue((response as any)['conta'].id);
 
+            // Forma
+            // this.lancamentoForm.controls['formaId'].setValue(response.formaIdTransferencia); 
+            // this.lancamentoForm.controls['formaIdTransferencia'].setValue(response['forma'].id);
+
           } else {
             this.lancamentoForm.controls['valor'].setValue(response.valor);
           }
 
           this.lancamentoForm.controls['centroCustoId'].setValue((response as any)['centroCusto'].id);
+          // this.lancamentoForm.controls['valor'].setValue(Math.abs(this.lancamentoForm.controls['valor'].value));// Mostra o numero negativo sem o sinal. Valor absoluto
           this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value);
 
           //Para Despesa
@@ -764,44 +728,36 @@ export class LancamentoListFormComponent implements OnInit {
   }
 
   buscaLancamentos() {
-    this.pesquisa = true; // Agora as buscas estão liberadas
-    this.filtro.page = 0;
-
-    if (this.grid) {
-      this.grid.first = 0; // Isso vai disparar o onLazyLoad automaticamente
-    } else {
-      this.refreshAll(); // Caso a grid não dispare, chamamos manualmente
-    }
-
-    this.filtro.page = 0; // Sempre volta para a primeira página em uma nova busca
+    this.pesquisa = true;
     if (this.rangeDates == null) {
-      this.dtinicio = this.rangeDates[0];
-      this.filtro.dtinicio = this.rangeDates[0];
-      if (this.dtinicio.length < 10) {
-        this.dtinicio = (this.rangeDates as string).substring(0, 10);
-        this.filtro.dtinicio = (this.rangeDates as string).substring(0, 10);
+      this.dtInicio = this.rangeDates[0];
+      this.filtro.dtInicio = this.rangeDates[0];
+      if (this.dtInicio.length < 10) {
+        this.dtInicio = (this.rangeDates as string).substring(0, 10);
+        this.filtro.dtInicio = (this.rangeDates as string).substring(0, 10);
       } else {
-        this.dtinicio = this.rangeDates[0];
-        this.filtro.dtinicio = this.rangeDates[0];
+        this.dtInicio = this.rangeDates[0];
+        this.filtro.dtInicio = this.rangeDates[0];
       }
     }
 
     this.crtSaldoFinal = true;
-    if (this.dtfim == null) {
-      this.dtfim = this.dtinicio
-      this.filtro.dtfim = this.dtinicio
+    if (this.dtFim == null) {
+      this.dtFim = this.dtInicio
+      this.filtro.dtFim = this.dtInicio
     }
-    this.rangeDates = this.dtinicio + " - " + this.dtfim;
+    this.rangeDates = this.dtInicio + " - " + this.dtFim;
+
+    this.loadLancamentos(this.page);
+    this.getTotalReceitaDizimo(); //Busca apenas o total de receitas do periodo para  entrada no "Livro Caixa"
+    this.getTotalGeralCredito();
 
     // Data do dia anterior
-    const data_americana = this.sharedService.formataDataUS(this.dtinicio);
+    const data_americana = this.sharedService.formataDataUS(this.dtInicio);
     const data_subtraida = this.sharedService.dataSubDay(data_americana, 1);
     this.dataDiaAnterior = data_subtraida;
-    // this.getTotalSaldoAnterior();
-
-    this.refreshAll(); // Chama Grid + Totalizações
+    this.getTotalSaldoAnterior();
   }
-
 
   // METODOS CONTA
   public createLancamento() {
@@ -842,7 +798,7 @@ export class LancamentoListFormComponent implements OnInit {
           this.lancamentoForm.controls['pessoaId'].setValue(0)
           this.lancamentoForm.controls['valor'].setValue(null)
           this.toastr.success('Registro inserido com sucesso!', 'Lançamento');
-          this.inicializarDados();
+          this.loadContas();
         },
         error: () => { }
       })
@@ -876,7 +832,7 @@ export class LancamentoListFormComponent implements OnInit {
         next: () => {
           this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
           this.toastr.success('Registro atualizado com sucesso!', 'Atualização');
-          this.inicializarDados();
+          this.loadContas();
         },
         error: () => { }
       })
@@ -933,7 +889,7 @@ export class LancamentoListFormComponent implements OnInit {
                           next: () => {
                             this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
                             this.toastr.success('Registro atualizado com sucesso!', 'Atualização');
-                            this.inicializarDados();
+                            this.loadContas();
                             this.resetLancamento();
                           }
                         })
@@ -983,7 +939,7 @@ export class LancamentoListFormComponent implements OnInit {
         next: () => {
           this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
           this.toastr.success('Registro inserido com sucesso!', 'Inclusão');
-          this.inicializarDados();
+          this.loadContas();
         }
       })
   }
@@ -1041,7 +997,7 @@ export class LancamentoListFormComponent implements OnInit {
                             this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
                             this.toastr.success('Registro atualizado com sucesso!', 'Atualização');
                             this.resetLancamento();
-                            this.inicializarDados();
+                            this.loadFormas();
                           }
                         })
                     }
@@ -1085,7 +1041,7 @@ export class LancamentoListFormComponent implements OnInit {
           this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
           this.toastr.success('Registro atualizado com sucesso!', 'Atualização');
           this.resetLancamento();
-          this.inicializarDados();
+          this.loadFormas();
         }
       })
   }
@@ -1103,18 +1059,19 @@ export class LancamentoListFormComponent implements OnInit {
   }
 
   getTotalGeralCredito() { // Inclui todas as Receitas inclusive Permuta, Ofertas Alçadas, missoes......
+    this.filtro.tipoLancamento = 'Receita'
     if (this.rangeDates !== null) {
-      this.dtinicio = this.rangeDates[0];
-      this.dtfim = this.rangeDates[1];
-      if (this.dtinicio.length < 10 && this.dtfim.length < 10) {
-        this.dtinicio = this.rangeDates.substring(0, 10);
-        this.dtfim = this.rangeDates.substring(13, 23);
+      this.dtInicio = this.rangeDates[0];
+      this.dtFim = this.rangeDates[1];
+      if (this.dtInicio.length < 10 && this.dtFim.length < 10) {
+        this.dtInicio = this.rangeDates.substring(0, 10);
+        this.dtFim = this.rangeDates.substring(13, 23);
       } else {
-        this.dtinicio = this.rangeDates[0];
-        this.dtfim = this.rangeDates[1];
+        this.dtInicio = this.rangeDates[0];
+        this.dtFim = this.rangeDates[1];
       }
     }
-    this.lancamentoService.getTotalGeralCreditoFromIgreja(this.filtro)
+    this.lancamentoService.getTotalReceitaFromIgreja(this.filtro)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
@@ -1123,6 +1080,130 @@ export class LancamentoListFormComponent implements OnInit {
       }),
       this.error; () => { }
   }
+
+  getTotalOfertasAlcadas() {
+    this.filtro.tipoLancamento = 'Receita'
+    this.filtro.categorias = '4,5' // 4= Ofertas Alçadas 1 | 5= Ofertas Alçadas 2
+    if (this.rangeDates !== null) {
+      this.dtInicio = this.rangeDates[0];
+      this.dtFim = this.rangeDates[1];
+      if (this.dtInicio.length < 10 && this.dtFim.length < 10) {
+        this.dtInicio = this.rangeDates.substring(0, 10);
+        this.dtFim = this.rangeDates.substring(13, 23);
+      } else {
+        this.dtInicio = this.rangeDates[0];
+        this.dtFim = this.rangeDates[1];
+      }
+    }
+    this.lancamentoService.getTotalOfertasAlcadas(this.filtro)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .subscribe({
+        next: response => {
+          response !== null ? this.total_ofertas_alcadas = response : this.total_ofertas_alcadas = 0.00;
+        }
+      }),
+      this.error; () => { }
+  }
+
+
+  getTotalGeralDebito() {
+    this.filtro.tipoLancamento = 'Despesa'
+    if (this.rangeDates !== null) {
+      this.dtInicio = this.rangeDates[0];
+      this.dtFim = this.rangeDates[1];
+      if (this.dtInicio.length < 10 && this.dtFim.length < 10) {
+        this.dtInicio = this.rangeDates.substring(0, 10);
+        this.dtFim = this.rangeDates.substring(13, 23);
+      } else {
+        this.dtInicio = this.rangeDates[0];
+        this.dtFim = this.rangeDates[1];
+      }
+    }
+    this.lancamentoService.getTotalGeralDebitoFromIgreja(this.filtro)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .subscribe({
+        next: response => {
+          response !== null ? this.totalDebitos = response * -1 : this.totalDebitos = 0.00;
+          this.filtro.tipoLancamento = this.tipoLancamento || ''
+        }
+      }),
+      this.error; () => { }
+  }
+
+  getTotalOfertas() {
+    this.filtro.tipoLancamento = 'Receita'
+    this.filtro.categorias = '2';
+    if (this.rangeDates !== null) {
+      this.dtInicio = this.rangeDates[0];
+      this.dtFim = this.rangeDates[1];
+      if (this.dtInicio.length < 10 && this.dtFim.length < 10) {
+        this.dtInicio = this.rangeDates.substring(0, 10);
+        this.dtFim = this.rangeDates.substring(13, 23);
+      } else {
+        this.dtInicio = this.rangeDates[0];
+        this.dtFim = this.rangeDates[1];
+      }
+    }
+    this.lancamentoService.getTotalOfertasFromIgreja(this.filtro)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .subscribe({
+        next: response => {
+          response !== null ? this.totalOfertas = response : this.totalOfertas = 0.00;
+        }
+      }),
+      this.error; () => { }
+  }
+
+
+  getTotalMissoes() {
+    this.filtro.tipoLancamento = 'Receita';
+    this.filtro.categorias = '7'; // 7=Missões
+    if (this.rangeDates !== null) {
+      this.dtInicio = this.rangeDates[0];
+      this.dtFim = this.rangeDates[1];
+      if (this.dtInicio.length < 10 && this.dtFim.length < 10) {
+        this.dtInicio = this.rangeDates.substring(0, 10);
+        this.dtFim = this.rangeDates.substring(13, 23);
+      } else {
+        this.dtInicio = this.rangeDates[0];
+        this.dtFim = this.rangeDates[1];
+      }
+    }
+
+    this.lancamentoService.getTotalMissoesFromIgreja(this.filtro)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .subscribe({
+        next: response => {
+          response !== null ? this.totalMissoes = response : this.totalMissoes = 0.00;
+        }
+      }),
+      this.error; () => { }
+  }
+
+  getTotalSaldoAnterior() {
+    this.lancamentoService.getTotalRDSaldoAnteriorFromIgreja(this.igrejaId, this.dataDiaAnterior)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .subscribe({
+        next: response => {
+          response !== null ? this.saldoAnterior = response : this.saldoAnterior = 0.00;
+        }
+      }),
+      this.error; () => { }
+  }
+
+  getTotalReceitaDizimo() {
+    this.filtro.tipoLancamento = 'Receita'
+    this.lancamentoService.getTotalReceitaDizimoFromIgreja(this.filtro)
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .subscribe({
+        next: response => {
+          response !== null ? this.totalReceitaDizimo = response : this.totalReceitaDizimo = 0.00;
+        }
+      }),
+      this.error; () => { }
+  }
+
+
 
   filtraCategoriaIds(value: string) { //Recebe tipo Receita ou Despesa e retorna IDS somente de receita ou de despesa
 
@@ -1168,15 +1249,46 @@ export class LancamentoListFormComponent implements OnInit {
 
   ///////////////////////////// Enentos DropDown   ///////////////////////////
 
-  // Chame este método sempre que o usuário mudar uma seleção na tela
-  atualizarFiltrosStrings(event: any, tipo: 'contas' | 'formas' | 'categorias') {
-    // Se o event.value for um array de objetos ou IDs:
-    if (Array.isArray(event.value)) {
-      const ids = event.value.map((item: any) => item.id || item);
-      this.filtro[tipo] = ids.join(',');
+  onChangeFormas(event: { value: string | number; }) {
+    // DEIXEI AQUI PARA USO FUTURO
+    //Array convertida em uma lista de string
+    let length = event.value.toString();
+    // Remove as virgulas da string
+    const sempontoevirgula = length.replace(/,/g, "");
+    //Pega o ultimo número da string
+    const tamanho = sempontoevirgula.slice(-1);
+    // DEIXEI AQUI PARA USO FUTURO
+
+    // event.value == '' ? this.ctr_formas = false :
+    //   tamanho == this.formas.length ? this.ctr_formas = false : this.ctr_formas = true;
+    if (event.value !== "" && event.value > '0') {
+      this.filtro.formas = event.value.toString();
+    }
+
+    if (event.value == "") {
+      this.filtro.formas = this.formasIds;
     }
   }
 
+  onChangeContas(event: { value: string | number; }) {
+    if (event.value !== "" && event.value > '0') {
+      this.filtro.contas = event.value.toString();
+    }
+
+    if (event.value == "") {
+      this.filtro.contas = this.contaIds;
+    }
+  }
+
+  onChangeCategorias(event: { value: string | number; }) {
+    if (event.value !== "" && event.value > '0') {
+      this.filtro.categorias = event.value.toString();
+    }
+
+    if (event.value == "") {
+      this.filtro.categorias = this.categoriaIds;
+    }
+  }
 
   onChangeNomeHistorico(value: { value: any; }) {
     this.loadPessoa(value.value);
@@ -1230,7 +1342,7 @@ export class LancamentoListFormComponent implements OnInit {
   }
 
   private getConta(value: number | undefined) {
-    let conta_id = this.contas.filter(tc => tc.id == value); //Armazema todas as contas de um tipo passado por parametro
+    let conta_id = this.contas.filter(tc => tc.id == value); //Armazema todas as categorias de um tipo passado por parametro
     let tipo_conta = conta_id.map(tp => {
       return tp.tipo; // Retorna uma string de ids do tipo passado no parametro.
     })
@@ -1238,46 +1350,37 @@ export class LancamentoListFormComponent implements OnInit {
   }
 
 
-  onChangeTipoLancamento(event: any) {
-    const valor = event.value;
-    // 1. Reset de UI e totais
-
-    // 2. Atualiza o Tipo no Filtro
-    this.filtro.tipoLancamento = (valor === 'Todas') ? "" : valor;
-
-    // 3. Atualiza os IDs de Categoria (Sincroniza com o Back-end)
-    // Seu método filtraCategoriaIds já atualiza this.filtro.categorias
-    this.filtraCategoriaIds(valor);
-
-    // 4. Filtra o que aparece no combo de categorias (UI)
-    this.filtraCategorias(valor);
-
-    if (valor === 'Todas'  ) {
-      this.categoriaForm.get('selectedCategorias')?.patchValue([]);
-      this.formaForm.get('selectedFormas')?.patchValue([]);
-      this.contaForm.get('selectedContas')?.patchValue([]);
-      this.filtro.tipoLancamento = '';
-      this.filtro.formas = this.formaIdsAux;
-      this.filtro.contas = this.contaIdsAux;
-      this.pesquisa = true; // Agora as buscas estão liberadas
-      this.filtro.page = 0;
-
-      if (this.grid) {
-        this.grid.first = 0; // Isso vai disparar o onLazyLoad automaticamente
-        this.getTotalizacoes();
-      } else {
-        this.getTotalizacoes(); // Caso a grid não dispare, chamamos manualmente
-      }
-    }
-
-  }
-
-  filtraCategorias(tipo: string) {
-    if (tipo === 'Todas' || !tipo) {
-      this.categoriasFiltradas = this.categorias;
+  onChangeCategoriasFiltradas(tipo: { value: string | undefined; }) {
+    // this.categoriaForm.controls['categoriaFiltrada'].setValue('Todas');
+    if (tipo.value !== 'Todas') {
+      // this.ctr_receita = true; 
+      this.totalCreditos = 0.00;
     } else {
-      this.categoriasFiltradas = this.categorias.filter(cat => cat.tipo === tipo);
+      this.categoriaForm.controls['selectedCategorias'].patchValue([]);
+      this.formaForm.controls['selectedFormas'].patchValue([]);
+      // this.totalDizimos = 0.00;
+      this.totalReceitaDizimo = 0.00;
     }
+
+    if (tipo.value == "Receita") {
+      this.categoriaForm.controls['selectedCategorias'].patchValue([]);
+      this.formaForm.controls['selectedFormas'].patchValue([]);
+    }
+
+    if (tipo.value == "Despesa") {
+      this.categoriaForm.controls['selectedCategorias'].patchValue([]);
+      this.formaForm.controls['selectedFormas'].patchValue([]);
+    }
+
+    tipo.value !== "Todas" ? this.filtro.tipoLancamento = tipo.value : this.filtro.tipoLancamento = "";
+    tipo.value !== "Todas" ? this.tipoLancamento = tipo.value! : this.tipoLancamento = "";
+    this.filtraCategoriaIds(tipo.value!);
+    tipo.value !== "Todas" ? this.categoriaFiltrada = tipo.value! : this.categoriaFiltrada = "";
+
+    this.filtraCategorias(tipo.value!)
+    this.filtro.tipoLancamento = this.categoriaFiltrada;
+    this.tipoLancamento = this.categoriaFiltrada
+
   }
 
   public doSelectTipoLancamento = (value: any) => {
@@ -1324,7 +1427,7 @@ export class LancamentoListFormComponent implements OnInit {
             }
             this.toastr.success('Exclusão', 'Registros excluidos com sucesso!');
           }
-          this.inicializarDados();
+          this.loadContas();
 
           this.grid.first = 0;
         }
@@ -1339,7 +1442,7 @@ export class LancamentoListFormComponent implements OnInit {
       .subscribe({
         next: () => {
           this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
-          this.inicializarDados();
+          this.loadContas();
           this.grid.reset();
           this.selectedLancamentos = null!;
         },
@@ -1354,7 +1457,10 @@ export class LancamentoListFormComponent implements OnInit {
       .subscribe({
         next: () => {
           this.grid.reset();
-          this.inicializarDados();
+          // this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
+          // this.toastr.success('Exclusão', 'Registro excluido com sucesso!');
+          // this.messageService.add({ severity: 'success', summary: 'Successo', detail: 'Registro excluido com sucesso!' });
+          this.loadContas();
         },
         error: () => { }
       })
@@ -1382,7 +1488,7 @@ export class LancamentoListFormComponent implements OnInit {
               next: () => {
                 this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
                 this.toastr.success('Exclusão', 'Registro excluido com sucesso!');
-                this.inicializarDados();
+                this.loadContas();
               },
               error: () => { }
             })
@@ -1411,7 +1517,7 @@ export class LancamentoListFormComponent implements OnInit {
               next: () => {
                 this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
                 this.toastr.success('Exclusão', 'Registro excluido com sucesso!');
-                this.inicializarDados();
+                this.loadFormas();
               },
               error: () => { }
             })
@@ -1542,6 +1648,11 @@ export class LancamentoListFormComponent implements OnInit {
 
       default:
     }
+  }
+
+  filtraCategorias(value: string) {
+    let cat1 = this.categorias.filter(cat => cat.tipo == value); //Armazema todas as categorias de um tipo passado por parametro
+    this.categoriasFiltradas = cat1;
   }
 
   private extractId(location: string): string { // Extrai o Id da URL

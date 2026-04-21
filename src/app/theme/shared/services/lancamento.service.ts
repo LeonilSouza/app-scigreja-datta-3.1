@@ -17,11 +17,6 @@ export class LancamentoService {
     public http: HttpClient) {
   }
 
-  findAll(): Observable<LancamentoDTO> {
-    return this.http.get<LancamentoDTO>(this.apiPath)
-      .pipe(
-        catchError(this.handleError));
-  }
 
   findById(id: number): Observable<LancamentoDTO> {
 
@@ -46,8 +41,8 @@ export class LancamentoService {
     if (filtro.formas) { params = params.set('formas', filtro.formas); }
     if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
     if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
-    if (filtro.dtInicio) { params = params.set('dtinicio', filtro.dtInicio); }
-    if (filtro.dtFim) { params = params.set('dtfim', filtro.dtFim); }
+    if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
+    if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
     if (filtro.setorId) { params = params.set('setor', filtro.setorId); }
 
     return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/page`, { headers, params })
@@ -55,71 +50,6 @@ export class LancamentoService {
         catchError(this.handleError)
       );
   }
-
-
-  getTotalReceitaFromIgreja(filtro: LancamentoFiltro) {
-    const headers = new HttpHeaders()
-    let params = new HttpParams()
-      .set('page', filtro.page)
-      .set('linesPerPage', filtro.linesPerPage);
-
-    if (filtro.nome) { params = params.set('nome', filtro.nome); }
-    if (filtro.igrejaId) { params = params.set('igreja', filtro.igrejaId); }
-    if (filtro.contas) { params = params.set('contas', filtro.contas); }
-    if (filtro.formas) { params = params.set('formas', filtro.formas); }
-    if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
-    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
-    if (filtro.dtInicio) { params = params.set('dtinicio', filtro.dtInicio); }
-    if (filtro.dtFim) { params = params.set('dtfim', filtro.dtFim); }
-
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/somareceita`, { headers, params })
-      .pipe(
-        catchError(this.handleError)
-      );
-  }
-
-  getTotalOfertasAlcadas(filtro: LancamentoFiltro) {
-    const headers = new HttpHeaders()
-    let params = new HttpParams()
-      .set('page', filtro.page)
-      .set('linesPerPage', filtro.linesPerPage);
-
-    if (filtro.nome) { params = params.set('nome', filtro.nome); }
-    if (filtro.igrejaId) { params = params.set('igreja', filtro.igrejaId); }
-    if (filtro.contas) { params = params.set('contas', filtro.contas); }
-    if (filtro.formas) { params = params.set('formas', filtro.formas); }
-    if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
-    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
-    if (filtro.dtInicio) { params = params.set('dtinicio', filtro.dtInicio); }
-    if (filtro.dtFim) { params = params.set('dtfim', filtro.dtFim); }
-
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/soma-oferta-alcadas`, { headers, params })
-      .pipe(
-        catchError(this.handleError)
-      );
-  }
-
-  getTotalDespesaFromIgreja(filtro: LancamentoFiltro) {
-    const headers = new HttpHeaders()
-    let params = new HttpParams()
-      .set('page', filtro.page)
-      .set('linesPerPage', filtro.linesPerPage);
-
-    if (filtro.nome) { params = params.set('nome', filtro.nome); }
-    if (filtro.igrejaId) { params = params.set('igreja', filtro.igrejaId); }
-    if (filtro.contas) { params = params.set('contas', filtro.contas); }
-    if (filtro.formas) { params = params.set('formas', filtro.formas); }
-    if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
-    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
-    if (filtro.dtInicio) { params = params.set('dtinicio', filtro.dtInicio); }
-    if (filtro.dtFim) { params = params.set('dtfim', filtro.dtFim); }
-
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/somadespesa`, { headers, params })
-      .pipe(
-        catchError(this.handleError)
-      );
-  }
-
 
   getTotalGeralCreditoFromIgreja(filtro: LancamentoFiltro) {
     const headers = new HttpHeaders()
@@ -133,16 +63,17 @@ export class LancamentoService {
     if (filtro.formas) { params = params.set('formas', filtro.formas); }
     if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
     if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
-    if (filtro.dtInicio) { params = params.set('dtinicio', filtro.dtInicio); }
-    if (filtro.dtFim) { params = params.set('dtfim', filtro.dtFim); }
+    if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
+    if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
 
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/soma_total_credito`, { headers, params })
+    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/soma-total-receita`, { headers, params })
       .pipe(
         catchError(this.handleError)
       );
   }
 
-  getTotalGeralDebitoFromIgreja(filtro: LancamentoFiltro) {
+
+  getTotalOfertasAlcadas(filtro: LancamentoFiltro) {
     const headers = new HttpHeaders()
     let params = new HttpParams()
       .set('page', filtro.page)
@@ -154,10 +85,31 @@ export class LancamentoService {
     if (filtro.formas) { params = params.set('formas', filtro.formas); }
     if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
     if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
-    if (filtro.dtInicio) { params = params.set('dtinicio', filtro.dtInicio); }
-    if (filtro.dtFim) { params = params.set('dtfim', filtro.dtFim); }
+    if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
+    if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
 
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/soma_total_debito`, { headers, params })
+    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/soma-oferta-alcadas`, { headers, params })
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  getTotalGeralDebitoFromIgreja(filtro: LancamentoFiltro) { // tipoLancamento 'Despesa' é atribuida no back-end 
+    const headers = new HttpHeaders()
+    let params = new HttpParams()
+      .set('page', filtro.page)
+      .set('linesPerPage', filtro.linesPerPage);
+
+    if (filtro.nome) { params = params.set('nome', filtro.nome); }
+    if (filtro.igrejaId) { params = params.set('igreja', filtro.igrejaId); }
+    if (filtro.contas) { params = params.set('contas', filtro.contas); }
+    if (filtro.formas) { params = params.set('formas', filtro.formas); }
+    if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
+    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
+    if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
+    if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
+
+    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/soma-total-debito`, { headers, params })
       .pipe(
         catchError(this.handleError)
       );
@@ -177,10 +129,31 @@ export class LancamentoService {
     if (filtro.formas) { params = params.set('formas', filtro.formas); }
     if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
     if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
-    if (filtro.dtInicio) { params = params.set('dtinicio', filtro.dtInicio); }
-    if (filtro.dtFim) { params = params.set('dtfim', filtro.dtFim); }
+    if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
+    if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
 
     return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/ofertas`, { headers, params })
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+   getTotalDiversosFromIgreja(filtro: LancamentoFiltro) {
+    const headers = new HttpHeaders()
+    let params = new HttpParams()
+      .set('page', filtro.page)
+      .set('linesPerPage', filtro.linesPerPage);
+
+    if (filtro.nome) { params = params.set('nome', filtro.nome); }
+    if (filtro.igrejaId) { params = params.set('igreja', filtro.igrejaId); }
+    if (filtro.contas) { params = params.set('contas', filtro.contas); }
+    if (filtro.formas) { params = params.set('formas', filtro.formas); }
+    if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
+    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
+    if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
+    if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
+
+    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/diversos`, { headers, params })
       .pipe(
         catchError(this.handleError)
       );
@@ -198,8 +171,8 @@ export class LancamentoService {
     if (filtro.formas) { params = params.set('formas', filtro.formas); }
     if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
     if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
-    if (filtro.dtInicio) { params = params.set('dtinicio', filtro.dtInicio); }
-    if (filtro.dtFim) { params = params.set('dtfim', filtro.dtFim); }
+    if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
+    if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
 
     return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/missoes`, { headers, params })
       .pipe(
@@ -208,29 +181,55 @@ export class LancamentoService {
   }
 
   getTotalRDSaldoAnteriorFromIgreja(igrejaId: number, data: string) {
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/saldoanterior?igreja=${igrejaId}&data=${data}`)
+    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/saldo-anterior?igreja=${igrejaId}&data=${data}`)
       .pipe(
         catchError(this.handleError)
       );
   }
 
-  getTotalReceitaDizimoFromIgreja(igrejaId: number, dtinicio: string, dtfim: string) {
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/receitadizimo?igreja=${igrejaId}&dtinicio=${dtinicio}&dtfim=${dtfim}`)
+  getTotalReceitaDizimoFromIgreja(filtro: LancamentoFiltro) {
+    const headers = new HttpHeaders()
+    let params = new HttpParams()
+      .set('page', filtro.page)
+      .set('linesPerPage', filtro.linesPerPage);
+
+    if (filtro.nome) { params = params.set('nome', filtro.nome); }
+    if (filtro.igrejaId) { params = params.set('igreja', filtro.igrejaId); }
+    if (filtro.contas) { params = params.set('contas', filtro.contas); }
+    if (filtro.formas) { params = params.set('formas', filtro.formas); }
+    if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
+    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
+    if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
+    if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
+
+    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/receita-dizimo`, { headers, params })
       .pipe(
         catchError(this.handleError)
       );
+  }
+
+  gerarRelatorioPdf(filtro: LancamentoFiltro): Observable<Blob> {
+    let params = new HttpParams()
+      .set('igreja', filtro.igrejaId.toString())
+      .set('dtinicio', filtro.dtinicio)
+      .set('dtfim', filtro.dtfim)
+      .set('nome', filtro.nome || '')
+      .set('tipoLancamento', filtro.tipoLancamento || '');
+
+    // Adiciona as listas de IDs se existirem
+    if (filtro.contas) params = params.set('contas', filtro.contas);
+    if (filtro.formas) params = params.set('formas', filtro.formas);
+    if (filtro.categorias) params = params.set('categorias', filtro.categorias);
+
+    // É fundamental informar ao Angular que o retorno é um arquivo binário (Blob)
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/relatorio-pdf`,
+      {
+        params, responseType: 'blob'
+      });
   }
 
   getSaldoFinalContasFromIgreja(igrejaId: any) {
     return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/saldocontas/?igreja=${igrejaId}`)
-      .pipe(
-        catchError(this.handleError)
-      );
-  }
-
-  getListLancamentoFromIgreja(igrejaId: any) {
-
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/list/?igreja=${igrejaId}`)
       .pipe(
         catchError(this.handleError)
       );
@@ -254,7 +253,6 @@ export class LancamentoService {
       .pipe(
         map(this.jsonDataToLancamento),
         catchError(this.handleError),
-        //map(this.jsonDataToLancamentoFuncao)
         map(() => lancamento)
       )
   }

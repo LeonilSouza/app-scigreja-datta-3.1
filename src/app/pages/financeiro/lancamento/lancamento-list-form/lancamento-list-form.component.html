@@ -12,19 +12,6 @@
 
         <div class="form-group row col-md-12 mt-2 mb-2">
 
-            <!-- Conta -->
-            <span class=" col-sm-3">
-                <form [formGroup]="contaForm">
-                    <label class="f-13">Conta corrente</label>
-                    <p-multiSelect class="mb-0"
-                        [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
-                        [options]="contas" formControlName="selectedContas" optionLabel="nome" optionValue="id"
-                        placeholder="Todas" (onChange)="onChangeContas($event)" [showClear]="false" appendTo="body">
-                    </p-multiSelect>
-                </form>
-            </span>
-
-
             <!-- Periodo -->
             <div class="col-sm-3 ">
                 <label class="f-13"> Período de lançamentos</label>
@@ -34,13 +21,27 @@
                     placeholder="dd/mm/aaaa" selectionMode="range" />
             </div>
 
+            <!-- Conta -->
+            <span class=" col-sm-3">
+                <form [formGroup]="contaForm">
+                    <label class="f-13">Conta corrente</label>
+                    <p-multiSelect class="mb-0"
+                        [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                        [options]="contas" formControlName="selectedContas" optionLabel="nome" optionValue="id"
+                        placeholder="Todas" (onChange)="atualizarFiltrosStrings($event, 'contas')" [showClear]="false"
+                        appendTo="body">
+                    </p-multiSelect>
+                </form>
+            </span>
+
             <!-- Natureza -->
             <div class="col-sm-2">
                 <label class="f-13">Débito | Crédito</label>
-                <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangeCategoriasFiltradas($event)"
+                <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangeTipoLancamento($event)"
                     class="w-full md  " [options]="tpLancamento" [editable]="false" [filter]="false" filterBy="nome"
                     [showClear]="false" optionLabel="nome" resetFilterOnHide="true" dateFormat="dd/mm/yy"
-                    dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="nome" placeholder="Todas" appendTo="body"/>
+                    dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="nome" placeholder="Todas"
+                    appendTo="body" />
             </div>
 
             <!-- Categorias -->
@@ -60,7 +61,7 @@
                         [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
                         [options]="categoriasFiltradas" formControlName="selectedCategorias" optionLabel="nome"
                         optionValue="id" placeholder="Todas" [showClear]="false" [autofocus]="false" display="chip"
-                        (onChange)="onChangeCategorias($event)" appendTo="body">
+                        (onChange)="atualizarFiltrosStrings($event, 'categorias')" appendTo="body">
                     </p-multiSelect>
                 </form>
             </div>
@@ -73,7 +74,8 @@
                     <p-multiSelect
                         [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
                         [options]="formas" formControlName="selectedFormas" optionLabel="nome" optionValue="id"
-                        placeholder="Todas" (onChange)="onChangeFormas($event)" [showClear]="false" appendTo="body">
+                        placeholder="Todas" (onChange)="atualizarFiltrosStrings($event, 'formas')" [showClear]="false"
+                        appendTo="body">
                     </p-multiSelect>
                 </form>
             </div>
@@ -82,10 +84,17 @@
         <div class="form-group row col-md-12 mt-2 mb-0">
 
             <div class=" form-group col-sm-2 float-end mb-0 ">
-                <label class="f-13">Receita | Dízimo</label>
+                <label class="f-13">Receita Total</label>
+                <strong><button type="button" class="mb-0 ml-0" pButton pRipple
+                        style="width:100% ; height: 30px; background:black ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
+                        {{ totalCreditos | currency:'BRL' }}</button></strong>
+            </div>
+
+            <div class=" form-group col-sm-2 float-end mb-0 ">
+                <label class="f-13">Dízimo</label>
                 <strong><button type="button" class="mb-0 ml-0" pButton pRipple
                         style="width:100% ; height: 30px; background:rgb(49, 170, 49) ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
-                        {{ total_creditos_sem_transferencias | currency:'BRL' }}</button></strong>
+                        {{ totalReceitaDizimo | currency:'BRL' }}</button></strong>
             </div>
 
             <div class=" form-group col-sm-2 mr-auto mb-0 ">
@@ -93,6 +102,13 @@
                 <strong><button type="button" class="mb-0 ml-0" pButton pRipple
                         style="width:100% ; height: 30px; background:#0D89EC ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
                         {{ totalOfertas | currency:'BRL' }}</button></strong>
+            </div>
+
+            <div class=" form-group col-sm-2 float-end mb-0 ">
+                <label class="f-13">Ofertas Alçadas</label>
+                <strong><button type="button" class="mb-0 ml-0" pButton pRipple
+                        style="width:100% ; height: 30px; background:rgb(4, 143, 182) ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
+                        {{ total_ofertas_alcadas | currency:'BRL' }}</button></strong>
             </div>
 
             <div class=" form-group col-sm-2 mr-auto mb-0 ">
@@ -113,6 +129,46 @@
                         {{ saldoAnterior | currency:'BRL' }}</button></strong>
                 }
             </div>
+
+            <!-- Despesas Pagas -->
+
+            <div class=" form-group col-sm-2 float-end mb-0 ">
+                <label class="f-13">Despesas Total</label>
+                <strong><button type="button" class="mb-0 ml-0" pButton pRipple
+                        style="width:100% ; height: 30px; background:red ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
+                        {{ totalDebitos | currency:'BRL' }}</button></strong>
+            </div>
+
+            <!-- Espaço -->
+            <div class=" form-group col-sm-2 float-end mb-0 "></div>
+
+            <div class=" form-group col-sm-1 float-end ">
+                <label class="f-13"> </label>
+                <button (click)="visibleModalPermuta = true; limpaCheckbox(); setModalInclusao('Permuta'); imodo.set(0)"
+                    class="btn btn-icon  btn-outline-warning p-0 float-end " type="button"
+                    [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Permuta
+                </button>
+            </div>
+
+            <div class=" form-group col-sm-1 float-end ">
+                <label class="f-13"> </label>
+                <button
+                    (click)="visibleModalTransferencia = true; limpaCheckbox(); setModalInclusao('Transferencia'); imodo.set(0)"
+                    class="btn btn-icon  btn-outline-secondary p-0 float-end" type="button"
+                    [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Transferir
+                </button>
+            </div>
+
+            <div class=" form-group col-sm-1 float-end ">
+                <label class="f-13"> </label>
+                <button routerLink="/cadastros" class="btn btn-icon  btn-outline-dark p-0 float-end " type="button"
+                    [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Contas
+                </button>
+            </div>
+
+
+            <!-- Espaço -->
+            <div class=" form-group col-sm-1 float-end mb-0 "></div>
 
             <div class=" form-group col-sm-1 float-end mb-0">
                 <label class="f-13"> </label>
@@ -149,39 +205,8 @@
 
         <div class="form-group row col-md-12 mb-0 " style="align-items: center;">
 
-            <div class=" form-group col-sm-2 float-end mb-0 ">
-                <label class="f-13">Ofertas Alçadas</label>
-                <strong><button type="button" class="mb-0 ml-0" pButton pRipple
-                        style="width:100% ; height: 30px; background:rgb(4, 143, 182) ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
-                        {{ total_ofertas_alcadas | currency:'BRL' }}</button></strong>
-            </div>
-
             <!-- Espaço -->
             <div class=" form-group col-sm-9 mb-0 "></div>
-
-            <div class=" form-group col-sm-1 float-end ">
-                <label class="f-13"> </label>
-                <button (click)="visibleModalPermuta = true; limpaCheckbox(); setModalInclusao('Permuta'); imodo.set(0)"
-                    class="btn btn-icon  btn-outline-warning p-0 float-end " type="button"
-                    [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Permuta
-                </button>
-            </div>
-
-            <div class=" form-group col-sm-1 float-end ">
-                <label class="f-13"> </label>
-                <button
-                    (click)="visibleModalTransferencia = true; limpaCheckbox(); setModalInclusao('Transferencia'); imodo.set(0)"
-                    class="btn btn-icon  btn-outline-secondary p-0 float-end" type="button"
-                    [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Transferir
-                </button>
-            </div>
-
-            <div class=" form-group col-sm-1 float-end ">
-                <label class="f-13"> </label>
-                <button routerLink="/cadastros" class="btn btn-icon  btn-outline-dark p-0 float-end " type="button"
-                    [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Contas
-                </button>
-            </div>
 
         </div>
 
@@ -273,6 +298,13 @@
 
 
 <ng-template #end>
+
+    <!-- Botão Imprimir Lançamentos -->
+    <div class="flex justify-between">
+        <p-button [style]="{'height':'32px', 'background':'black','margin-right':'20px'}"  [outlined]="false" icon="pi pi-print" class="text-white"
+            label="Imprimir Lançamentos" (click)="imprimirLancamentos()" />
+    </div>
+
     <!-- Busca  -->
     <strong><button (click)="buscaLancamentos()" icon="pi pi-search" type="button" class=" mb-0 mx-3" pButton pRipple
             label="Buscar"
@@ -367,8 +399,7 @@
 
                     <!-- Editar -->
                     <td class="col-acoes-header py-1">
-                        <button [disabled]="lancamento.nome == 'Transferencia' || lancamento.nome == 'Permuta'" 
-                            (click)="limpaCheckbox();  lancamento.nome == 'Transferencia' ? visibleModalTransferencia = true : 
+                        <button [disabled]="lancamento.nome == 'Transferencia' || lancamento.nome == 'Permuta'" (click)="limpaCheckbox();  lancamento.nome == 'Transferencia' ? visibleModalTransferencia = true : 
                             lancamento.nome == 'Permuta' ? visibleModalPermuta = true : visibleLancamento = true; 
                             loadLancamento(lancamento); setModalEdicao(lancamento.tipoLancamento) " type="button"
                             class="btn btn-icon  btn-outline-success p-1 mb-0 mt-0 "
@@ -402,6 +433,7 @@
 </div>
 <!-- </div> -->
 
+<!-- Totalização -->
 <div class="col-md-4 float-end border border-top-0 mt-0 mb-2" style="background-color: #fafafa;">
     <span class="row mb-0 float-end">
         <!-- Crédito -->
@@ -409,7 +441,7 @@
             <label class="f-13 mt-1" style="width:100%; text-align:left">Crédito</label>
             <strong><label class="mb-0 mt-0 ml-0  text-success "
                     style="width:100% ; height: 30px;  text-align:left; background:#fafafa ; border: 0px; font-size: 13px; border-radius: 6px;">
-                    {{ total_geral_creditos | currency:'BRL' }}</label></strong>
+                    {{ totalCreditos | currency:'BRL' }}</label></strong>
         </div>
 
         <!-- Débito -->
@@ -417,7 +449,7 @@
             <label class="f-13 mt-1 mb-0" style="width:100%;  text-align:left">Débito</label>
             <strong><label class="mb-0 ml-0 mt-0 text-danger"
                     style="width:100% ; height: 30px; text-align:left; background:#fafafa ;  border: 0px; font-size: 13px; border-radius: 6px; ">
-                    {{ total_geral_debitos | currency:'BRL' }}</label></strong>
+                    {{ totalDebitos | currency:'BRL' }}</label></strong>
         </div>
 
         <!-- Diferença -->
@@ -425,7 +457,7 @@
             <label class="f-13  mt-1" style="width:100%;  text-align:left">Saldo</label>
             <strong><label class="mb-0 ml-0 text-primary"
                     style="width:100% ; height: 30px; text-align:left; background:#fafafa ; border: 0px; font-size: 13px; border-radius: 6px;">
-                    {{ total_geral_creditos - total_geral_debitos | currency:'BRL' }}
+                    {{ totalCreditos - totalDebitos | currency:'BRL' }}
                 </label></strong>
         </div>
     </span>
@@ -445,7 +477,7 @@
             <p-dialog header="LANÇAMENTO DE - {{  pageTitle }}" [modal]="true" [(visible)]="visibleLancamento"
                 [position]="positionLancamento" [dismissableMask]="false"
                 [style]="{width: '60vw', 'min-height': '30vh', height: 'auto'}" [closeOnEscape]="false"
-                [breakpoints]="{'960px': '95vw', '640px': '100vw'}"  [draggable]="false" [resizable]="false"
+                [breakpoints]="{'960px': '95vw', '640px': '100vw'}" [draggable]="false" [resizable]="false"
                 [contentStyle]="{ 'overflow': 'auto' }" [transitionOptions]="'500ms ease-out'">
                 <hr class="mt-1 mb-2">
 
@@ -481,7 +513,7 @@
                                 [editable]="false" [filter]="true" filterBy="nome" [showClear]="false"
                                 optionLabel="nome" resetFilterOnHide="true" dateFormat="dd/mm/yy"
                                 dropdownIcon="pi pi-users" [autofocus]="false" optionValue="id"
-                                placeholder="Selecione um provedor" class="mt-1 " appendTo="body"/>
+                                placeholder="Selecione um provedor" class="mt-1 " appendTo="body" />
                             }
 
                             <!-- Nome/Histórico Não Cadastrado -->
@@ -519,8 +551,8 @@
                         <p-select [style]="{'width':'100%','height':'30px'}" formControlName="formaId"
                             class="w-full md  " [options]="formas" [editable]="false" [filter]="false" filterBy="nome"
                             [showClear]="false" optionLabel="nome" resetFilterOnHide="false" dateFormat="dd/mm/yy"
-                            dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id"
-                            placeholder="Selecione..." appendTo="body"/>
+                            dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id" placeholder="Selecione..."
+                            appendTo="body" />
 
                     </div>
 
@@ -544,7 +576,8 @@
                             (onChange)="onChangeTPConta($event)" class="w-full md   mb-0" [options]="contas"
                             [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
                             resetFilterOnHide="true" dateFormat="dd/mm/yy" dropdownIcon="pi pi-users"
-                            [autofocus]="false" optionValue="id" placeholder="Selecione uma categoriar" appendTo="body"/>
+                            [autofocus]="false" optionValue="id" placeholder="Selecione uma categoriar"
+                            appendTo="body" />
 
                     </div>
 
@@ -555,7 +588,8 @@
                             formControlName="categoriaId" class="w-full md  mb-1" [options]="categoriasFiltradas"
                             [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
                             resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
-                            [autofocus]="false" optionValue="id" placeholder="Selecione uma categoria" appendTo="body"/>
+                            [autofocus]="false" optionValue="id" placeholder="Selecione uma categoria"
+                            appendTo="body" />
                     </div>
 
                     <!-- Centro de Custo -->
@@ -565,7 +599,7 @@
                             class="w-full md  mb-1" [options]="centroCustos" [editable]="false" [filter]="true"
                             filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
                             dateFormat="dd/mm/yy" dropdownIcon="pi pi-check" [autofocus]="false" optionValue="id"
-                            placeholder="Selecione um centro de custo" appendTo="body"/>
+                            placeholder="Selecione um centro de custo" appendTo="body" />
                     </div>
 
                     <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
@@ -635,7 +669,7 @@
                         <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
                             [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
                             inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
-                            formControlName="data" appendTo="body"/>
+                            formControlName="data" appendTo="body" />
                     </div>
 
                     <!--  Origem da Transferencia-->
@@ -647,7 +681,7 @@
                             class="w-full md  mb-2" [options]="contas" [editable]="false" [filter]="false"
                             filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
                             dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id"
-                            placeholder="Selecione..." appendTo="body"/>
+                            placeholder="Selecione..." appendTo="body" />
                     </div>
                     }
 
@@ -662,7 +696,7 @@
                             class="w-full md  mb-2" [options]="contasTransferencia" [editable]="false" [filter]="false"
                             filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
                             dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id"
-                            placeholder="Selecione..." appendTo="body"/>
+                            placeholder="Selecione..." appendTo="body" />
 
 
                         @if(lancamentoForm.controls['contaId'].value ==
@@ -756,7 +790,7 @@
                         <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
                             [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
                             inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
-                            formControlName="data" appendTo="body"/>
+                            formControlName="data" appendTo="body" />
 
                     </div>
 
@@ -768,7 +802,8 @@
                             formControlName="formaIdTransferencia" class="w-full md  mb-2" [options]="formasPermuta"
                             [editable]="false" [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
                             resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
-                            [autofocus]="false" optionValue="formaIdTransferencia" placeholder="Selecione..." appendTo="body" />
+                            [autofocus]="false" optionValue="formaIdTransferencia" placeholder="Selecione..."
+                            appendTo="body" />
 
                         @if(lancamentoForm.controls['formaId'].value ==
                         lancamentoForm.controls['formaIdTransferencia'].value){
@@ -786,7 +821,8 @@
                             formControlName="formaId" class="w-full md  mb-2" [options]="formas" [editable]="false"
                             [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
                             resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
-                            [autofocus]="false" readonly="true" optionValue="id" placeholder="Selecione..." appendTo="body"/>
+                            [autofocus]="false" readonly="true" optionValue="id" placeholder="Selecione..."
+                            appendTo="body" />
 
                     </div>
                     }

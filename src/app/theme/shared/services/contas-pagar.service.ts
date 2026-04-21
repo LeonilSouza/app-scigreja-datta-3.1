@@ -36,8 +36,6 @@ export class ContasPagarService {
       .set('dtInicio', dtInicio)
       .set('dtFim', dtFim);
 
-      console.log(params)
-
     return this.http.get(`${API_CONFIG.baseUrl}/contas-pagar/resumo/?igreja=${igrejaId}`, { params })
       .pipe(
         catchError(this.handleError)
@@ -73,8 +71,6 @@ export class ContasPagarService {
     // data deve estar no formato dd/MM/yyyy se enviado
     const url = `${this.apiPath}/baixar-pagamento/${id}`;
     const params = data ? { params: { dataPagamento: data,  valorPago: valor }  } : {};
-
-    console.log(params)
     return this.http.put(url, {}, (params as any));
   }
 
