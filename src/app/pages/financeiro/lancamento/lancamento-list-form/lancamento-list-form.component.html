@@ -142,6 +142,7 @@
             <!-- Espaço -->
             <div class=" form-group col-sm-2 float-end mb-0 "></div>
 
+            <!-- Troca | Permuta -->
             <div class=" form-group col-sm-1 float-end ">
                 <label class="f-13"> </label>
                 <button (click)="visibleModalPermuta = true; limpaCheckbox(); setModalInclusao('Permuta'); imodo.set(0)"
@@ -268,6 +269,7 @@
 </div>
 }
 
+
 @if(length() > 1){
 <div class="flex justify-between">
     <p-button (click)="deleteMultiplos()" [model]="selecaoItemsMultiplos" icon="pi pi-trash" label="Deletar"
@@ -285,21 +287,45 @@
 <!-- Fim Ação Selecionados -->
 </ng-template>
 
+<ng-template pTemplate="caption">
+    <div class="flex align-items-center justify-content-between">
+        <h5 class="m-0">Lançamentos Financeiros</h5>
+        
+        <!-- Campo de Busca Global -->
+        <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input 
+                pInputText 
+                type="text" 
+                style="height: 32px; width:400px;" 
+                [(ngModel)]="filtro.nome" 
+                (input)="onGlobalFilter()" 
+                placeholder="Pesquisar nome, valor ou histórico..." 
+                class="w-full sm:w-auto" />
+        </span>
+    </div>
+</ng-template>
+
 
 <ng-template #center>
     <!-- Pesquisa -->
     <p-iconfield iconPosition="left">
         <p-inputicon class="pi pi-search" />
-        <input (input)="dtlancamento.filterGlobal($event.target?.addEventListener, 'contains')" type="text"
-            style="height: 32px; width:400px;" pInputText placeholder="Pesquisar " [(ngModel)]="filtro.nome"
-            [ngModelOptions]="{standalone: true}" />
+         <input 
+                pInputText 
+                type="text" 
+                style="height: 32px; width:400px;" 
+                [(ngModel)]="filtro.nome" 
+                (input)="onGlobalFilter()" 
+                placeholder="Pesquisar nome, valor ou histórico..." 
+                class="w-full sm:w-auto" />
     </p-iconfield>
 </ng-template>
 
 
 <ng-template #end>
 
-    <!-- Botão Imprimir Lançamentos -->
+    <!-- Botão Imprimir -->
     <div class="flex justify-between">
         <p-button [style]="{'height':'32px', 'background':'black','margin-right':'20px'}"  [outlined]="false" icon="pi pi-print" class="text-white"
             label="Imprimir" (click)="imprimirLancamentos()" />
@@ -321,8 +347,7 @@
 <div class="col-sm-12">
     <div class=" mb-0 ">
         <p-table #dtlancamento [value]="lancamentos" [(selection)]="selectedLancamentos" dataKey="id"
-            [globalFilterFields]="['nome', 'lancamento.descricao', 'lancamento.valor']" [lazy]="true"
-            [rows]="filtro.linesPerPage" responsiveLayout="stack" (onLazyLoad)="aoMudarPagina($event)"
+            [lazy]="true" [rows]="filtro.linesPerPage" responsiveLayout="stack" (onLazyLoad)="aoMudarPagina($event)"
             [showCurrentPageReport]="true" [totalRecords]="totalRegistros" showGridlines stripedRows
             [rowsPerPageOptions]="[6, 10, 20, 30, 50]" [tableStyle]="{ 'min-width': '30rem' }"
             currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros " [paginator]="true"
@@ -347,7 +372,7 @@
                     </th>
 
                     <th class="py-2" style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue;">
-                        <b>Descrição</b>
+                        <b>Histórico</b>
                     </th>
 
                     <th class="col-data-150 py-2"

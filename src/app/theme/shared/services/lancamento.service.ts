@@ -208,13 +208,14 @@ export class LancamentoService {
       );
   }
 
-  gerarRelatorioPdf(filtro: LancamentoFiltro): Observable<Blob> {
+  gerarRelatorioPdf(filtro: LancamentoFiltro, nomeRelatorio: string): Observable<Blob> {
     let params = new HttpParams()
       .set('igreja', filtro.igrejaId.toString())
       .set('dtinicio', filtro.dtinicio)
       .set('dtfim', filtro.dtfim)
       .set('nome', filtro.nome || '')
-      .set('tipoLancamento', filtro.tipoLancamento || '');
+      .set('tipoLancamento', filtro.tipoLancamento || '')
+      .set('nomeRelatorio', nomeRelatorio || '');
 
     // Adiciona as listas de IDs se existirem
     if (filtro.contas) params = params.set('contas', filtro.contas);
@@ -222,7 +223,7 @@ export class LancamentoService {
     if (filtro.categorias) params = params.set('categorias', filtro.categorias);
 
     // É fundamental informar ao Angular que o retorno é um arquivo binário (Blob)
-    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/relatorio-pdf`,
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-dinamico`,
       {
         params, responseType: 'blob'
       });

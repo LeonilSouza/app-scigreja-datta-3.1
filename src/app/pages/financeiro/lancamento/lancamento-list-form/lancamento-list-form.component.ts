@@ -34,6 +34,7 @@ export class LancamentoFiltro {
   igrejaId: number = igrejaIdSignal();
   setorId?: number = setorIdSignal();
   nome: string = '';
+  busca: string = '';
   dtinicio: string = ''; // No Java usamos @Param("dtinicio")
   dtfim: string = '';    // No Java usamos @Param("dtfim")
   page: number = 0;
@@ -42,6 +43,7 @@ export class LancamentoFiltro {
   categorias: string = "";
   formas: string = "";
   tipoLancamento: string = ""; // Inicie com um padrão
+  nomeRelatorio: string = ""; // Nome do arquivo do relatorio jasper - layout no java
 }
 
 @Component({
@@ -68,6 +70,9 @@ export class LancamentoFiltro {
   ]
 })
 export class LancamentoListFormComponent implements OnInit {
+
+  // Adicione essa variável no topo da classe
+  private searchTimer: any; 
 
   positionLancamento: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
   positionModalTransferencia: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
@@ -283,6 +288,24 @@ export class LancamentoListFormComponent implements OnInit {
     }
   }
 
+  //Filtra nome, historico e valor
+  onGlobalFilter() {
+  // Limpa o timer anterior para não disparar várias buscas seguidas
+  if (this.searchTimer) {
+    clearTimeout(this.searchTimer);
+  }
+
+  // Espera 400ms após a última tecla para disparar a busca (Debounce)
+  this.searchTimer = setTimeout(() => {
+    this.filtro.page = 0; // Volta para a primeira página
+    if (this.grid) {
+      this.grid.first = 0;
+    }
+    this.refreshAll(); // Dispara a busca Multi-Campo no Java
+  }, 400);
+}
+
+
   aoMudarPagina(event: LazyLoadEvent) { // Metodo será chamado toda vez que mudar de pagina ou houver necessidade de dados novos
     this.filtro.page = event!.first! / event!.rows!;
     this.filtro.linesPerPage = event.rows!;
@@ -309,6 +332,7 @@ export class LancamentoListFormComponent implements OnInit {
         let ids = res.formas.map((c: { id: any; }) => c.id).join(',');
         this.formasIds = ids;
         this.formaIdsAux = ids;
+        this.loadFormasPermuta();
 
         /////////////////// Fim formas
 
@@ -543,7 +567,8 @@ export class LancamentoListFormComponent implements OnInit {
   //O Angular vai chamar a mesma URL, com os mesmos parâmetros que usa para a grid, 
   // e a única diferença é que o navegador vai tratar a resposta como um arquivo (PDF) em vez de um JSON.
   imprimirLancamentos() {
-    this.lancamentoService.gerarRelatorioPdf(this.filtro).subscribe({
+    this.lancamentoService.gerarRelatorioPdf(this.filtro, 'movimentacao-financeira')
+    .subscribe({
       next: (blob) => {
         // Cria um link na memória do navegador para o arquivo recebido
         const url = window.URL.createObjectURL(blob);
@@ -1252,7 +1277,7 @@ export class LancamentoListFormComponent implements OnInit {
     // 4. Filtra o que aparece no combo de categorias (UI)
     this.filtraCategorias(valor);
 
-    if (valor === 'Todas'  ) {
+    if (valor === 'Todas' || valor === 'Receita' || valor === 'Despesa') {
       this.categoriaForm.get('selectedCategorias')?.patchValue([]);
       this.formaForm.get('selectedFormas')?.patchValue([]);
       this.contaForm.get('selectedContas')?.patchValue([]);
@@ -1261,6 +1286,7 @@ export class LancamentoListFormComponent implements OnInit {
       this.filtro.contas = this.contaIdsAux;
       this.pesquisa = true; // Agora as buscas estão liberadas
       this.filtro.page = 0;
+      this.filtro.nome = '';
 
       if (this.grid) {
         this.grid.first = 0; // Isso vai disparar o onLazyLoad automaticamente
