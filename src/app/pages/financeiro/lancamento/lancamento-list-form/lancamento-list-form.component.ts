@@ -104,6 +104,8 @@ export class LancamentoListFormComponent implements OnInit {
 
   descricao: string = '';
 
+  valorTpLancamento: any = 'Todas';
+
   indexId!: number;
   indexIdTransferencia!: number;
 
@@ -790,7 +792,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   buscaLancamentos() {
     this.pesquisa = true; // Agora as buscas estão liberadas
-    this.filtro.page = 0;
+    this.filtro.page = 0; 
 
     if (this.grid) {
       this.grid.first = 0; // Isso vai disparar o onLazyLoad automaticamente
@@ -824,8 +826,11 @@ export class LancamentoListFormComponent implements OnInit {
     this.dataDiaAnterior = data_subtraida;
     // this.getTotalSaldoAnterior();
 
-    if(this.filtro.tipoLancamento !== 'Todas'){
-        this.filtro.incluirPermuta = 'false'.toString()
+    console.log(this.valorTpLancamento)
+    if(this.valorTpLancamento === 'Todas'){
+        this.filtro.incluirPermuta = 'true'.toString();
+    }else{
+       this.filtro.incluirPermuta = 'false'.toString();
     }
     this.refreshAll(); // Chama Grid + Totalizações
   }
@@ -1267,20 +1272,21 @@ export class LancamentoListFormComponent implements OnInit {
 
 
   onChangeTipoLancamento(event: any) {
-    const valor = event.value;
+     this.valorTpLancamento = event.value;
     // 1. Reset de UI e totais
 
     // 2. Atualiza o Tipo no Filtro
-    this.filtro.tipoLancamento = (valor === 'Todas') ? "" : valor;
+    this.filtro.tipoLancamento = (event.value === 'Todas') ? "" : event.value;
+
 
     // 3. Atualiza os IDs de Categoria (Sincroniza com o Back-end)
     // Seu método filtraCategoriaIds já atualiza this.filtro.categorias
-    this.filtraCategoriaIds(valor);
+    this.filtraCategoriaIds(event.value);
 
     // 4. Filtra o que aparece no combo de categorias (UI)
-    this.filtraCategorias(valor);
+    this.filtraCategorias(event.value);
 
-    if (valor === 'Todas' || valor === 'Receita' || valor === 'Despesa') {
+    if (event.value === 'Todas' || event.value === 'Receita' || event.value === 'Despesa') {
       this.categoriaForm.get('selectedCategorias')?.patchValue([]);
       this.formaForm.get('selectedFormas')?.patchValue([]);
       this.contaForm.get('selectedContas')?.patchValue([]);
