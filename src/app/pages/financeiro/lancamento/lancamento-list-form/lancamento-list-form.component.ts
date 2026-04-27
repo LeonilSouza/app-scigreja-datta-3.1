@@ -824,7 +824,9 @@ export class LancamentoListFormComponent implements OnInit {
     this.dataDiaAnterior = data_subtraida;
     // this.getTotalSaldoAnterior();
 
-    this.filtro.incluirPermuta = 'false'.toString()
+    if(this.filtro.tipoLancamento !== 'Todas'){
+        this.filtro.incluirPermuta = 'false'.toString()
+    }
     this.refreshAll(); // Chama Grid + Totalizações
   }
 
