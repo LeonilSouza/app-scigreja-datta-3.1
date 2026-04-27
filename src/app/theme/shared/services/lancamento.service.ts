@@ -33,6 +33,7 @@ export class LancamentoService {
     const headers = new HttpHeaders()
     let params = new HttpParams()
       .set('page', filtro.page)
+      .set('incluirPermuta', filtro.incluirPermuta.toString()) // 'true' ou 'false'
       .set('linesPerPage', filtro.linesPerPage);
 
     if (filtro.nome) { params = params.set('nome', filtro.nome); }

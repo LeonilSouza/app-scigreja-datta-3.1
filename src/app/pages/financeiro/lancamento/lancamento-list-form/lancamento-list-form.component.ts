@@ -42,7 +42,8 @@ export class LancamentoFiltro {
   contas: string = "";
   categorias: string = "";
   formas: string = "";
-  tipoLancamento: string = ""; // Inicie com um padrão
+  tipoLancamento: string = ""; // Inicie com um padrão 
+  incluirPermuta: string = ""; // Inicie com um padrão 
   nomeRelatorio: string = ""; // Nome do arquivo do relatorio jasper - layout no java
 }
 
@@ -823,6 +824,7 @@ export class LancamentoListFormComponent implements OnInit {
     this.dataDiaAnterior = data_subtraida;
     // this.getTotalSaldoAnterior();
 
+    this.filtro.incluirPermuta = 'false'.toString()
     this.refreshAll(); // Chama Grid + Totalizações
   }
 
