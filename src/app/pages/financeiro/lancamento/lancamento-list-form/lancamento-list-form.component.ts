@@ -564,10 +564,9 @@ export class LancamentoListFormComponent implements OnInit {
       });
   }
 
-  //O Angular vai chamar a mesma URL, com os mesmos parâmetros que usa para a grid, 
-  // e a única diferença é que o navegador vai tratar a resposta como um arquivo (PDF) em vez de um JSON.
+  //Movimentação financeira - Agora basta criar o relatorio no jasper e passar o nome junto com o filtro
   imprimirLancamentos() {
-    this.lancamentoService.gerarRelatorioPdf(this.filtro, 'movimentacao-financeira')
+    this.lancamentoService.gerarMovimentacaoFinanceiraPdf(this.filtro, 'movimentacao-financeira')
     .subscribe({
       next: (blob) => {
         // Cria um link na memória do navegador para o arquivo recebido

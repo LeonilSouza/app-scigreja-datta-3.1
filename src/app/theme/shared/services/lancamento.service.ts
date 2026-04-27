@@ -138,7 +138,7 @@ export class LancamentoService {
       );
   }
 
-   getTotalDiversosFromIgreja(filtro: LancamentoFiltro) {
+  getTotalDiversosFromIgreja(filtro: LancamentoFiltro) {
     const headers = new HttpHeaders()
     let params = new HttpParams()
       .set('page', filtro.page)
@@ -208,25 +208,23 @@ export class LancamentoService {
       );
   }
 
-  gerarRelatorioPdf(filtro: LancamentoFiltro, nomeRelatorio: string): Observable<Blob> {
+  gerarMovimentacaoFinanceiraPdf(filtro: LancamentoFiltro, nomeRelatorio: string): Observable<Blob> {
     let params = new HttpParams()
+      .set('nomeRelatorio', nomeRelatorio) // O Java espera 'nomeRelatorio' para carregar o .jasper
       .set('igreja', filtro.igrejaId.toString())
       .set('dtinicio', filtro.dtinicio)
       .set('dtfim', filtro.dtfim)
       .set('nome', filtro.nome || '')
       .set('tipoLancamento', filtro.tipoLancamento || '')
-      .set('nomeRelatorio', nomeRelatorio || '');
-
-    // Adiciona as listas de IDs se existirem
+    // Adiciona as listas de IDs (que o Java usa na Specification)
     if (filtro.contas) params = params.set('contas', filtro.contas);
     if (filtro.formas) params = params.set('formas', filtro.formas);
     if (filtro.categorias) params = params.set('categorias', filtro.categorias);
 
-    // É fundamental informar ao Angular que o retorno é um arquivo binário (Blob)
-    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-dinamico`,
-      {
-        params, responseType: 'blob'
-      });
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-dinamico`, { //endpoint fabrica de relatorios basta criar o relatorio no jasper e passar o nome aqui
+      params,
+      responseType: 'blob'
+    });
   }
 
   getSaldoFinalContasFromIgreja(igrejaId: any) {
