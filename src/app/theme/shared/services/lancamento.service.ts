@@ -28,6 +28,23 @@ export class LancamentoService {
     )
   }
 
+  uploadComprovante(lancamentoId: number, arquivo: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('arquivo', arquivo, arquivo.name);
+
+    return this.http.put(`${API_CONFIG.baseUrl}/lancamentos/${lancamentoId}/comprovante`, formData);
+  }
+
+  baixarComprovante(lancamentoId: number): Observable<Blob> {
+    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/${lancamentoId}/comprovante`, {
+      responseType: 'blob' // ESSENCIAL para o Angular aceitar arquivos binários
+    });
+  }
+
+  deletarComprovante(lancamentoId: number): Observable<any> {
+    return this.http.delete(`${API_CONFIG.baseUrl}/lancamentos/${lancamentoId}/comprovante`);
+  }
+
 
   getPageLancamentoFromIgreja(filtro: LancamentoFiltro) {
     const headers = new HttpHeaders()

@@ -28,7 +28,12 @@ import { DatePicker } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'; // Importe o operador
 import { Table } from 'primeng/table';
+import { FileUploadModule } from 'primeng/fileupload';
 
+interface UploadEvent {
+  originalEvent: Event;
+  files: File[];
+}
 
 export class LancamentoFiltro {
   igrejaId: number = igrejaIdSignal();
@@ -58,7 +63,8 @@ export class LancamentoFiltro {
     ButtonModule,
     RouterLink,
     SharedModule,
-    InputNumberModule
+    InputNumberModule,
+    FileUploadModule
   ],
   providers: [
     LancamentoService,
@@ -73,7 +79,7 @@ export class LancamentoFiltro {
 export class LancamentoListFormComponent implements OnInit {
 
   // Adicione essa variável no topo da classe
-  private searchTimer: any; 
+  private searchTimer: any;
 
   positionLancamento: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
   positionModalTransferencia: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
@@ -156,7 +162,7 @@ export class LancamentoListFormComponent implements OnInit {
   totalDebitos: number = 0;
 
   totalDiversos: number = 0;
-  
+
   totalMissoes: number = 0;
   totalOfertas: number = 0;
   totalReceitaDizimo: number = 0;
@@ -293,20 +299,20 @@ export class LancamentoListFormComponent implements OnInit {
 
   //Filtra nome, historico e valor
   onGlobalFilter() {
-  // Limpa o timer anterior para não disparar várias buscas seguidas
-  if (this.searchTimer) {
-    clearTimeout(this.searchTimer);
-  }
-
-  // Espera 400ms após a última tecla para disparar a busca (Debounce)
-  this.searchTimer = setTimeout(() => {
-    this.filtro.page = 0; // Volta para a primeira página
-    if (this.grid) {
-      this.grid.first = 0;
+    // Limpa o timer anterior para não disparar várias buscas seguidas
+    if (this.searchTimer) {
+      clearTimeout(this.searchTimer);
     }
-    this.refreshAll(); // Dispara a busca Multi-Campo no Java
-  }, 400);
-}
+
+    // Espera 400ms após a última tecla para disparar a busca (Debounce)
+    this.searchTimer = setTimeout(() => {
+      this.filtro.page = 0; // Volta para a primeira página
+      if (this.grid) {
+        this.grid.first = 0;
+      }
+      this.refreshAll(); // Dispara a busca Multi-Campo no Java
+    }, 400);
+  }
 
 
   aoMudarPagina(event: LazyLoadEvent) { // Metodo será chamado toda vez que mudar de pagina ou houver necessidade de dados novos
@@ -419,10 +425,68 @@ export class LancamentoListFormComponent implements OnInit {
     this.lancamentoService.getTotalMissoesFromIgreja(this.filtro)
       .subscribe(total => total !== null && this.filtro.tipoLancamento !== 'Despesa' ? this.totalMissoes = total : 0.00);
 
-     // Total Diversos
+    // Total Diversos
     this.lancamentoService.getTotalDiversosFromIgreja(this.filtro)
-      .subscribe(total =>  total !== null && this.filtro.tipoLancamento !== 'Despesa' ? this.totalDiversos = total : 0.00);
+      .subscribe(total => total !== null && this.filtro.tipoLancamento !== 'Despesa' ? this.totalDiversos = total : 0.00);
   }
+
+  visualizarComprovante(lancamentoId: number) {
+    this.lancamentoService.baixarComprovante(lancamentoId).subscribe({
+      next: (blob: Blob) => {
+        // Cria um endereço temporário na memória do navegador para o arquivo
+        const url = window.URL.createObjectURL(blob);
+        // Abre o PDF ou imagem em uma nova aba (_blank)
+        window.open(url, '_blank');
+      },
+      error: (err) => {
+        this.toastr.error('Erro ao abrir o arquivo ou anexo não encontrado.');
+        console.error(err);
+      }
+    });
+  }
+
+  // Método para deletar o anexo
+  excluirComprovante1(lancamentoId: number) {
+    if (confirm('anexado a este lançamento?')) {
+      this.lancamentoService.deletarComprovante(lancamentoId).subscribe({
+        next: () => {
+          this.toastr.success('Comprovante removido com sucesso!');
+          this.refreshAll(); // Atualiza a grid na hora
+        },
+        error: (err) => {
+          this.toastr.error('Erro ao remover o comprovante.');
+          console.error(err);
+        }
+      });
+    }
+  }
+
+  excluirComprovante(lancamentoId: number) {
+    Swal.fire({
+      title: 'Exclusão',
+      text: 'Tem certeza que deseja remover o comprovante?',
+      icon: 'error',
+      showCloseButton: true,
+      showCancelButton: true,
+    }).then((willDelete) => {
+      if (willDelete.dismiss) {
+        // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
+      } else {
+        this.lancamentoService.deletarComprovante(lancamentoId).subscribe({
+          next: () => {
+            this.toastr.success('Comprovante removido com sucesso!');
+            this.refreshAll(); // Atualiza a grid na hora
+          },
+          error: (err) => {
+            this.toastr.error('Erro ao remover o comprovante.');
+            console.error(err);
+          }
+        });
+        // Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
+      }
+    });
+  }
+
 
   linhasSelecionada(event: string | any[]): void {
     this.length.set(event.length);
@@ -533,6 +597,8 @@ export class LancamentoListFormComponent implements OnInit {
       contaIdTransferencia: [null],
       lancamentoIdTransferencia: [null],
       formaIdTransferencia: [null],
+      comprovante: [null],
+      comprovanteNome: [null],
       lancamentoIdOrigem: [null]
     });
   }
@@ -556,7 +622,7 @@ export class LancamentoListFormComponent implements OnInit {
       .subscribe({
         next: (response) => {
           this.lancamentos = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
-          this.totalRegistros = response.totalElements; 
+          this.totalRegistros = response.totalElements;
           this.pesquisa = true; // Para permitir a paginação na primeira carga
           this.getPrinters();
         },
@@ -570,18 +636,18 @@ export class LancamentoListFormComponent implements OnInit {
   //Movimentação financeira - Agora basta criar o relatorio no jasper e passar o nome junto com o filtro
   imprimirLancamentos() {
     this.lancamentoService.gerarMovimentacaoFinanceiraPdf(this.filtro, 'movimentacao-financeira')
-    .subscribe({
-      next: (blob) => {
-        // Cria um link na memória do navegador para o arquivo recebido
-        const url = window.URL.createObjectURL(blob);
-        // Abre o PDF em uma nova aba
-        window.open(url, '_blank');
-      },
-      error: (err) => {
-        this.toastr.error('Erro ao gerar o relatório PDF');
-        console.error(err);
-      }
-    });
+      .subscribe({
+        next: (blob) => {
+          // Cria um link na memória do navegador para o arquivo recebido
+          const url = window.URL.createObjectURL(blob);
+          // Abre o PDF em uma nova aba
+          window.open(url, '_blank');
+        },
+        error: (err) => {
+          this.toastr.error('Erro ao gerar o relatório PDF');
+          console.error(err);
+        }
+      });
   }
 
   imprimirRecibo(id: any) {
@@ -792,7 +858,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   buscaLancamentos() {
     this.pesquisa = true; // Agora as buscas estão liberadas
-    this.filtro.page = 0; 
+    this.filtro.page = 0;
 
     if (this.grid) {
       this.grid.first = 0; // Isso vai disparar o onLazyLoad automaticamente
@@ -826,11 +892,10 @@ export class LancamentoListFormComponent implements OnInit {
     this.dataDiaAnterior = data_subtraida;
     // this.getTotalSaldoAnterior();
 
-    console.log(this.valorTpLancamento)
-    if(this.valorTpLancamento === 'Todas'){
-        this.filtro.incluirPermuta = 'true'.toString();
-    }else{
-       this.filtro.incluirPermuta = 'false'.toString();
+    if (this.valorTpLancamento === 'Todas') {
+      this.filtro.incluirPermuta = 'true'.toString();
+    } else {
+      this.filtro.incluirPermuta = 'false'.toString();
     }
     this.refreshAll(); // Chama Grid + Totalizações
   }
@@ -1272,7 +1337,7 @@ export class LancamentoListFormComponent implements OnInit {
 
 
   onChangeTipoLancamento(event: any) {
-     this.valorTpLancamento = event.value;
+    this.valorTpLancamento = event.value;
     // 1. Reset de UI e totais
 
     // 2. Atualiza o Tipo no Filtro
@@ -1297,12 +1362,12 @@ export class LancamentoListFormComponent implements OnInit {
       this.filtro.page = 0;
       this.filtro.nome = '';
 
-      if (this.grid) {
-        this.grid.first = 0; // Isso vai disparar o onLazyLoad automaticamente
-        this.getTotalizacoes();
-      } else {
-        this.getTotalizacoes(); // Caso a grid não dispare, chamamos manualmente
-      }
+      // if (this.grid) {
+      //   this.grid.first = 0; // Isso vai disparar o onLazyLoad automaticamente
+      //   this.getTotalizacoes();
+      // } else {
+      //   this.getTotalizacoes(); // Caso a grid não dispare, chamamos manualmente
+      // }
     }
 
   }

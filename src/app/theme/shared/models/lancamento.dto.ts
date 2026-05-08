@@ -18,6 +18,8 @@ export class LancamentoDTO {
         public formaId?: number,
         public contaIdTransferencia?: number,
         public formaIdTransferencia?: number,
+        public comprovante?: string,
+        public comprovanteNome?: string,
         public lancamentoIdTransferencia?: number,
         public tipoConta?: string,
         public tipoContaDestino?: string

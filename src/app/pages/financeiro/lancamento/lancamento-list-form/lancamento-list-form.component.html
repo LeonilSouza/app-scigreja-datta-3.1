@@ -290,17 +290,12 @@
 <ng-template pTemplate="caption">
     <div class="flex align-items-center justify-content-between">
         <h5 class="m-0">Lançamentos Financeiros</h5>
-        
+
         <!-- Campo de Busca Global -->
         <span class="p-input-icon-left">
             <i class="pi pi-search"></i>
-            <input 
-                pInputText 
-                type="text" 
-                style="height: 32px; width:400px;" 
-                [(ngModel)]="filtro.nome" 
-                (input)="onGlobalFilter()" 
-                placeholder="Pesquisar nome, valor ou histórico..." 
+            <input pInputText type="text" style="height: 32px; width:400px;" [(ngModel)]="filtro.nome"
+                (input)="onGlobalFilter()" placeholder="Pesquisar nome, valor ou histórico..."
                 class="w-full sm:w-auto" />
         </span>
     </div>
@@ -311,14 +306,8 @@
     <!-- Pesquisa -->
     <p-iconfield iconPosition="left">
         <p-inputicon class="pi pi-search" />
-         <input 
-                pInputText 
-                type="text" 
-                style="height: 32px; width:400px;" 
-                [(ngModel)]="filtro.nome" 
-                (input)="onGlobalFilter()" 
-                placeholder="Pesquisar nome, valor ou histórico..." 
-                class="w-full sm:w-auto" />
+        <input pInputText type="text" style="height: 32px; width:400px;" [(ngModel)]="filtro.nome"
+            (input)="onGlobalFilter()" placeholder="Pesquisar nome, valor ou histórico..." class="w-full sm:w-auto" />
     </p-iconfield>
 </ng-template>
 
@@ -326,9 +315,10 @@
 <ng-template #end>
 
     <!-- Botão Imprimir -->
+    <!-- [placement]="'top'" ngbTooltip="Permutas não são consideradas" -->
     <div class="flex justify-between">
-        <p-button [style]="{'height':'32px', 'background':'black','margin-right':'20px'}"  [outlined]="false" icon="pi pi-print" class="text-white"
-            label="Imprimir" (click)="imprimirLancamentos()" />
+        <p-button [style]="{'height':'32px', 'background':'black','margin-right':'20px'}" [outlined]="false"
+            icon="pi pi-print" class="text-white" label="Imprimir" (click)="imprimirLancamentos()" />
     </div>
 
     <!-- Busca  -->
@@ -346,8 +336,8 @@
 
 <div class="col-sm-12">
     <div class=" mb-0 ">
-        <p-table #dtlancamento [value]="lancamentos" [(selection)]="selectedLancamentos" dataKey="id"
-            [lazy]="true" [rows]="filtro.linesPerPage" responsiveLayout="stack" (onLazyLoad)="aoMudarPagina($event)"
+        <p-table #dtlancamento [value]="lancamentos" [(selection)]="selectedLancamentos" dataKey="id" [lazy]="true"
+            [rows]="filtro.linesPerPage" responsiveLayout="stack" (onLazyLoad)="aoMudarPagina($event)"
             [showCurrentPageReport]="true" [totalRecords]="totalRegistros" showGridlines stripedRows
             [rowsPerPageOptions]="[6, 10, 20, 30, 50]" [tableStyle]="{ 'min-width': '30rem' }"
             currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros " [paginator]="true"
@@ -389,7 +379,7 @@
                         <b>Valor R$</b>
                     </th>
 
-                    <th class="col-acoes-header py-2"
+                    <th class="col-acoes py-2"
                         style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; ; border-top-right-radius: 5px">
                         <b>Ações</b>
                     </th>
@@ -423,7 +413,7 @@
                         {{ lancamento.valor | currency:' '}}<br></td>
 
                     <!-- Editar -->
-                    <td class="col-acoes-header py-1">
+                    <td class="col-acoes-4-botao py-1">
                         <button [disabled]="lancamento.nome == 'Transferencia' || lancamento.nome == 'Permuta'" (click)="limpaCheckbox();  lancamento.nome == 'Transferencia' ? visibleModalTransferencia = true : 
                             lancamento.nome == 'Permuta' ? visibleModalPermuta = true : visibleLancamento = true; 
                             loadLancamento(lancamento); setModalEdicao(lancamento.tipoLancamento) " type="button"
@@ -444,12 +434,46 @@
 
                         <!-- Recibo Disabled-->
                         @if(lancamento.tipoLancamento !== "Despesa"){
-                        <button disabled (click)="imprimirRecibo() " type="button"
+                        <button type="button"
                             class="btn btn-icon  btn-outline-secondary p-1 mb-0 mt-0"
-                            [style]="{'height': '26px', 'width': '26px'} " [placement]="'top'" ngbTooltip="Recibo">
+                            [style]="{'height': '26px', 'width': '26px'} " [placement]="'top'" ngbTooltip="Sem recibo">
                             <i class="pi pi-print"></i>
                         </button>
                         }
+
+                        @if (lancamento.comprovanteNome) {
+                        <button (click)="visualizarComprovante(lancamento.id)" type="button"
+                            class="ml-1 col-acoes-4-botao py-1 btn btn-icon  btn-outline-danger p-1 mb-0 mt-0"
+                            icon="pi pi-file-pdf" [style]="{'margin-left': '7px', 'height': '26px', 'width': '26px'} "
+                            [placement]="'top'" ngbTooltip="Visualizar Comprovante">
+                            <i class="pi pi-file-pdf"></i>
+                        </button>
+                        } @else {
+                        <button type="button"
+                            class="ml-1 col-acoes-4-botao py-1 btn btn-icon  btn-outline-dark p-1 mb-0 mt-0"
+                            icon="pi pi-file-pdf" [style]="{'margin-left': '7px', 'height': '26px', 'width': '26px'} "
+                            [placement]="'top'" ngbTooltip="Sem anexo">
+                            <i class="pi pi-file-pdf"></i>
+                        </button>
+                        }
+
+                        <!-- Botão de Deletar Anexo (Lixeira Vermelha) -->
+                        @if (lancamento.comprovanteNome) {
+                        <button (click)="excluirComprovante(lancamento.id)" type="button"
+                            class="ml-1 col-acoes-4-botao py-1 btn btn-icon  btn-outline-danger p-1 mb-0 mt-0"
+                            icon="pi pi-file-pdf" [style]="{'margin-left': '7px', 'height': '26px', 'width': '26px'} "
+                            [placement]="'top'" ngbTooltip="Excluir Anexo">
+                            <i class="pi pi-trash"></i>
+                        </button>
+                        } @else {
+                        <button disabled type="button"
+                            class="ml-1 col-acoes-4-botao py-1 btn btn-icon  btn-outline-dark p-1 mb-0 mt-0"
+                            icon="pi pi-file-pdf" [style]="{'margin-left': '7px', 'height': '26px', 'width': '26px'} "
+                            [placement]="'top'" ngbTooltip="Sem comprovante">
+                            <i class="pi pi-trash"></i>
+                        </button>
+                        }
+
                     </td>
                 </tr>
             </ng-template>

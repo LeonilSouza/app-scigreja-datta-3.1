@@ -30,6 +30,8 @@ import { Fluid } from 'primeng/fluid';
 import { FormaDTO } from 'src/app/theme/shared/models/forma.dto';
 import { ContasPagarDTO, ContasPagarResumoDTO } from 'src/app/theme/shared/models/contas-pagar.dto';
 import { ConfirmDialog } from "primeng/confirmdialog";
+import { LancamentoService } from 'src/app/theme/shared/services/lancamento.service';
+import { FileUploadModule } from 'primeng/fileupload';
 
 @Component({
   selector: 'app-contas-pagar-list-form',
@@ -43,7 +45,8 @@ import { ConfirmDialog } from "primeng/confirmdialog";
     SharedModule,
     Fluid,
     InputNumberModule,
-    ConfirmDialog
+    ConfirmDialog,
+    FileUploadModule
   ],
   providers: [
     ContasPagarService,
@@ -56,6 +59,10 @@ import { ConfirmDialog } from "primeng/confirmdialog";
 })
 
 export class ContasPagarListFormComponent implements OnInit {
+
+  salvando = false;
+  arquivoSelecionado: File | null = null;
+
   private confirmationService = inject(ConfirmationService);
   private messageService = inject(MessageService);
   positionContasPagar: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
@@ -163,7 +170,8 @@ export class ContasPagarListFormComponent implements OnInit {
     private categoriaService: CategoriaService,
     private contaService: ContaService,
     private centroCustoService: CentroCustoService,
-    private formaService: FormaService
+    private formaService: FormaService,
+    private lancamentoService: LancamentoService
 
   ) { }
 
@@ -264,6 +272,28 @@ export class ContasPagarListFormComponent implements OnInit {
     this.rangeDates = this.dtInicio + " - " + this.dtFim;
 
     this.loadContasPagar(this.igrejaId, (this.nome as any), this.dtInicio, this.dtFim, this.page, this.linesPerPage);
+  }
+
+  //Upload de comprovantes 
+  onUpload(event: any, lancamentoId: number) {
+    // 1. PRIMEIRA LINHA: Teste de vida do método
+
+    // No evento onSelect do PrimeNG, os arquivos vêm em event.files
+    const arquivo: File = event.files && event.files.length > 0 ? event.files[0] : null;
+
+    if (arquivo) {
+
+      this.lancamentoService.uploadComprovante(lancamentoId, arquivo).subscribe({
+        next: () => {
+          this.toastr.success('Comprovante anexado com sucesso!');
+          // this.refreshAll(); // Atualiza a lista/grid
+        },
+        error: (err) => {
+          this.toastr.error('Erro ao enviar o comprovante.');
+          console.error(err);
+        }
+      });
+    }
   }
 
   loadCategorias() {
@@ -574,19 +604,88 @@ export class ContasPagarListFormComponent implements OnInit {
     }
   }
 
+  // public confirmarPagamento() {
+  //   const payload: ContasPagarDTO = Object.assign(this.contasPagarForm.value);
+  //   payload.dataVencimento = this.sharedService?.formataDataBR(this.contasPagarForm.controls['dataVencimento'].value)!;
+  //   const data = this.sharedService.formataDataBR(this.contasPagarForm.controls['dataPagamento'].value);
+  //   this.contasPagarService.baixarPagamento(payload.id!, payload.dataPagamento, payload.valor?.toString())
+  //     .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+  //     .subscribe({
+  //       next: () => {
+  //         this.toastr.success('Conta paga com sucesso!', 'Pagamento');
+  //         this.grid.reset();
+  //       },
+  //       error: () => { }
+  //     })
+  // }
+
   public confirmarPagamento() {
+    this.salvando = true; // Bloqueia novos cliques no botão
+
     const payload: ContasPagarDTO = Object.assign(this.contasPagarForm.value);
     payload.dataVencimento = this.sharedService?.formataDataBR(this.contasPagarForm.controls['dataVencimento'].value)!;
     const data = this.sharedService.formataDataBR(this.contasPagarForm.controls['dataPagamento'].value);
+
     this.contasPagarService.baixarPagamento(payload.id!, payload.dataPagamento, payload.valor?.toString())
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => {
-          this.toastr.success('Conta paga com sucesso!', 'Pagamento');
-          this.grid.reset();
+        next: (contaPaga: any) => {
+          // Captura o ID injetado pela propriedade transiente do Java
+          const idDoLancamento = contaPaga?.lancamentoId;
+
+          if (this.arquivoSelecionado && idDoLancamento) {
+            this.executarUploadComprovante(idDoLancamento);
+          } else {
+            this.toastr.success('Conta paga com sucesso!', 'Pagamento');
+            this.finalizarFluxoTelas();
+          }
         },
-        error: () => { }
-      })
+        error: () => {
+          this.salvando = false;
+        }
+      });
+  }
+
+
+  private executarUploadComprovante(id: number) {
+    this.lancamentoService.uploadComprovante(id, this.arquivoSelecionado!).subscribe({
+      next: () => {
+        this.toastr.success('Conta paga e comprovante anexado com sucesso!', 'Pagamento');
+        this.finalizarFluxoTelas();
+      },
+      error: (err) => {
+        this.toastr.error('Conta paga, mas houve uma falha ao anexar o comprovante.', 'Aviso');
+        console.error(err);
+        this.finalizarFluxoTelas(); // Fecha as modais mesmo se o arquivo falhar para não travar o usuário
+      }
+    });
+  }
+
+  private finalizarFluxoTelas() {
+    this.salvando = false;
+    this.arquivoSelecionado = null;
+
+    // Fecha as modais de forma segura via código
+    this.visiblePagamento = false;
+    this.visibleContasPagar = false;
+
+    // Reseta a grid visual
+    this.grid.reset();
+  }
+
+  // 1. Método disparado quando o usuário escolhe um arquivo na janela local
+  onSelecionarArquivo(event: any) {
+    // No modo basic/onSelect, os arquivos vêm dentro de event.files ou event.currentFiles
+    if (event.files && event.files.length > 0) {
+      this.arquivoSelecionado = event.files[0];
+    } else if (event.currentFiles && event.currentFiles.length > 0) {
+      this.arquivoSelecionado = event.currentFiles[0];
+    }
+  }
+
+  // 2. Método disparado quando o usuário clica no 'X' para remover o anexo da tela
+  onRemoverArquivo() {
+    this.arquivoSelecionado = null;
   }
 
   buscaContasPagar() {
@@ -595,7 +694,7 @@ export class ContasPagarListFormComponent implements OnInit {
 
 
   public updateContasPagar() {
-    if ((this.mes !== this.mesNovo) && this.contaPagar.uuidGrupo ) {
+    if ((this.mes !== this.mesNovo) && this.contaPagar.uuidGrupo) {
       Swal.fire({
         // title: 'Exclusão',
         text: 'Deseja alterar a data? Todos as parcelas seguirão esta data.',

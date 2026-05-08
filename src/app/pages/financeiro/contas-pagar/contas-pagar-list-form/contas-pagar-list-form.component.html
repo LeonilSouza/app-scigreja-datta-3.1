@@ -242,8 +242,7 @@
         <div class="card flex justify-center">
             <p-dialog header="CONTAS A PAGAR - {{ pageTitle }}" [modal]="true" [(visible)]="visibleContasPagar"
                 [position]="positionContasPagar" [draggable]="false" [resizable]="false"
-                [breakpoints]="{'960px': '95vw', '640px': '100vw'}" [style]="{width: '60vw'}"
-                [dismissableMask]="false">
+                [breakpoints]="{'960px': '95vw', '640px': '100vw'}" [style]="{width: '60vw'}" [dismissableMask]="false">
                 <b class="mb-3 text-c-red">Origem
                     <hr class="mb-2 text-c-red">
                 </b>
@@ -360,7 +359,7 @@
                             class="w-full md " [options]="centroCustos" [editable]="false" [filter]="true"
                             filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
                             dateFormat="dd/mm/yy" dropdownIcon="pi pi-check" [autofocus]="false" optionValue="id"
-                            placeholder="" appendTo="body"/>
+                            placeholder="" appendTo="body" />
                     </div>
 
                     <!-- espaço -->
@@ -473,7 +472,7 @@
                             <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
                                 [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
                                 inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
-                                formControlName="dataVencimento"  />
+                                formControlName="dataVencimento" />
                         </div>
 
                         <!-- Nome/Fornecedor -->
@@ -514,7 +513,7 @@
                                 class="w-full md " [options]="centroCustos" [editable]="false" [filter]="true"
                                 filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
                                 dateFormat="dd/mm/yy" dropdownIcon="pi pi-check" [autofocus]="false" optionValue="id"
-                                placeholder="" appendTo="body"/>
+                                placeholder="" appendTo="body" />
                         </div>
 
                         <!-- Forma de pagamento -->
@@ -553,8 +552,17 @@
                     <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
                     <div class="modal-footer" style="height: 38px;">
 
+                        <!-- Upload de comprovantes -->
+                        <!-- <div class="p-field mt-3"> -->
+                            <p-fileUpload class=" mx-5 float-left mb-0" mode="basic" chooseLabel="Anexar Comprovante " chooseIcon="pi pi-paperclip"
+                                [style]="{'margin-left':'20px%', 'width':'100%','height':'30px'}" accept="image/*,application/pdf"
+                                maxFileSize="5000000" [auto]="false" (onSelect)="onSelecionarArquivo($event)"
+                                (onRemove)="onRemoverArquivo()">
+                            </p-fileUpload>
+
+
                         <!-- Cancelar -->
-                        <button type="button" class=" ml-4 mb-0" pButton pRipple (click)="visiblePagamento = false; "
+                        <button type="button" class="m-l-10 mb-0" pButton pRipple (click)="visiblePagamento = false; "
                             label="Cancelar" style="width: 7em; height: 30px; font-size: small;
                                       border-radius: 6px; border: 0;background: #1a82ce;" icon='pi pi-wallet'>
                         </button>
@@ -562,8 +570,8 @@
                         <!-- Pagar -->
                         <strong><button
                                 (click)="visiblePagamento = false; visibleContasPagar = false; confirmarPagamento()"
-                                [disabled]="contasPagarForm.invalid" type="button" class="mx-3 float-end mb-0" pButton
-                                pRipple label="Pagar"
+                                [disabled]="contasPagarForm.invalid || salvando" type="button"
+                                class="mx-3 float-end mb-0" pButton pRipple label="Pagar"
                                 style="width: 7em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
                                 icon='pi pi-check'>
                             </button></strong>
