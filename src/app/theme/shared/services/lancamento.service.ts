@@ -50,7 +50,6 @@ export class LancamentoService {
     const headers = new HttpHeaders()
     let params = new HttpParams()
       .set('page', filtro.page)
-      .set('incluirPermuta', filtro.incluirPermuta.toString()) // 'true' ou 'false'
       .set('linesPerPage', filtro.linesPerPage);
 
     if (filtro.nome) { params = params.set('nome', filtro.nome); }
@@ -62,174 +61,182 @@ export class LancamentoService {
     if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
     if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
     if (filtro.setorId) { params = params.set('setor', filtro.setorId); }
-
+    
     return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/page`, { headers, params })
       .pipe(
         catchError(this.handleError)
       );
   }
 
-  getTotalGeralCreditoFromIgreja(filtro: LancamentoFiltro) {
-    const headers = new HttpHeaders()
+  getTotalReceitaDizimoFromIgreja(filtro: LancamentoFiltro): Observable<number> {
     let params = new HttpParams()
-      .set('page', filtro.page)
-      .set('linesPerPage', filtro.linesPerPage);
-
     if (filtro.nome) { params = params.set('nome', filtro.nome); }
     if (filtro.igrejaId) { params = params.set('igreja', filtro.igrejaId); }
     if (filtro.contas) { params = params.set('contas', filtro.contas); }
     if (filtro.formas) { params = params.set('formas', filtro.formas); }
     if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
-    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
+    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); } // Aqui o bacend força Receita
     if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
     if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
+    if (filtro.setorId) { params = params.set('setor', filtro.setorId); }
 
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/soma-total-receita`, { headers, params })
-      .pipe(
-        catchError(this.handleError)
-      );
+
+    return this.http.get<number>(`${API_CONFIG.baseUrl}/relatorios/totalReceitasDizimos`, { params });
   }
 
-
-  getTotalOfertasAlcadas(filtro: LancamentoFiltro) {
-    const headers = new HttpHeaders()
+  getTotalReceitasDiversosFromIgreja(filtro: LancamentoFiltro): Observable<number> {
     let params = new HttpParams()
-      .set('page', filtro.page)
-      .set('linesPerPage', filtro.linesPerPage);
-
     if (filtro.nome) { params = params.set('nome', filtro.nome); }
     if (filtro.igrejaId) { params = params.set('igreja', filtro.igrejaId); }
     if (filtro.contas) { params = params.set('contas', filtro.contas); }
     if (filtro.formas) { params = params.set('formas', filtro.formas); }
     if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
-    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
+    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); } // Aqui o bacend força Receita
     if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
     if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
+    if (filtro.setorId) { params = params.set('setor', filtro.setorId); }
 
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/soma-oferta-alcadas`, { headers, params })
-      .pipe(
-        catchError(this.handleError)
-      );
+
+    return this.http.get<number>(`${API_CONFIG.baseUrl}/relatorios/totalReceitasDiversos`, { params });
   }
 
-  getTotalGeralDebitoFromIgreja(filtro: LancamentoFiltro) { // tipoLancamento 'Despesa' é atribuida no back-end 
-    const headers = new HttpHeaders()
+  getTotalGeralReceitasFromIgreja(filtro: LancamentoFiltro): Observable<number> {
     let params = new HttpParams()
-      .set('page', filtro.page)
-      .set('linesPerPage', filtro.linesPerPage);
-
     if (filtro.nome) { params = params.set('nome', filtro.nome); }
     if (filtro.igrejaId) { params = params.set('igreja', filtro.igrejaId); }
     if (filtro.contas) { params = params.set('contas', filtro.contas); }
     if (filtro.formas) { params = params.set('formas', filtro.formas); }
     if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
-    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
+    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); } // Aqui o bacend força Receita
     if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
     if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
+    if (filtro.setorId) { params = params.set('setor', filtro.setorId); }
 
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/soma-total-debito`, { headers, params })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http.get<number>(`${API_CONFIG.baseUrl}/relatorios/totalGeralReceitas`, { params });
   }
 
 
-
-  getTotalOfertasFromIgreja(filtro: LancamentoFiltro) {
-    const headers = new HttpHeaders()
+  getTotalOfertasFromIgreja(filtro: LancamentoFiltro): Observable<number> {
     let params = new HttpParams()
-      .set('page', filtro.page)
-      .set('linesPerPage', filtro.linesPerPage);
-
     if (filtro.nome) { params = params.set('nome', filtro.nome); }
     if (filtro.igrejaId) { params = params.set('igreja', filtro.igrejaId); }
     if (filtro.contas) { params = params.set('contas', filtro.contas); }
     if (filtro.formas) { params = params.set('formas', filtro.formas); }
     if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
-    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
+    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); } // Aqui o bacend força Receita
     if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
     if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
+    if (filtro.setorId) { params = params.set('setor', filtro.setorId); }
 
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/ofertas`, { headers, params })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http.get<number>(`${API_CONFIG.baseUrl}/relatorios/totalOfertas`, { params });
   }
 
-  getTotalDiversosFromIgreja(filtro: LancamentoFiltro) {
-    const headers = new HttpHeaders()
+  getTotalOfertasAlcadasFromIgreja(filtro: LancamentoFiltro): Observable<number> {
     let params = new HttpParams()
-      .set('page', filtro.page)
-      .set('linesPerPage', filtro.linesPerPage);
-
     if (filtro.nome) { params = params.set('nome', filtro.nome); }
     if (filtro.igrejaId) { params = params.set('igreja', filtro.igrejaId); }
     if (filtro.contas) { params = params.set('contas', filtro.contas); }
     if (filtro.formas) { params = params.set('formas', filtro.formas); }
     if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
-    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
+    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); } // Aqui o bacend força Receita
     if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
     if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
+    if (filtro.setorId) { params = params.set('setor', filtro.setorId); }
 
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/diversos`, { headers, params })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http.get<number>(`${API_CONFIG.baseUrl}/relatorios/totalOfertasAlcadas`, { params });
   }
 
-  getTotalMissoesFromIgreja(filtro: LancamentoFiltro) {
-    const headers = new HttpHeaders()
-    let params = new HttpParams()
-      .set('page', filtro.page)
-      .set('linesPerPage', filtro.linesPerPage);
 
+  getTotalGeralDespesaFromIgreja(filtro: LancamentoFiltro) { // tipoLancamento 'Despesa' é atribuida no back-end 
+   let params = new HttpParams()
     if (filtro.nome) { params = params.set('nome', filtro.nome); }
     if (filtro.igrejaId) { params = params.set('igreja', filtro.igrejaId); }
     if (filtro.contas) { params = params.set('contas', filtro.contas); }
     if (filtro.formas) { params = params.set('formas', filtro.formas); }
     if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
-    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
+    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); } // Aqui o bacend força Receita
     if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
     if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
+    if (filtro.setorId) { params = params.set('setor', filtro.setorId); }
 
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/missoes`, { headers, params })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http.get<number>(`${API_CONFIG.baseUrl}/relatorios/totalGeralDespesas`, { params });
   }
 
-  getTotalRDSaldoAnteriorFromIgreja(igrejaId: number, data: string) {
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/saldo-anterior?igreja=${igrejaId}&data=${data}`)
-      .pipe(
-        catchError(this.handleError)
-      );
-  }
-
-  getTotalReceitaDizimoFromIgreja(filtro: LancamentoFiltro) {
-    const headers = new HttpHeaders()
-    let params = new HttpParams()
-      .set('page', filtro.page)
-      .set('linesPerPage', filtro.linesPerPage);
-
+  getTotalSaldoAnteriorFromIgreja(filtro: LancamentoFiltro) { // tipoLancamento 'Despesa' é atribuida no back-end 
+   let params = new HttpParams()
     if (filtro.nome) { params = params.set('nome', filtro.nome); }
     if (filtro.igrejaId) { params = params.set('igreja', filtro.igrejaId); }
     if (filtro.contas) { params = params.set('contas', filtro.contas); }
     if (filtro.formas) { params = params.set('formas', filtro.formas); }
     if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
-    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
+    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); } // Aqui o bacend força Receita
     if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
     if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
+    if (filtro.setorId) { params = params.set('setor', filtro.setorId); }
 
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/receita-dizimo`, { headers, params })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http.get<number>(`${API_CONFIG.baseUrl}/relatorios/totalSaldoAnterior`, { params });
   }
 
+  getTotalMissoesFromIgreja(filtro: LancamentoFiltro) { // tipoLancamento 'Despesa' é atribuida no back-end 
+   let params = new HttpParams()
+    if (filtro.nome) { params = params.set('nome', filtro.nome); }
+    if (filtro.igrejaId) { params = params.set('igreja', filtro.igrejaId); }
+    if (filtro.contas) { params = params.set('contas', filtro.contas); }
+    if (filtro.formas) { params = params.set('formas', filtro.formas); }
+    if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
+    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); } // Aqui o bacend força Receita
+    if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
+    if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
+    if (filtro.setorId) { params = params.set('setor', filtro.setorId); }
+
+    return this.http.get<number>(`${API_CONFIG.baseUrl}/relatorios/totalReceitasMissoes`, { params });
+  }
+
+  // MODELO USANDO  A SEGUNDA FABRICA - (ESTATICA/CONSOLIDADA) 
+  // MODELO PARA GERAÇÃO DE RELATORIOS - PASSANDO NOME DO RELATORIO
+  gerarLivroCaixaSimplificado(
+    filtro: LancamentoFiltro,
+    nomeRelatorio: string
+  ): Observable<Blob> {
+    let params = new HttpParams()
+      .set('nomeRelatorio', nomeRelatorio)
+      .set('igreja', filtro.igrejaId.toString())
+      .set('dtinicio', filtro.dtinicio)
+      .set('dtfim', filtro.dtfim)
+      .set('nome', filtro.nome || '');
+
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-consolidado`, {
+      params,
+      responseType: 'blob'
+    });
+  }
+
+  // MODELO USANDO  A SEGUNDA FABRICA - (ESTATICA/CONSOLIDADA) 
+  // MODELO PARA GERAÇÃO DE RELATORIOS - PASSANDO NOME DO RELATORIO
+  gerarLivroCaixaDetalhado(
+    filtro: LancamentoFiltro,
+    nomeRelatorio: string
+  ): Observable<Blob> {
+    let params = new HttpParams()
+      .set('nomeRelatorio', nomeRelatorio)
+      .set('igreja', filtro.igrejaId.toString())
+      .set('dtinicio', filtro.dtinicio)
+      .set('dtfim', filtro.dtfim)
+      .set('nome', filtro.nome || '');
+
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-consolidado`, {
+      params,
+      responseType: 'blob'
+    });
+  }
+
+  // MODELO USANDO PRIMEIRA FABRICA - (DINÂMICA)  
+  // MODELO DE GERAÇÃO DE RELATORIOS QUE FORAM FILTRADO NA GRID - PASSANDO NOME DO RELATORIO
   gerarMovimentacaoFinanceiraPdf(filtro: LancamentoFiltro, nomeRelatorio: string): Observable<Blob> {
     let params = new HttpParams()
       .set('nomeRelatorio', nomeRelatorio) // O Java espera 'nomeRelatorio' para carregar o .jasper
       .set('igreja', filtro.igrejaId.toString())
+      .set('setorId', filtro.setorId.toString())
       .set('dtinicio', filtro.dtinicio)
       .set('dtfim', filtro.dtfim)
       .set('nome', filtro.nome || '')
@@ -239,12 +246,13 @@ export class LancamentoService {
     if (filtro.formas) params = params.set('formas', filtro.formas);
     if (filtro.categorias) params = params.set('categorias', filtro.categorias);
 
-    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-dinamico`, { //endpoint fabrica de relatorios basta criar o relatorio no jasper e passar o nome aqui
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-dinamico`, { //endpoint Primeira Fabrica de relatorios basta criar o relatorio no jasper e passar o nome aqui
       params,
       responseType: 'blob'
     });
   }
 
+  //Separado
   getSaldoFinalContasFromIgreja(igrejaId: any) {
     return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/saldocontas/?igreja=${igrejaId}`)
       .pipe(

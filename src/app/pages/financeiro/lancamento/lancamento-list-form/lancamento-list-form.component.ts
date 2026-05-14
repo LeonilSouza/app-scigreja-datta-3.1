@@ -37,7 +37,7 @@ interface UploadEvent {
 
 export class LancamentoFiltro {
   igrejaId: number = igrejaIdSignal();
-  setorId?: number = setorIdSignal();
+  setorId: number = setorIdSignal();
   nome: string = '';
   busca: string = '';
   dtinicio: string = ''; // No Java usamos @Param("dtinicio")
@@ -48,7 +48,7 @@ export class LancamentoFiltro {
   categorias: string = "";
   formas: string = "";
   tipoLancamento: string = ""; // Inicie com um padrão 
-  incluirPermuta: string = ""; // Inicie com um padrão 
+  incluirPermuta: boolean = false; // Inicie com um padrão 
   nomeRelatorio: string = ""; // Nome do arquivo do relatorio jasper - layout no java
 }
 
@@ -396,38 +396,47 @@ export class LancamentoListFormComponent implements OnInit {
   }
 
   getTotalizacoes() {
-    // Total Dízimo (Usando a Categoria 1 fixa que definimos no Java)
-    this.lancamentoService.getTotalReceitaDizimoFromIgreja(this.filtro
-    ).subscribe(total => total !== null && this.filtro.tipoLancamento !== 'Despesa' ? this.totalReceitaDizimo = total : 0.00);
+    // 1. Total Dízimo
+    this.lancamentoService.getTotalReceitaDizimoFromIgreja(this.filtro).subscribe(
+      total => this.totalReceitaDizimo = (total !== null && this.filtro.tipoLancamento !== 'Despesa') ? total : 0.00
+    );
 
-    // Soma Geral (Para nova query dinâmica com Specification no java)
-    this.lancamentoService.getTotalGeralCreditoFromIgreja(this.filtro)
-      .subscribe(total => total !== null && this.filtro.tipoLancamento !== 'Despesa' ? this.totalCreditos = total : 0.00);
+    // 2. Soma Geral Créditos
+    this.lancamentoService.getTotalGeralReceitasFromIgreja(this.filtro).subscribe(
+      total => this.totalCreditos = (total !== null && this.filtro.tipoLancamento !== 'Despesa') ? total : 0.00
+    );
 
-    // Saldo Anterior
-    this.lancamentoService.getTotalRDSaldoAnteriorFromIgreja(this.igrejaId, this.filtro.dtinicio!)
-      .subscribe(saldo => this.saldoAnterior = saldo);
+    // 3. Saldo Anterior (Calculado automaticamente com base na data de início do filtro)
+    this.lancamentoService.getTotalSaldoAnteriorFromIgreja(this.filtro!).subscribe(
+      saldo => this.saldoAnterior = saldo || 0.00
+    );
 
-    // Total Ofertas
-    this.lancamentoService.getTotalOfertasFromIgreja(this.filtro)
-      .subscribe(total => total !== null && this.filtro.tipoLancamento !== 'Despesa' ? this.totalOfertas = total : 0.00);
+    // 4. Total Ofertas
+    this.lancamentoService.getTotalOfertasFromIgreja(this.filtro).subscribe(
+      total => this.totalOfertas = (total !== null && this.filtro.tipoLancamento !== 'Despesa') ? total : 0.00
+    );
 
-    // Ofertas Alçadas
-    this.lancamentoService.getTotalOfertasAlcadas(this.filtro)
-      .subscribe(total => total !== null && this.filtro.tipoLancamento !== 'Despesa' ? this.total_ofertas_alcadas = total : 0.00);
+    // 5. Ofertas Alçadas
+    this.lancamentoService.getTotalOfertasAlcadasFromIgreja(this.filtro).subscribe(
+      total => this.total_ofertas_alcadas = (total !== null && this.filtro.tipoLancamento !== 'Despesa') ? total : 0.00
+    );
 
-    // Total Geral Debito
-    this.lancamentoService.getTotalGeralDebitoFromIgreja(this.filtro)
-      .subscribe(total =>
-        total !== null && this.filtro.tipoLancamento !== 'Receita' ? this.totalDebitos = total * -1 : 0.00);
+    
 
-    // Total Missões
-    this.lancamentoService.getTotalMissoesFromIgreja(this.filtro)
-      .subscribe(total => total !== null && this.filtro.tipoLancamento !== 'Despesa' ? this.totalMissoes = total : 0.00);
+    // 6. Total Geral Débito (Multiplica por -1 para exibir o valor positivo no card da tela)
+    this.lancamentoService.getTotalGeralDespesaFromIgreja(this.filtro).subscribe(
+      total => this.totalDebitos = (total !== null && this.filtro.tipoLancamento !== 'Receita') ? total * -1 : 0.00
+    );
 
-    // Total Diversos
-    this.lancamentoService.getTotalDiversosFromIgreja(this.filtro)
-      .subscribe(total => total !== null && this.filtro.tipoLancamento !== 'Despesa' ? this.totalDiversos = total : 0.00);
+    // 7. Total Missões
+    this.lancamentoService.getTotalMissoesFromIgreja(this.filtro).subscribe(
+      total => this.totalMissoes = (total !== null && this.filtro.tipoLancamento !== 'Despesa') ? total : 0.00
+    );
+
+    // 8. Total Diversos
+    this.lancamentoService.getTotalReceitasDiversosFromIgreja(this.filtro).subscribe(
+      total => this.totalDiversos = (total !== null && this.filtro.tipoLancamento !== 'Despesa') ? total : 0.00
+    );
   }
 
   visualizarComprovante(lancamentoId: number) {
@@ -598,6 +607,7 @@ export class LancamentoListFormComponent implements OnInit {
       lancamentoIdTransferencia: [null],
       formaIdTransferencia: [null],
       comprovante: [null],
+      tipoConta: [null],
       comprovanteNome: [null],
       lancamentoIdOrigem: [null]
     });
@@ -686,18 +696,18 @@ export class LancamentoListFormComponent implements OnInit {
         label: 'Livro caixa - Mensal Simplificado',
         icon: 'pi pi-calendar',
         command: () => {
-          // Montamos a URL com os valores ATUAIS das variáveis
-          const url = `${API_CONFIG.baseUrl}/relatorios/despesas/?nome=livro-caixa-mensal-simplificado` +
-            `&igreja=${this.igrejaId}` +
-            `&dt_inicio=${this.dtinicio}` +
-            `&dt_fim=${this.dtfim}` +
-            `&saldo_anterior=${this.saldoAnterior || 0}` +
-            `&total_dizimo=${this.totalReceitaDizimo || 0}` +
-            `&total_oferta=${this.totalOfertas || 0}` +
-            `&total_receitas_diversas=${this.totalDiversos || 0}`;
-
-          // Abre em uma nova aba
-          window.open(url, '_blank');
+          //Relatórios da Segunda Fabrica Estatica/Consolidada - Agora basta criar o relatorio no jasper e passar o nome junto com o filtro
+          this.lancamentoService.gerarLivroCaixaSimplificado(this.filtro, 'livro-caixa-mensal-simplificado')
+            .subscribe({
+              next: (blob) => {
+                const url = window.URL.createObjectURL(blob);
+                window.open(url, '_blank'); // Abre o PDF direto em uma nova aba
+              },
+              error: (err) => {
+                this.toastr.error('Erro ao gerar o relatório Livro Caixa Mensal.');
+                console.error(err);
+              }
+            });
         }
       },
       { separator: true },
@@ -705,18 +715,18 @@ export class LancamentoListFormComponent implements OnInit {
         label: 'Livro caixa - Mensal Detalhado',
         icon: 'pi pi-calendar',
         command: () => {
-          // Montamos a URL com os valores ATUAIS das variáveis
-          const url = `${API_CONFIG.baseUrl}/relatorios/despesas/?nome=livro-caixa-mensal-detalhado` +
-            `&igreja=${this.igrejaId}` +
-            `&dt_inicio=${this.dtinicio}` +
-            `&dt_fim=${this.dtfim}` +
-            `&saldo_anterior=${this.saldoAnterior || 0}` +
-            `&total_dizimo=${this.totalReceitaDizimo || 0}` +
-            `&total_oferta=${this.totalOfertas || 0}` +
-            `&total_receitas_diversas=${this.totalDiversos || 0}`;
-
-          // Abre em uma nova aba
-          window.open(url, '_blank');
+          //Relatórios da Segunda Fabrica Estatica/Consolidada - Agora basta criar o relatorio no jasper e passar o nome junto com o filtro
+          this.lancamentoService.gerarLivroCaixaDetalhado(this.filtro, 'livro-caixa-mensal-detalhado')
+            .subscribe({
+              next: (blob) => {
+                const url = window.URL.createObjectURL(blob);
+                window.open(url, '_blank'); // Abre o PDF direto em uma nova aba
+              },
+              error: (err) => {
+                this.toastr.error('Erro ao gerar o relatório Livro Caixa Mensal.');
+                console.error(err);
+              }
+            });
         }
       },
       {
@@ -892,11 +902,11 @@ export class LancamentoListFormComponent implements OnInit {
     this.dataDiaAnterior = data_subtraida;
     // this.getTotalSaldoAnterior();
 
-    if (this.valorTpLancamento === 'Todas') {
-      this.filtro.incluirPermuta = 'true'.toString();
-    } else {
-      this.filtro.incluirPermuta = 'false'.toString();
-    }
+    // if (this.valorTpLancamento === 'Todas') {
+    //   this.filtro.incluirPermuta = 'true'.toString();
+    // } else {
+    //   this.filtro.incluirPermuta = 'false'.toString();
+    // }
     this.refreshAll(); // Chama Grid + Totalizações
   }
 
@@ -1212,7 +1222,7 @@ export class LancamentoListFormComponent implements OnInit {
         this.dtfim = this.rangeDates[1];
       }
     }
-    this.lancamentoService.getTotalGeralCreditoFromIgreja(this.filtro)
+    this.lancamentoService.getTotalGeralReceitasFromIgreja(this.filtro)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: response => {
@@ -1330,9 +1340,9 @@ export class LancamentoListFormComponent implements OnInit {
   private getConta(value: number | undefined) {
     let conta_id = this.contas.filter(tc => tc.id == value); //Armazema todas as contas de um tipo passado por parametro
     let tipo_conta = conta_id.map(tp => {
-      return tp.tipo; // Retorna uma string de ids do tipo passado no parametro.
+      return tp.tipo?.toString(); // Retorna uma string de ids do tipo passado no parametro.
     })
-    this.lancamentoForm.controls['tipoConta'].setValue(tipo_conta.toString());
+    this.lancamentoForm.controls['tipoConta'].setValue(tipo_conta);
   }
 
 
@@ -1379,16 +1389,6 @@ export class LancamentoListFormComponent implements OnInit {
       this.categoriasFiltradas = this.categorias.filter(cat => cat.tipo === tipo);
     }
   }
-
-  public doSelectTipoLancamento = (value: any) => {
-    if (value === 'Padrao') {
-      this.lancamentoForm.controls['igrejaId'].setValue(null);
-    } else {
-      this.lancamentoForm.controls['igrejaId'].setValue(this.igrejaId);
-    }
-
-  }
-
 
   //EXCLUIR LANÇAMENTOS 
   exclusaoLancamento(indexId: number, indexIdTransferencia: number | undefined) {
