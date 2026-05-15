@@ -111,7 +111,7 @@
 
             <!-- Pesquisa CentroCusto -->
             <div class="row mb-2">
-                 <span class=" col-sm-6 mt-0 mb-2">
+                <span class=" col-sm-6 mt-0 mb-2">
                     <p-inputgroup>
                         <button type="button" style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius:0;
                border-top-right-radius: 0; border: 0; background:rgb(237, 237, 237);" pButton pRipple class=""> <i
@@ -215,7 +215,7 @@
             <!-- centroCusto Fim -->
         </app-card>
     </div>
-    
+
 
     <!-- CATEGORIAS  CATEGORIAS CATEGORIAS CATEGORIAS CATEGORIAS CATEGORIAS -->
 
@@ -227,7 +227,7 @@
 
             <!-- Pesquisa Categorias -->
             <div class="row mb-2">
-                    <span class=" col-sm-6 mt-0 mb-2">
+                <span class=" col-sm-6 mt-0 mb-2">
                     <p-inputgroup>
                         <button type="button" style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius:0;
                border-top-right-radius: 0; border: 0; background:rgb(237, 237, 237);" pButton pRipple class=""> <i
@@ -309,6 +309,14 @@
                                                 </button>
                                                 }
                                             </td>
+
+                                            <td>
+                                                @if (categoria.ocultarNoTotalizador) {
+                                                <span class="p-badge p-badge-danger">Oculta no Faturamento</span>
+                                                } @else {
+                                                <span class="p-badge p-badge-success">Ativa</span>
+                                                }
+                                            </td>
                                         </tr>
                                         }
 
@@ -353,7 +361,7 @@
 
             <!-- Pesquisa Formas -->
             <div class="row mb-2">
-                   <span class=" col-sm-6 mt-0 mb-2">
+                <span class=" col-sm-6 mt-0 mb-2">
                     <p-inputgroup>
                         <button type="button" style="height: 30px; cursor:default ; border-radius: 6px; border-bottom-right-radius:0;
                border-top-right-radius: 0; border: 0; background:rgb(237, 237, 237);" pButton pRipple class=""> <i
@@ -623,6 +631,18 @@
 
                         </div>
                         }
+
+                            <div class="p-field-checkbox form-group col-md-6 mt-3">
+                            <p-checkbox binary="true" inputId="ocultarNoTotalizador"
+                               formControlName="ocultarNoTotalizador" name="ocultarNoTotalizador">
+                            </p-checkbox>
+                            <label for="ocultarNoTotalizador" class="ml-2 font-medium">  
+                                Ocultar esta categoria nos cartões de faturamento geral
+                            </label>
+                            <!-- </div> -->
+
+                        </div>
+
                     </div>
 
 
@@ -649,8 +669,8 @@
                             </button></strong>
 
                     </div>
-                    <!-- <div class="form-group "></div>
-                      <pre> {{categoriaForm.value | json}} </pre> -->
+                    <div class="form-group "></div>
+                      <pre> {{categoriaForm.value | json}} </pre>
                 </div>
             </app-ui-modal>
         </div>

@@ -145,11 +145,9 @@ export class CadastroListComponent implements OnInit {
   constructor(
     private contaService: ContaService,
     private formBuilder: FormBuilder,
-    private toastr: ToastrService,
     private categoriaService: CategoriaService,
     private centroCustoService: CentroCustoService,
     private formaService: FormaService,
-    private confirmationService: ConfirmationService,
     private messageService: MessageService
 
   ) { }
@@ -242,7 +240,8 @@ export class CadastroListComponent implements OnInit {
       nome: [null, [Validators.required]], // As vezes tem que deixar vazio "" ao invés de null p/ não dá BO
       tipo: [null, [Validators.required]],
       tipoPadraoIgreja: [(this.perfil == 'ADMIN') ? 'Padrao' : 'Igreja', [Validators.required]],// Campo inexistente no banco. Utilizados apenas para Admin para setar null em igrejaId
-      igrejaId: [null]
+      igrejaId: [null],
+      ocultarNoTotalizador: [false]
     });
   }
 
@@ -428,6 +427,7 @@ export class CadastroListComponent implements OnInit {
 
   public updateCategoria() {
     const categoria: CategoriaDTO = Object.assign(new CategoriaDTO(), this.categoriaForm.value)
+    console.log(this.categoriaForm.value)
 
     this.categoriaService.update(categoria)
       .pipe(takeUntil(this.destroy$))
