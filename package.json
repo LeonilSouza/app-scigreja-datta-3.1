@@ -60,6 +60,7 @@
     "angularx-flatpickr": "8.1.0",
     "apexcharts": "4.7.0",
     "bootstrap": "5.3.7",
+    "chart.js": "^4.5.1",
     "date-fns": "4.1.0",
     "dayjs": "1.11.13",
     "dragula": "3.7.3",

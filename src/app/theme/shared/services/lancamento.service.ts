@@ -45,6 +45,31 @@ export class LancamentoService {
     return this.http.delete(`${API_CONFIG.baseUrl}/lancamentos/${lancamentoId}/comprovante`);
   }
 
+  // Estatisticas
+  buscarFaturamentoMensal(igrejaId: number, setorId?: number): Observable<any[]> {
+    let params = new HttpParams().set('igreja', igrejaId.toString());
+
+    if (setorId) {
+      params = params.set('setorId', setorId.toString());
+    }
+
+    return this.http.get<any[]>(`${API_CONFIG.baseUrl}/lancamentos/dashboard/faturamento-mensal`, { params });
+  }
+
+  // Estatisticas
+  buscarGastosPorCategoria(filtro: any): Observable<any[]> {
+    let params = new HttpParams()
+      .set('igreja', filtro.igrejaId.toString())
+      .set('dtinicio', filtro.dtinicio)
+      .set('dtfim', filtro.dtfim);
+    
+    if (filtro.setorId) {
+        params = params.set('setorId', filtro.setorId.toString());
+    }
+
+    return this.http.get<any[]>(`${API_CONFIG.baseUrl}/lancamentos/dashboard/gastos-por-categoria`, { params });
+}
+
 
   getPageLancamentoFromIgreja(filtro: LancamentoFiltro) {
     const headers = new HttpHeaders()
@@ -61,7 +86,7 @@ export class LancamentoService {
     if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
     if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
     if (filtro.setorId) { params = params.set('setor', filtro.setorId); }
-    
+
     return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/page`, { headers, params })
       .pipe(
         catchError(this.handleError)
@@ -148,7 +173,7 @@ export class LancamentoService {
 
 
   getTotalGeralDespesaFromIgreja(filtro: LancamentoFiltro) { // tipoLancamento 'Despesa' é atribuida no back-end 
-   let params = new HttpParams()
+    let params = new HttpParams()
     if (filtro.nome) { params = params.set('nome', filtro.nome); }
     if (filtro.igrejaId) { params = params.set('igreja', filtro.igrejaId); }
     if (filtro.contas) { params = params.set('contas', filtro.contas); }
@@ -163,7 +188,7 @@ export class LancamentoService {
   }
 
   getTotalSaldoAnteriorFromIgreja(filtro: LancamentoFiltro) { // tipoLancamento 'Despesa' é atribuida no back-end 
-   let params = new HttpParams()
+    let params = new HttpParams()
     if (filtro.nome) { params = params.set('nome', filtro.nome); }
     if (filtro.igrejaId) { params = params.set('igreja', filtro.igrejaId); }
     if (filtro.contas) { params = params.set('contas', filtro.contas); }
@@ -178,7 +203,7 @@ export class LancamentoService {
   }
 
   getTotalMissoesFromIgreja(filtro: LancamentoFiltro) { // tipoLancamento 'Despesa' é atribuida no back-end 
-   let params = new HttpParams()
+    let params = new HttpParams()
     if (filtro.nome) { params = params.set('nome', filtro.nome); }
     if (filtro.igrejaId) { params = params.set('igreja', filtro.igrejaId); }
     if (filtro.contas) { params = params.set('contas', filtro.contas); }

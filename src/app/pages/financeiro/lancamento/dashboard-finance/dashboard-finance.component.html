@@ -1,0 +1,61 @@
+<div class="container-fluid mt-4">
+
+  <!-- BARRA DE FILTROS SUPERIOR -->
+  <div class="card shadow-sm border-0 p-3 mb-4bg-light">
+    <div class="row align-items-center p-fluid">
+
+      <div class="col-12 col-md-3 mb-2 mb-md-0">
+        <label class="font-medium text-muted small mb-1 d-block">Data Inicial</label>
+        <p-datepicker [(ngModel)]="dataInicial" dateFormat="dd/mm/yy" [showIcon]="true"
+          [style]="{'width':'100%','height':'30px'}" [locale]="ptBr" placeholder="Início">
+        </p-datepicker>
+      </div>
+
+      <div class="col-12 col-md-3 mb-2 mb-md-0">
+        <label class="font-medium text-muted small mb-1 d-block">Data Final</label>
+        <p-datepicker [(ngModel)]="dataFinal" [style]="{'width':'100%','height':'30px'}" dateFormat="dd/mm/yy"
+          [showIcon]="true" [locale]="ptBr" placeholder="Fim">
+        </p-datepicker>
+      </div>
+
+
+      <div  class="flex justify-between col-12 col-md-3 mt-3 d-flex align-items-end">
+        <p-button [style]="{'height':'30px', 'background':'black','margin-right':'20px'}" [outlined]="false"
+          icon="pi pi-search" class="text-white" label="Filtrar Gráficos" (click)="atualizarDashboard()" />
+      </div>
+
+      <div class="col-12 col-md-3 ">
+      </div>
+
+    </div>
+  </div>
+
+  <!-- LINHA DOS GRÁFICOS (LADO A LADO) -->
+  <div class="row">
+
+    <!-- Gráfico 1: Barras (Faturamento) -->
+    <div class="col-12 col-xl-7 mb-4">
+      <div class="card shadow-sm border-0 p-4 h-100">
+        <h5 class="font-medium text-secondary mb-4">📊 Demonstrativo Operacional (Últimos 6 Meses)</h5>
+        @if (dataBarras) {
+        <p-chart type="bar" [data]="dataBarras" [options]="optionsBarras" height="350px"></p-chart>
+        } @else {
+        <div class="text-center text-muted p-5">Carregando faturamento...</div>
+        }
+      </div>
+    </div>
+
+    <!-- Gráfico 2: Rosca (Gastos por Categorias) -->
+    <div class="col-12 col-xl-5 mb-4">
+      <div class="card shadow-sm border-0 p-4 h-100">
+        <h5 class="font-medium text-secondary mb-4">🍩 Distribuição de Gastos por Categorias</h5>
+        @if (dataRosca && dataRosca.labels.length > 0) {
+        <p-chart type="doughnut" [data]="dataRosca" [options]="optionsRosca" height="350px"></p-chart>
+        } @else {
+        <div class="text-center text-muted p-5">Nenhum gasto registrado neste período.</div>
+        }
+      </div>
+    </div>
+
+  </div>
+</div>

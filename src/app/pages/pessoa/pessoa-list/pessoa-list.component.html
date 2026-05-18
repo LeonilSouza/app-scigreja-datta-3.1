@@ -267,7 +267,7 @@
                 [style]="{'height': '26px', 'width': '26px'} " [placement]="'top'" ngbTooltip="Alterar Cadastro">
                 <i class="pi pi-pencil"></i>
               </button>
-              <button type="button" class="btn btn-icon btn-outline-secondary p-1 ml-2"
+              <button (click)="imprimirFichaMembro(pessoa.id)" type="button" class="btn btn-icon btn-outline-secondary p-1 ml-2"
                 [style]="{'height': '26px', 'width': '26px', 'margin-left': '10px'} " [placement]="'top'"
                 ngbTooltip="Ficha de Membro">
                 <i class="pi pi-book"></i>

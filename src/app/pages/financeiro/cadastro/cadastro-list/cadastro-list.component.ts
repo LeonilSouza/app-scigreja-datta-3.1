@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
-import { ConfirmationService, LazyLoadEvent, MessageService } from 'primeng/api';
+import { LazyLoadEvent, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { InputGroup } from 'primeng/inputgroup';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -427,7 +426,6 @@ export class CadastroListComponent implements OnInit {
 
   public updateCategoria() {
     const categoria: CategoriaDTO = Object.assign(new CategoriaDTO(), this.categoriaForm.value)
-    console.log(this.categoriaForm.value)
 
     this.categoriaService.update(categoria)
       .pipe(takeUntil(this.destroy$))

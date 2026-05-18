@@ -22,6 +22,7 @@ import { UiModalComponent } from 'src/app/theme/shared/components/modal/ui-modal
 import { SharedService } from 'src/app/theme/shared/services/shared.service';
 import { Subject, Subscription } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ToastrService } from 'ngx-toastr';
 
 
 @Component({
@@ -53,7 +54,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 export class PessoaListComponent implements OnInit {
 
-   private destroyRef = inject(DestroyRef); // 1. Injete a referência de destruição
+  private destroyRef = inject(DestroyRef); // 1. Injete a referência de destruição
 
   positionChamadaObreiro: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
 
@@ -116,7 +117,8 @@ export class PessoaListComponent implements OnInit {
     private messageService: MessageService,
     private formBuilder: FormBuilder,
     private datasService: DatasService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private toastr: ToastrService,
   ) {
 
   }
@@ -371,7 +373,7 @@ export class PessoaListComponent implements OnInit {
     const tipoMembro = 'Membro';
     const situacaoCadastral = 'Ativo';
     this.pessoaService.countMembrosAtivosFromIgreja(this.igrejaId, situacaoCadastral, tipoMembro)
-    .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe(
         response => {
           response ? this.totalMembros = response : 0;
@@ -421,11 +423,22 @@ export class PessoaListComponent implements OnInit {
       separator: true,
     },
     // {
-    //   label: 'Ficha de membros',
-    //   icon: 'fas fa-clipboard-list',
-    //   // target: '_blank',
-    //   // url: `${API_CONFIG.baseUrl}/relatorios/list/?nome=ficha-de-membros&igreja=${this.igrejaId}`
-
+    //   label: 'Ficha de Membro',
+    //   icon: 'pi pi-user',
+    //   command: () => {
+    //     //Relatórios da Segunda Fabrica Estatica/Consolidada - Agora basta criar o relatorio no jasper e passar o nome junto com o filtro
+    //     this.pessoaService.gerarFichaMembro(this.id)
+    //       .subscribe({
+    //         next: (blob) => {
+    //           const url = window.URL.createObjectURL(blob);
+    //           window.open(url, '_blank'); // Abre o PDF direto em uma nova aba
+    //         },
+    //         error: (err) => {
+    //           this.toastr.error('Erro ao gerar o relatório Livro Caixa Mensal.');
+    //           console.error(err);
+    //         }
+    //       });
+    //   }
     // },
     {
       // label: 'Ficha em branco',
@@ -439,7 +452,7 @@ export class PessoaListComponent implements OnInit {
   countNovos() {
     const situacaoCadastral = 'Ativo';
     this.pessoaService.countNovos(this.igrejaId, situacaoCadastral)
-    .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe(
         response => {
           response ? this.totalNovos = response.length : 0;
@@ -447,11 +460,26 @@ export class PessoaListComponent implements OnInit {
         () => { });
   }
 
+  imprimirFichaMembro(id: any) {
+      //Relatórios da Segunda Fabrica Estatica/Consolidada - Agora basta criar o relatorio no jasper e passar o nome junto com o filtro
+        this.pessoaService.gerarFichaMembro(id)
+          .subscribe({
+            next: (blob) => {
+              const url = window.URL.createObjectURL(blob);
+              window.open(url, '_blank'); // Abre o PDF direto em uma nova aba
+            },
+            error: (err) => {
+              this.toastr.error('Erro ao gerar o relatório Livro Caixa Mensal.');
+              console.error(err);
+            }
+          });
+  }
+
   countCongregadosAtivos() {
     const tipoMembro = 'Congregado';
     const situacaoCadastral = 'Ativo';
     this.pessoaService.countMembrosAtivosFromIgreja(this.igrejaId, situacaoCadastral, tipoMembro)
-    .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe(
         response => {
           response ? this.totalCongregados = response : 0;

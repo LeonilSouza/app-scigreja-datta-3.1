@@ -900,13 +900,7 @@ export class LancamentoListFormComponent implements OnInit {
     const data_americana = this.sharedService.formataDataUS(this.dtinicio);
     const data_subtraida = this.sharedService.dataSubDay(data_americana, 1);
     this.dataDiaAnterior = data_subtraida;
-    // this.getTotalSaldoAnterior();
-
-    // if (this.valorTpLancamento === 'Todas') {
-    //   this.filtro.incluirPermuta = 'true'.toString();
-    // } else {
-    //   this.filtro.incluirPermuta = 'false'.toString();
-    // }
+  
     this.refreshAll(); // Chama Grid + Totalizações
   }
 

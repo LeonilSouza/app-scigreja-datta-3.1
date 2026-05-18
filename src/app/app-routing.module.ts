@@ -107,6 +107,10 @@ const routes: Routes = [
         path: 'lancamentos',
         loadChildren: () => import('./pages/financeiro/lancamento/lancamento.routes').then((module) => module.LANCAMENTO_ROUTES),
       },
+      {
+        path: 'dashboard-finance',
+        loadChildren: () => import('./pages/financeiro/lancamento/lancamento.routes').then((module) => module.LANCAMENTO_ROUTES),
+      },
        {
         path: 'contas-pagar',
         loadChildren: () => import('./pages/financeiro/contas-pagar/contas-pagar.routes').then((module) => module.CONTAS_PAGAR_ROUTES),

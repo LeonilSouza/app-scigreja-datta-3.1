@@ -14,7 +14,7 @@ export class PessoaService {
   private apiPath: string = `${API_CONFIG.baseUrl}/pessoas`;
 
   constructor(
-    public http: HttpClient  ) { }
+    public http: HttpClient) { }
 
   // Page
   getByPagePessoasFromIgreja(igrejaId: number, nomeSemAcento: string, situacaoCadastral: string, page: number, linesPerPage: any) {
@@ -31,7 +31,7 @@ export class PessoaService {
     return this.http.get(`${API_CONFIG.baseUrl}/pessoas/obreiros/?igreja=${igrejaId}&situacaoCadastral=${situacaoCadastral}&tipoMembro=${tipoMembro}`)
       .pipe(
         catchError(this.handleError)
-    );
+      );
   }
 
   getPessoasAtivasFromIgreja(igrejaId: number, situacaoCadastral: string) {
@@ -39,7 +39,7 @@ export class PessoaService {
     return this.http.get(`${API_CONFIG.baseUrl}/pessoas/list/?igreja=${igrejaId}&situacaoCadastral=${situacaoCadastral}`)
       .pipe(
         catchError(this.handleError)
-    );
+      );
   }
 
   getPessoasAtivasTransferidasIgreja(igrejaId: number, situacaoCadastral: string) {
@@ -47,7 +47,7 @@ export class PessoaService {
     return this.http.get(`${API_CONFIG.baseUrl}/pessoas/ativo_transferido/?igreja=${igrejaId}&situacaoCadastral=${situacaoCadastral}`)
       .pipe(
         catchError(this.handleError)
-    );
+      );
   }
 
   upload(pessoa: PessoaDTO, formData: FormData): Observable<any> {
@@ -74,14 +74,14 @@ export class PessoaService {
 
   listaObreiros(id: number) {
     return this.http.get(`${API_CONFIG.baseUrl}/reports/?igreja=${id}`)
-}
+  }
 
-y: any
-  countMembrosAtivosFromIgreja(igrejaId: number, situacaoCadastral: string,  tipoMembro: string) {
+  y: any
+  countMembrosAtivosFromIgreja(igrejaId: number, situacaoCadastral: string, tipoMembro: string) {
     return this.http.get(`${API_CONFIG.baseUrl}/pessoas/count/?igreja=${igrejaId}&situacaoCadastral=${situacaoCadastral}&tipoMembro=${tipoMembro}`)
       .pipe(
         catchError(this.handleError)
-    );
+      );
   }
 
   countObreirosAtivosFromIgreja(igrejaId: any, situacaoCadastral: any, tipoMembro: any) {
@@ -98,11 +98,11 @@ y: any
       );
   }
 
-  countCongregadosAtivosFromIgreja(igrejaId: any, situacaoCadastral: any,  tipoMembro: any) {
+  countCongregadosAtivosFromIgreja(igrejaId: any, situacaoCadastral: any, tipoMembro: any) {
     return this.http.get(`${API_CONFIG.baseUrl}/pessoas/count/?igreja=${igrejaId}&situacaoCadastral=${situacaoCadastral}&tipoMembro=${tipoMembro}`)
       .pipe(
         catchError(this.handleError)
-    );
+      );
   }
 
   create(pessoa: PessoaDTO) {
@@ -154,17 +154,17 @@ y: any
     return this.http.get(`${API_CONFIG.baseUrl}/documentos/list/?igreja=${igrejaId}&pessoa=${pessoaId}&name=${name}`)
       .pipe(
         catchError(this.handleError)
-    );
+      );
   }
 
-  // resetPagina() {
-  //  window.onbeforeunload = function (e) {
-  //   e = e || window.event;
-  //   e.preventDefault = true;
-  //   e.cancelBubble = true;
-  //   e.returnValue = 'Se você sair agora desta atividade, poderaá perder dados não salvos';
-  //       }
-  //   }
+  // RELATORIOS
+
+  gerarFichaMembro(id: number): Observable<Blob> {
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/pessoas/${id}/ficha-membro`, {
+      responseType: 'blob'
+    });
+  }
+
 
   // PRIVATE METHODS
 
