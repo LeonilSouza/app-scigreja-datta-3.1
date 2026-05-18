@@ -112,6 +112,10 @@ const routes: Routes = [
         loadChildren: () => import('./pages/financeiro/lancamento/lancamento.routes').then((module) => module.LANCAMENTO_ROUTES),
       },
        {
+        path: 'auditoria-caixa',
+        loadChildren: () => import('./pages/financeiro/administracao/log-exclusao.routes').then((module) => module.AUDITORIA_ROUTES),
+      },
+       {
         path: 'contas-pagar',
         loadChildren: () => import('./pages/financeiro/contas-pagar/contas-pagar.routes').then((module) => module.CONTAS_PAGAR_ROUTES),
       },
