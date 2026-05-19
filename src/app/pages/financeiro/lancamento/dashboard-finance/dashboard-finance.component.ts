@@ -45,8 +45,8 @@ export class DashboardFinanceComponent implements OnInit {
   filtro = {
     igrejaId: this.setorId, // Substitua pelo ID real da sessão do usuário
     setorId: this.setorId,
-    dtinicio: '01/04/2026', // Exemplo de período mensal cheio
-    dtfim: '30/04/2026'
+    dtinicio: '01/05/2026', // Exemplo de período mensal cheio
+    dtfim: '30/05/2026'
   };
 
   constructor(private lancamentoService: LancamentoService) { }
