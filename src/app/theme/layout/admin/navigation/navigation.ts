@@ -59,6 +59,13 @@ export const NavigationItems: NavigationItem[] = [
             breadcrumbs: true,
           },
           {
+            id: 'secretaria-assinar',
+            title: 'Assinar documentos',
+            type: 'item',
+            url: '/assinar-documentos',
+            breadcrumbs: true,
+          },
+          {
             id: 'secretaria-tratamento-caso',
             title: 'Tratamento de caso',
             type: 'item',

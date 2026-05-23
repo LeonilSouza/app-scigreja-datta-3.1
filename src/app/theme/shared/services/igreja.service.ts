@@ -34,10 +34,17 @@ export class IgrejaService {
       );
   }
 
-  upload(igreja: IgrejaDTO, formData: FormData): Observable<any> {
+  uploadLogo(igreja: IgrejaDTO, formData: FormData): Observable<any> {
     const url = `${this.apiPath}/${igreja.id}/logo`;
     return this.http.put(url, formData, { responseType: 'blob' });
   }
+
+  uploadAssinatura(id: any, file: File): Observable<void> {
+    const formData = new FormData();
+    formData.append('file', file); // Vincula o arquivo binário à chave 'file' esperada pelo Java
+
+    return this.http.put<void>(`${API_CONFIG.baseUrl}/igrejas/${id}/upload-assinatura`, formData);
+}
 
 
   getByIgrejaFromSetor(setor_id: number) {

@@ -42,6 +42,7 @@ import { PaisService } from "src/app/theme/shared/services/pais.service";
 import { CidadeService } from "src/app/theme/shared/services/cidade.service";
 import { nomeIgrejaSignal, perfilSignal } from "src/app/theme/shared/_helpers/shared-signals";
 import { DatePicker } from "primeng/datepicker";
+import { FileUploadModule } from 'primeng/fileupload';
 
 //declare const $: any;
 
@@ -64,6 +65,7 @@ import { DatePicker } from "primeng/datepicker";
     ImageCropperModule,
     SelectModule,
     DatePicker,
+    FileUploadModule
     // JsonPipe,
   ],
   providers: [
@@ -224,6 +226,7 @@ export class IgrejaFormComponent
       numero: [null],
       complemento: [null],
       logo: [null],
+      assinaturaPastor: [null],
       bairro: [null],
       cep: ["", [Validators.minLength(8), Validators.maxLength(9)]],
       tipo: [null, [Validators.required]],
@@ -358,43 +361,81 @@ export class IgrejaFormComponent
   //cropper - cortar imagem
 
   uploadLogo(IgrejaDTO: IgrejaDTO) {
-    if (this.croppedImage) {
-      // Imagem base64 no formato png
-      this.convertPngToJpeg(this.croppedImage); // Enviada para ser convertida em para o formato jpeg ou jpg. Formatos diferentes somente no nome
-      let numero = "data:image/jpeg;base64,";
-      let N = numero.length;
+  // Garante que existe uma imagem cortada para enviar
+  if (!this.croppedImage) return;
 
-      const base64 = this.croppedImage.substr(N, this.croppedImage.length); //Retira estes dados da imagem "data:image/png;base64"
-      const nome = this.igrejaLogo.nome;
-      const nome_sem_espacos = nome?.replace(/ /g, "_"); // regex que substitui todos os espaços por _
+  try {
+    // 1. O PULO DO GATO SEGURO: Divide a string no caractere ',' 
+    // Isola o cabeçalho ("data:image/png;base64") dos dados brutos em base64 de forma infalível
+    const partesBase64 = this.croppedImage.split(',');
+    const base64Dados = partesBase64[1];
+    
+    // Detecta o tipo real da imagem (png, jpeg, etc.) direto do cabeçalho
+    const tipoImagem = partesBase64[0].match(/:(.*?);/)?.[1] || 'image/png';
 
-      const imageName = nome_sem_espacos + ".jpeg"; // Tanto faz jpeg ou jpg
-      const imageBlob = this.dataURItoBlob(base64);
-      const imageFile = new File([imageBlob], imageName, {
-        type: "image/jpeg",
+    // 2. Higienização do nome do arquivo utilizando Expressão Regular (Regex)
+    const nomeOriginal = this.igrejaLogo?.nome || 'logo_igreja';
+    const nomeLimpo = nomeOriginal.trim().replace(/\s+/g, "_"); // Substitui QUALQUER quantidade de espaços por um único "_"
+    const extensao = tipoImagem.split('/')[1]; // Captura 'png' ou 'jpeg' dinamicamente
+    const nomeArquivoFinal = `${nomeLimpo}.${extensao}`;
+
+    // 3. Converte a string Base64 em um arquivo físico aceito pelo Java MultipartFile
+    const imageBlob = this.dataURItoBlob(base64Dados);
+    const imageFile = new File([imageBlob], nomeArquivoFinal, { type: tipoImagem });
+
+    // 4. VALIDAÇÃO DE TAMANHO REALISTA (Bloqueia apenas se passar de 1MB)
+    const limiteUmMegabyte = 1024 * 1024; // 1.048.576 bytes
+    if (imageFile.size > limiteUmMegabyte) {
+      this.messageService.add({
+        severity: "error",
+        summary: "Erro",
+        detail: "A imagem do logotipo é muito grande. O limite máximo permitido é 1MB.",
       });
-
-      const tamanhoImagem = imageFile.size;
-
-      if (tamanhoImagem > 10000) {
-        this.messageService.add({
-          severity: "error",
-          summary: "Erro",
-          detail: "Imagem muito grande",
-        });
-      } else {
-        const logo = imageFile;
-        const formData: FormData = new FormData();
-        formData.append("logo", logo);
-        this.igrejaService.upload(IgrejaDTO, formData).subscribe(() => {
-          this.loadIgreja();
-          this.croppedImage = null;
-          this.imageChangedEvent = null;
-          this.toastr.success("Registro cadastrado com sucesso", "Cadastro");
-        });
-      }
+      return;
     }
+
+    // 5. ENVIO ATÔMICO PARA O BACK-END
+    const formData: FormData = new FormData();
+    formData.append("logo", imageFile); // Certifique-se de que a chave coincide com o seu @RequestParam do Java
+
+    this.igrejaService.uploadLogo(IgrejaDTO, formData).subscribe({
+      next: () => {
+        // Reseta os estados visuais da tela após o sucesso
+        this.loadIgreja();
+        this.croppedImage = null;
+        this.imageChangedEvent = null;
+        this.toastr.success("Logotipo da congregação atualizado com sucesso!", "Cadastro");
+      },
+      error: (err) => {
+        this.toastr.error("Falha ao sincronizar o logotipo com o servidor.");
+        console.error(err);
+      }
+    });
+
+  } catch (error) {
+    this.toastr.error("Erro interno ao processar a imagem do logotipo.");
+    console.error('Erro no processamento do Base64:', error);
   }
+}
+
+onUploadAssinatura(event: any) {
+  // 1. Captura o arquivo binário enviado pelo p-fileUpload do PrimeNG
+  const arquivo: File = event.files[0]; 
+
+  // 2. O seu service de igreja espera o ID e o Arquivo: uploadAssinatura(id, file)
+  // Nós passamos o 'this.igrejaId' que já está guardado na classe!
+  if (arquivo && this.igreja) {
+    this.igrejaService.uploadAssinatura(this.igreja.id, arquivo).subscribe({
+      next: () => {
+        this.toastr.success('Assinatura digital do pastor salva com sucesso!', 'Sucesso');
+      },
+      error: (err) => {
+        this.toastr.error('Erro ao fazer o upload da assinatura no servidor.');
+        console.error(err);
+      }
+    });
+  }
+}
 
   dataURItoBlob(dataURI: string) {
     const byteString = window.atob(dataURI);

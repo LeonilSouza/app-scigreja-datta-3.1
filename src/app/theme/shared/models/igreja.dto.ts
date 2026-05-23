@@ -18,6 +18,7 @@ export class IgrejaDTO {
        public pais?: string,
        public cidade?: string,
        public logo?: string,
+       public assinaturaPastor?: string,
        public tipo?: string,
        public tipoPessoa?: string,
        public uf?: string,

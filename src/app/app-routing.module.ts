@@ -79,6 +79,10 @@ const routes: Routes = [
         loadChildren: () => import('./pages/carta/carta.routes').then((module) => module.CARTA_ROUTES),
       },
       {
+        path: 'assinar-documentos',
+        loadChildren: () => import('./pages/assinar-documentos/assinar-documento.routes').then((module) => module.ASSINAR_DOCUMENTO_ROUTES),
+      },
+      {
         path: 'casos',
         loadChildren: () => import('./pages/caso/caso.routes').then((module) => module.CASO_ROUTES),
       },
@@ -111,15 +115,15 @@ const routes: Routes = [
         path: 'dashboard-finance',
         loadChildren: () => import('./pages/financeiro/lancamento/lancamento.routes').then((module) => module.LANCAMENTO_ROUTES),
       },
-       {
+      {
         path: 'auditoria-caixa',
         loadChildren: () => import('./pages/financeiro/administracao/log-exclusao.routes').then((module) => module.AUDITORIA_ROUTES),
       },
-       {
+      {
         path: 'contas-pagar',
         loadChildren: () => import('./pages/financeiro/contas-pagar/contas-pagar.routes').then((module) => module.CONTAS_PAGAR_ROUTES),
       },
-      
+
       // {
       //   path: 'casos',
       //   loadChildren: () =>

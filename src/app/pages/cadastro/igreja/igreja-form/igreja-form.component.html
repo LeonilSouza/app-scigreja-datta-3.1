@@ -100,7 +100,7 @@
         (click)="this.activeTab = 'documentos'" id="documentos-tab" data-toggle="tab" href="javascript:" role="tab"
         aria-controls="documentos" aria-selected="false">
         <i class="fas fa-book mr-2 text-c-yellow"></i>
-        Documentos
+        Assinatura
       </a>
     </li>
     }
@@ -110,7 +110,7 @@
         (click)="this.activeTab = 'outros'" id="outros-tab" data-toggle="tab" href="javascript:" role="tab"
         aria-controls="outros" aria-selected="false">
         <i class="fas fa-plus mr-2 text-c-red"></i>
-        Outros
+        Documentos
       </a>
     </li>
     }
@@ -511,7 +511,24 @@
       <!-- ABA DOCUMENTOS  -->
       <div class="tab-pane fade" [ngClass]="{ 'show active': this.activeTab === 'documentos' }" id="documentos"
         role="tabpanel" aria-labelledby="documentos-tab">
-        Documentos falta criar Tabela no banco e componenetes no Angular
+
+        <div class="card shadow-sm border-0 p-4 mt-4">
+          <h5 class="font-medium text-secondary mb-2"><i class="pi pi-pencil mr-2"></i> Assinatura Digital do Pastor
+            Presidente</h5>
+          <p class="text-muted small mb-4">Insira o arquivo da assinatura escaneada com fundo transparente no formato
+            .PNG.</p>
+
+          <div class="row">
+            <div class="col-12 col-md-8">
+              <!-- Componente do PrimeNG para seleção e envio de arquivos -->
+              <p-fileUpload mode="advanced" chooseLabel="Selecionar Assinatura" uploadLabel="Enviar para o Sistema"
+                cancelLabel="Cancelar" accept="image/png" maxFileSize="1000000" customUpload="true"
+                (uploadHandler)="onUploadAssinatura($event)">
+              </p-fileUpload>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <!-- ABA OUTROS  -->
