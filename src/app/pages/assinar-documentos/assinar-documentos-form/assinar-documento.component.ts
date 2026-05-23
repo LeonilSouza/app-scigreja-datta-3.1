@@ -38,7 +38,7 @@ export class AssinarDocumentoComponent {
  // Coordenadas calculadas em tempo real pelo arrastar do mouse
   coordenadaX: number = 50; 
   coordenadaY: number = 50;
-  larguraAssinatura: number = 250;
+  larguraAssinatura: number = 200;
 
   // Armazena a imagem da própria assinatura do pastor para mostrar no quadradinho arrastável
   urlAssinaturaPastor: string = '';

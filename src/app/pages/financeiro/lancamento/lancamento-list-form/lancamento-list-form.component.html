@@ -236,8 +236,9 @@
                                                     }}</td>
                                                 <td class="col-data-rigth-100 py-2 "
                                                     style=" font-size: 13px; height: 27px;"
-                                                    [style.color]="conta.totalConta >= 0  ? 'green' : 'red'">
-                                                    {{ conta.totalConta | currency: ' ' }}<br></td>
+                                                    [style.color]="conta.saldoCalculado >= 0  ? 'green' : 'red'">
+                                                    <!-- <span class="saldo-valor">R$ {{ conta.saldoCalculado | number: '1.2-2' }}</span> -->
+                                                    {{ conta.saldoCalculado | number: '1.2-2' }}<br></td>
                                             </tr>
                                             }
                                         </tbody>
