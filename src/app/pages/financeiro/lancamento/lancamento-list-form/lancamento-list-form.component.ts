@@ -365,11 +365,17 @@ export class LancamentoListFormComponent implements OnInit {
           this.contas = res.contas;
           this.loadContasTransferencia();
           this.contasTransferencia = res.contas;
-          res.contas.map((t: { totalConta: number; }) => {
-            total += t.totalConta;
-            this.saldoFinalContas = total;
-          })
+          let total = 0; // Garante que a variável nasce zerada antes de somar
 
+          res.contas.map((t: { saldoCalculado: number; }) => {
+            if (t.saldoCalculado) {
+              total += t.saldoCalculado;
+            }
+          });
+
+           // Atualiza o painel superior com a somatória geral das contas limpa
+          this.saldoFinalContas = total;
+          
           let ids = res.contas.map((c: { id: any; }) => c.id).join(',');
           this.contaIds = ids;
           this.filtro.contas = ids;
