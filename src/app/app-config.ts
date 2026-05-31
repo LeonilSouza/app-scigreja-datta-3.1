@@ -19,6 +19,7 @@ export class ThemeConfig {
   static isNavListTitleHide = false; // false, true
   static layout_6_Background = 'linear-gradient(to right, #ffffffff 0%, #04a9f5 100%)'; // used only for pre-layout = layout-6
   static i18n = 'en'; // en, fr, ro, cn
+  
 }
 
 export const API_CONFIG = {
