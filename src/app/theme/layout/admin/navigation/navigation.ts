@@ -169,7 +169,7 @@ export const NavigationItems: NavigationItem[] = [
         title: 'Cargos departamentais',
         type: 'item',
         icon: 'feather icon-book',
-        url: '/lancamentocargodeptos',
+        url: '/cargos-deptos',
         breadcrumbs: true,
       },
       // departamentais fim

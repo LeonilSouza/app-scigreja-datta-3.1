@@ -59,7 +59,7 @@ const routes: Routes = [
         loadChildren: () => import('./pages/cadastro/modelo-documento/modelo-documento-routes').then((module) => module.MODELO_DOCUMENTO_ROUTES),
       },
       {
-        path: 'lancamentocargodeptos',
+        path: 'cargos-deptos',
         loadChildren: () => import('./pages/lancamento-cargo-depto/lancamento-cargo.routes').then((module) => module.LANCAMENTO_CARGO_ROUTES),
       },
       {

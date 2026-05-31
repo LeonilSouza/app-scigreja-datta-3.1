@@ -17,7 +17,7 @@ export class PessoaService {
     public http: HttpClient) { }
 
   // Page
-  getByPagePessoasFromIgreja(igrejaId: number, nomeSemAcento: string, situacaoCadastral: string, page: number, linesPerPage: any) {
+  getByPagePessoasFromIgreja(igrejaId: any, nomeSemAcento: string, situacaoCadastral: string, page: number, linesPerPage: any) {
 
     return this.http.get(`${API_CONFIG.baseUrl}/pessoas/?igreja=${igrejaId}&nomeSemAcento=${nomeSemAcento}&situacaoCadastral=${situacaoCadastral}&page=${page}&linesPerPage=${linesPerPage}`)
       .pipe(

@@ -374,7 +374,7 @@
                         style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
                         <b>Natureza</b>
                     </th>
-                    <th class="col-data-100 py-2"
+                    <th class="col-data-rigth-150 py-2"
                         style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
                         <b>Valor R$</b>
                     </th>
@@ -407,14 +407,15 @@
                         lancamento.tipoLancamento }}<br>
                     </td>
                     <!-- Impressão Disabled -->
-                    <td class="col-data-rigth-100 py-1" style=" font-size: 13px;" [style.color]="lancamento.tipoLancamento === 'Receita' ? 'green' : 
+                    <td class="col-data-rigth-150 py-1" style=" font-size: 13px;" [style.color]="lancamento.tipoLancamento === 'Receita' ? 'green' : 
                     lancamento.tipoLancamento === 'Despesa' ? 'red' : 
                     lancamento.tipoLancamento === 'Livro Caixa' ? 'purple' : 'blue'">
                         {{ lancamento.valor | currency:' '}}<br></td>
 
                     <!-- Editar -->
                     <td class="col-acoes-4-botao py-1">
-                        <button [disabled]="lancamento.nome == 'Transferencia' || lancamento.nome == 'Permuta'" (click)="limpaCheckbox();  lancamento.nome == 'Transferencia' ? visibleModalTransferencia = true : 
+                        <button [disabled]="lancamento.nome == 'Transferencia' || lancamento.nome == 'Permuta'" (click)="limpaCheckbox();
+                            lancamento.nome == 'Transferencia' ? visibleModalTransferencia = true : 
                             lancamento.nome == 'Permuta' ? visibleModalPermuta = true : visibleLancamento = true; 
                             loadLancamento(lancamento); setModalEdicao(lancamento.tipoLancamento) " type="button"
                             class="btn btn-icon  btn-outline-success p-1 mb-0 mt-0 "

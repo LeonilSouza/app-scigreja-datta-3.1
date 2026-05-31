@@ -34,8 +34,8 @@
         <!--Fim pesquisa departamentos  -->
 
         <span class="col-sm-8 ">
-            <p-button routerLink="new" type="button" severity="success" class="float-end" label="Novo" [style]="{'height':'30px', 'background':'#388669'}"
-                size="small" icon="pi pi-check" />
+            <p-button routerLink="new" type="button" severity="success" class="float-end" label="Novo"
+                [style]="{'height':'30px', 'background':'#388669'}" size="small" icon="pi pi-check" />
         </span>
 
     </div>
@@ -59,6 +59,12 @@
                             style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
                             <b>Nome</b>
                         </th>
+
+                        <th
+                            style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                            <b>Nome do Conjunto</b>
+                        </th>
+
                         <th class="col-acoes-header"
                             style="font-size: 13px; background-color: rgb(77, 83, 90); color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-right-radius: 5px;">
                             Ações</th>
@@ -67,13 +73,14 @@
                 </ng-template>
 
                 <ng-template #body let-departamento>
-                    
+
                     @if(perfil !== 'ADMIN' && (departamento.igrejaId == igrejaId ||
                     departamento.igrejaId == null)){
                     <tr>
-                        <td class="col-data-100 py-1" style=" font-size: 13px">{{ departamento.id }}
-                        </td>
+                        <td class="col-data-100 py-1" style=" font-size: 13px">{{ departamento.id }}</td>
                         <td class="py-1" style=" font-size: 13px">{{ departamento.nome }}</td>
+                        <td class="py-1" style=" font-size: 13px">{{ departamento.nomeConjunto }}</td>
+
                         <td class="col-acoes-header py-1">
 
                             @if(perfil !== 'ADMIN' && (departamento.igrejaId == igrejaId )){
@@ -89,10 +96,10 @@
 
                     @if(perfil == 'ADMIN'){
                     <tr>
-                        <td class="col-data-100 py-1" style=" font-size: 13px">{{ departamento.id }}
-                        </td>
-                        <td class="py-1" style=" font-size: 13px;">{{ departamento.nome }}<br>
-                        </td>
+                        <td class="col-data-100 py-1" style=" font-size: 13px">{{ departamento.id }}</td>
+                          <td class="py-1" style=" font-size: 13px;">{{ departamento.nome }}<br></td>
+                          <td class="py-1" style=" font-size: 13px">{{ departamento.nomeConjunto }}</td>
+                       
                         <td class="col-acoes-header py-1">
                             <button [routerLink]="[departamento.id, 'edit']" type="button"
                                 class="btn btn-icon btn-outline-info p-1 mt-0 mb-0"

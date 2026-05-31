@@ -8,6 +8,16 @@
   }
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+.font-bold {
+  font-weight: 700;
+}
+.font-semibold {
+  font-weight: 600;
+}
+
 @media screen and (max-width: 40rem) {
   :host ::ng-deep {
       .p-datatable {
@@ -52,7 +62,7 @@ TEM que colocar no scss do componente*/
 :host ::ng-deep.p-select {
   align-items: center  !important;
   // width: 100% !important;
-  height: 32px !important;
+  height: 30px !important;
   border-radius: 4px !important;
   padding-bottom: 2px !important;
 }
@@ -65,7 +75,7 @@ TEM que colocar no scss do componente*/
 }
 
 :host ::ng-deep.p-select-filter {
-  max-height: 32px !important;
+  max-height: 30px !important;
 }
 //Fim select
 

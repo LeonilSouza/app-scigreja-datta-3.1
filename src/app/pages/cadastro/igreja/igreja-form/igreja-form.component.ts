@@ -3,6 +3,7 @@ import {
   Component,
   OnDestroy,
   OnInit,
+  signal,
 } from "@angular/core";
 import {
   FormBuilder,
@@ -43,6 +44,8 @@ import { CidadeService } from "src/app/theme/shared/services/cidade.service";
 import { nomeIgrejaSignal, perfilSignal } from "src/app/theme/shared/_helpers/shared-signals";
 import { DatePicker } from "primeng/datepicker";
 import { FileUploadModule } from 'primeng/fileupload';
+import { PessoaDTO } from "src/app/theme/shared/models/pessoa.dto";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 //declare const $: any;
 
@@ -83,6 +86,8 @@ export class IgrejaFormComponent
 
   nomeIgreja = nomeIgrejaSignal();
   perfil = perfilSignal();
+
+   pessoas = signal<PessoaDTO[]>([]);
 
   // Consulta CEP ViaCep
   dataCep!: any[];
@@ -163,7 +168,6 @@ export class IgrejaFormComponent
     public setorService: SetorService,
     // public cargoService: CargoService,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService,
     public translate: TranslateService,
     public pessoaService: PessoaService,
     private sharedService: SharedService,
@@ -177,11 +181,11 @@ export class IgrejaFormComponent
   //Fim Calendar PrimeNG
 
   ngOnInit(): void {
-    // this.igrejaId = GLOBALS.igrejaId;
     this.setCurrentAction();
     this.buildIgrejaForm();
     this.loadPaises();
     this.loadIgreja();
+    this.loadPessoas();
   }
 
   ngAfterContentChecked() {
@@ -227,6 +231,7 @@ export class IgrejaFormComponent
       complemento: [null],
       logo: [null],
       assinaturaPastor: [null],
+      pastorDirigente: [null],
       bairro: [null],
       cep: ["", [Validators.minLength(8), Validators.maxLength(9)]],
       tipo: [null, [Validators.required]],
@@ -357,6 +362,17 @@ export class IgrejaFormComponent
     // console.error("Load image failed");
   }
   //   fim cropped
+
+  loadPessoas() {
+    const situacaoCadastral = 'Ativo'
+    this.pessoaService.getPessoasAtivasFromIgreja(this.id, situacaoCadastral)
+      .subscribe({
+        next: (response) => {
+          this.pessoas.set(response);
+        },
+        error: () => { }
+      });
+  }
 
   //cropper - cortar imagem
 
@@ -489,9 +505,7 @@ onUploadAssinatura(event: any) {
     this.igrejaForm.controls["nome"].setValue(
       this.igrejaForm.controls["nome"].value.toUpperCase()
     );
-    const igreja: IgrejaDTO = Object.assign(
-      new IgrejaDTO(),
-      this.igrejaForm.value
+    const igreja: IgrejaDTO = Object.assign(new IgrejaDTO(), this.igrejaForm.value
     );
     this.igrejaService.update(igreja).subscribe({
       next: () => {

@@ -1,0 +1,265 @@
+Cards Estaticticas
+<section class="main-content">
+
+
+
+    <div class="card-border-c-blue row col-12 mb-2 border-2 shadow py-2 m-l-0">
+
+        <!-- Filtrar por departamento -->
+
+        <span class="col-sm-3 mb-2">
+            <label class="f-13">Filtrar po departamento</label>
+            <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangeDepartamento($event)"
+                class="w-full md  " [options]="departamentos()" [editable]="false" [filter]="false" filterBy="nome"
+                [showClear]="false" optionLabel="nome" resetFilterOnHide="true" dateFormat="dd/mm/yy"
+                dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id" placeholder="Todos" appendTo="body" />
+        </span>
+
+        <!-- Filtrar por cargo -->
+        <span class="col-sm-2 mb-2">
+            <label class="f-13">Filtrar por Cargo</label>
+            <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangeDepartamento($event)"
+                class="w-full md  " [options]="cargos()" [editable]="false" [filter]="false" filterBy="nome"
+                [showClear]="false" optionLabel="nome" resetFilterOnHide="true" dateFormat="dd/mm/yy"
+                dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id" placeholder="Todos" appendTo="body" />
+        </span>
+
+
+        <!-- Filtrar por membro -->
+        <span class="col-sm-4 mb-2">
+            <label class="f-13">Filtrar por Membro</label>
+            <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangeDepartamento($event)"
+                class="w-full md  " [options]="pessoas()" [editable]="false" [filter]="false" filterBy="nome"
+                [showClear]="false" optionLabel="nome" resetFilterOnHide="true" dateFormat="dd/mm/yy"
+                dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id" placeholder="Todos" appendTo="body" />
+        </span>
+
+
+        <span class="col-sm-1 mt-4 ">
+            <p-button class="float-end " icon="pi pi-plus"
+                (click)="imodo.set(0); setModalInclusao(); visibleLancamentoCargo = true;"
+                [style]="{'height':'32px',  'border-radius':'6px' }" severity="success" label=" Novo    "
+                size="small" />
+        </span>
+
+        <span class=" col-sm-2  mt-4">
+            <p-splitButton class="float-end " label="Relatórios" icon="pi pi-print" [model]="printItems"
+                severity="contrast" size="small" [style]="{'height':'32px',  'border-radius':'6px' }" />
+        </span>
+
+    </div>
+
+    <app-card [hidHeader]="true" cardTitle="" cardClass="card-border-c-blue shadow  border-1">
+        <div class="p-0">
+            <p-table #dtLancamentoCargo [value]="lancamentoCargos()" [lazy]="true" [rows]="filtro.linesPerPage"
+                responsiveLayout="stack" (onLazyLoad)="loadLancamentoCargoLazy($event)" [showCurrentPageReport]="true"
+                [totalRecords]="totalRegistros" showGridlines stripedRows [rowsPerPageOptions]="[6, 10, 20, 30, 50]"
+                [tableStyle]="{ 'min-width': '30rem' }"
+                currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros " [paginator]="true"
+                emptyMessage="Nenhum registro encontrado" selectionMode="multiple">
+
+                <ng-template #header>
+                    <tr>
+
+                        <th class="f-12 col-data-content-4"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                            <b>Nome</b>
+                        </th>
+
+                        <th class="col-data-content-4"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px">
+                            <b>Departamento</b>
+                        </th>
+
+                        <th class="col-data-content-4"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px">
+                            <b>Nome Conjunto</b>
+                        </th>
+
+                        <th class="col-data-content-4"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px">
+                            <b>Cargo / Função</b>
+                        </th>
+
+                        <th class="col-date py-2"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                            <b>Data Posse</b>
+                        </th>
+
+                        <th class="col-data-200"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                            <b>Status</b>
+                        </th>
+
+                        <th class="col-acoes py-2"
+                            style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; ; border-top-right-radius: 5px">
+                            <b>Ações</b>
+                        </th>
+
+                    </tr>
+                </ng-template>
+
+                <ng-template #body let-lancamentoCargo>
+                    <tr>
+                        <td class="col-data-content-4 py-2 text-capitalize" style="font-size: 13px; cursor: pointer; ">
+                            {{
+                            lancamentoCargo.nomePessoa.toLowerCase()
+                            }}</td>
+
+                        <td class="col-data-content-4 py-2" style=" font-size: 13px; cursor: pointer;">{{
+                            lancamentoCargo.nomeDepartamento
+                            }}
+                        </td>
+
+                        <td class="col-data-content-4 py-2" style=" font-size: 13px; cursor: pointer;">{{
+                            lancamentoCargo.nomeConjunto
+                            }}
+                        </td>
+
+                        <td class="col-data-content-4 py-2 " style="font-size: 13px; cursor: pointer ">{{
+                            lancamentoCargo.nomeCargo}}</td>
+
+
+                        <td class="col-date py-2 " style="font-size: 13px; cursor: pointer ">{{
+                            lancamentoCargo.dataPosse}}</td>
+
+
+                        <td class="col-data-200 py-2 " style="font-size: 13px; cursor: pointer ">{{
+                            lancamentoCargo.status === 'ATIVO' ? '✅ Ativo' :'❌Inativo'
+                            }}</td>
+
+                        <td class="col-acoes-header py-1">
+                            <!-- setModalEdicao(lancamento.tipoLancamento) -->
+                            <button visibleLancamentoCargo=true
+                                (click)="imodo.set(0); loadLancamentoCargo(lancamentoCargo); visibleLancamentoCargo = true; setModalEdicao()"
+                                type="button" class="btn btn-icon  btn-outline-success p-1 mb-0 mt-0 "
+                                [style]="{'margin-right': '10px','height': '26px', 'width': '26px'} "
+                                [placement]="'top'" ngbTooltip="Editar">
+                                <i class="pi pi-pencil"></i>
+                            </button>
+
+                            <button (click)="exclusaoLancamentoCargo(lancamentoCargo)" type="button"
+                                class="btn btn-icon btn-outline-danger p-1 mt-0 mb-0"
+                                [style]="{'height': '26px', 'width': '26px'} " [placement]="'top'" ngbTooltip="Excluir">
+                                <i class="pi pi-trash"></i>
+                            </button>
+
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </app-card>
+
+    <!-- MODAL LANÇAMENTOS/CARGO INICIO -->
+
+    <form [formGroup]="lancamentoCargoForm" autocomplete="off" (submit)="submitForm()">
+        <div class="col-md-12 col-xl-12" data-backdrop="static">
+
+            <div class="card flex justify-center">
+                <p-dialog header="LANÇAMENTO DE - {{  pageTitle }}" [modal]="true" [(visible)]="visibleLancamentoCargo"
+                    [position]="positionLancamentoCargo" [dismissableMask]="false"
+                    [style]="{width: '40vw', 'min-height': '30vh', height: 'auto'}" [closeOnEscape]="false"
+                    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false"
+                    [contentStyle]="{ 'overflow': 'visible' }" [transitionOptions]="'500ms ease-out'">
+                    <hr class="mt-1 mb-2">
+                    <!-- Modal Body Inicio -->
+                    <div class="row ">
+
+                        <!-- Data da posse-->
+                        <span class="col-sm-4 mb-0 mt-2 mb-1 ">
+                            <label class="mb-1">Data da posse</label>
+                            <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
+                                [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
+                                inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
+                                formControlName="dataPosse" appendTo="body" />
+
+                        </span>
+
+
+                        <!-- Departamento-->
+                        <span class="col-sm-4 mb-0 mt-2 mb-1 ">
+                            <label class="mb-1">Departamento</label>
+                            <!-- <span class=" col-sm-3 mt-0 "> -->
+                            <p-select (onChange)="onChangeDepartamento($event)" [options]="departamentos()"
+                                formControlName="departamentoId" [editable]="false" [filter]="true" filterBy="nome"
+                                placeholder="Selecione um departamento" [style]="{'width':'100%','height':'30px'}"
+                                [showClear]="false" optionLabel="nome" resetFilterOnHide="true" class=""
+                                dropdownIcon="pi pi-server" optionValue="id" [autofocus]="false" />
+                            <!-- </span> -->
+
+                        </span>
+
+                        <!-- Nome do Conjunto -->
+                        <span class="col-sm-4 mb-0 mt-2 mb-1 ">
+                            <label class="mb-1">Nome do Conjunto</label>
+                            <input type="text" class="form-control" formControlName="nomeConjunto"
+                                placeholder="Nome do Conjunto">
+                        </span>
+
+                        <!-- Cargo-->
+                        <span class="col-sm-5 mb-0 mt-2 mb-1 ">
+                            <label class="mb-1">Cargo</label>
+                            <span class=" col-sm-3 mt-0 ">
+                                <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangeCargos($event)"
+                                    [options]="cargos()" [editable]="false" [filter]="true" filterBy="nome"
+                                    formControlName="cargoId" [showClear]="false" optionLabel="nome"
+                                    resetFilterOnHide="true" class="" dropdownIcon="pi pi-cog" optionValue="id"
+                                    [autofocus]="false" placeholder="Selecione um cargo" />
+                            </span>
+
+                        </span>
+
+                        <!-- Membro-->
+                        <span class="col-sm-7 mb-0 mt-2 mb-3 ">
+                            <label class="mb-1">Membro</label>
+                            <span class=" col-sm-3 mt-0 ">
+                                <p-select [style]="{'width':'100%','height':'30px'}"
+                                    (onChange)="onChangePessoas($event)" [options]="pessoas()" [editable]="false"
+                                    [filter]="true" filterBy="nome" formControlName="pessoaId" [showClear]="false"
+                                    optionLabel="nome" resetFilterOnHide="true" class="" dropdownIcon="pi pi-user"
+                                    optionValue="id" [autofocus]="false" placeholder="Selecione um membro" />
+                            </span>
+
+                        </span>
+
+                        <!-- Status -->
+                        <span class="col-sm-4 mb-0 mt-2 mb-3 ">
+                            <label for="situacao">Status</label>
+                            <p-select [style]="{'width':'100%','height':'30px'}" formControlName="status" [options]="status" [editable]="false" [filter]="false"
+                                filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="true"
+                                dropdownIcon="pi pi-chevron-down" optionValue="nome" [autofocus]="true"
+                                placeholder="Selecione..." />
+                        </span>
+
+                    </div>
+
+                    <hr class="mt-1 mb-2">
+
+                    <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
+                    <div class="modal-footer py-1" style="height: 38px;">
+
+                        <!-- Fechar -->
+                        <button data-dismiss="modal" type="button" class=" mx-4 mb-2 " pButton pRipple
+                            (click)="visibleLancamentoCargo = false" label="Fechar" style="width: 9em; height: 30px; font-size: small;
+                          border-radius: 6px; border: 0;background: #1a82ce;" icon='pi pi-wallet'>
+                        </button>
+
+                        <!-- Salvar -->
+                        <strong><button [disabled]="lancamentoCargoForm.invalid" type="submit" imodo="0"
+                                class=" float-end mb-2" pButton pRipple label="Salvar"
+                                style="width: 9em; border: 0;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
+                                icon='pi pi-check'>
+                            </button></strong>
+
+                    </div>
+                </p-dialog>
+            </div>
+            <!-- <div class="row ">
+                <div class="form-group ">
+                    <pre> {{lancamentoCargoForm.value | json}} </pre><br>
+                </div>
+            </div> -->
+        </div>
+
+    </form>

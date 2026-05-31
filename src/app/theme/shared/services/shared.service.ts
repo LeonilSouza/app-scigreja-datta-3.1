@@ -281,10 +281,21 @@ export class SharedService {
     return (moment().format('LLLL'));
   }
 
+  // Formata Strings com a primeira maiúscula de forma totalmente blindada contra erros
+  formataNome(nome: any): string {
+    // 🔥 O PULO DO GATO: Se o valor for nulo, vazio ou não for um texto de verdade, 
+    // retorna um texto vazio imediatamente sem tentar rodar o .toLowerCase()
+    if (!nome || typeof nome !== 'string') {
+      return '';
+    }
+
+    return nome.trim().toLowerCase().replace(/(?:^|\s)(?!da |de |do |das |dos)\S/g, l => l.toUpperCase());
+  }
+  
   // Formata Strings com a primeira maiuscula e de/do/da/dos/das tudo em minusculo
-  formataNome(nome: string) {
-    return nome.toLowerCase().replace(/(?:^|\s)(?!da |de |do |das |dos)\S/g, l => l.toUpperCase());
-  };
+  // formataNome(nome: string) {
+  //   return nome.toLowerCase().replace(/(?:^|\s)(?!da |de |do |das |dos)\S/g, l => l.toUpperCase());
+  // };
 
   formatCnpjCpf(value: string) {
     const cnpjCpf = value.replace(/\D/g, '');

@@ -94,6 +94,7 @@ export class DepartamentoFormComponent implements OnInit, AfterContentChecked {
     this.departamentoForm = this.formBuilder.group({
       id: [null],
       nome: [null, [Validators.required]], // As vezes tem que deixar vazio "" ao invés de null p/ não dá BO
+      nomeConjunto: [null],
       tipo: ['Padrao'], // Campo inexistente no banco. Utilizados apenas para Admin para setar null em igrejaId
       igrejaId: [this.perfil == 'ADMIN' ? null : this.igrejaId],
     });

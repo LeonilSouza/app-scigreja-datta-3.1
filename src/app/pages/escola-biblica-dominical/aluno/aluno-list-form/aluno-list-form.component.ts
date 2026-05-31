@@ -199,29 +199,25 @@ export class AlunoListComponent implements OnInit, AfterContentChecked {
     Swal.fire({
       // title: 'Exclusão',
       text: 'Tem certeza que deseja excluir este registro?',
-       position: 'top',
+      position: 'top',
       showCloseButton: true,
       showCancelButton: true,
     }).then((willDelete) => {
       if (willDelete.dismiss) {
         // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
       } else {
-        this.excluir(aluno);
+        this.alunoService.delete(aluno.id ?? 0)
+          .subscribe({
+            next: () => {
+              this.grid.reset();//atualiza a tabela do primeng
+              this.toastr.success(`Registro excluido com sucesso!`)
+            },
+            error: () => {
+              this.toastr.error(`Erro ao excluir registro!`)
+            },
+          });
       }
     });
-  }
-
-  excluir(aluno: AlunoDTO) {
-    this.alunoService.delete(aluno.id ?? 0)
-      .subscribe({
-        next: () => {
-          this.grid.reset();//atualiza a tabela do primeng
-          this.toastr.success(`Registro excluido com sucesso!`)
-        },
-        error: () => {
-          this.toastr.error(`Erro ao excluir registro!`)
-        },
-      });
   }
 
 

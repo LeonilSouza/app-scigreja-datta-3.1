@@ -30,11 +30,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'; // Importe o op
 import { Table } from 'primeng/table';
 import { FileUploadModule } from 'primeng/fileupload';
 
-interface UploadEvent {
-  originalEvent: Event;
-  files: File[];
-}
-
 export class LancamentoFiltro {
   igrejaId: number = igrejaIdSignal();
   setorId: number = setorIdSignal();
@@ -869,7 +864,6 @@ export class LancamentoListFormComponent implements OnInit {
 
   resetLancamento() {
     window.location.reload()
-
   }
 
   buscaLancamentos() {
