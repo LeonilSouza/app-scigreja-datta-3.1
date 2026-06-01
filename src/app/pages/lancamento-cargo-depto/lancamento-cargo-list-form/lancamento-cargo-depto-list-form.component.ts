@@ -247,8 +247,9 @@ export class LancamentoCargoListFormComponent implements OnInit, OnDestroy {
     // this.carregando = true;
     this.toastr.info('Preparando o documento PDF...', 'Relatório');
 
-    this.lancamentoCargoService.imprimirCargosDepto(this.filtro).subscribe({
-      next: (blob: Blob) => {
+    this.lancamentoCargoService.imprimirCargosDepto(this.filtro)
+    .subscribe({
+      next: (blob) => {
         // Cria um link temporário seguro na memória do navegador para o arquivo PDF
         const urlFile = window.URL.createObjectURL(blob);
 

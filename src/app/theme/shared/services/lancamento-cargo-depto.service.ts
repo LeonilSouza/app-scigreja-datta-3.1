@@ -53,13 +53,13 @@ export class LancamentoCargoDeptoService {
   }
 
   // Método para obter os bytes do PDF gerado pelo Jasper
-  imprimirCargosDepto(filtros: { igrejaId?: number; departamentoId?: number; cargoId?: number }): Observable<Blob> {
+  imprimirCargosDepto(filtro: { igrejaId?: number; departamentoId?: number; cargoId?: number }): Observable<Blob> {
     let params = new HttpParams();
 
     // Anexa os filtros dinâmicos se estiverem selecionados na tela
-    if (filtros.igrejaId) params = params.set('igreja', filtros.igrejaId.toString());
-    if (filtros.departamentoId) params = params.set('departamento', filtros.departamentoId.toString());
-    if (filtros.cargoId) params = params.set('cargo', filtros.cargoId.toString());
+    if (filtro.igrejaId) params = params.set('igreja', filtro.igrejaId.toString());
+    if (filtro.departamentoId) params = params.set('departamento', filtro.departamentoId.toString());
+    if (filtro.cargoId) params = params.set('cargo', filtro.cargoId.toString());
 
     // O pulo do gato: informamos 'blob' para o Angular aceitar o fluxo binário do PDFBox
     return this.http.get(`${API_CONFIG.baseUrl}/relatorios/cargos-departamentos`, {
@@ -67,4 +67,5 @@ export class LancamentoCargoDeptoService {
       responseType: 'blob'
     });
   }
+
 }
