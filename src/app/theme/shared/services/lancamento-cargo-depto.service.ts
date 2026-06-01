@@ -23,7 +23,7 @@ export class LancamentoCargoDeptoService {
   create(obj: LancamentoCargoDeptoDTO): Observable<any> {
     return this.http.post(this.apiPath, obj, {
       observe: 'response',
-      // responseType: 'text'
+      responseType: 'text'
     });
   }
 

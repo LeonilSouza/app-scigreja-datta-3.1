@@ -352,7 +352,7 @@ export class LancamentoCargoListFormComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.error(err);
-          this.toastr.error('Erro ao salvar nova designação ministerial.');
+          this.toastr.error('Erro ao salvar nova cargo.');
         }
       });
   }
