@@ -42,6 +42,7 @@ export class LancamentoFiltro {
   contas: string = "";
   categorias: string = "";
   formas: string = "";
+  centroCustos: string = "";
   tipoLancamento: string = ""; // Inicie com um padrão 
   incluirPermuta: boolean = false; // Inicie com um padrão 
   nomeRelatorio: string = ""; // Nome do arquivo do relatorio jasper - layout no java
@@ -131,6 +132,7 @@ export class LancamentoListFormComponent implements OnInit {
   contaForm!: FormGroup;
   formaForm!: FormGroup;
   categoriaForm!: FormGroup;
+  centroCustoForm!: FormGroup;
 
   dataAtual: any = moment();
 
@@ -283,6 +285,10 @@ export class LancamentoListFormComponent implements OnInit {
 
     this.categoriaForm = new FormGroup({
       selectedCategorias: new FormControl<CategoriaDTO[] | null>(null)
+    });
+
+    this.centroCustoForm = new FormGroup({
+      selectedCentroCustos: new FormControl<CentroCustoDTO[] | null>(null)
     });
   };
 
@@ -1271,7 +1277,7 @@ export class LancamentoListFormComponent implements OnInit {
   ///////////////////////////// Enentos DropDown   ///////////////////////////
 
   // Chame este método sempre que o usuário mudar uma seleção na tela
-  atualizarFiltrosStrings(event: any, tipo: 'contas' | 'formas' | 'categorias') {
+  atualizarFiltrosStrings(event: any, tipo: 'contas' | 'formas' | 'categorias' | 'centroCustos') {
     // Se o event.value for um array de objetos ou IDs:
     if (Array.isArray(event.value)) {
       const ids = event.value.map((item: any) => item.id || item);
@@ -1359,6 +1365,7 @@ export class LancamentoListFormComponent implements OnInit {
       this.categoriaForm.get('selectedCategorias')?.patchValue([]);
       this.formaForm.get('selectedFormas')?.patchValue([]);
       this.contaForm.get('selectedContas')?.patchValue([]);
+      this.centroCustoForm.get('selectedCentroCustos')?.patchValue([]);
       this.filtro.tipoLancamento = '';
       this.filtro.formas = this.formaIdsAux;
       this.filtro.contas = this.contaIdsAux;

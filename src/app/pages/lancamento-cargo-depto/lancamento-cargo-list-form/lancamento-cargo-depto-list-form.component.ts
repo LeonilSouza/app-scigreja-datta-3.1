@@ -244,27 +244,23 @@ export class LancamentoCargoListFormComponent implements OnInit, OnDestroy {
   }
 
   imprimirCargoDepto() {
-    // this.carregando = true;
-    this.toastr.info('Preparando o documento PDF...', 'Relatório');
-
     this.lancamentoCargoService.imprimirCargosDepto(this.filtro)
     .subscribe({
-      next: (blob) => {
+      next: (blob: Blob) => {
         // Cria um link temporário seguro na memória do navegador para o arquivo PDF
         const urlFile = window.URL.createObjectURL(blob);
 
         // Abre o PDF diretamente em uma nova aba com o visualizador nativo
         window.open(urlFile, '_blank');
 
-        // this.carregando = false;
       },
       error: (err) => {
-        // this.carregando = false;
         this.toastr.error('Não foi possível gerar a impressão do relatório.');
         console.error(err);
       }
     });
   }
+
 
   loadLancamentosCargos() {
     this.lancamentoCargoService.getPageLancamentoCargoFromIgreja(this.filtro)

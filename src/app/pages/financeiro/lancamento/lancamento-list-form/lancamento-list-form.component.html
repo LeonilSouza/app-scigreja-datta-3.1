@@ -13,7 +13,7 @@
         <div class="form-group row col-md-12 mt-2 mb-2">
 
             <!-- Periodo -->
-            <div class="col-sm-3 ">
+            <div class="col-sm-2 ">
                 <label class="f-13"> Período de lançamentos</label>
                 <p-datepicker (click)="periodo()" [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
                     [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
@@ -22,7 +22,7 @@
             </div>
 
             <!-- Conta -->
-            <span class=" col-sm-3">
+            <span class=" col-sm-2">
                 <form [formGroup]="contaForm">
                     <label class="f-13">Conta corrente</label>
                     <p-multiSelect class="mb-0"
@@ -79,6 +79,18 @@
                     </p-multiSelect>
                 </form>
             </div>
+
+             <span class=" col-sm-2">
+                <form [formGroup]="centroCustoForm">
+                    <label class="f-13">Centro de Custo</label>
+                    <p-multiSelect class="mb-0"
+                        [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                        [options]="centroCustos" formControlName="selectedCentroCustos" optionLabel="nome" optionValue="id"
+                        placeholder="Todas" (onChange)="atualizarFiltrosStrings($event, 'centroCustos')" [showClear]="false"
+                        appendTo="body">
+                    </p-multiSelect>
+                </form>
+            </span>
         </div>
 
         <div class="form-group row col-md-12 mt-2 mb-0">

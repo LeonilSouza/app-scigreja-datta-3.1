@@ -82,10 +82,12 @@ export class LancamentoService {
     if (filtro.contas) { params = params.set('contas', filtro.contas); }
     if (filtro.formas) { params = params.set('formas', filtro.formas); }
     if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
+    if (filtro.centroCustos) { params = params.set('centroCustos', filtro.centroCustos); }
     if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
     if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
     if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
     if (filtro.setorId) { params = params.set('setor', filtro.setorId); }
+     console.log(filtro)
 
     return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/page`, { headers, params })
       .pipe(
@@ -163,7 +165,7 @@ export class LancamentoService {
     if (filtro.contas) { params = params.set('contas', filtro.contas); }
     if (filtro.formas) { params = params.set('formas', filtro.formas); }
     if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
-    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); } // Aqui o bacend força Receita
+    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); } // Aqui o bakcend força Receita
     if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
     if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
     if (filtro.setorId) { params = params.set('setor', filtro.setorId); }
@@ -270,7 +272,8 @@ export class LancamentoService {
     if (filtro.contas) params = params.set('contas', filtro.contas);
     if (filtro.formas) params = params.set('formas', filtro.formas);
     if (filtro.categorias) params = params.set('categorias', filtro.categorias);
-
+    if (filtro.centroCustos) params = params.set('centroCustoIds', filtro.centroCustos);
+    
     return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-dinamico`, { //endpoint Primeira Fabrica de relatorios basta criar o relatorio no jasper e passar o nome aqui
       params,
       responseType: 'blob'

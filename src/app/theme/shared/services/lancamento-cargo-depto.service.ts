@@ -57,9 +57,9 @@ export class LancamentoCargoDeptoService {
     let params = new HttpParams();
 
     // Anexa os filtros dinâmicos se estiverem selecionados na tela
-    if (filtro.igrejaId) params = params.set('igreja', filtro.igrejaId.toString());
-    if (filtro.departamentoId) params = params.set('departamento', filtro.departamentoId.toString());
-    if (filtro.cargoId) params = params.set('cargo', filtro.cargoId.toString());
+    if (filtro.igrejaId) params = params.set('igrejaId', filtro.igrejaId);
+    if (filtro.departamentoId) params = params.set('departamentoId', filtro.departamentoId);
+    if (filtro.cargoId) params = params.set('cargoId', filtro.cargoId);
 
     // O pulo do gato: informamos 'blob' para o Angular aceitar o fluxo binário do PDFBox
     return this.http.get(`${API_CONFIG.baseUrl}/relatorios/cargos-departamentos`, {
@@ -68,4 +68,19 @@ export class LancamentoCargoDeptoService {
     });
   }
 
+//    imprimirCargosDepto(filtro: LancamentoCargoFiltro): Observable<Blob> {
+//       let params = new HttpParams()
+//         .set('igrejaId', filtro.igrejaId.toString())
+//         .set('departamentoId', filtro.setorId.toString())
+//         .set('cargoId', filtro.dtinicio)
+//       // Adiciona as listas de IDs (que o Java usa na Specification)
+//       if (filtro.contas) params = params.set('contas', filtro.contas);
+//       if (filtro.formas) params = params.set('formas', filtro.formas);
+//       if (filtro.categorias) params = params.set('categorias', filtro.categorias);
+  
+//       return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-dinamico`, { //endpoint Primeira Fabrica de relatorios basta criar o relatorio no jasper e passar o nome aqui
+//         params,
+//         responseType: 'blob'
+//       });
+//     }
 }
