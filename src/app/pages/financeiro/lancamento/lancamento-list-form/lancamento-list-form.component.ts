@@ -872,7 +872,7 @@ export class LancamentoListFormComponent implements OnInit {
     window.location.reload()
   }
 
-  buscaLancamentos() {
+  filtraLancamentos() {
     this.pesquisa = true; // Agora as buscas estão liberadas
     this.filtro.page = 0;
 
