@@ -29,6 +29,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'; // Importe o operador
 import { Table } from 'primeng/table';
 import { FileUploadModule } from 'primeng/fileupload';
+import { TotaisDTO } from 'src/app/theme/shared/models/totais.dto';
 
 export class LancamentoFiltro {
   igrejaId: number = igrejaIdSignal();
@@ -157,6 +158,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   // Valor desconsiderando o debito de Permuta
   totalDebitos: number = 0;
+  totalEventos: number = 0;
 
   totalDiversos: number = 0;
 
@@ -186,6 +188,7 @@ export class LancamentoListFormComponent implements OnInit {
   categoriaFiltrada!: string;
 
   categoriaIds!: string;
+  centroCustoIds!: string;
   tipoLancamento: string = "".toLowerCase();
   categoriaIdsAux!: string;
   crtCategoria: number = 3; //Para controlar: Todas, Receita e Despesa em categorias
@@ -259,7 +262,6 @@ export class LancamentoListFormComponent implements OnInit {
     this.buildLancamentoForm();
     this.periodo();
     this.inicializarDados();
-    this.loadCentroCustos();
     this.loadPessoas();
     this.periodo();
     this.rangeDates = this.sharedService.rangeMesAtual();
@@ -273,7 +275,6 @@ export class LancamentoListFormComponent implements OnInit {
     const data_americana = this.sharedService.formataDataUS(this.dtinicio);
     const data_subtraida = this.sharedService.dataSubDay(data_americana, 1);
     this.dataDiaAnterior = data_subtraida;
-    // this.getTotalSaldoAnterior(); HOJE
 
     this.contaForm = new FormGroup({
       selectedContas: new FormControl<ContaDTO[] | null>(null)
@@ -332,7 +333,8 @@ export class LancamentoListFormComponent implements OnInit {
     forkJoin({
       formas: this.formaService.getListFormaFromIgreja(this.igrejaId),
       categorias: this.categoriaService.getListCategoriaFromIgreja(this.igrejaId),
-      contas: this.contaService.getListContaFromIgreja(this.igrejaId)
+      contas: this.contaService.getListContaFromIgreja(this.igrejaId),
+      centroCustos: this.centroCustoService.getListCentroCustoFromIgreja(this.igrejaId)
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(res => {
@@ -358,6 +360,17 @@ export class LancamentoListFormComponent implements OnInit {
 
         //////////////// Fim categorias
 
+         ////////////////// centro custos
+        this.centroCustos = res.centroCustos;
+        let cc1 = this.centroCustos.filter(cc => cc.id?.toString());
+        let cc2 = cc1.map(c => {
+          return c.id?.toString(); // Retorna nova string de todos os ids de centro custo. Necessario para o Backend
+        })
+        this.centroCustoIds = '';
+        this.filtro.centroCustos = '';
+
+        //////////////// Fim centro custos
+
         /////////// contas
         let total = 0;
         if (res.contas.length == 0) {
@@ -374,9 +387,9 @@ export class LancamentoListFormComponent implements OnInit {
             }
           });
 
-           // Atualiza o painel superior com a somatória geral das contas limpa
+          // Atualiza o painel superior com a somatória geral das contas limpa
           this.saldoFinalContas = total;
-          
+
           let ids = res.contas.map((c: { id: any; }) => c.id).join(',');
           this.contaIds = ids;
           this.filtro.contas = ids;
@@ -388,7 +401,6 @@ export class LancamentoListFormComponent implements OnInit {
           this.filtro.formas = res.formas.map((f: { id: any; }) => f.id).join(',');
           this.filtro.categorias = res.categorias.map((c: { id: any; }) => c.id).join(',');
           this.filtro.contas = res.contas.map((c: { id: any; }) => c.id).join(',');
-          this.getTotalGeralCredito();
 
           // Só agora disparamos a primeira busca
           this.refreshAll();
@@ -402,52 +414,31 @@ export class LancamentoListFormComponent implements OnInit {
     this.getTotalizacoes();      // Chama todos os seus métodos de soma
   }
 
-  getTotalizacoes() {
-    // 1. Total Dízimo
-    this.lancamentoService.getTotalReceitaDizimoFromIgreja(this.filtro).subscribe(
-      total => this.totalReceitaDizimo = (total !== null && this.filtro.tipoLancamento !== 'Despesa') ? total : 0.00
-    );
-
-    // 2. Soma Geral Créditos
-    this.lancamentoService.getTotalGeralReceitasFromIgreja(this.filtro).subscribe(
-      total => this.totalCreditos = (total !== null && this.filtro.tipoLancamento !== 'Despesa') ? total : 0.00
-    );
-
-    // 3. Saldo Anterior (Calculado automaticamente com base na data de início do filtro)
-    this.lancamentoService.getTotalSaldoAnteriorFromIgreja(this.filtro!).subscribe(
-      saldo => this.saldoAnterior = saldo || 0.00
-    );
-
-    // 4. Total Ofertas
-    this.lancamentoService.getTotalOfertasFromIgreja(this.filtro).subscribe(
-      total => this.totalOfertas = (total !== null && this.filtro.tipoLancamento !== 'Despesa') ? total : 0.00
-    );
-
-    // 5. Ofertas Alçadas
-    this.lancamentoService.getTotalOfertasAlcadasFromIgreja(this.filtro).subscribe(
-      total => this.total_ofertas_alcadas = (total !== null && this.filtro.tipoLancamento !== 'Despesa') ? total : 0.00
-    );
-
-    
-
-    // 6. Total Geral Débito (Multiplica por -1 para exibir o valor positivo no card da tela)
-    this.lancamentoService.getTotalGeralDespesaFromIgreja(this.filtro).subscribe(
-      total => this.totalDebitos = (total !== null && this.filtro.tipoLancamento !== 'Receita') ? total * -1 : 0.00
-    );
-
-    // 7. Total Missões
-    this.lancamentoService.getTotalMissoesFromIgreja(this.filtro).subscribe(
-      total => this.totalMissoes = (total !== null && this.filtro.tipoLancamento !== 'Despesa') ? total : 0.00
-    );
-
-    // 8. Total Diversos
-    this.lancamentoService.getTotalReceitasDiversosFromIgreja(this.filtro).subscribe(
-      total => this.totalDiversos = (total !== null && this.filtro.tipoLancamento !== 'Despesa') ? total : 0.00
-    );
-  }
+ getTotalizacoes() {
+  this.lancamentoService.getTotaisFromIgreja(this.filtro)
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
+      next: total => {
+        this.totalReceitaDizimo   = total.totalDizimo      || 0.00;
+        this.totalCreditos        = total.totalReceitas    || 0.00;
+        this.saldoAnterior        = total.saldoAnterior    || 0.00;
+        this.totalOfertas         = total.totalOferta      || 0.00;
+        this.total_ofertas_alcadas= total.totalOfertaAlcadas|| 0.00;
+        this.totalDebitos         = total.totalDespesas    || 0.00;
+        this.totalEventos         = total.totalEventos     || 0.00;
+        this.totalMissoes         = total.totalMissoes     || 0.00;
+        this.totalDiversos        = total.totalDiversos    || 0.00;
+      },
+      error: err => {
+        this.toastr.error('Erro ao obter totalizações.');
+        console.error(err);
+      }
+    });
+}
 
   visualizarComprovante(lancamentoId: number) {
-    this.lancamentoService.baixarComprovante(lancamentoId).subscribe({
+    this.lancamentoService.baixarComprovante(lancamentoId)
+    .subscribe({
       next: (blob: Blob) => {
         // Cria um endereço temporário na memória do navegador para o arquivo
         const url = window.URL.createObjectURL(blob);
@@ -464,7 +455,8 @@ export class LancamentoListFormComponent implements OnInit {
   // Método para deletar o anexo
   excluirComprovante1(lancamentoId: number) {
     if (confirm('anexado a este lançamento?')) {
-      this.lancamentoService.deletarComprovante(lancamentoId).subscribe({
+      this.lancamentoService.deletarComprovante(lancamentoId)
+      .subscribe({
         next: () => {
           this.toastr.success('Comprovante removido com sucesso!');
           this.refreshAll(); // Atualiza a grid na hora
@@ -576,8 +568,6 @@ export class LancamentoListFormComponent implements OnInit {
     this.submittingForm = true;
     if (this.imodo() === 0) {
       this.createLancamentoTransferencia();
-    } else {
-      this.updateLancamentoTransferencia();
     }
   }
 
@@ -585,8 +575,6 @@ export class LancamentoListFormComponent implements OnInit {
     this.submittingForm = true;
     if (this.imodo() === 0) {
       this.createLancamentoPermuta();
-    } else {
-      this.updateLancamentoPermuta();
     }
   }
 
@@ -651,21 +639,24 @@ export class LancamentoListFormComponent implements OnInit {
   }
 
   //Movimentação financeira - Agora basta criar o relatorio no jasper e passar o nome junto com o filtro
-  imprimirLancamentos() {
-    this.lancamentoService.gerarMovimentacaoFinanceiraPdf(this.filtro, 'movimentacao-financeira')
-      .subscribe({
-        next: (blob) => {
-          // Cria um link na memória do navegador para o arquivo recebido
-          const url = window.URL.createObjectURL(blob);
-          // Abre o PDF em uma nova aba
-          window.open(url, '_blank');
-        },
-        error: (err) => {
-          this.toastr.error('Erro ao gerar o relatório PDF');
-          console.error(err);
-        }
-      });
-  }
+  imprimirLancamentos(): void {
+    if (this.lancamentos.length === 0) {                 // ← checa o array
+      this.toastr.warning('Nenhum registro para imprimir.');
+      return;
+    }
+
+  this.lancamentoService.gerarMovimentacaoFinanceiraPdf(this.filtro, 'movimentacao-financeira')
+    .subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+      },
+      error: (error) => {
+        this.toastr.error('Erro ao gerar o relatório PDF.');
+        console.error(error);
+      }
+    });
+}
 
   imprimirRecibo(id: any) {
     if (!id) {
@@ -869,7 +860,7 @@ export class LancamentoListFormComponent implements OnInit {
   }
 
   resetLancamento() {
-    window.location.reload()
+    this.refreshAll()
   }
 
   filtraLancamentos() {
@@ -906,7 +897,7 @@ export class LancamentoListFormComponent implements OnInit {
     const data_americana = this.sharedService.formataDataUS(this.dtinicio);
     const data_subtraida = this.sharedService.dataSubDay(data_americana, 1);
     this.dataDiaAnterior = data_subtraida;
-  
+
     this.refreshAll(); // Chama Grid + Totalizações
   }
 
@@ -1002,7 +993,7 @@ export class LancamentoListFormComponent implements OnInit {
 
           this.lancamentoForm.controls['contaId'].setValue(this.contaIdTransferencia);
           lancamento.contaIdTransferencia = this.contaId;
-          lancamento.categoriaId = 8;
+          lancamento.categoriaId = this.lancamentoForm.controls['categoriaId'].value;
           let valor = this.lancamentoForm.controls['valor'].value
           valor = valor * -1;
           lancamento.valor = valor;
@@ -1040,8 +1031,8 @@ export class LancamentoListFormComponent implements OnInit {
                         .subscribe({
                           next: () => {
                             this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
-                            this.toastr.success('Registro atualizado com sucesso!', 'Atualização');
                             this.inicializarDados();
+                            this.toastr.success('Operação realizada com sucesso!', 'Transferência');
                             this.resetLancamento();
                           }
                         })
@@ -1049,49 +1040,6 @@ export class LancamentoListFormComponent implements OnInit {
                   })
               }
             })
-        }
-      })
-  }
-
-  public updateLancamentoTransferencia() {
-    this.lancamentoForm.controls['nome'].setValue(this.sharedService.formataNome(this.lancamentoForm.controls['nome'].value));
-
-    // Lançamento negativo na conta Origem
-    this.lancamentoForm.controls['tipoLancamento'].setValue('Receita');
-    this.lancamentoForm.controls['categoriaId'].setValue(this.transferenciaCategoriaId);
-    this.lancamentoForm.controls['nome'].setValue('Transferencia');
-    this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value * -1);
-    this.lancamentoForm.controls['contaId'].setValue(this.contaId);
-    this.lancamentoForm.controls['contaIdTransferencia'].setValue(this.contaIdTransferencia);
-
-    const lancamento: LancamentoDTO = Object.assign(new LancamentoDTO(), this.lancamentoForm.value);
-    this.lancamentoService.update(lancamento)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-      .subscribe({
-        next: () => {
-          // this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
-          // this.toastr.success('Registro atualizado com sucesso!', 'Atualização');
-          // this.loadContas();
-        }
-      }),
-
-      // Lançamento positivo na conta Destino
-      this.lancamentoForm.controls['tipoLancamento'].setValue('Receita');
-    this.lancamentoForm.controls['categoriaId'].setValue(this.transferenciaCategoriaId);
-    this.lancamentoForm.controls['nome'].setValue('Transferencia');
-    this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value * -1);
-    this.lancamentoForm.controls['contaId'].setValue(this.contaId);
-    this.lancamentoForm.controls['contaIdTransferencia'].setValue(this.contaIdTransferencia);
-
-    // const lancamento: LancamentoDTO = Object.assign(new LancamentoDTO(), this.lancamentoForm.value);
-
-    this.lancamentoService.update(lancamento)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-      .subscribe({
-        next: () => {
-          this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
-          this.toastr.success('Registro inserido com sucesso!', 'Inclusão');
-          this.inicializarDados();
         }
       })
   }
@@ -1147,7 +1095,8 @@ export class LancamentoListFormComponent implements OnInit {
                         .subscribe({
                           next: () => {
                             this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
-                            this.toastr.success('Registro atualizado com sucesso!', 'Atualização');
+                            // this.toastr.success('Registro atualizado com sucesso!', 'Atualização');
+                             this.toastr.success('Operação realizada com sucesso!', 'Transferência');
                             this.resetLancamento();
                             this.inicializarDados();
                           }
@@ -1156,44 +1105,6 @@ export class LancamentoListFormComponent implements OnInit {
                   })
               }
             })
-        }
-      })
-  }
-
-  public updateLancamentoPermuta() {
-    this.lancamentoForm.controls['nome'].setValue(this.sharedService.formataNome(this.lancamentoForm.controls['nome'].value));
-
-    // Lançamento negativo na conta Origem
-    this.lancamentoForm.controls['tipoLancamento'].setValue('Despesa');
-    this.lancamentoForm.controls['nome'].setValue('Permuta');
-    this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value * -1);
-    this.lancamentoForm.controls['formaId'].setValue(this.formaId);
-    this.lancamentoForm.controls['formaIdTransferencia'].setValue(this.formaIdTransferencia);
-
-    const lancamento: LancamentoDTO = Object.assign(new LancamentoDTO(), this.lancamentoForm.value);
-    this.lancamentoService.update(lancamento)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-      .subscribe({
-        next: () => { }
-      }),
-
-      // Lançamento positivo na conta Destino
-      this.lancamentoForm.controls['tipoLancamento'].setValue('Receita');
-    this.lancamentoForm.controls['nome'].setValue('Permuta');
-    this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value * -1);
-    this.lancamentoForm.controls['formaId'].setValue(this.formaId);
-    this.lancamentoForm.controls['formaIdTransferencia'].setValue(this.formaIdTransferencia);
-
-    // const lancamento: LancamentoDTO = Object.assign(new LancamentoDTO(), this.lancamentoForm.value);
-
-    this.lancamentoService.update(lancamento)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-      .subscribe({
-        next: () => {
-          this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
-          this.toastr.success('Registro atualizado com sucesso!', 'Atualização');
-          this.resetLancamento();
-          this.inicializarDados();
         }
       })
   }
@@ -1208,28 +1119,6 @@ export class LancamentoListFormComponent implements OnInit {
         },
         error: () => { }
       });
-  }
-
-  getTotalGeralCredito() { // Inclui todas as Receitas inclusive Permuta, Ofertas Alçadas, missoes......
-    if (this.rangeDates !== null) {
-      this.dtinicio = this.rangeDates[0];
-      this.dtfim = this.rangeDates[1];
-      if (this.dtinicio.length < 10 && this.dtfim.length < 10) {
-        this.dtinicio = this.rangeDates.substring(0, 10);
-        this.dtfim = this.rangeDates.substring(13, 23);
-      } else {
-        this.dtinicio = this.rangeDates[0];
-        this.dtfim = this.rangeDates[1];
-      }
-    }
-    this.lancamentoService.getTotalGeralReceitasFromIgreja(this.filtro)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-      .subscribe({
-        next: response => {
-          response !== null ? this.totalCreditos = response : this.totalCreditos = 0.00;
-        }
-      }),
-      this.error; () => { }
   }
 
   filtraCategoriaIds(value: string) { //Recebe tipo Receita ou Despesa e retorna IDS somente de receita ou de despesa
@@ -1333,6 +1222,11 @@ export class LancamentoListFormComponent implements OnInit {
     this.getCategoria(tipo.value)
   }
 
+  onChangeTransferencia(id: { value: any; }) {
+    console.log(id.value)
+     this.lancamentoForm.controls['categoriaId'].setValue(id.value);
+  }
+
   onChangeTPConta(event: { value: any; }) {
     this.getConta(event.value)
   }
@@ -1372,13 +1266,6 @@ export class LancamentoListFormComponent implements OnInit {
       this.pesquisa = true; // Agora as buscas estão liberadas
       this.filtro.page = 0;
       this.filtro.nome = '';
-
-      // if (this.grid) {
-      //   this.grid.first = 0; // Isso vai disparar o onLazyLoad automaticamente
-      //   this.getTotalizacoes();
-      // } else {
-      //   this.getTotalizacoes(); // Caso a grid não dispare, chamamos manualmente
-      // }
     }
 
   }

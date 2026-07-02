@@ -104,8 +104,9 @@ export class ErrorInterceptor implements HttpInterceptor {
 
     }
 
-    handle404(errorObj: { message: any; }) {
+    handle404(errorObj: { message: any; error: any;  status: any;  }) {
         const error = errorObj.message
+        const err = errorObj.status
         this.toastr.info(error);
         // Swal.fire('', (error), 'info');
     }
