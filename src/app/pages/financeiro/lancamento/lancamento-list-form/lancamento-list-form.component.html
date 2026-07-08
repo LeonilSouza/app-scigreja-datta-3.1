@@ -80,13 +80,14 @@
                 </form>
             </div>
 
-             <span class=" col-sm-2">
+            <span class=" col-sm-2">
                 <form [formGroup]="centroCustoForm">
                     <label class="f-13">Centro de Custo</label>
                     <p-multiSelect class="mb-0"
                         [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
-                        [options]="centroCustos" formControlName="selectedCentroCustos" optionLabel="nome" optionValue="id"
-                        placeholder="Todas" (onChange)="atualizarFiltrosStrings($event, 'centroCustos')" [showClear]="false"
+                        [options]="centroCustos" formControlName="selectedCentroCustos" optionLabel="nome"
+                        optionValue="id" placeholder="Todas"
+                        (onChange)="atualizarFiltrosStrings($event, 'centroCustos')" [showClear]="false"
                         appendTo="body">
                     </p-multiSelect>
                 </form>
@@ -290,12 +291,6 @@
 
 }
 
-<!-- Botão reset window -->
-<div class="flex justify-between">
-    <p-button [style]="{'height':'32px', 'margin-right':'20px'}" [outlined]="true" icon="pi pi-filter-slash"
-        label="Limpar" (click)="resetLancamento()" />
-</div>
-
 <!-- Fim Ação Selecionados -->
 </ng-template>
 
@@ -325,6 +320,12 @@
 
 
 <ng-template #end>
+
+    <!-- Impressão sintetico -->
+    <div class="flex justify-between">
+        <p-button [style]="{'height':'32px', 'background':'black','margin-right':'20px'}" [outlined]="false"
+            icon="pi pi-print" class="text-white" label="Sintetico" (click)="imprimirSintetico()" />
+    </div>
 
     <!-- Botão Imprimir -->
     <!-- [placement]="'top'" ngbTooltip="Permutas não são consideradas" -->
@@ -379,6 +380,11 @@
 
                     <th class="col-data-150 py-2"
                         style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
+                        <b>Forma Pgto</b>
+                    </th>
+
+                    <th class="col-data-150 py-2"
+                        style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
                         <b>Conta</b>
                     </th>
 
@@ -412,6 +418,13 @@
                         lancamento.nome }}</td>
                     <td class="py-1" style=" font-size: 13px">{{
                         lancamento.historico }}</td>
+
+                    <td class="col-data-150 py-1" style="font-size: 13px">
+                        <span [ngStyle]="getCorForma(lancamento.formaId)">
+                            {{ lancamento.nomeForma }}
+                        </span>
+                    </td>
+
                     <td class="col-data-150 py-1" style=" font-size: 13px">{{
                         lancamento.nomeConta }}<br>
                     </td>
@@ -447,8 +460,7 @@
 
                         <!-- Recibo Disabled-->
                         @if(lancamento.tipoLancamento !== "Despesa"){
-                        <button type="button"
-                            class="btn btn-icon  btn-outline-secondary p-1 mb-0 mt-0"
+                        <button type="button" class="btn btn-icon  btn-outline-secondary p-1 mb-0 mt-0"
                             [style]="{'height': '26px', 'width': '26px'} " [placement]="'top'" ngbTooltip="Sem recibo">
                             <i class="pi pi-print"></i>
                         </button>
@@ -710,6 +722,105 @@
         <!-- FIM MODAL  LANCAMENTO -->
     </div>
 
+
+    <!-- BOTÃO NO SPLIT BUTTON -->
+    <!-- Adicione este item no seu printItems / getPrintItems -->
+
+    <!-- ═══ MODAL RELATÓRIO SINTÉTICO ═══ -->
+    <div class="col-md-12 col-xl-12">
+        <div class="card flex justify-center">
+            <p-dialog header="RELATÓRIO SINTÉTICO DE MOVIMENTAÇÃO" [modal]="true"
+                [(visible)]="visibleRelatorioSintetico" [position]="positionRelatorioSintetico"
+                [dismissableMask]="false" [style]="{ width: '55vw', 'min-height': '30vh', height: 'auto' }"
+                [closeOnEscape]="false" [breakpoints]="{ '1199px': '75vw', '575px': '95vw' }" [draggable]="false"
+                [resizable]="false" [contentStyle]="{ overflow: 'visible' }" [transitionOptions]="'500ms ease-out'">
+
+                <hr class="mt-1 mb-2" />
+
+                <form [formGroup]="relatorioSinteticoForm">
+                    <div class="row">
+
+                        <!-- Data Início -->
+                        <div class="form-group col-md-3 mb-2">
+                            <label class="mb-1">Data Início <span class="text-danger">*</span></label>
+                            <p-datepicker formControlName="dtinicio" [style]="{ width: '100%', height: '30px' }"
+                                [showIcon]="true" dateFormat="dd/mm/yy" dataType="string" placeholder="dd/mm/aaaa"
+                                [showButtonBar]="true" />
+                            <small class="text-danger" *ngIf="relatorioSinteticoForm.get('dtinicio')?.invalid &&
+                     relatorioSinteticoForm.get('dtinicio')?.touched">
+                                Informe a data início.
+                            </small>
+                        </div>
+
+                        <!-- Data Fim -->
+                        <div class="form-group col-md-3 mb-2">
+                            <label class="mb-1">Data Fim <span class="text-danger">*</span></label>
+                            <p-datepicker formControlName="dtfim" [style]="{ width: '100%', height: '30px' }"
+                                [showIcon]="true" dateFormat="dd/mm/yy" dataType="string" placeholder="dd/mm/aaaa"
+                                [showButtonBar]="true" />
+                            <small class="text-danger" *ngIf="relatorioSinteticoForm.get('dtfim')?.invalid &&
+                     relatorioSinteticoForm.get('dtfim')?.touched">
+                                Informe a data fim.
+                            </small>
+                        </div>
+
+                        <!-- Tipo -->
+                        <div class="form-group col-md-3 mb-2">
+                            <label class="mb-1">Tipo</label>
+                            <p-select formControlName="tipo" [options]="tiposRelatorio" optionLabel="label"
+                                optionValue="value" placeholder="Todos" [showClear]="true"
+                                [style]="{ width: '100%', height: '30px' }" />
+                        </div>
+
+                        <!-- Conta -->
+                        <div class="form-group col-md-3 mb-2">
+                            <label class="mb-1">Conta</label>
+                            <p-select formControlName="contaId" [options]="contasRelatorio" optionLabel="nome"
+                                optionValue="id" placeholder="Todas" [showClear]="true" [filter]="true"
+                                filterPlaceholder="Buscar conta..." [style]="{ width: '100%', height: '30px' }" />
+                        </div>
+
+                        <!-- Setor -->
+                        <div class="form-group col-md-4 mb-2">
+                            <label class="mb-1">Setor</label>
+                            <p-select formControlName="setorId" [options]="setoresRelatorio" optionLabel="nome"
+                                optionValue="id" placeholder="Todos" [showClear]="true" [filter]="true"
+                                filterPlaceholder="Buscar setor..." [style]="{ width: '100%', height: '30px' }" />
+                        </div>
+
+                        <!-- Formato -->
+                        <div class="form-group col-md-4 mb-2">
+                            <label class="mb-1">Formato <span class="text-danger">*</span></label>
+                            <p-select formControlName="formato" [options]="formatosRelatorio" optionLabel="label"
+                                optionValue="value" placeholder="Selecione"
+                                [style]="{ width: '100%', height: '30px' }" />
+                            <small class="text-danger" *ngIf="relatorioSinteticoForm.get('formato')?.invalid &&
+                     relatorioSinteticoForm.get('formato')?.touched">
+                                Selecione o formato.
+                            </small>
+                        </div>
+
+                    </div>
+                </form>
+
+                <!-- Footer -->
+                <div class="modal-footer mt-2">
+                    <button (click)="fecharRelatorioSintetico()" icon="pi pi-times"
+                        style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton pRipple
+                        type="button" label="Fechar" class="p-button-primary mx-3 p-button-outlined mt-1">
+                    </button>
+                    <button (click)="gerarRelatorioSintetico()" icon="pi pi-print"
+                        style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton pRipple
+                        type="button" label="Gerar" class="p-button-success mt-1"
+                        [disabled]="relatorioSinteticoForm.invalid || gerandoRelatorio" [loading]="gerandoRelatorio">
+                    </button>
+                </div>
+
+            </p-dialog>
+        </div>
+    </div>
+    <!-- FIM MODAL RELATÓRIO SINTÉTICO -->
+
     <!-- INICIO MODAL  TRANSFERENCIA -->
     <div class="col-md-12 col-xl-12" data-backdrop="static">
 
@@ -768,26 +879,26 @@
                     }
 
                     <!-- Historico -->
-                     @if(lancamentoForm.controls['contaId'].value == null){
+                    @if(lancamentoForm.controls['contaId'].value == null){
                     <div class="form-group col-md-8 mb-5">
                         <label>Historico</label>
                         <input readonly type="text" class="form-control" formControlName="historico">
                     </div>
-                     }
+                    }
 
-                      <!-- Categoria de Receita -->
-                    <div class="form-group col-md-4 mb-0">
-                        <label>Categoria </label>
+                    <!-- Categoria de Receita -->
+                    <!-- <div class="form-group col-md-4 mb-0">
+                        <label>Categoria de Receitas</label><label class="text-danger"> (Mude apenas se necessário)</label>
                         <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangeTransferencia($event)"
                             formControlName="categoriaId" class="w-full md  mb-1" [options]="categoriasFiltradas"
                             [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
                             resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
                             [autofocus]="false" optionValue="id" placeholder="Selecione uma categoria"
                             appendTo="body" />
-                    </div>
+                    </div> -->
 
                     @if(lancamentoForm.controls['contaId'].value !== null){
-                        <div class="form-group col-md-4 mb-5">
+                    <div class="form-group col-md-8 mb-5">
                         <label>Historico</label>
                         <input type="text" class="form-control" formControlName="historico">
                     </div>

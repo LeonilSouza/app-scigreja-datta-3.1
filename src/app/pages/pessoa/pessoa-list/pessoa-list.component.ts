@@ -422,31 +422,7 @@ export class PessoaListComponent implements OnInit {
     {
       separator: true,
     },
-    // {
-    //   label: 'Ficha de Membro',
-    //   icon: 'pi pi-user',
-    //   command: () => {
-    //     //Relatórios da Segunda Fabrica Estatica/Consolidada - Agora basta criar o relatorio no jasper e passar o nome junto com o filtro
-    //     this.pessoaService.gerarFichaMembro(this.id)
-    //       .subscribe({
-    //         next: (blob) => {
-    //           const url = window.URL.createObjectURL(blob);
-    //           window.open(url, '_blank'); // Abre o PDF direto em uma nova aba
-    //         },
-    //         error: (err) => {
-    //           this.toastr.error('Erro ao gerar o relatório Livro Caixa Mensal.');
-    //           console.error(err);
-    //         }
-    //       });
-    //   }
-    // },
-    {
-      // label: 'Ficha em branco',
-      // icon: 'fas fa-book-reader',
-      // // target: '_blank',
-      // // url: `${API_CONFIG.baseUrl}/relatorios/list/?nome=ficha-branco&igreja=${this.igrejaId}`
 
-    }
   ];
 
   countNovos() {

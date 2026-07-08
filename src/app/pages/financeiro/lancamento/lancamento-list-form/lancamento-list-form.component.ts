@@ -29,7 +29,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'; // Importe o operador
 import { Table } from 'primeng/table';
 import { FileUploadModule } from 'primeng/fileupload';
-import { TotaisDTO } from 'src/app/theme/shared/models/totais.dto';
+import { SetorService } from 'src/app/theme/shared/services/setor.service';
+import { HttpClient } from '@angular/common/http';
 
 export class LancamentoFiltro {
   igrejaId: number = igrejaIdSignal();
@@ -69,7 +70,8 @@ export class LancamentoFiltro {
     ContaService,
     CentroCustoService,
     PessoaService,
-    FormaService
+    FormaService,
+    SetorService
 
   ]
 })
@@ -116,7 +118,27 @@ export class LancamentoListFormComponent implements OnInit {
 
   transf!: number;
 
+  fb!: FormGroup;
+
   @ViewChild('dtlancamento') grid!: Table;
+
+  // ═══ VARIÁVEIS ═══
+  visibleRelatorioSintetico = false;
+  positionRelatorioSintetico: 'top' | 'bottom' | 'left' | 'right' | 'center' = 'top';
+  gerandoRelatorio = false;
+
+  contasRelatorio: any[] = [];
+  setoresRelatorio: any[] = [];
+
+  tiposRelatorio = [
+    { label: 'Receitas', value: 'Receita' },
+    { label: 'Despesas', value: 'Despesa' },
+  ];
+
+  formatosRelatorio = [
+    { label: 'PDF', value: 'pdf' },
+    { label: 'Excel', value: 'excel' },
+  ];
 
   // Mes atual
   rangeDates!: string;
@@ -252,7 +274,9 @@ export class LancamentoListFormComponent implements OnInit {
     private categoriaService: CategoriaService,
     private contaService: ContaService,
     private centroCustoService: CentroCustoService,
-    private formaService: FormaService
+    private formaService: FormaService,
+    private setorService: SetorService,
+    public http: HttpClient
 
   ) {
     this.activeTab = 'home';
@@ -298,6 +322,52 @@ export class LancamentoListFormComponent implements OnInit {
       this.subscription.unsubscribe();
     }
   }
+
+  // Com Claude no apoio
+  getCorForma(formaId: number): any {
+    switch (formaId) {
+        case 1: return { 'color': '#009900', 'font-weight': 'bold' }; // Dinheiro - Verde
+        case 2: return { 'color': '#ffc107d3', 'font-weight': 'bold' }; // Cartão - Amarelo
+        case 3: return { 'color': '#FF8C00', 'font-weight': 'bold' }; // Pix - Laranja
+        default: return {};
+    }
+}
+
+gerarAnaliticoPdf(): void {
+    this.filtro.nomeRelatorio = 'relatorio-analitico';
+    this.lancamentoService.gerarRelatorioAnaliticoPdf(this.filtro).subscribe({
+        next: (blob) => {
+            const url = window.URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        },
+        error: () => this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Erro ao gerar relatório analítico PDF'
+        })
+    });
+}
+
+gerarAnaliticoExcel(): void {
+    this.filtro.nomeRelatorio = 'relatorio-analitico';
+    this.lancamentoService.gerarRelatorioAnaliticoExcel(this.filtro).subscribe({
+        next: (blob) => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `relatorio-analitico-${this.filtro.dtinicio}-${this.filtro.dtfim}.xlsx`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        },
+        error: () => this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Erro ao gerar relatório analítico Excel'
+        })
+    });
+}
+
+  // Fim Claude 
 
   //Filtra nome, historico e valor
   onGlobalFilter() {
@@ -360,7 +430,7 @@ export class LancamentoListFormComponent implements OnInit {
 
         //////////////// Fim categorias
 
-         ////////////////// centro custos
+        ////////////////// centro custos
         this.centroCustos = res.centroCustos;
         let cc1 = this.centroCustos.filter(cc => cc.id?.toString());
         let cc2 = cc1.map(c => {
@@ -414,58 +484,58 @@ export class LancamentoListFormComponent implements OnInit {
     this.getTotalizacoes();      // Chama todos os seus métodos de soma
   }
 
- getTotalizacoes() {
-  this.lancamentoService.getTotaisFromIgreja(this.filtro)
-    .pipe(takeUntilDestroyed(this.destroyRef))
-    .subscribe({
-      next: total => {
-        this.totalReceitaDizimo   = total.totalDizimo      || 0.00;
-        this.totalCreditos        = total.totalReceitas    || 0.00;
-        this.saldoAnterior        = total.saldoAnterior    || 0.00;
-        this.totalOfertas         = total.totalOferta      || 0.00;
-        this.total_ofertas_alcadas= total.totalOfertaAlcadas|| 0.00;
-        this.totalDebitos         = total.totalDespesas    || 0.00;
-        this.totalEventos         = total.totalEventos     || 0.00;
-        this.totalMissoes         = total.totalMissoes     || 0.00;
-        this.totalDiversos        = total.totalDiversos    || 0.00;
-      },
-      error: err => {
-        this.toastr.error('Erro ao obter totalizações.');
-        console.error(err);
-      }
-    });
-}
+  getTotalizacoes() {
+    this.lancamentoService.getTotaisFromIgreja(this.filtro)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: total => {
+          this.totalReceitaDizimo = total.totalDizimo || 0.00;
+          this.totalCreditos = total.totalReceitas || 0.00;
+          this.saldoAnterior = total.saldoAnterior || 0.00;
+          this.totalOfertas = total.totalOferta || 0.00;
+          this.total_ofertas_alcadas = total.totalOfertaAlcadas || 0.00;
+          this.totalDebitos = total.totalDespesas || 0.00;
+          this.totalEventos = total.totalEventos || 0.00;
+          this.totalMissoes = total.totalMissoes || 0.00;
+          this.totalDiversos = total.totalDiversos || 0.00;
+        },
+        error: err => {
+          this.toastr.error('Erro ao obter totalizações.');
+          console.error(err);
+        }
+      });
+  }
 
   visualizarComprovante(lancamentoId: number) {
     this.lancamentoService.baixarComprovante(lancamentoId)
-    .subscribe({
-      next: (blob: Blob) => {
-        // Cria um endereço temporário na memória do navegador para o arquivo
-        const url = window.URL.createObjectURL(blob);
-        // Abre o PDF ou imagem em uma nova aba (_blank)
-        window.open(url, '_blank');
-      },
-      error: (err) => {
-        this.toastr.error('Erro ao abrir o arquivo ou anexo não encontrado.');
-        console.error(err);
-      }
-    });
+      .subscribe({
+        next: (blob: Blob) => {
+          // Cria um endereço temporário na memória do navegador para o arquivo
+          const url = window.URL.createObjectURL(blob);
+          // Abre o PDF ou imagem em uma nova aba (_blank)
+          window.open(url, '_blank');
+        },
+        error: (err) => {
+          this.toastr.error('Erro ao abrir o arquivo ou anexo não encontrado.');
+          console.error(err);
+        }
+      });
   }
 
   // Método para deletar o anexo
   excluirComprovante1(lancamentoId: number) {
     if (confirm('anexado a este lançamento?')) {
       this.lancamentoService.deletarComprovante(lancamentoId)
-      .subscribe({
-        next: () => {
-          this.toastr.success('Comprovante removido com sucesso!');
-          this.refreshAll(); // Atualiza a grid na hora
-        },
-        error: (err) => {
-          this.toastr.error('Erro ao remover o comprovante.');
-          console.error(err);
-        }
-      });
+        .subscribe({
+          next: () => {
+            this.toastr.success('Comprovante removido com sucesso!');
+            this.refreshAll(); // Atualiza a grid na hora
+          },
+          error: (err) => {
+            this.toastr.error('Erro ao remover o comprovante.');
+            console.error(err);
+          }
+        });
     }
   }
 
@@ -578,6 +648,15 @@ export class LancamentoListFormComponent implements OnInit {
     }
   }
 
+  relatorioSinteticoForm = this.formBuilder.group({
+    dtinicio: [null, Validators.required],
+    dtfim: [null, Validators.required],
+    tipo: [null],
+    contaId: [null],
+    setorId: [null],
+    formato: ['pdf', Validators.required],
+  });
+
   private buildLancamentoForm() {
     this.lancamentoForm = this.formBuilder.group({
       id: [null],
@@ -645,18 +724,38 @@ export class LancamentoListFormComponent implements OnInit {
       return;
     }
 
-  this.lancamentoService.gerarMovimentacaoFinanceiraPdf(this.filtro, 'movimentacao-financeira')
-    .subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        window.open(url, '_blank');
-      },
-      error: (error) => {
-        this.toastr.error('Erro ao gerar o relatório PDF.');
-        console.error(error);
-      }
-    });
-}
+    this.lancamentoService.gerarMovimentacaoFinanceiraPdf(this.filtro, 'movimentacao-financeira')
+      .subscribe({
+        next: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          window.open(url, '_blank');
+        },
+        error: (error) => {
+          this.toastr.error('Erro ao gerar o relatório PDF.');
+          console.error(error);
+        }
+      });
+  }
+
+  //Relatorio Sintetico
+  imprimirSintetico(): void {
+    if (this.lancamentos.length === 0) {                 //checa o array
+      this.toastr.warning('Nenhum registro para imprimir.');
+      return;
+    }
+
+    this.lancamentoService.gerarRelatorioSinteticoPdf(this.filtro)
+      .subscribe({
+        next: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          window.open(url, '_blank');
+        },
+        error: (error) => {
+          this.toastr.error('Erro ao gerar o relatório PDF.');
+          console.error(error);
+        }
+      });
+  }
 
   imprimirRecibo(id: any) {
     if (!id) {
@@ -676,6 +775,11 @@ export class LancamentoListFormComponent implements OnInit {
         url: (`${API_CONFIG.baseUrl}/relatorios/entradas/?nome=entrada-dizimo-oferta&igreja=${this.igrejaId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`)
       },
       { separator: true },
+      {
+        label: 'Sintético Financeiro',
+        icon: 'pi pi-chart-bar',
+        command: () => this.abrirRelatorioSintetico()
+      },
       {
         label: 'Dízimo de obreiros',
         icon: 'pi pi-dollar',
@@ -777,6 +881,83 @@ export class LancamentoListFormComponent implements OnInit {
         url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=fechamento-setor&setor=${this.setorId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`)
       },
     ];
+  }
+
+
+  // ═══ MÉTODOS ═══
+
+  abrirRelatorioSintetico(): void {
+    this.relatorioSinteticoForm.reset({ formato: 'pdf' });
+    this.carregarContasESetores();
+    this.positionRelatorioSintetico = 'top';
+    this.visibleRelatorioSintetico = true;
+  }
+
+  fecharRelatorioSintetico(): void {
+    this.visibleRelatorioSintetico = false;
+    this.relatorioSinteticoForm.reset({ formato: 'pdf' });
+  }
+
+  private carregarContasESetores(): void {
+    const igrejaId = igrejaIdSignal();
+
+    this.contaService.getContasByIgreja(igrejaId).subscribe({
+      next: (contas) => this.contasRelatorio = contas,
+      error: (err) => console.error('Erro ao carregar contas:', err)
+    });
+
+    this.setorService.getSetoresLista().subscribe({
+      next: (setores) => this.setoresRelatorio = setores,
+      error: (err) => console.error('Erro ao carregar setores:', err)
+    });
+  }
+
+  gerarRelatorioSintetico(): void {
+    if (this.relatorioSinteticoForm.invalid) {
+      this.relatorioSinteticoForm.markAllAsTouched();
+      return;
+    }
+
+    const { dtinicio, dtfim, tipo, contaId, setorId, formato } = this.relatorioSinteticoForm.value;
+    const igrejaId = igrejaIdSignal();
+
+    // Monta a URL base
+    let url = `${API_CONFIG.baseUrl}/relatorios/gerar-pdf-sintetico` +
+      `?igreja=${igrejaId}` +
+      `&dtinicio=${dtinicio}` +
+      `&dtfim=${dtfim}`;
+
+    if (tipo) url += `&tipo=${tipo}`;
+    if (contaId) url += `&contaId=${contaId}`;
+    if (setorId) url += `&setorId=${setorId}`;
+
+    this.gerandoRelatorio = true;
+
+    if (formato === 'pdf') {
+      // Abre o PDF em nova aba
+      window.open(url, '_blank');
+      this.gerandoRelatorio = false;
+      this.visibleRelatorioSintetico = false;
+    } else {
+      // Excel — download direto
+      this.http.get(url.replace('gerar-pdf-sintetico', 'gerar-excel-sintetico'),
+        { responseType: 'blob' }
+      ).subscribe({
+        next: (blob) => {
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = `relatorio-sintetico-${dtinicio}-${dtfim}.xlsx`;
+          link.click();
+          URL.revokeObjectURL(link.href);
+          this.gerandoRelatorio = false;
+          this.visibleRelatorioSintetico = false;
+        },
+        error: (err) => {
+          console.error('Erro ao gerar Excel:', err);
+          this.gerandoRelatorio = false;
+        }
+      });
+    }
   }
 
   periodo() {
@@ -1084,7 +1265,7 @@ export class LancamentoListFormComponent implements OnInit {
                       lancamento.id = this.lancamentoIdOrigem;
                       lancamento.formaIdTransferencia = this.formaIdTransferencia;
                       lancamento.lancamentoIdTransferencia = this.lancamentoIdTransferencia;
-                      lancamento.categoriaId = 6;
+                      lancamento.categoriaId = 28;
                       let valor = this.lancamentoForm.controls['valor'].value
                       valor = valor;
                       lancamento.valor = valor;
@@ -1096,7 +1277,7 @@ export class LancamentoListFormComponent implements OnInit {
                           next: () => {
                             this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
                             // this.toastr.success('Registro atualizado com sucesso!', 'Atualização');
-                             this.toastr.success('Operação realizada com sucesso!', 'Transferência');
+                            this.toastr.success('Operação realizada com sucesso!', 'Transferência');
                             this.resetLancamento();
                             this.inicializarDados();
                           }
@@ -1224,7 +1405,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   onChangeTransferencia(id: { value: any; }) {
     console.log(id.value)
-     this.lancamentoForm.controls['categoriaId'].setValue(id.value);
+    this.lancamentoForm.controls['categoriaId'].setValue(id.value);
   }
 
   onChangeTPConta(event: { value: any; }) {
@@ -1488,6 +1669,10 @@ export class LancamentoListFormComponent implements OnInit {
       case "Transferencia": //Transferencia de forma pgto
         let catTransferencia = this.categorias.filter(cat => (cat.tipo == 'Receita')); //Receita LC = Receita Livro Caixa
         this.categoriasFiltradas = catTransferencia;
+
+        const catTransferenciaDefault = this.categorias.find(cat => cat.id === 8);
+        this.lancamentoForm.controls['categoriaId'].setValue(catTransferenciaDefault?.id ?? 8);
+
         this.pageTitle = "Transferência".toUpperCase();
         this.lancamentoForm.controls['cadastrado'].setValue('nao');
         this.lancamentoForm.controls['igrejaId'].setValue(this.igrejaId);
@@ -1504,7 +1689,6 @@ export class LancamentoListFormComponent implements OnInit {
         this.lancamentoForm.controls['pessoaId'].setValue(0);
         this.lancamentoForm.controls['nome'].setValue('Transferencia');
         this.lancamentoForm.controls['tituloMin'].setValue("Membro");
-        this.lancamentoForm.controls['categoriaId'].setValue(this.categorias[0].id);
         break;
 
       case "Permuta": //Transferencia de forma pgto;

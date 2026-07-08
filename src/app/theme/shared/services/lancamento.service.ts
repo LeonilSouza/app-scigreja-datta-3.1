@@ -173,6 +173,65 @@ export class LancamentoService {
     });
   }
 
+  // METODOS COM CLUDE APOIO
+  gerarRelatorioSinteticoPdf(filtro: LancamentoFiltro): Observable<Blob> {
+  let params = new HttpParams()
+      .set('igreja',  filtro.igrejaId.toString())
+      .set('dtinicio', filtro.dtinicio)
+      .set('dtfim',    filtro.dtfim);
+  // setor é opcional
+  if (filtro.setorId != null) {
+    params = params.set('setorId', filtro.setorId.toString());
+  }
+
+  /* Quais filtros adicionais o backend aceita?
+     No nosso controller ele só espera igreja, setor, dtinicio, dtfim.
+     Então não precisamos mandar contas, formas, etc.
+     Mas, se amanhã você ajustar o controller para aceitar mais,
+     basta adicionar aqui da mesma forma. */
+
+  return this.http.get(
+      `${API_CONFIG.baseUrl}/relatorios/gerar-pdf-sintetico`,
+      { params, responseType: 'blob' });
+}
+
+gerarRelatorioAnaliticoPdf(filtro: LancamentoFiltro): Observable<Blob> {
+    let params = new HttpParams()
+        .set('igreja',   filtro.igrejaId.toString())
+        .set('dtinicio', filtro.dtinicio)
+        .set('dtfim',    filtro.dtfim)
+        .set('setorId',  filtro.setorId.toString()); // vem automático do signal
+
+    if (filtro.tipoLancamento != '') params = params.set('tipoLancamento', filtro.tipoLancamento);
+    if (filtro.contas         != '') params = params.set('contaId',        filtro.contas);
+    if (filtro.categorias     != '') params = params.set('categoriaId',    filtro.categorias);
+    if (filtro.formas         != '') params = params.set('formaId',        filtro.formas);
+
+    return this.http.get(
+        `${API_CONFIG.baseUrl}/relatorios/gerar-pdf-analitico`,
+        { params, responseType: 'blob' });
+}
+
+gerarRelatorioAnaliticoExcel(filtro: LancamentoFiltro): Observable<Blob> {
+    let params = new HttpParams()
+        .set('igreja',   filtro.igrejaId.toString())
+        .set('dtinicio', filtro.dtinicio)
+        .set('dtfim',    filtro.dtfim)
+        .set('setorId',  filtro.setorId.toString()); // vem automático do signal
+
+    if (filtro.tipoLancamento != '') params = params.set('tipoLancamento', filtro.tipoLancamento);
+    if (filtro.contas         != '') params = params.set('contaId',        filtro.contas);
+    if (filtro.categorias     != '') params = params.set('categoriaId',    filtro.categorias);
+    if (filtro.formas         != '') params = params.set('formaId',        filtro.formas);
+
+    return this.http.get(
+        `${API_CONFIG.baseUrl}/relatorios/gerar-excel-analitico`,
+        { params, responseType: 'blob' });
+}
+
+
+// FIM CLADE
+
   //Separado
   getSaldoFinalContasFromIgreja(igrejaId: any) {
     return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/saldocontas/?igreja=${igrejaId}`)
