@@ -38,7 +38,6 @@ import { IgrejaService } from './services/igreja.service';
 import { SelectModule } from 'primeng/select';
 
 import { InputNumberModule } from 'primeng/inputnumber';
-import { TabViewModule } from 'primeng/tabview';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { InputMaskModule } from 'primeng/inputmask';
 import { RadioButtonModule } from 'primeng/radiobutton';
@@ -55,6 +54,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 
 import localePt from '@angular/common/locales/pt';
 import { DialogModule } from 'primeng/dialog';
+import { TabsModule } from 'primeng/tabs';
 
 registerLocaleData(localePt);
 
@@ -86,7 +86,8 @@ registerLocaleData(localePt);
     RadioButtonModule,
     CheckboxModule,
     ToastModule,
-    TabViewModule,
+    // TabViewModule,
+    TabsModule,
     ToolbarModule,
     TableModule,
     AccordionModule,
@@ -126,12 +127,13 @@ registerLocaleData(localePt);
     InputMaskModule,
     RadioButtonModule,
     TableModule,
-    TabViewModule,
+    // TabViewModule,
     ToolbarModule,
     AccordionModule,
     SplitButtonModule,
     SelectModule,
-    DialogModule
+    DialogModule,
+    TabsModule
   ],
   providers: [
     UsuarioService,

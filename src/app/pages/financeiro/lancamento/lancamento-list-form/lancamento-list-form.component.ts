@@ -26,28 +26,46 @@ import { LancamentoService } from 'src/app/theme/shared/services/lancamento.serv
 import { igrejaIdSignal, nomeIgrejaSignal, nomeUsuarioSignal, setorIdSignal } from 'src/app/theme/shared/_helpers/shared-signals';
 import { DatePicker } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'; // Importe o operador
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Table } from 'primeng/table';
 import { FileUploadModule } from 'primeng/fileupload';
 import { SetorService } from 'src/app/theme/shared/services/setor.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
+// ═══════════════════════════════════════════════════════
+// FILTRO PRINCIPAL — usado pela grid, totais e relatórios
+// NÃO ALTERAR OS TIPOS (string) — backend depende disso
+// ═══════════════════════════════════════════════════════
 export class LancamentoFiltro {
   igrejaId: number = igrejaIdSignal();
   setorId: number = setorIdSignal();
   nome: string = '';
   busca: string = '';
-  dtinicio: string = ''; // No Java usamos @Param("dtinicio")
-  dtfim: string = '';    // No Java usamos @Param("dtfim")
+  dtinicio: string = '';
+  dtfim: string = '';
   page: number = 0;
   linesPerPage: number = 10;
   contas: string = "";
   categorias: string = "";
   formas: string = "";
   centroCustos: string = "";
-  tipoLancamento: string = ""; // Inicie com um padrão 
-  incluirPermuta: boolean = false; // Inicie com um padrão 
-  nomeRelatorio: string = ""; // Nome do arquivo do relatorio jasper - layout no java
+  tipoLancamento: string = "";
+  incluirPermuta: boolean = false;
+  nomeRelatorio: string = "";
+}
+
+// ═══════════════════════════════════════════════════════
+// FILTRO EXCLUSIVO DO RELATÓRIO ANALÍTICO
+// Usa arrays de number para o multiselect
+// NÃO interfere no LancamentoFiltro principal
+// ═══════════════════════════════════════════════════════
+export class RelatorioAnaliticoFiltro {
+  categoriasIds: number[] = [];
+  formasIds: number[] = [];
+  tipoLancamento: string = '';
+  formato: string = '';
+  contaId: number | null = null; 
+  centroCustoIds: number | null = null;
 }
 
 @Component({
@@ -72,25 +90,15 @@ export class LancamentoFiltro {
     PessoaService,
     FormaService,
     SetorService
-
   ]
 })
 export class LancamentoListFormComponent implements OnInit {
 
-  // Adicione essa variável no topo da classe
   private searchTimer: any;
+  private destroyRef = inject(DestroyRef);
 
-  positionLancamento: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
-  positionModalTransferencia: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
-  positionModalPermuta: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
-
-  visibleLancamento: boolean = false;
-  visibleModalTransferencia: boolean = false;
-  visibleModalPermuta: boolean = false;
-
-  private destroyRef = inject(DestroyRef); // 1. Injete a referência de destruição
-
-  nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
+  // ── Signals ──────────────────────────────────────────
+  nomeIgrejaSignal = nomeIgrejaSignal;
   igrejaIdSignal = igrejaIdSignal;
   nomeUsuarioSignal = nomeUsuarioSignal;
   setorIdSignal = setorIdSignal;
@@ -101,31 +109,28 @@ export class LancamentoListFormComponent implements OnInit {
   setorId = setorIdSignal();
 
   imodo = signal<number>(0);
-  // private destroy$: Subject<void> = new Subject<void>();
 
+  // ── Filtros ───────────────────────────────────────────
   filtro = new LancamentoFiltro();
 
-  pesquisa?: boolean = false;
+  // Filtro exclusivo do relatório analítico (multiselect)
+  relatorioAnalitico = new RelatorioAnaliticoFiltro();
 
-  descricao: string = '';
+  // ── Modal positions ───────────────────────────────────
+  positionLancamento: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
+  positionModalTransferencia: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
+  positionModalPermuta: 'left' | 'right' | 'top' | 'bottom' | 'center' | 'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
 
-  valorTpLancamento: any = 'Todas';
+  // ── Visibilidade de modais ────────────────────────────
+  visibleLancamento = false;
+  visibleModalTransferencia = false;
+  visibleModalPermuta = false;
 
-  indexId!: number;
-  indexIdTransferencia!: number;
-
-  length = signal(0);
-
-  transf!: number;
-
-  fb!: FormGroup;
-
-  @ViewChild('dtlancamento') grid!: Table;
-
-  // ═══ VARIÁVEIS ═══
+  // ── Relatório Sintético ───────────────────────────────
   visibleRelatorioSintetico = false;
   positionRelatorioSintetico: 'top' | 'bottom' | 'left' | 'right' | 'center' = 'top';
   gerandoRelatorio = false;
+  formatoSintetico: string = '';  // usado só no sintético
 
   contasRelatorio: any[] = [];
   setoresRelatorio: any[] = [];
@@ -140,22 +145,100 @@ export class LancamentoListFormComponent implements OnInit {
     { label: 'Excel', value: 'excel' },
   ];
 
-  // Mes atual
+  // ── Período ───────────────────────────────────────────
   rangeDates!: string;
   dtinicio: string = "";
   dtfim: string = "";
+  dataDiaAnterior = "";
 
-  // Saldo dia anterior
-  dataDiaAnterior: string = ""; // Data para pegar o saldo anterior
+  // ── Controles de UI ──────────────────────────────────
+  pesquisa?: boolean = false;
+  descricao = '';
+  valorTpLancamento: any = 'Todas';
+  crtSaldoFinal = false;
+  membroCadastrado = true;
+  crtCategoria = 3;
 
-  //  formaId: number = 2; //Forma - Transferencia Dinheiro por outra forma //Inicia com a forma Cartao - GT
-  transferenciaCategoriaId: number = 1;
+  // ── IDs auxiliares (strings para o backend) ──────────
+  contaIds!: string;
+  contaIdsAux!: string;
+  contaIdsAux1!: string;
+  formasIds!: string;
+  formaIdsAux!: string;
+  categoriaIds!: string;
+  categoriaIdsAux!: string;
+  categoriaFiltrada!: string;
+  centroCustoIds!: string;
 
-  pessoaId: number = 0;
+  // ── IDs individuais ───────────────────────────────────
+  contaId!: number;
+  contaIdTransferencia!: number;
+  formaIdTransferencia!: number;
+  formaId!: number;
+  categoriaId!: number;
+  tipoLancamento = "".toLowerCase();
+  transferenciaCategoriaId = 1;
+  pessoaId = 0;
+
+  // ── Totais ────────────────────────────────────────────
+  totalCreditos: number = 0;
+  total_ofertas_alcadas: number = 0;
+  totalDebitos: number = 0;
+  totalEventos: number = 0;
+  totalDiversos: number = 0;
+  totalMissoes: number = 0;
+  totalOfertas: number = 0;
+  totalReceitaDizimo: number = 0;
+  saldoAnterior: number = 0;
+  saldoFinalContas!: number;
+  totalRegistros = 0;
+  totalRegistrosConta = 0;
+
+  // ── Índices de seleção ────────────────────────────────
+  indexId!: number;
+  indexIdTransferencia!: number;
+  length = signal(0);
+  transf!: number;
+
+  // ── Lançamento IDs de transferência ──────────────────
+  lancamentoId!: number;
+  lancamentoIdOrigem!: number;
+  lancamentoIdTransferencia!: number;
+
+  // ── Listas de dados ───────────────────────────────────
+  lancamentos!: LancamentoDTO[];
+  selectedLancamentos!: LancamentoDTO[];
+
+  contas: ContaDTO[] = [];
+  contasTransferencia: ContaDTO[] = [];
+  formasPermuta: FormaDTO[] = [];
+  categorias: CategoriaDTO[] = [];   // todas as categorias
+  categoriasFiltradas: CategoriaDTO[] = [];   // filtradas por tipo (usadas nos combos)
+  centroCustos: CentroCustoDTO[] = [];
+  pessoas: PessoaDTO[] = [];
+  formas: FormaDTO[] = [];
+
+  // ── Formulários ───────────────────────────────────────
+  fb!: FormGroup;
   contaForm!: FormGroup;
   formaForm!: FormGroup;
   categoriaForm!: FormGroup;
   centroCustoForm!: FormGroup;
+  lancamentoForm!: FormGroup;
+  relatorioSinteticoForm!: FormGroup;
+
+  // ── Modelos ───────────────────────────────────────────
+  lancamento: LancamentoDTO = new LancamentoDTO();
+  pessoa: PessoaDTO = new PessoaDTO();
+  categoria: CategoriaDTO = new CategoriaDTO();
+
+  // ── Misc ──────────────────────────────────────────────
+  error = '';
+  pageTitle!: string;
+  lancamentoNome = "";
+  subscription!: Subscription;
+  submittingForm = false;
+  activeTab: string;
 
   dataAtual: any = moment();
 
@@ -163,90 +246,13 @@ export class LancamentoListFormComponent implements OnInit {
     { nome: "Todas" },
     { nome: "Receita" },
     { nome: "Despesa" }
-
-  ]
+  ];
 
   datas = [
     { nome: "Hoje" },
     { nome: "Mes Atual" },
     { nome: "Mês Anterior" }
-
-  ]
-  // Valor Desconsiderando Permuta e Transferencia Alçadas
-  totalCreditos: number = 0;
-
-  // Ofertas Alcada 1 e 2 
-  total_ofertas_alcadas: number = 0;
-
-  // Valor desconsiderando o debito de Permuta
-  totalDebitos: number = 0;
-  totalEventos: number = 0;
-
-  totalDiversos: number = 0;
-
-  totalMissoes: number = 0;
-  totalOfertas: number = 0;
-  totalReceitaDizimo: number = 0;
-
-  saldoAnterior: number = 0;
-  saldoFinalContas!: number;
-
-  crtSaldoFinal: boolean = false;
-  membroCadastrado: boolean = true;
-
-  totalRegistros: number = 0
-  totalRegistrosConta: number = 0
-
-  contaId!: number;
-  contaIdTransferencia!: number;
-  formaIdTransferencia!: number;
-  formaId!: number;
-  categoriaId!: number;
-  contaIds!: string;
-  contaIdsAux!: string;
-  contaIdsAux1!: string;
-  formasIds!: string;
-  formaIdsAux!: string;
-  categoriaFiltrada!: string;
-
-  categoriaIds!: string;
-  centroCustoIds!: string;
-  tipoLancamento: string = "".toLowerCase();
-  categoriaIdsAux!: string;
-  crtCategoria: number = 3; //Para controlar: Todas, Receita e Despesa em categorias
-
-  lancamentos!: LancamentoDTO[];
-  selectedLancamentos!: LancamentoDTO[];
-
-  contas: ContaDTO[] = [];
-  contasTransferencia: ContaDTO[] = [];
-  formasPermuta: FormaDTO[] = [];
-  categorias: CategoriaDTO[] = [];  // Armazena todas as categorias. Não usada nos combos
-  categoriasFiltradas: CategoriaDTO[] = []; // Armazena as categorias filtradas por tipo. Usada nos combo.
-  centroCustos: CentroCustoDTO[] = [];
-  pessoas: PessoaDTO[] = [];
-  formas: FormaDTO[] = [];
-
-  error = '';
-
-  lancamentoId!: number;
-
-  lancamentoIdOrigem!: number;
-  lancamentoIdTransferencia!: number;
-
-  public page = 0;
-
-
-  public activeTab: string;
-
-  lancamentoNome: string = "";
-  subscription!: Subscription;
-  lancamentoForm!: FormGroup;
-  lancamento: LancamentoDTO = new LancamentoDTO();
-  pessoa: PessoaDTO = new PessoaDTO();
-  categoria: CategoriaDTO = new CategoriaDTO();
-  pageTitle!: string;
-  submittingForm: boolean = false;
+  ];
 
   imaskConfig = {
     mask: Number,
@@ -258,9 +264,10 @@ export class LancamentoListFormComponent implements OnInit {
   };
 
   printItems!: MenuItem[];
-
   selecaoItemsIndividual!: MenuItem[];
   selecaoItemsMultiplos!: MenuItem[];
+
+  @ViewChild('dtlancamento') grid!: Table;
 
   constructor(
     private lancamentoService: LancamentoService,
@@ -277,45 +284,43 @@ export class LancamentoListFormComponent implements OnInit {
     private formaService: FormaService,
     private setorService: SetorService,
     public http: HttpClient
-
   ) {
     this.activeTab = 'home';
   }
 
+  // ════════════════════════════════════════════════════
+  // LIFECYCLE
+  // ════════════════════════════════════════════════════
+
   ngOnInit() {
     this.buildLancamentoForm();
+    this.buildRelatorioSinteticoForm();
     this.periodo();
     this.inicializarDados();
     this.loadPessoas();
-    this.periodo();
+
     this.rangeDates = this.sharedService.rangeMesAtual();
     this.dtinicio = this.sharedService.primeiroDiaMes();
     this.dtfim = this.sharedService.ultimoDiaMes();
-
     this.filtro.dtinicio = this.sharedService.primeiroDiaMes();
     this.filtro.dtfim = this.sharedService.ultimoDiaMes();
 
-    // Data um dia anterior
     const data_americana = this.sharedService.formataDataUS(this.dtinicio);
-    const data_subtraida = this.sharedService.dataSubDay(data_americana, 1);
-    this.dataDiaAnterior = data_subtraida;
+    this.dataDiaAnterior = this.sharedService.dataSubDay(data_americana, 1);
 
     this.contaForm = new FormGroup({
       selectedContas: new FormControl<ContaDTO[] | null>(null)
     });
-
     this.formaForm = new FormGroup({
       selectedFormas: new FormControl<FormaDTO[] | null>(null)
     });
-
     this.categoriaForm = new FormGroup({
       selectedCategorias: new FormControl<CategoriaDTO[] | null>(null)
     });
-
     this.centroCustoForm = new FormGroup({
       selectedCentroCustos: new FormControl<CentroCustoDTO[] | null>(null)
     });
-  };
+  }
 
   ngOnDestroy() {
     if (this.subscription) {
@@ -323,83 +328,11 @@ export class LancamentoListFormComponent implements OnInit {
     }
   }
 
-  // Com Claude no apoio
-  getCorForma(formaId: number): any {
-    switch (formaId) {
-        case 1: return { 'color': '#009900', 'font-weight': 'bold' }; // Dinheiro - Verde
-        case 2: return { 'color': '#ffc107d3', 'font-weight': 'bold' }; // Cartão - Amarelo
-        case 3: return { 'color': '#FF8C00', 'font-weight': 'bold' }; // Pix - Laranja
-        default: return {};
-    }
-}
-
-gerarAnaliticoPdf(): void {
-    this.filtro.nomeRelatorio = 'relatorio-analitico';
-    this.lancamentoService.gerarRelatorioAnaliticoPdf(this.filtro).subscribe({
-        next: (blob) => {
-            const url = window.URL.createObjectURL(blob);
-            window.open(url, '_blank');
-        },
-        error: () => this.messageService.add({
-            severity: 'error',
-            summary: 'Erro',
-            detail: 'Erro ao gerar relatório analítico PDF'
-        })
-    });
-}
-
-gerarAnaliticoExcel(): void {
-    this.filtro.nomeRelatorio = 'relatorio-analitico';
-    this.lancamentoService.gerarRelatorioAnaliticoExcel(this.filtro).subscribe({
-        next: (blob) => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `relatorio-analitico-${this.filtro.dtinicio}-${this.filtro.dtfim}.xlsx`;
-            a.click();
-            window.URL.revokeObjectURL(url);
-        },
-        error: () => this.messageService.add({
-            severity: 'error',
-            summary: 'Erro',
-            detail: 'Erro ao gerar relatório analítico Excel'
-        })
-    });
-}
-
-  // Fim Claude 
-
-  //Filtra nome, historico e valor
-  onGlobalFilter() {
-    // Limpa o timer anterior para não disparar várias buscas seguidas
-    if (this.searchTimer) {
-      clearTimeout(this.searchTimer);
-    }
-
-    // Espera 400ms após a última tecla para disparar a busca (Debounce)
-    this.searchTimer = setTimeout(() => {
-      this.filtro.page = 0; // Volta para a primeira página
-      if (this.grid) {
-        this.grid.first = 0;
-      }
-      this.refreshAll(); // Dispara a busca Multi-Campo no Java
-    }, 400);
-  }
-
-
-  aoMudarPagina(event: LazyLoadEvent) { // Metodo será chamado toda vez que mudar de pagina ou houver necessidade de dados novos
-    this.filtro.page = event!.first! / event!.rows!;
-    this.filtro.linesPerPage = event.rows!;
-
-    // SÓ dispara a busca se o usuário já tiver clicado no botão "Filtrar" 
-    // ou se for apenas uma mudança de página de uma busca que já existe.
-    if (this.pesquisa) {
-      this.refreshAll();
-    }
-  }
+  // ════════════════════════════════════════════════════
+  // INICIALIZAÇÃO DE DADOS
+  // ════════════════════════════════════════════════════
 
   inicializarDados() {
-    // Carrega tudo em paralelo. Só prossegue quando todos terminarem.
     forkJoin({
       formas: this.formaService.getListFormaFromIgreja(this.igrejaId),
       categorias: this.categoriaService.getListCategoriaFromIgreja(this.igrejaId),
@@ -409,79 +342,80 @@ gerarAnaliticoExcel(): void {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(res => {
 
-        //////////////////// formas
+        // ── FORMAS ──────────────────────────────────────
         this.formas = res.formas;
-        let ids = res.formas.map((c: { id: any; }) => c.id).join(',');
-        this.formasIds = ids;
-        this.formaIdsAux = ids;
+        this.formasIds = res.formas.map((f: any) => f.id).join(',');
+        this.formaIdsAux = this.formasIds;
+        this.filtro.formas = this.formasIds;
         this.loadFormasPermuta();
 
-        /////////////////// Fim formas
-
-        ////////////////// categorias
+        // ── CATEGORIAS ──────────────────────────────────
         this.categorias = res.categorias;
-        let cat1 = this.categorias.filter(cat => cat.id?.toString());
-        let cat2 = cat1.map(c => {
-          return c.id?.toString(); // Retorna nova string de todos os ids de categorias. Necessario para o Backend
-        })
-        this.categoriaIds = cat2.toString();
-        this.categoriaIdsAux = cat2.toString();
-        this.filtro.categorias = cat2.toString();
+        this.categoriaIds = res.categorias.map((c: any) => c.id).join(',');
+        this.categoriaIdsAux = this.categoriaIds;
+        this.filtro.categorias = this.categoriaIds;
 
-        //////////////// Fim categorias
+        // Pré-seleciona TODAS no multiselect do relatório analítico
+        this.relatorioAnalitico.categoriasIds = res.categorias.map((c: any) => c.id);
+        this.relatorioAnalitico.formasIds = res.formas.map((f: any) => f.id);
 
-        ////////////////// centro custos
+        // ── CENTRO CUSTOS ────────────────────────────────
         this.centroCustos = res.centroCustos;
-        let cc1 = this.centroCustos.filter(cc => cc.id?.toString());
-        let cc2 = cc1.map(c => {
-          return c.id?.toString(); // Retorna nova string de todos os ids de centro custo. Necessario para o Backend
-        })
         this.centroCustoIds = '';
         this.filtro.centroCustos = '';
 
-        //////////////// Fim centro custos
-
-        /////////// contas
-        let total = 0;
-        if (res.contas.length == 0) {
+        // ── CONTAS ───────────────────────────────────────
+        if (res.contas.length === 0) {
           Swal.fire('Atenção !!!', 'Nenhuma conta encontrada. Cadastre uma conta', 'warning');
-        } else {
-          this.contas = res.contas;
-          this.loadContasTransferencia();
-          this.contasTransferencia = res.contas;
-          let total = 0; // Garante que a variável nasce zerada antes de somar
-
-          res.contas.map((t: { saldoCalculado: number; }) => {
-            if (t.saldoCalculado) {
-              total += t.saldoCalculado;
-            }
-          });
-
-          // Atualiza o painel superior com a somatória geral das contas limpa
-          this.saldoFinalContas = total;
-
-          let ids = res.contas.map((c: { id: any; }) => c.id).join(',');
-          this.contaIds = ids;
-          this.filtro.contas = ids;
-          this.contaIdsAux = ids;
-
-          ///////////// Fim contas
-
-          // Agora que temos os dados, montamos as strings de IDs iniciais
-          this.filtro.formas = res.formas.map((f: { id: any; }) => f.id).join(',');
-          this.filtro.categorias = res.categorias.map((c: { id: any; }) => c.id).join(',');
-          this.filtro.contas = res.contas.map((c: { id: any; }) => c.id).join(',');
-
-          // Só agora disparamos a primeira busca
-          this.refreshAll();
+          return;
         }
+
+        this.contas = res.contas;
+        this.contasTransferencia = res.contas;
+        this.loadContasTransferencia();
+
+        // Saldo total das contas
+        this.saldoFinalContas = res.contas.reduce(
+          (total: number, c: any) => total + (c.saldoCalculado || 0), 0
+        );
+
+        this.contaIds = res.contas.map((c: any) => c.id).join(',');
+        this.contaIdsAux = this.contaIds;
+        this.filtro.contas = this.contaIds;
+
+        // Dispara a primeira busca
+        this.refreshAll();
       });
   }
 
-  // Método centralizador para atualizar Grid + Totais
+  // ════════════════════════════════════════════════════
+  // REFRESH CENTRAL
+  // ════════════════════════════════════════════════════
+
   refreshAll() {
-    this.loadLancamentos();      // Atualiza a Grid
-    this.getTotalizacoes();      // Chama todos os seus métodos de soma
+    this.loadLancamentos();
+    this.getTotalizacoes();
+  }
+
+  // ════════════════════════════════════════════════════
+  // LOAD DADOS
+  // ════════════════════════════════════════════════════
+
+  loadLancamentos() {
+    this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.lancamentos = response['content'].sort((a: { id: number }, b: { id: number }) => b.id - a.id);
+          this.totalRegistros = response.totalElements;
+          this.pesquisa = true;
+          this.getPrinters();
+        },
+        error: (error) => {
+          this.error = error;
+          this.showError(error);
+        }
+      });
   }
 
   getTotalizacoes() {
@@ -489,15 +423,15 @@ gerarAnaliticoExcel(): void {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: total => {
-          this.totalReceitaDizimo = total.totalDizimo || 0.00;
-          this.totalCreditos = total.totalReceitas || 0.00;
-          this.saldoAnterior = total.saldoAnterior || 0.00;
-          this.totalOfertas = total.totalOferta || 0.00;
-          this.total_ofertas_alcadas = total.totalOfertaAlcadas || 0.00;
-          this.totalDebitos = total.totalDespesas || 0.00;
-          this.totalEventos = total.totalEventos || 0.00;
-          this.totalMissoes = total.totalMissoes || 0.00;
-          this.totalDiversos = total.totalDiversos || 0.00;
+          this.totalReceitaDizimo = total.totalDizimo || 0;
+          this.totalCreditos = total.totalReceitas || 0;
+          this.saldoAnterior = total.saldoAnterior || 0;
+          this.totalOfertas = total.totalOferta || 0;
+          this.total_ofertas_alcadas = total.totalOfertaAlcadas || 0;
+          this.totalDebitos = total.totalDespesas || 0;
+          this.totalEventos = total.totalEventos || 0;
+          this.totalMissoes = total.totalMissoes || 0;
+          this.totalDiversos = total.totalDiversos || 0;
         },
         error: err => {
           this.toastr.error('Erro ao obter totalizações.');
@@ -506,230 +440,147 @@ gerarAnaliticoExcel(): void {
       });
   }
 
-  visualizarComprovante(lancamentoId: number) {
-    this.lancamentoService.baixarComprovante(lancamentoId)
+  loadPessoas() {
+    this.pessoaService.getPessoasAtivasFromIgreja(this.igrejaId, 'Ativo')
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (blob: Blob) => {
-          // Cria um endereço temporário na memória do navegador para o arquivo
-          const url = window.URL.createObjectURL(blob);
-          // Abre o PDF ou imagem em uma nova aba (_blank)
-          window.open(url, '_blank');
-        },
-        error: (err) => {
-          this.toastr.error('Erro ao abrir o arquivo ou anexo não encontrado.');
-          console.error(err);
-        }
+        next: (response) => { this.pessoas = response; },
+        error: () => { }
       });
   }
 
-  // Método para deletar o anexo
-  excluirComprovante1(lancamentoId: number) {
-    if (confirm('anexado a este lançamento?')) {
-      this.lancamentoService.deletarComprovante(lancamentoId)
-        .subscribe({
-          next: () => {
-            this.toastr.success('Comprovante removido com sucesso!');
-            this.refreshAll(); // Atualiza a grid na hora
-          },
-          error: (err) => {
-            this.toastr.error('Erro ao remover o comprovante.');
-            console.error(err);
-          }
-        });
-    }
-  }
-
-  excluirComprovante(lancamentoId: number) {
-    Swal.fire({
-      title: 'Exclusão',
-      text: 'Tem certeza que deseja remover o comprovante?',
-      icon: 'error',
-      showCloseButton: true,
-      showCancelButton: true,
-    }).then((willDelete) => {
-      if (willDelete.dismiss) {
-        // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
-      } else {
-        this.lancamentoService.deletarComprovante(lancamentoId).subscribe({
-          next: () => {
-            this.toastr.success('Comprovante removido com sucesso!');
-            this.refreshAll(); // Atualiza a grid na hora
-          },
-          error: (err) => {
-            this.toastr.error('Erro ao remover o comprovante.');
-            console.error(err);
-          }
-        });
-        // Swal.fire('Exclusão', 'Registro excluido com sucesso!', 'success');
-      }
-    });
-  }
-
-
-  linhasSelecionada(event: string | any[]): void {
-    this.length.set(event.length);
-    if (event.length >= 1) {
-      this.indexId = event[0].id;
-      this.indexIdTransferencia = event[0].lancamentoIdTransferencia;
-    }
-
-  }
-
-  aoDesmarcar(event: any) {
-    // Pega o evento de desmaracar o checkbox
-    this.length.set(0);
-  }
-
-  deleteIndividual() {
-    this.exclusaoLancamento(this.indexId, this.indexIdTransferencia);
-  }
-
-  deleteMultiplos() {
-    this.exclusaoLancamento(this.indexId, this.indexIdTransferencia);
-  }
-
-
   loadContasTransferencia() {
-    this.contasTransferencia = this.contas.map(c => {
-      return {
-        contaIdTransferencia: c.id,
-        nome: c.nome
-      }
-    });
+    this.contasTransferencia = this.contas.map(c => ({
+      contaIdTransferencia: c.id,
+      nome: c.nome
+    }));
   }
 
   loadFormasPermuta() {
-    let fr1 = this.formas.filter(fr => fr.id !== 1);
-    this.formasPermuta = fr1.map(f => {
-      return {
-        formaIdTransferencia: f.id,
-        nome: f.nome
-      }
-    });
+    this.formasPermuta = this.formas
+      .filter(fr => fr.id !== 1)
+      .map(f => ({ formaIdTransferencia: f.id, nome: f.nome }));
   }
 
   loadCentroCustos() {
     this.centroCustoService.getListCentroCustoFromIgreja(this.igrejaId)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: response => {
-          this.centroCustos = response;
-        },
+        next: response => { this.centroCustos = response; },
         error: () => { }
-      })
+      });
   }
 
+  // ════════════════════════════════════════════════════
+  // RELATÓRIOS — SINTÉTICO
+  // ════════════════════════════════════════════════════
 
-  submitFormLancamento() {
-    this.submittingForm = true;
-    if (this.imodo() === 0)
-      this.createLancamento();
-    else
-      this.updateLancamento();
-
-  }
-
-  limpaCheckbox() {
-    this.selectedLancamentos ? this.selectedLancamentos = [] : this.selectedLancamentos = [];
-    this.length.set(0);
-  }
-
-  submitFormTransferencia() {
-    this.submittingForm = true;
-    if (this.imodo() === 0) {
-      this.createLancamentoTransferencia();
+  gerarRelatorioSintetico(): void {
+    if (this.formatoSintetico === 'pdf') {
+      this.lancamentoService.gerarRelatorioSinteticoPdf(this.filtro)
+        .subscribe({ next: (blob) => { window.open(URL.createObjectURL(blob), '_blank'); } });
+    } else {
+      this.lancamentoService.gerarRelatorioSinteticoExcel(this.filtro)
+        .subscribe({
+          next: (blob) => {
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `sintetico-${this.filtro.dtinicio}-${this.filtro.dtfim}.xlsx`;
+            a.click();
+          }
+        });
     }
   }
 
-  submitFormPermuta() {
-    this.submittingForm = true;
-    if (this.imodo() === 0) {
-      this.createLancamentoPermuta();
-    }
-  }
+  // ════════════════════════════════════════════════════
+  // RELATÓRIOS — ANALÍTICO
+  // Usa relatorioAnalitico (arrays) — NÃO usa filtro.categorias/formas
+  // ════════════════════════════════════════════════════
 
-  relatorioSinteticoForm = this.formBuilder.group({
-    dtinicio: [null, Validators.required],
-    dtfim: [null, Validators.required],
-    tipo: [null],
-    contaId: [null],
-    setorId: [null],
-    formato: ['pdf', Validators.required],
-  });
+  gerarRelatorioAnalitico(): void {
+    const { categoriasIds, formasIds, tipoLancamento, formato, contaId, centroCustoIds } = this.relatorioAnalitico;
 
-  private buildLancamentoForm() {
-    this.lancamentoForm = this.formBuilder.group({
-      id: [null],
-      nome: ["", [Validators.required]],
-      documento: [null],
-      historico: [null, [Validators.required]],
-      data: [null],
-      competencia: [null, [Validators.required]],
-      tipoLancamento: [null],
-      valor: [null, [Validators.required]],
-      totalConta: [null],
-      igrejaId: [this.igrejaId, [Validators.required]],
-      tituloMin: [null],
-      categoriaId: [null, [Validators.required]],
-      pessoaId: [0, [Validators.required]],
-      cadastrado: ['sim'],
-      contaId: [null, [Validators.required]],
-      setorId: [this.setorId],
-      formaId: [this.formaId, [Validators.required]],
-      centroCustoId: [null],
-      contaIdTransferencia: [null],
-      lancamentoIdTransferencia: [null],
-      formaIdTransferencia: [null],
-      comprovante: [null],
-      tipoConta: [null],
-      comprovanteNome: [null],
-      lancamentoIdOrigem: [null]
-    });
-  }
+    const obs$ = formato === 'pdf'
+      ? this.lancamentoService.gerarRelatorioAnaliticoPdf(
+          this.filtro, categoriasIds, formasIds, tipoLancamento, contaId, centroCustoIds)  // ← contaId
+      : this.lancamentoService.gerarRelatorioAnaliticoExcel(
+          this.filtro, categoriasIds, formasIds, tipoLancamento, contaId, centroCustoIds); // ← contaId
 
-  cadastradoC() {
-    this.lancamentoForm.controls['cadastrado'].setValue('sim');
-    this.lancamentoForm.controls['nome'].setValue("");
-  }
-  cadastradoNC() {
-    this.lancamentoForm.controls['cadastrado'].setValue('nao');
-    this.lancamentoForm.controls['pessoaId'].setValue(0);
-    this.lancamentoForm.controls['nome'].setValue("");
-    this.lancamentoForm.controls['tituloMin'].setValue('Membro');
-    this.pessoaId = 0;
+    this.gerandoRelatorio = true;
 
-  }
-
-  loadLancamentos() {
-    this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+    obs$.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (response) => {
-          this.lancamentos = response['content'].sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
-          this.totalRegistros = response.totalElements;
-          this.pesquisa = true; // Para permitir a paginação na primeira carga
-          this.getPrinters();
+        next: (blob) => {
+          const url = URL.createObjectURL(blob);
+          if (formato === 'pdf') {
+            window.open(url, '_blank');
+          } else {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `analitico-${this.filtro.dtinicio}-${this.filtro.dtfim}.xlsx`;
+            a.click();
+            URL.revokeObjectURL(url);
+          }
+          this.gerandoRelatorio = false;
         },
-        error: (error) => {
-          this.error = error;
-          this.showError(error)
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Erro ao gerar relatório analítico'
+          });
+          this.gerandoRelatorio = false;
         }
       });
   }
 
-  //Movimentação financeira - Agora basta criar o relatorio no jasper e passar o nome junto com o filtro
+  abrirRelatorioSintetico(): void {
+    this.carregarContasESetores();
+    this.positionRelatorioSintetico = 'top';
+    this.visibleRelatorioSintetico = true;
+  }
+
+  fecharRelatorioSintetico(): void {
+    this.visibleRelatorioSintetico = false;
+    this.formatoSintetico = '';
+
+    // Reseta o filtro analítico e pré-seleciona tudo novamente
+    this.relatorioAnalitico = new RelatorioAnaliticoFiltro();
+    this.relatorioAnalitico.categoriasIds = this.categorias.map(c => c.id!);
+    this.relatorioAnalitico.formasIds = this.formas.map(f => f.id!);
+    this.relatorioAnalitico.contaId;
+  }
+
+  private carregarContasESetores(): void {
+    this.contaService.getContasByIgreja(igrejaIdSignal()).subscribe({
+      next: (contas) => { this.contasRelatorio = contas; },
+      error: (err) => { console.error('Erro ao carregar contas:', err); }
+    });
+
+    // Busca o setor pelo signal e monta a lista só com o nome
+    this.setorService.getSetorById(setorIdSignal()).subscribe({
+        next: (setor) => { 
+            this.setoresRelatorio = [{ id: setor.id, nome: setor.nome }];
+            this.lancamentoForm.controls['nomeSetor'].setValue(this.setoresRelatorio[0].nome)
+        },
+        error: (err) => { console.error('Erro ao carregar setor:', err); }
+    });
+  }
+
+  
+
+  // ════════════════════════════════════════════════════
+  // RELATÓRIOS — OUTROS
+  // ════════════════════════════════════════════════════
+
   imprimirLancamentos(): void {
-    if (this.lancamentos.length === 0) {                 // ← checa o array
+    if (this.lancamentos.length === 0) {
       this.toastr.warning('Nenhum registro para imprimir.');
       return;
     }
-
     this.lancamentoService.gerarMovimentacaoFinanceiraPdf(this.filtro, 'movimentacao-financeira')
       .subscribe({
-        next: (blob) => {
-          const url = window.URL.createObjectURL(blob);
-          window.open(url, '_blank');
-        },
+        next: (blob) => { window.open(window.URL.createObjectURL(blob), '_blank'); },
         error: (error) => {
           this.toastr.error('Erro ao gerar o relatório PDF.');
           console.error(error);
@@ -737,19 +588,14 @@ gerarAnaliticoExcel(): void {
       });
   }
 
-  //Relatorio Sintetico
   imprimirSintetico(): void {
-    if (this.lancamentos.length === 0) {                 //checa o array
+    if (this.lancamentos.length === 0) {
       this.toastr.warning('Nenhum registro para imprimir.');
       return;
     }
-
     this.lancamentoService.gerarRelatorioSinteticoPdf(this.filtro)
       .subscribe({
-        next: (blob) => {
-          const url = window.URL.createObjectURL(blob);
-          window.open(url, '_blank');
-        },
+        next: (blob) => { window.open(window.URL.createObjectURL(blob), '_blank'); },
         error: (error) => {
           this.toastr.error('Erro ao gerar o relatório PDF.');
           console.error(error);
@@ -761,202 +607,176 @@ gerarAnaliticoExcel(): void {
     if (!id) {
       Swal.fire('Exclusão', 'Nenhum registro encontrado', 'info');
     } else {
-      let url = (`${API_CONFIG.baseUrl}/relatorios/recibos/?nome=recibo-lancamento&igreja=${this.igrejaId}&lancamento_id=${id}`)
-      window.open(url, "_blank");
+      window.open(
+        `${API_CONFIG.baseUrl}/relatorios/recibos/?nome=recibo-lancamento&igreja=${this.igrejaId}&lancamento_id=${id}`,
+        '_blank'
+      );
     }
   }
 
   getPrinters() {
     this.printItems = [
       {
-        label: 'Entradas',
-        icon: 'pi pi-dollar',
-        target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/?nome=entrada-dizimo-oferta&igreja=${this.igrejaId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`)
+        label: 'Entradas', icon: 'pi pi-dollar', target: '_blank',
+        url: `${API_CONFIG.baseUrl}/relatorios/entradas/?nome=entrada-dizimo-oferta&igreja=${this.igrejaId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`
       },
       { separator: true },
       {
-        label: 'Sintético Financeiro',
-        icon: 'pi pi-chart-bar',
+        label: 'Sintético Financeiro', icon: 'pi pi-chart-bar',
         command: () => this.abrirRelatorioSintetico()
       },
       {
-        label: 'Dízimo de obreiros',
-        icon: 'pi pi-dollar',
-        target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/?nome=entrada-dizimo-obreiros&igreja=${this.igrejaId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`)
+        label: 'Dízimo de obreiros', icon: 'pi pi-dollar', target: '_blank',
+        url: `${API_CONFIG.baseUrl}/relatorios/entradas/?nome=entrada-dizimo-obreiros&igreja=${this.igrejaId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`
       },
       { separator: true },
       {
-        label: 'Livro caixa - Diário',
-        icon: 'pi pi-dollar',
-        target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/?nome=livro-caixa-diario&igreja=${this.igrejaId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`)
+        label: 'Livro caixa - Diário', icon: 'pi pi-dollar', target: '_blank',
+        url: `${API_CONFIG.baseUrl}/relatorios/entradas/?nome=livro-caixa-diario&igreja=${this.igrejaId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`
       },
       { separator: true },
       {
-        label: 'Livro caixa - Mensal Simplificado',
-        icon: 'pi pi-calendar',
+        label: 'Livro caixa - Mensal Simplificado', icon: 'pi pi-calendar',
         command: () => {
-          //Relatórios da Segunda Fabrica Estatica/Consolidada - Agora basta criar o relatorio no jasper e passar o nome junto com o filtro
           this.lancamentoService.gerarLivroCaixaSimplificado(this.filtro, 'livro-caixa-mensal-simplificado')
             .subscribe({
-              next: (blob) => {
-                const url = window.URL.createObjectURL(blob);
-                window.open(url, '_blank'); // Abre o PDF direto em uma nova aba
-              },
-              error: (err) => {
-                this.toastr.error('Erro ao gerar o relatório Livro Caixa Mensal.');
-                console.error(err);
-              }
+              next: (blob) => { window.open(window.URL.createObjectURL(blob), '_blank'); },
+              error: (err) => { this.toastr.error('Erro ao gerar o relatório Livro Caixa Mensal.'); console.error(err); }
             });
         }
       },
       { separator: true },
       {
-        label: 'Livro caixa - Mensal Detalhado',
-        icon: 'pi pi-calendar',
+        label: 'Livro caixa - Mensal Detalhado', icon: 'pi pi-calendar',
         command: () => {
-          //Relatórios da Segunda Fabrica Estatica/Consolidada - Agora basta criar o relatorio no jasper e passar o nome junto com o filtro
           this.lancamentoService.gerarLivroCaixaDetalhado(this.filtro, 'livro-caixa-mensal-detalhado')
             .subscribe({
-              next: (blob) => {
-                const url = window.URL.createObjectURL(blob);
-                window.open(url, '_blank'); // Abre o PDF direto em uma nova aba
-              },
-              error: (err) => {
-                this.toastr.error('Erro ao gerar o relatório Livro Caixa Mensal.');
-                console.error(err);
-              }
+              next: (blob) => { window.open(window.URL.createObjectURL(blob), '_blank'); },
+              error: (err) => { this.toastr.error('Erro ao gerar o relatório Livro Caixa Mensal.'); console.error(err); }
             });
         }
       },
       {
-        label: 'Ofertas - Alçadas',
-        icon: 'pi pi-dollar',
+        label: 'Ofertas - Alçadas', icon: 'pi pi-dollar',
         command: () => {
-          // Montamos a URL com os valores ATUAIS das variáveis
-          const url = `${API_CONFIG.baseUrl}/relatorios/entradas/?nome=ofertas-alcadas` +
-            `&igreja=${this.igrejaId}` +
-            `&dt_inicio=${this.dtinicio}` +
-            `&dt_fim=${this.dtfim}`;
-
-          // Abre em uma nova aba
-          window.open(url, '_blank');
+          window.open(
+            `${API_CONFIG.baseUrl}/relatorios/entradas/?nome=ofertas-alcadas&igreja=${this.igrejaId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`,
+            '_blank'
+          );
         }
       },
       { separator: true },
       {
-        label: 'Demostrativo de Receitas e Permutas - CONGREGAÇÃO',
-        icon: 'pi pi-dollar',
-        target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/?nome=relacao-entradas-dizimo-transferencias-congregacao&igreja=${this.igrejaId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`)
+        label: 'Demostrativo de Receitas e Permutas - CONGREGAÇÃO', icon: 'pi pi-dollar', target: '_blank',
+        url: `${API_CONFIG.baseUrl}/relatorios/entradas/?nome=relacao-entradas-dizimo-transferencias-congregacao&igreja=${this.igrejaId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`
       },
       { separator: true },
       {
-        label: 'Transferências - SETOR',
-        icon: 'pi pi-dollar',
-        target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=relacao-entradas-dizimo-transferencias-setor&setor=${this.setorId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`)
+        label: 'Transferências - SETOR', icon: 'pi pi-dollar', target: '_blank',
+        url: `${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=relacao-entradas-dizimo-transferencias-setor&setor=${this.setorId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`
       },
       { separator: true },
       {
-        label: 'Resumo - SETOR', // O percentualMaior e o percentualMenor o jasper repassa de cada igreja do relatorio principal para o sub relatorio
-        icon: 'pi pi-dollar',
-        target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/resumo/?nome=resumo-entradas-setor&setor=${this.setorId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`)
+        label: 'Resumo - SETOR', icon: 'pi pi-dollar', target: '_blank',
+        url: `${API_CONFIG.baseUrl}/relatorios/entradas/setor/resumo/?nome=resumo-entradas-setor&setor=${this.setorId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`
       },
       { separator: true },
       {
-        label: 'Relatório - SETOR',
-        icon: 'pi pi-dollar',
-        target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=relatorio-entradas-setor-quadro&setor=${this.setorId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`)
+        label: 'Relatório - SETOR', icon: 'pi pi-dollar', target: '_blank',
+        url: `${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=relatorio-entradas-setor-quadro&setor=${this.setorId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`
       },
       { separator: true },
       {
-        label: 'Fechamento - SETOR',
-        icon: 'pi pi-dollar',
-        target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=fechamento-setor&setor=${this.setorId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`)
+        label: 'Fechamento - SETOR', icon: 'pi pi-dollar', target: '_blank',
+        url: `${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=fechamento-setor&setor=${this.setorId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`
       },
     ];
   }
 
+  // ════════════════════════════════════════════════════
+  // FILTROS E PAGINAÇÃO
+  // ════════════════════════════════════════════════════
 
-  // ═══ MÉTODOS ═══
-
-  abrirRelatorioSintetico(): void {
-    this.relatorioSinteticoForm.reset({ formato: 'pdf' });
-    this.carregarContasESetores();
-    this.positionRelatorioSintetico = 'top';
-    this.visibleRelatorioSintetico = true;
+  onGlobalFilter() {
+    if (this.searchTimer) { clearTimeout(this.searchTimer); }
+    this.searchTimer = setTimeout(() => {
+      this.filtro.page = 0;
+      if (this.grid) { this.grid.first = 0; }
+      this.refreshAll();
+    }, 400);
   }
 
-  fecharRelatorioSintetico(): void {
-    this.visibleRelatorioSintetico = false;
-    this.relatorioSinteticoForm.reset({ formato: 'pdf' });
+  aoMudarPagina(event: LazyLoadEvent) {
+    this.filtro.page = event!.first! / event!.rows!;
+    this.filtro.linesPerPage = event.rows!;
+    if (this.pesquisa) { this.refreshAll(); }
   }
 
-  private carregarContasESetores(): void {
-    const igrejaId = igrejaIdSignal();
+  filtraLancamentos() {
+    this.pesquisa = true;
+    this.filtro.page = 0;
 
-    this.contaService.getContasByIgreja(igrejaId).subscribe({
-      next: (contas) => this.contasRelatorio = contas,
-      error: (err) => console.error('Erro ao carregar contas:', err)
-    });
-
-    this.setorService.getSetoresLista().subscribe({
-      next: (setores) => this.setoresRelatorio = setores,
-      error: (err) => console.error('Erro ao carregar setores:', err)
-    });
-  }
-
-  gerarRelatorioSintetico(): void {
-    if (this.relatorioSinteticoForm.invalid) {
-      this.relatorioSinteticoForm.markAllAsTouched();
-      return;
+    if (this.grid) {
+      this.grid.first = 0;
+    } else {
+      this.refreshAll();
     }
 
-    const { dtinicio, dtfim, tipo, contaId, setorId, formato } = this.relatorioSinteticoForm.value;
-    const igrejaId = igrejaIdSignal();
+    if (this.rangeDates == null) {
+      this.dtinicio = this.rangeDates[0];
+      this.filtro.dtinicio = this.rangeDates[0];
+      if (this.dtinicio.length < 10) {
+        this.dtinicio = (this.rangeDates as string).substring(0, 10);
+        this.filtro.dtinicio = (this.rangeDates as string).substring(0, 10);
+      }
+    }
 
-    // Monta a URL base
-    let url = `${API_CONFIG.baseUrl}/relatorios/gerar-pdf-sintetico` +
-      `?igreja=${igrejaId}` +
-      `&dtinicio=${dtinicio}` +
-      `&dtfim=${dtfim}`;
+    this.crtSaldoFinal = true;
+    if (this.dtfim == null) {
+      this.dtfim = this.dtinicio;
+      this.filtro.dtfim = this.dtinicio;
+    }
+    this.rangeDates = this.dtinicio + " - " + this.dtfim;
 
-    if (tipo) url += `&tipo=${tipo}`;
-    if (contaId) url += `&contaId=${contaId}`;
-    if (setorId) url += `&setorId=${setorId}`;
+    const data_americana = this.sharedService.formataDataUS(this.dtinicio);
+    this.dataDiaAnterior = this.sharedService.dataSubDay(data_americana, 1);
 
-    this.gerandoRelatorio = true;
+    this.refreshAll();
+  }
 
-    if (formato === 'pdf') {
-      // Abre o PDF em nova aba
-      window.open(url, '_blank');
-      this.gerandoRelatorio = false;
-      this.visibleRelatorioSintetico = false;
+  filtraCategoriaIds(value: string) {
+    value == 'Receita' ? this.crtCategoria = 1 :
+      value == 'Despesa' ? this.crtCategoria = 2 :
+        value == 'Todas' || value == '' ? this.crtCategoria = 3 :
+          value == 'Receita LC' ? this.crtCategoria = 4 : 3;
+
+    if (value !== 'Todas') {
+      const cat1 = this.categorias.filter(cat => cat.tipo == value);
+      const cat2 = cat1.map(c => c.id?.toString());
+      this.categoriaFiltrada = value;
+      this.filtro.tipoLancamento = value;
+      this.tipoLancamento = value;
+      this.categoriaIds = cat2.toString();
+      this.filtro.categorias = this.categoriaIds;
     } else {
-      // Excel — download direto
-      this.http.get(url.replace('gerar-pdf-sintetico', 'gerar-excel-sintetico'),
-        { responseType: 'blob' }
-      ).subscribe({
-        next: (blob) => {
-          const link = document.createElement('a');
-          link.href = URL.createObjectURL(blob);
-          link.download = `relatorio-sintetico-${dtinicio}-${dtfim}.xlsx`;
-          link.click();
-          URL.revokeObjectURL(link.href);
-          this.gerandoRelatorio = false;
-          this.visibleRelatorioSintetico = false;
-        },
-        error: (err) => {
-          console.error('Erro ao gerar Excel:', err);
-          this.gerandoRelatorio = false;
-        }
-      });
+      this.filtro.tipoLancamento = "";
+      this.filtro.categorias = this.categoriaIdsAux;
+      this.categoriaIds = this.categoriaIdsAux;
+    }
+  }
+
+  filtraCategorias(tipo: string) {
+    if (tipo === 'Todas' || !tipo) {
+      this.categoriasFiltradas = this.categorias;
+    } else {
+      this.categoriasFiltradas = this.categorias.filter(cat => cat.tipo === tipo);
+    }
+  }
+
+  atualizarFiltrosStrings(event: any, tipo: 'contas' | 'formas' | 'categorias' | 'centroCustos') {
+    if (Array.isArray(event.value)) {
+      const ids = event.value.map((item: any) => item.id || item);
+      this.filtro[tipo] = ids.join(',');
     }
   }
 
@@ -986,39 +806,164 @@ gerarAnaliticoExcel(): void {
     }
   }
 
+  // ════════════════════════════════════════════════════
+  // EVENTOS DE DROPDOWN
+  // ════════════════════════════════════════════════════
+
+  onChangeTipoLancamento(event: any) {
+    this.valorTpLancamento = event.value;
+    this.filtro.tipoLancamento = (event.value === 'Todas') ? "" : event.value;
+
+    this.filtraCategoriaIds(event.value);
+    this.filtraCategorias(event.value);
+
+    if (event.value === 'Todas' || event.value === 'Receita' || event.value === 'Despesa') {
+      this.categoriaForm.get('selectedCategorias')?.patchValue([]);
+      this.formaForm.get('selectedFormas')?.patchValue([]);
+      this.contaForm.get('selectedContas')?.patchValue([]);
+      this.centroCustoForm.get('selectedCentroCustos')?.patchValue([]);
+      this.filtro.tipoLancamento = '';
+      this.filtro.formas = this.formaIdsAux;
+      this.filtro.contas = this.contaIdsAux;
+      this.pesquisa = true;
+      this.filtro.page = 0;
+      this.filtro.nome = '';
+    }
+  }
+
+  onChangeNomeHistorico(value: { value: any }) {
+    this.loadPessoa(value.value);
+  }
+
+  onChangeTransferenciaCategoria(value: { value: number }) {
+    this.transferenciaCategoriaId = value.value;
+    this.lancamentoForm.controls['categoriaId'].setValue(value.value);
+  }
+
+  onChangeTransferenciaOrigem(event: { value: number }) {
+    this.contaId = event.value;
+    this.lancamentoIdOrigem = event.value;
+  }
+
+  onChangeTransferenciaDestino(event: { value: number }) {
+    this.contaIdTransferencia = event.value;
+    this.lancamentoIdTransferencia = event.value;
+  }
+
+  onChangePermutaOrigem(event: { value: number }) {
+    this.formaId = event.value;
+    this.lancamentoIdOrigem = event.value;
+  }
+
+  onChangePermutaDestino(event: { value: number }) {
+    this.lancamentoForm.controls['categoriaId'].setValue(1);
+    this.formaIdTransferencia = event.value;
+    this.lancamentoIdTransferencia = event.value;
+  }
+
+  onChangeTPCategorias(tipo: { value: any }) {
+    this.getCategoria(tipo.value);
+  }
+
+  onChangeTransferencia(id: { value: any }) {
+    this.lancamentoForm.controls['categoriaId'].setValue(id.value);
+  }
+
+  onChangeTPConta(event: { value: any }) {
+    this.getConta(event.value);
+  }
+
+  // ════════════════════════════════════════════════════
+  // CRUD LANÇAMENTO
+  // ════════════════════════════════════════════════════
+
+  submitFormLancamento() {
+    this.submittingForm = true;
+    if (this.imodo() === 0) this.createLancamento();
+    else this.updateLancamento();
+  }
+
+  public createLancamento() {
+    this.lancamentoForm.controls['nome'].setValue(
+      this.sharedService.formataNome(this.lancamentoForm.controls['nome'].value)
+    );
+
+    const value = this.lancamentoForm.controls['tipoLancamento'].value;
+    if ((value === 'Receita' || value === 'Receita LC') && this.lancamentoForm.controls['valor'].value < 0) {
+      this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value * -1);
+    }
+    if (value === 'Despesa' && this.lancamentoForm.controls['valor'].value > 0) {
+      this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value * -1);
+    }
+
+    const lancamento: LancamentoDTO = this.lancamentoForm.value;
+    this.lancamentoService.create(lancamento)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: response => {
+          this.lancamento.id = parseInt(this.extractId((response as any).headers.get('location')));
+          this.lancamentoForm.controls['nome'].setValue(null);
+          this.lancamentoForm.controls['pessoaId'].setValue(0);
+          this.lancamentoForm.controls['valor'].setValue(null);
+          this.toastr.success('Registro inserido com sucesso!', 'Lançamento');
+          this.inicializarDados();
+        },
+        error: () => { }
+      });
+  }
+
+  public updateLancamento() {
+    this.lancamentoForm.controls['nome'].setValue(
+      this.sharedService.formataNome(this.lancamentoForm.controls['nome'].value)
+    );
+
+    const value = this.lancamentoForm.controls['tipoLancamento'].value;
+    if (value === 'Receita' && this.lancamentoForm.controls['valor'].value < 0) {
+      this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value * -1);
+    }
+    if (value === 'Despesa' && this.lancamentoForm.controls['valor'].value > 0) {
+      this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value * -1);
+    }
+
+    const lancamento: LancamentoDTO = Object.assign(new LancamentoDTO(), this.lancamentoForm.value);
+    this.lancamentoService.update(lancamento)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.toastr.success('Registro atualizado com sucesso!', 'Atualização');
+          this.inicializarDados();
+        },
+        error: () => { }
+      });
+  }
+
   loadLancamento(lancamento: LancamentoDTO) {
     this.lancamentoId = lancamento.id ?? 0;
     this.lancamentoService.findById(this.lancamentoId)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
           this.lancamento = response;
-          this.lancamentoForm.patchValue(this.lancamento)   // binds loaded  
+          this.lancamentoForm.patchValue(this.lancamento);
           this.contaId = (response as any)['conta'].id;
-          this.contaId = (response as any)['forma'].id;
           this.contaIdTransferencia = response.contaIdTransferencia ?? 0;
           this.formaIdTransferencia = response.formaIdTransferencia ?? 0;
-          this.contaId = (response as any)['categoria'].id;
           this.lancamentoForm.controls['igrejaId'].setValue(this.igrejaId);
           this.lancamentoForm.controls['pessoaId'].setValue(this.lancamento.pessoaId);
           this.lancamentoForm.controls['categoriaId'].setValue((response as any)['categoria'].id);
           this.lancamentoForm.controls['contaId'].setValue((response as any)['conta'].id);
-          this.lancamentoForm.controls['formaId'].setValue((response as any)['forma'].id)
+          this.lancamentoForm.controls['formaId'].setValue((response as any)['forma'].id);
           this.lancamentoForm.controls['valor'].setValue(Math.abs(this.lancamentoForm.controls['valor'].value));
 
           if (response.valor! > '0' && (response.nome == 'Transferencia' || response.nome == 'Permuta')) {
-            //Conta  
             this.lancamentoForm.controls['contaId'].setValue(response.contaIdTransferencia);
             this.lancamentoForm.controls['contaIdTransferencia'].setValue((response as any)['conta'].id);
-
           } else {
             this.lancamentoForm.controls['valor'].setValue(response.valor);
           }
 
           this.lancamentoForm.controls['centroCustoId'].setValue((response as any)['centroCusto'].id);
-          this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value);
 
-          //Para Despesa
           if (response.valor! < '0') {
             this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value * -1);
           }
@@ -1037,164 +982,49 @@ gerarAnaliticoExcel(): void {
           }
         },
         error: () => { }
-      })
+      });
   }
 
-  resetLancamento() {
-    this.refreshAll()
+  resetLancamento() { this.refreshAll(); }
+
+  // ════════════════════════════════════════════════════
+  // TRANSFERÊNCIA
+  // ════════════════════════════════════════════════════
+
+  submitFormTransferencia() {
+    this.submittingForm = true;
+    if (this.imodo() === 0) { this.createLancamentoTransferencia(); }
   }
 
-  filtraLancamentos() {
-    this.pesquisa = true; // Agora as buscas estão liberadas
-    this.filtro.page = 0;
-
-    if (this.grid) {
-      this.grid.first = 0; // Isso vai disparar o onLazyLoad automaticamente
-    } else {
-      this.refreshAll(); // Caso a grid não dispare, chamamos manualmente
-    }
-
-    this.filtro.page = 0; // Sempre volta para a primeira página em uma nova busca
-    if (this.rangeDates == null) {
-      this.dtinicio = this.rangeDates[0];
-      this.filtro.dtinicio = this.rangeDates[0];
-      if (this.dtinicio.length < 10) {
-        this.dtinicio = (this.rangeDates as string).substring(0, 10);
-        this.filtro.dtinicio = (this.rangeDates as string).substring(0, 10);
-      } else {
-        this.dtinicio = this.rangeDates[0];
-        this.filtro.dtinicio = this.rangeDates[0];
-      }
-    }
-
-    this.crtSaldoFinal = true;
-    if (this.dtfim == null) {
-      this.dtfim = this.dtinicio
-      this.filtro.dtfim = this.dtinicio
-    }
-    this.rangeDates = this.dtinicio + " - " + this.dtfim;
-
-    // Data do dia anterior
-    const data_americana = this.sharedService.formataDataUS(this.dtinicio);
-    const data_subtraida = this.sharedService.dataSubDay(data_americana, 1);
-    this.dataDiaAnterior = data_subtraida;
-
-    this.refreshAll(); // Chama Grid + Totalizações
-  }
-
-
-  // METODOS CONTA
-  public createLancamento() {
-    // this.lancamentoForm.controls['nome'].setValue(this.lancamentoForm.controls['nome'].value.toUpperCase());
-    this.lancamentoForm.controls['nome'].setValue(this.sharedService.formataNome(this.lancamentoForm.controls['nome'].value));
-
-    let value = this.lancamentoForm.controls['tipoLancamento'].value
-    switch (value) {
-      case "Receita":
-        if (this.lancamentoForm.controls['valor'].value < 0) {
-          this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value * -1);
-        }
-        break;
-
-      case "Receita LC":
-        if (this.lancamentoForm.controls['valor'].value < 0) {
-          this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value * -1);
-        }
-        break;
-
-      case "Despesa":
-        if (this.lancamentoForm.controls['valor'].value > 0) {
-          this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value * -1);
-        }
-        break;
-
-      default:
-    }
-
-    const lancamento: LancamentoDTO = this.lancamentoForm.value;
-    this.lancamentoService.create(lancamento)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-      .subscribe({
-        next: response => {
-          this.lancamento.id = parseInt(this.extractId((response as any).headers.get('location'))); // Extrai o Id da URI retornada do banco      
-          this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
-          this.lancamentoForm.controls['nome'].setValue(null);
-          this.lancamentoForm.controls['pessoaId'].setValue(0)
-          this.lancamentoForm.controls['valor'].setValue(null)
-          this.toastr.success('Registro inserido com sucesso!', 'Lançamento');
-          this.inicializarDados();
-        },
-        error: () => { }
-      })
-  }
-
-  public updateLancamento() {
-    // this.lancamentoForm.controls['nome'].setValue(this.lancamentoForm.controls['nome'].value.toUpperCase());
-    this.lancamentoForm.controls['nome'].setValue(this.sharedService.formataNome(this.lancamentoForm.controls['nome'].value));
-
-    let value = this.lancamentoForm.controls['tipoLancamento'].value
-    switch (value) {
-      case "Receita":
-        if (this.lancamentoForm.controls['valor'].value < 0) {
-          this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value * -1);
-        }
-        break;
-
-      case "Despesa":
-        if (this.lancamentoForm.controls['valor'].value > 0) {
-          this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value * -1);
-        }
-        break;
-
-      default:
-    }
-
-    const lancamento: LancamentoDTO = Object.assign(new LancamentoDTO(), this.lancamentoForm.value);
-    this.lancamentoService.update(lancamento)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-      .subscribe({
-        next: () => {
-          this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
-          this.toastr.success('Registro atualizado com sucesso!', 'Atualização');
-          this.inicializarDados();
-        },
-        error: () => { }
-      })
-  }
-
-  // METODO PARA Transferencia
   public createLancamentoTransferencia() {
     this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value * -1);
     const lancamento: LancamentoDTO = this.lancamentoForm.value;
+
     this.lancamentoService.create(lancamento)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
-          this.lancamentoIdOrigem = parseInt(this.extractId((response as any).headers.get('location'))); // Extrai o Id da URI retornada do banco 
+          this.lancamentoIdOrigem = parseInt(this.extractId((response as any).headers.get('location')));
 
           this.lancamentoForm.controls['contaId'].setValue(this.contaIdTransferencia);
           lancamento.contaIdTransferencia = this.contaId;
           lancamento.categoriaId = this.lancamentoForm.controls['categoriaId'].value;
-          let valor = this.lancamentoForm.controls['valor'].value
-          valor = valor * -1;
-          lancamento.valor = valor;
-
+          lancamento.valor = String(this.lancamentoForm.controls['valor'].value * -1);
           lancamento.contaId = this.contaIdTransferencia;
+
           this.lancamentoService.create(lancamento)
-            .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
               next: response => {
-                this.lancamentoIdTransferencia = parseInt(this.extractId((response as any).headers.get('location'))); // Extrai o Id da URI retornada do banco 
-
-                // Atualiza o campo lancamentoIdOrigem com os ids dos lançamentos de transferencia
+                this.lancamentoIdTransferencia = parseInt(this.extractId((response as any).headers.get('location')));
 
                 lancamento.id = this.lancamentoIdTransferencia;
                 lancamento.contaId = this.contaIdTransferencia;
                 lancamento.contaIdTransferencia = this.contaId;
                 lancamento.lancamentoIdTransferencia = this.lancamentoIdOrigem;
-                // lancamento.tipoConta = this.lancamentoForm.controls['tipoContaDestino'].value.toString();//Atualiza tipoConta Destino
+
                 this.lancamentoService.update(lancamento)
-                  .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+                  .pipe(takeUntilDestroyed(this.destroyRef))
                   .subscribe({
                     next: () => {
                       lancamento.contaId = this.contaId;
@@ -1202,63 +1032,63 @@ gerarAnaliticoExcel(): void {
                       lancamento.contaIdTransferencia = this.contaIdTransferencia;
                       lancamento.lancamentoIdTransferencia = this.lancamentoIdTransferencia;
                       lancamento.categoriaId = 29;
-                      let valor = this.lancamentoForm.controls['valor'].value
-                      valor = valor;
-                      lancamento.valor = valor;
-                      // lancamento.tipoConta = this.lancamentoForm.controls['tipoConta'].value.toString(); //Atualiza tipoConta Origem
-                      lancamento.tipoLancamento = 'Despesa'
+                      lancamento.tipoLancamento = 'Despesa';
+
                       this.lancamentoService.update(lancamento)
-                        .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+                        .pipe(takeUntilDestroyed(this.destroyRef))
                         .subscribe({
                           next: () => {
-                            this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
-                            this.inicializarDados();
                             this.toastr.success('Operação realizada com sucesso!', 'Transferência');
+                            this.inicializarDados();
                             this.resetLancamento();
                           }
-                        })
+                        });
                     }
-                  })
+                  });
               }
-            })
+            });
         }
-      })
+      });
   }
 
+  // ════════════════════════════════════════════════════
+  // PERMUTA
+  // ════════════════════════════════════════════════════
 
-  // METODO PARA Permuta
+  submitFormPermuta() {
+    this.submittingForm = true;
+    if (this.imodo() === 0) { this.createLancamentoPermuta(); }
+  }
+
   public createLancamentoPermuta() {
     this.lancamentoForm.controls['valor'].setValue(this.lancamentoForm.controls['valor'].value * -1);
     const lancamento: LancamentoDTO = this.lancamentoForm.value;
+
     this.lancamentoService.create(lancamento)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
-          this.lancamentoIdOrigem = parseInt(this.extractId((response as any).headers.get('location'))); // Extrai o Id da URI retornada do banco 
+          this.lancamentoIdOrigem = parseInt(this.extractId((response as any).headers.get('location')));
 
           this.lancamentoForm.controls['formaId'].setValue(this.formaIdTransferencia);
           lancamento.formaIdTransferencia = this.formaId;
-          let valor = this.lancamentoForm.controls['valor'].value
-          valor = valor * -1;
-          lancamento.valor = valor;
+          lancamento.valor = String(this.lancamentoForm.controls['valor'].value * -1);
           lancamento.categoriaId = 6;
-
           lancamento.formaId = this.formaIdTransferencia;
+
           this.lancamentoService.create(lancamento)
-            .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
               next: response => {
-                this.lancamentoIdTransferencia = parseInt(this.extractId((response as any).headers.get('location'))); // Extrai o Id da URI retornada do banco 
-
-                // Atualiza o campo lancamentoIdOrigem com os ids dos lançamentos de transferencia
+                this.lancamentoIdTransferencia = parseInt(this.extractId((response as any).headers.get('location')));
 
                 lancamento.id = this.lancamentoIdTransferencia;
                 lancamento.formaId = this.formaIdTransferencia;
                 lancamento.formaIdTransferencia = this.formaId;
                 lancamento.lancamentoIdTransferencia = this.lancamentoIdOrigem;
-                // lancamento.tipoConta = this.lancamentoForm.controls['tipoContaDestino'].value.toString();//Atualiza tipoConta Destino
+
                 this.lancamentoService.update(lancamento)
-                  .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+                  .pipe(takeUntilDestroyed(this.destroyRef))
                   .subscribe({
                     next: () => {
                       lancamento.formaId = this.formaId;
@@ -1266,269 +1096,107 @@ gerarAnaliticoExcel(): void {
                       lancamento.formaIdTransferencia = this.formaIdTransferencia;
                       lancamento.lancamentoIdTransferencia = this.lancamentoIdTransferencia;
                       lancamento.categoriaId = 28;
-                      let valor = this.lancamentoForm.controls['valor'].value
-                      valor = valor;
-                      lancamento.valor = valor;
-                      // lancamento.tipoConta = this.lancamentoForm.controls['tipoConta'].value.toString(); //Atualiza tipoConta Origem
-                      lancamento.tipoLancamento = 'Despesa'
+                      lancamento.tipoLancamento = 'Despesa';
+
                       this.lancamentoService.update(lancamento)
-                        .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+                        .pipe(takeUntilDestroyed(this.destroyRef))
                         .subscribe({
                           next: () => {
-                            this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
-                            // this.toastr.success('Registro atualizado com sucesso!', 'Atualização');
-                            this.toastr.success('Operação realizada com sucesso!', 'Transferência');
+                            this.toastr.success('Operação realizada com sucesso!', 'Permuta');
                             this.resetLancamento();
                             this.inicializarDados();
                           }
-                        })
+                        });
                     }
-                  })
+                  });
               }
-            })
+            });
         }
-      })
-  }
-
-  loadPessoas() {
-    let situacaoCadastral = 'Ativo'
-    this.pessoaService.getPessoasAtivasFromIgreja(this.igrejaId, situacaoCadastral)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-      .subscribe({
-        next: (response) => {
-          this.pessoas = response;
-        },
-        error: () => { }
       });
   }
 
-  filtraCategoriaIds(value: string) { //Recebe tipo Receita ou Despesa e retorna IDS somente de receita ou de despesa
+  // ════════════════════════════════════════════════════
+  // EXCLUSÃO
+  // ════════════════════════════════════════════════════
 
-    //Controla a visibilidade do comobo de categorias 
-    value == 'Receita' ? this.crtCategoria = 1 :
-      value == 'Despesa' ? this.crtCategoria = 2 :
-        value == 'Todas' || '' ? this.crtCategoria = 3 :
-          value == 'Receita LC' ? this.crtCategoria = 4 : 3;
-
-    if (value !== 'Todas') {
-      let cat1 = this.categorias.filter(cat => cat.tipo == value); //Armazema todas as categorias de um tipo passado por parametro
-      let cat2 = cat1.map(c => {
-        return c.id?.toString(); // Retorna uma string de ids do tipo passado no parametro.
-      })
-      this.categoriaFiltrada = value;
-      this.filtro.tipoLancamento = value;
-      this.tipoLancamento = value; ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      this.categoriaIds = cat2.toString();
-      this.filtro.categorias = this.categoriaIds;
-
-    } else {
-      this.filtro.tipoLancamento = "";
-      this.filtro.categorias = this.categoriaIdsAux;
-      this.categoriaIds = this.categoriaIdsAux;
-    }
-
-  }
-
-  private loadPessoa(value: number) {
-    this.pessoaService.getById(value)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-      .subscribe({
-        next: (response) => {
-          this.pessoa = response;
-          this.pessoaId = this.pessoa.id ?? 0;
-          this.lancamentoForm.controls['pessoaId'].setValue(this.pessoa.id);
-          this.lancamentoForm.controls['nome'].setValue(this.pessoa.nome);
-          this.lancamentoForm.controls['tituloMin'].setValue(this.pessoa.tituloMin?.trim());
-        },
-        error: () => { }
-      });
-  }
-
-  ///////////////////////////// Enentos DropDown   ///////////////////////////
-
-  // Chame este método sempre que o usuário mudar uma seleção na tela
-  atualizarFiltrosStrings(event: any, tipo: 'contas' | 'formas' | 'categorias' | 'centroCustos') {
-    // Se o event.value for um array de objetos ou IDs:
-    if (Array.isArray(event.value)) {
-      const ids = event.value.map((item: any) => item.id || item);
-      this.filtro[tipo] = ids.join(',');
+  linhasSelecionada(event: string | any[]): void {
+    this.length.set(event.length);
+    if (event.length >= 1) {
+      this.indexId = event[0].id;
+      this.indexIdTransferencia = event[0].lancamentoIdTransferencia;
     }
   }
 
+  aoDesmarcar(event: any) { this.length.set(0); }
 
-  onChangeNomeHistorico(value: { value: any; }) {
-    this.loadPessoa(value.value);
+  deleteIndividual() { this.exclusaoLancamento(this.indexId, this.indexIdTransferencia); }
+  deleteMultiplos() { this.exclusaoLancamento(this.indexId, this.indexIdTransferencia); }
+
+  limpaCheckbox() {
+    this.selectedLancamentos ? this.selectedLancamentos = [] : this.selectedLancamentos = [];
+    this.length.set(0);
   }
 
-  onChangeTransferenciaCategoria(value: { value: number; }) {
-    this.transferenciaCategoriaId = value.value
-    this.lancamentoForm.controls['categoriaId'].setValue(value.value);
-  }
-
-
-  onChangeTransferenciaOrigem(event: { value: number; }) {
-    this.contaId = event.value;
-    this.lancamentoIdOrigem = event.value;
-  }
-
-  onChangeTransferenciaDestino(event: { value: number; }) {
-    this.contaIdTransferencia = event.value;
-    this.lancamentoIdTransferencia = event.value;
-  }
-
-  onChangePermutaOrigem(event: { value: number; }) {
-    this.formaId = event.value;
-    this.lancamentoIdOrigem = event.value;
-  }
-
-  onChangePermutaDestino(event: { value: number; }) {
-    this.lancamentoForm.controls['categoriaId'].setValue(1);
-    this.formaIdTransferencia = event.value;
-    this.lancamentoIdTransferencia = event.value;
-  }
-
-  private getCategoria(value: number) {
-    this.categoriaService.findById(value)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-      .subscribe({
-        next: (response) => {
-          this.categoria = response;
-          this.lancamentoForm.controls['tipoLancamento'].setValue(response.tipo);
-        },
-        error: () => { }
-      });
-  }
-
-  onChangeTPCategorias(tipo: { value: any; }) {
-    this.getCategoria(tipo.value)
-  }
-
-  onChangeTransferencia(id: { value: any; }) {
-    console.log(id.value)
-    this.lancamentoForm.controls['categoriaId'].setValue(id.value);
-  }
-
-  onChangeTPConta(event: { value: any; }) {
-    this.getConta(event.value)
-  }
-
-  private getConta(value: number | undefined) {
-    let conta_id = this.contas.filter(tc => tc.id == value); //Armazema todas as contas de um tipo passado por parametro
-    let tipo_conta = conta_id.map(tp => {
-      return tp.tipo?.toString(); // Retorna uma string de ids do tipo passado no parametro.
-    })
-    this.lancamentoForm.controls['tipoConta'].setValue(tipo_conta);
-  }
-
-
-  onChangeTipoLancamento(event: any) {
-    this.valorTpLancamento = event.value;
-    // 1. Reset de UI e totais
-
-    // 2. Atualiza o Tipo no Filtro
-    this.filtro.tipoLancamento = (event.value === 'Todas') ? "" : event.value;
-
-
-    // 3. Atualiza os IDs de Categoria (Sincroniza com o Back-end)
-    // Seu método filtraCategoriaIds já atualiza this.filtro.categorias
-    this.filtraCategoriaIds(event.value);
-
-    // 4. Filtra o que aparece no combo de categorias (UI)
-    this.filtraCategorias(event.value);
-
-    if (event.value === 'Todas' || event.value === 'Receita' || event.value === 'Despesa') {
-      this.categoriaForm.get('selectedCategorias')?.patchValue([]);
-      this.formaForm.get('selectedFormas')?.patchValue([]);
-      this.contaForm.get('selectedContas')?.patchValue([]);
-      this.centroCustoForm.get('selectedCentroCustos')?.patchValue([]);
-      this.filtro.tipoLancamento = '';
-      this.filtro.formas = this.formaIdsAux;
-      this.filtro.contas = this.contaIdsAux;
-      this.pesquisa = true; // Agora as buscas estão liberadas
-      this.filtro.page = 0;
-      this.filtro.nome = '';
-    }
-
-  }
-
-  filtraCategorias(tipo: string) {
-    if (tipo === 'Todas' || !tipo) {
-      this.categoriasFiltradas = this.categorias;
-    } else {
-      this.categoriasFiltradas = this.categorias.filter(cat => cat.tipo === tipo);
-    }
-  }
-
-  //EXCLUIR LANÇAMENTOS 
   exclusaoLancamento(indexId: number, indexIdTransferencia: number | undefined) {
-
     if (this.selectedLancamentos == null || this.length() == 0 || undefined) {
       Swal.fire('Lançamento | Seleção', 'Nenhum registro selecionado', 'info');
-    } else {
-      Swal.fire({
-        title: 'Exclusão',
-        text: 'Tem certeza que deseja excluir ' + this.length() + ' registro?',
-        showCloseButton: true,
-        showCancelButton: true,
-        position: 'top',
-      }).then((willDelete) => {
-        if (willDelete.dismiss) {
-          this.selectedLancamentos = [];
-          this.length.set(0);
-          // Swal.fire('Exclusão Cancelada', 'Seu registro está seguro', 'success');
-        } else {
-          if (this.length() <= 1) {
-            if (this.indexId) { this.excluirLancamento(indexId); }
-            if (this.indexIdTransferencia) { this.excluirSelectedLancamento(indexIdTransferencia ?? 0); }
-            this.toastr.success('Exclusão', 'Registro excluido com sucesso!');
-          }
-
-          if (this.length() > 1) {
-            for (let index = 0; index < this.length(); index++) {
-              indexIdTransferencia = this.selectedLancamentos[index].lancamentoIdTransferencia;
-              if (indexIdTransferencia) {
-                this.excluirSelectedLancamento(indexIdTransferencia);
-              }
-              this.excluirLancamento(this.selectedLancamentos[index].id);
-            }
-            this.toastr.success('Exclusão', 'Registros excluidos com sucesso!');
-          }
-          this.inicializarDados();
-
-          this.grid.first = 0;
-        }
-      });
+      return;
     }
 
+    Swal.fire({
+      title: 'Exclusão',
+      text: 'Tem certeza que deseja excluir ' + this.length() + ' registro?',
+      showCloseButton: true,
+      showCancelButton: true,
+      position: 'top',
+    }).then((willDelete) => {
+      if (willDelete.dismiss) {
+        this.selectedLancamentos = [];
+        this.length.set(0);
+      } else {
+        if (this.length() <= 1) {
+          if (this.indexId) { this.excluirLancamento(indexId); }
+          if (this.indexIdTransferencia) { this.excluirSelectedLancamento(indexIdTransferencia ?? 0); }
+          this.toastr.success('Exclusão', 'Registro excluido com sucesso!');
+        }
+        if (this.length() > 1) {
+          for (let index = 0; index < this.length(); index++) {
+            indexIdTransferencia = this.selectedLancamentos[index].lancamentoIdTransferencia;
+            if (indexIdTransferencia) { this.excluirSelectedLancamento(indexIdTransferencia); }
+            this.excluirLancamento(this.selectedLancamentos[index].id);
+          }
+          this.toastr.success('Exclusão', 'Registros excluidos com sucesso!');
+        }
+        this.inicializarDados();
+        this.grid.first = 0;
+      }
+    });
   }
 
   excluirLancamento(indexId: number | undefined) {
     this.lancamentoService.delete(indexId ?? 0)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
           this.inicializarDados();
           this.grid.reset();
           this.selectedLancamentos = null!;
         },
         error: () => { }
-      })
+      });
   }
-
 
   excluirSelectedLancamento(indexIdTransferencia: number) {
     this.lancamentoService.delete(indexIdTransferencia)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.grid.reset();
           this.inicializarDados();
         },
         error: () => { }
-      })
+      });
   }
-
 
   confirmarExclusaoLancamentoTransferencia(lancamento: LancamentoDTO): void {
     this.confirmationService.confirm({
@@ -1542,21 +1210,20 @@ gerarAnaliticoExcel(): void {
 
   excluirLancamentoTransferencia(lancamento: LancamentoDTO) {
     this.lancamentoService.delete(lancamento.id ?? 0)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.lancamentoService.delete(lancamento.lancamentoIdTransferencia!)
-            .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
               next: () => {
-                this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
                 this.toastr.success('Exclusão', 'Registro excluido com sucesso!');
                 this.inicializarDados();
               },
               error: () => { }
-            })
+            });
         }
-      })
+      });
   }
 
   confirmarExclusaoLancamentoPermuta(lancamento: LancamentoDTO): void {
@@ -1571,33 +1238,112 @@ gerarAnaliticoExcel(): void {
 
   excluirLancamentoPermuta(lancamento: LancamentoDTO) {
     this.lancamentoService.delete(lancamento.id ?? 0)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.lancamentoService.delete(lancamento.lancamentoIdTransferencia!)
-            .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
               next: () => {
-                this.lancamentoService.getPageLancamentoFromIgreja(this.filtro)
                 this.toastr.success('Exclusão', 'Registro excluido com sucesso!');
                 this.inicializarDados();
               },
               error: () => { }
-            })
+            });
         }
-      })
+      });
   }
 
+  // ════════════════════════════════════════════════════
+  // COMPROVANTES
+  // ════════════════════════════════════════════════════
+
+  visualizarComprovante(lancamentoId: number) {
+    this.lancamentoService.baixarComprovante(lancamentoId)
+      .subscribe({
+        next: (blob: Blob) => { window.open(window.URL.createObjectURL(blob), '_blank'); },
+        error: () => { this.toastr.error('Erro ao abrir o arquivo ou anexo não encontrado.'); }
+      });
+  }
+
+  excluirComprovante(lancamentoId: number) {
+    Swal.fire({
+      title: 'Exclusão',
+      text: 'Tem certeza que deseja remover o comprovante?',
+      icon: 'error',
+      showCloseButton: true,
+      showCancelButton: true,
+    }).then((willDelete) => {
+      if (!willDelete.dismiss) {
+        this.lancamentoService.deletarComprovante(lancamentoId).subscribe({
+          next: () => {
+            this.toastr.success('Comprovante removido com sucesso!');
+            this.refreshAll();
+          },
+          error: () => { this.toastr.error('Erro ao remover o comprovante.'); }
+        });
+      }
+    });
+  }
+
+  // ════════════════════════════════════════════════════
+  // FORMULÁRIOS — BUILD
+  // ════════════════════════════════════════════════════
+
+  private buildLancamentoForm() {
+    this.lancamentoForm = this.formBuilder.group({
+      id: [null],
+      nome: ["", [Validators.required]],
+      documento: [null],
+      historico: [null, [Validators.required]],
+      data: [null],
+      competencia: [null, [Validators.required]],
+      tipoLancamento: [null],
+      valor: [null, [Validators.required]],
+      totalConta: [null],
+      igrejaId: [this.igrejaId, [Validators.required]],
+      tituloMin: [null],
+      categoriaId: [null, [Validators.required]],
+      pessoaId: [0, [Validators.required]],
+      cadastrado: ['sim'],
+      contaId: [null, [Validators.required]],
+      setorId: [this.setorId],
+      nomeSetor: [null],
+      formaId: [this.formaId, [Validators.required]],
+      centroCustoId: [null],
+      contaIdTransferencia: [null],
+      lancamentoIdTransferencia: [null],
+      formaIdTransferencia: [null],
+      comprovante: [null],
+      tipoConta: [null],
+      comprovanteNome: [null],
+      lancamentoIdOrigem: [null]
+    });
+  }
+
+  private buildRelatorioSinteticoForm() {
+    this.relatorioSinteticoForm = this.formBuilder.group({
+      dtinicio: [null, Validators.required],
+      dtfim: [null, Validators.required],
+      tipo: [null],
+      contaId: [null],
+      setorId: [null],
+      formato: ['pdf', Validators.required],
+    });
+  }
+
+  // ════════════════════════════════════════════════════
+  // MODAL — CONTROLES
+  // ════════════════════════════════════════════════════
 
   resetModal() {
     this.lancamentoForm.reset();
-    this.filtraCategorias(""); // Para deixar o combo de Categorias de Receitas de despesas vazia quando retorna da edição de lançamentos
+    this.filtraCategorias("");
     this.crtCategoria = 3;
   }
+
   setModalEdicao(value: string) {
-    if (value == 'Transferencia') {
-      value = 'Receita'
-    }
+    if (value == 'Transferencia') { value = 'Receita'; }
     this.filtraCategorias(value);
     this.pageTitle = "Editando Movimento".toUpperCase();
     this.imodo.set(1);
@@ -1609,122 +1355,184 @@ gerarAnaliticoExcel(): void {
 
     switch (value) {
       case "Receita":
-        let catReceita = this.categorias.filter((cat): boolean => cat.tipo !== "Despesa"); //Receita LC = Receita Livro Caixa
-        this.categoriasFiltradas = catReceita;
+        this.categoriasFiltradas = this.categorias.filter(cat => cat.tipo !== "Despesa");
         this.pageTitle = "Nova Receita".toUpperCase();
-        this.lancamentoForm.controls['cadastrado'].setValue('sim');
-        this.lancamentoForm.controls['igrejaId'].setValue(this.igrejaId);
-        this.lancamentoForm.controls['tipoLancamento'].setValue('Receita');
-        this.lancamentoForm.controls['data'].setValue(this.sharedService.dataAtualFormatada());
-        this.lancamentoForm.controls['competencia'].setValue(this.sharedService.mesAno());
-        this.lancamentoForm.controls['contaId'].setValue(this.contas[0].id);
-        this.lancamentoForm.controls['centroCustoId'].setValue(1);
-        this.lancamentoForm.controls['formaId'].setValue(1);
-        this.lancamentoForm.controls['categoriaId'].setValue(1);
-        this.lancamentoForm.controls['documento'].setValue(this.sharedService.mesAno());
-        this.lancamentoForm.controls['historico'].setValue('Dízimo');
-        this.lancamentoForm.controls['setorId'].setValue(this.setorId);
-        this.lancamentoForm.controls['pessoaId'].setValue(0);
-        this.lancamentoForm.controls['nome'].setValue("");
+        this.lancamentoForm.patchValue({
+          cadastrado: 'sim',
+          igrejaId: this.igrejaId,
+          tipoLancamento: 'Receita',
+          data: this.sharedService.dataAtualFormatada(), // Corrigido o campo 'data'
+          competencia: this.sharedService.mesAno(),
+          contaId: this.contas[0].id,
+          centroCustoId: 1,
+          formaId: 1,
+          categoriaId: 1,
+          documento: this.sharedService.mesAno(),
+          historico: 'Dízimo',
+          setorId: this.setorId,
+          pessoaId: 0,
+          nome: ""
+        });
         break;
 
       case "Oferta":
-        let catOferta = this.categorias.filter(cat => (cat.tipo == 'Receita' || cat.tipo == 'Receita LC' || cat.tipo == 'Oferta')); //Receita LC = Receita Livro Caixa
-        this.categoriasFiltradas = catOferta;
+        this.categoriasFiltradas = this.categorias.filter(cat =>
+          cat.tipo === 'Receita' || cat.tipo === 'Receita LC' || cat.tipo === 'Oferta'
+        );
         this.pageTitle = "Nova Oferta".toUpperCase();
-        this.lancamentoForm.controls['cadastrado'].setValue('sim');
-        this.lancamentoForm.controls['igrejaId'].setValue(this.igrejaId);
-        this.lancamentoForm.controls['tipoLancamento'].setValue('Receita');
-        this.lancamentoForm.controls['data'].setValue(this.sharedService.dataAtualFormatada());
-        this.lancamentoForm.controls['competencia'].setValue(this.sharedService.mesAno());
-        this.lancamentoForm.controls['contaId'].setValue(this.contas[0].id);
-        this.lancamentoForm.controls['centroCustoId'].setValue(1);
-        this.lancamentoForm.controls['formaId'].setValue(1);
-        this.lancamentoForm.controls['categoriaId'].setValue(2);
-        this.lancamentoForm.controls['historico'].setValue('Oferta');
-        this.lancamentoForm.controls['setorId'].setValue(this.setorId);
-        this.lancamentoForm.controls['pessoaId'].setValue(0);
-        this.lancamentoForm.controls['nome'].setValue("");
+        this.lancamentoForm.patchValue({
+          cadastrado: 'sim',
+          igrejaId: this.igrejaId,
+          tipoLancamento: 'Receita',
+          data: this.sharedService.dataAtualFormatada(), // Corrigido o campo 'data'
+          competencia: this.sharedService.mesAno(),
+          contaId: this.contas[0].id,
+          centroCustoId: 1,
+          formaId: 1,
+          categoriaId: 2,
+          documento: this.sharedService.mesAno(),
+          historico: 'Oferta',
+          setorId: this.setorId,
+          pessoaId: 0,
+          nome: ""
+        });
         break;
 
       case "Despesa":
-        let cat1 = this.categorias.filter(cat => cat.tipo == "Despesa"); //Armazema todas as categorias de um tipo passado por parametro
-        this.categoriasFiltradas = cat1;
+        this.categoriasFiltradas = this.categorias.filter(cat => cat.tipo === "Despesa");
         this.pageTitle = "Nova Despesa".toUpperCase();
-        this.lancamentoForm.controls['cadastrado'].setValue('sim');
-        this.lancamentoForm.controls['igrejaId'].setValue(this.igrejaId);
-        this.lancamentoForm.controls['tipoLancamento'].setValue("Despesa");
-        this.lancamentoForm.controls['data'].setValue(this.sharedService.dataAtualFormatada());
-        this.lancamentoForm.controls['competencia'].setValue(this.sharedService.mesAno());
-        this.lancamentoForm.controls['contaId'].setValue(this.contas[0].id);
-        this.lancamentoForm.controls['centroCustoId'].setValue(1);
-        this.lancamentoForm.controls['formaId'].setValue(1);
-        this.lancamentoForm.controls['categoriaId'].setValue(19);
-        this.lancamentoForm.controls['historico'].setValue('Despesa');
-        this.lancamentoForm.controls['setorId'].setValue(this.setorId);
-        this.lancamentoForm.controls['pessoaId'].setValue(0);
-        this.lancamentoForm.controls['nome'].setValue("");
+        this.lancamentoForm.patchValue({
+          cadastrado: 'sim',
+          igrejaId: this.igrejaId,
+          tipoLancamento: 'Despesa',
+          data: this.sharedService.dataAtualFormatada(), // Corrigido o campo 'data'
+          competencia: this.sharedService.mesAno(),
+          contaId: this.contas[0].id,
+          centroCustoId: 1,
+          formaId: 1,
+          categoriaId: 19,
+          documento: this.sharedService.mesAno(),
+          historico: 'Despesa',
+          setorId: this.setorId,
+          pessoaId: 0,
+          nome: ""
+        });
         break;
 
-      case "Transferencia": //Transferencia de forma pgto
-        let catTransferencia = this.categorias.filter(cat => (cat.tipo == 'Receita')); //Receita LC = Receita Livro Caixa
-        this.categoriasFiltradas = catTransferencia;
-
+      case "Transferencia":
+        this.categoriasFiltradas = this.categorias.filter(cat => cat.tipo === 'Receita');
         const catTransferenciaDefault = this.categorias.find(cat => cat.id === 8);
-        this.lancamentoForm.controls['categoriaId'].setValue(catTransferenciaDefault?.id ?? 8);
-
         this.pageTitle = "Transferência".toUpperCase();
-        this.lancamentoForm.controls['cadastrado'].setValue('nao');
-        this.lancamentoForm.controls['igrejaId'].setValue(this.igrejaId);
-        this.lancamentoForm.controls['tipoLancamento'].setValue('Receita');
-        this.lancamentoForm.controls['data'].setValue(this.sharedService.dataAtualFormatada());
-        this.lancamentoForm.controls['competencia'].setValue(this.sharedService.mesAno());
-        this.lancamentoForm.controls['contaId'].setValue(this.contas[0].id);// Conta de Origem
         this.contaId = this.contas[0].id ?? 0;
-        this.lancamentoForm.controls['centroCustoId'].setValue(1);
-        this.lancamentoForm.controls['formaId'].setValue(1);
-        this.lancamentoForm.controls['documento'].setValue(this.sharedService.mesAno());
-        this.lancamentoForm.controls['historico'].setValue('Transferencia entre contas');
-        this.lancamentoForm.controls['setorId'].setValue(this.setorId);
-        this.lancamentoForm.controls['pessoaId'].setValue(0);
-        this.lancamentoForm.controls['nome'].setValue('Transferencia');
-        this.lancamentoForm.controls['tituloMin'].setValue("Membro");
+        this.lancamentoForm.patchValue({
+          cadastrado: 'nao',
+          igrejaId: this.igrejaId,
+          tipoLancamento: 'Receita',
+          data: this.sharedService.dataAtualFormatada(), // Corrigido o campo 'data'
+          competencia: this.sharedService.mesAno(),
+          contaId: this.contas[0].id,
+          centroCustoId: 1,
+          formaId: 1,
+          categoriaId: catTransferenciaDefault?.id ?? 8,
+          documento: this.sharedService.mesAno(),
+          historico: 'Transferencia entre contas',
+          setorId: this.setorId,
+          pessoaId: 0,
+          nome: 'Transferencia',
+          tituloMin: 'Membro'
+        });
         break;
 
-      case "Permuta": //Transferencia de forma pgto;
+      case "Permuta":
         this.pageTitle = "Permuta | Troca".toUpperCase();
-        this.lancamentoForm.controls['cadastrado'].setValue('nao');
-        this.lancamentoForm.controls['igrejaId'].setValue(this.igrejaId);
-        this.lancamentoForm.controls['tipoLancamento'].setValue('Receita');
-        this.lancamentoForm.controls['data'].setValue(this.sharedService.dataAtualFormatada());
-        this.lancamentoForm.controls['competencia'].setValue(this.sharedService.mesAno());
-        this.lancamentoForm.controls['contaId'].setValue(this.contas[0].id);// Conta de Origem
         this.formaId = this.formas[0].id ?? 0;
-        this.lancamentoForm.controls['formaIdTransferencia'].setValue('Selecione ....');
-        this.lancamentoForm.controls['centroCustoId'].setValue(1);
-        this.lancamentoForm.controls['formaId'].setValue(1);
-        this.lancamentoForm.controls['documento'].setValue(this.sharedService.mesAno());
-        this.lancamentoForm.controls['historico'].setValue('Troca | Permuta');
-        this.lancamentoForm.controls['setorId'].setValue(this.setorId);
-        this.lancamentoForm.controls['pessoaId'].setValue(0);
-        this.lancamentoForm.controls['nome'].setValue('Permuta');
-        this.lancamentoForm.controls['contaId'].setValue(this.contas[0].id);// Conta de Origem
-        this.lancamentoForm.controls['tituloMin'].setValue("Membro");
+        this.lancamentoForm.patchValue({
+          cadastrado: 'nao',
+          igrejaId: this.igrejaId,
+          tipoLancamento: 'Receita',
+          data: this.sharedService.dataAtualFormatada(), // Corrigido o campo 'data'
+          competencia: this.sharedService.mesAno(),
+          contaId: this.contas[0].id,
+          centroCustoId: 1,
+          formaId: 1,
+          formaIdTransferencia: 'Selecione ....',
+          documento: this.sharedService.mesAno(),
+          historico: 'Troca | Permuta',
+          setorId: this.setorId,
+          pessoaId: 0,
+          nome: 'Permuta',
+          tituloMin: 'Membro'
+        });
         break;
-
-      default:
     }
   }
 
-  private extractId(location: string): string { // Extrai o Id da URL
-    let position = location.lastIndexOf('/');
+  cadastradoC() {
+    this.lancamentoForm.controls['cadastrado'].setValue('sim');
+    this.lancamentoForm.controls['nome'].setValue("");
+  }
+
+  cadastradoNC() {
+    this.lancamentoForm.controls['cadastrado'].setValue('nao');
+    this.lancamentoForm.controls['pessoaId'].setValue(0);
+    this.lancamentoForm.controls['nome'].setValue("");
+    this.lancamentoForm.controls['tituloMin'].setValue('Membro');
+    this.pessoaId = 0;
+  }
+
+  // ════════════════════════════════════════════════════
+  // HELPERS PRIVADOS
+  // ════════════════════════════════════════════════════
+
+  private loadPessoa(value: number) {
+    this.pessoaService.getById(value)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.pessoa = response;
+          this.pessoaId = this.pessoa.id ?? 0;
+          this.lancamentoForm.controls['pessoaId'].setValue(this.pessoa.id);
+          this.lancamentoForm.controls['nome'].setValue(this.pessoa.nome);
+          this.lancamentoForm.controls['tituloMin'].setValue(this.pessoa.tituloMin?.trim());
+        },
+        error: () => { }
+      });
+  }
+
+  private getCategoria(value: number) {
+    this.categoriaService.findById(value)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.categoria = response;
+          this.lancamentoForm.controls['tipoLancamento'].setValue(response.tipo);
+        },
+        error: () => { }
+      });
+  }
+
+  private getConta(value: number | undefined) {
+    const conta_id = this.contas.filter(tc => tc.id == value);
+    const tipo_conta = conta_id.map(tp => tp.tipo?.toString());
+    this.lancamentoForm.controls['tipoConta'].setValue(tipo_conta);
+  }
+
+  private extractId(location: string): string {
+    const position = location.lastIndexOf('/');
     return location.substring(position + 1, location.length);
   }
 
-
-  private showError(error: { message: any; }) {
+  private showError(error: { message: any }) {
     this.messageService.add({ severity: 'error', summary: 'Erro', detail: error.message });
   }
 
+  getCorForma(formaId: number): any {
+    switch (formaId) {
+      case 1: return { 'color': '#009900'};
+      case 2: return { 'color': '#0772ffce'};
+      case 3: return { 'color': '#FF8C00'};
+      // case 3: return { 'color': '#FF8C00', 'font-weight': 'bold' };
+      default: return {};
+    }
+  }
 }
-

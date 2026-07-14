@@ -141,7 +141,7 @@ export class SetorFormComponent implements OnInit, AfterContentChecked {
                 this.id = urlParams['id'];
                 this.setorId = urlParams['id'];
                 this.setorService
-                    .findById(this.id)
+                    .getSetorById(this.id)
                     .subscribe({
                         next: (response) => {
                             this.setor = response;

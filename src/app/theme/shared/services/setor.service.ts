@@ -19,12 +19,6 @@ export class SetorService {
         catchError(this.handleError));
   }
 
-  // Para Relatorio 
-  getSetoresLista(): Observable<SetorDTO[]> {
-    return this.http.get<SetorDTO[]>(`${this.apiPath}/list`)
-      .pipe(catchError(this.handleError));
-  }
-
 
   //Igual o findAll só que paginado / os dois usa o mesmo metodo no banco
   getPageSetor(nome: string, page: number, linesPerPage: number) {
@@ -74,7 +68,7 @@ export class SetorService {
   // Fim Busca Setor
 
 
-  findById(id: number): Observable<SetorDTO> {
+  getSetorById(id: number): Observable<SetorDTO> {
 
     const url = `${this.apiPath}/${id}`;
 

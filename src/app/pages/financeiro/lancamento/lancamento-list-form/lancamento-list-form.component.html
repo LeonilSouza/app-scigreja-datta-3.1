@@ -1,3 +1,4 @@
+>
 <div class="col-md-12">
     <app-card [hidHeader]="true" cardTitle="" cardClass="shadow" blockClass="pc-component">
 
@@ -14,11 +15,11 @@
 
             <!-- Periodo -->
             <div class="col-sm-2 ">
-                <label class="f-13"> Período de lançamentos</label>
+                <label class="f-13"> Período de lançamentos</label>
                 <p-datepicker (click)="periodo()" [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
-                    [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
-                    inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" [(ngModel)]="rangeDates"
-                    placeholder="dd/mm/aaaa" selectionMode="range" />
+                    [ngModelOptions]="{standalone: true}" [yearNavigator]="true" yearRange="1900:2100"
+                    [showButtonBar]="true" [showIcon]="true" inputId="icondisplay" dataType="string"
+                    dateFormat="dd/mm/yy" [(ngModel)]="rangeDates" placeholder="dd/mm/aaaa" selectionMode="range" />
             </div>
 
             <!-- Conta -->
@@ -57,10 +58,10 @@
                     @if(crtCategoria == 3){
                     <label class="f-13">Categorias</label>
                     }
-                    <p-multiSelect [filter]="true"
-                        [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
-                        [options]="categoriasFiltradas" formControlName="selectedCategorias" optionLabel="nome"
-                        optionValue="id" placeholder="Todas" [showClear]="false" [autofocus]="false" display="chip"
+                    <p-multiSelect [filter]="true" [style]="{'width':'100%','height':'30px', 'align-items':
+                        'center', 'border-radius': '6px','font-size': '13px'}" [options]="categoriasFiltradas"
+                        formControlName="selectedCategorias" optionLabel="nome" optionValue="id" placeholder="Todas"
+                        [showClear]="false" [autofocus]="false" display="chip"
                         (onChange)="atualizarFiltrosStrings($event, 'categorias')" appendTo="body">
                     </p-multiSelect>
                 </form>
@@ -131,113 +132,99 @@
                         {{ totalMissoes | currency:'BRL' }}</button></strong>
             </div>
 
-            <!-- Saldo Anterior -->
             <div class=" form-group col-sm-2 mr-auto mb-0 ">
                 @if(tipoLancamento != 'Livro Caixa'){
                 <label class="f-13">Saldo anterior</label>
                 }
-                @if(tipoLancamento != 'Livro Caixa'){
+                @if(tipoLancamento !='Livro Caixa'){
                 <strong><button type="button" class="mb-0 ml-0" pButton pRipple
                         style="width:100% ; height: 30px; background:purple ; border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
                         {{ saldoAnterior | currency:'BRL' }}</button></strong>
                 }
             </div>
 
-            <!-- Despesas Pagas -->
-
             <div class=" form-group col-sm-2 float-end mb-0 ">
-                <label class="f-13">Despesas Total</label>
+                <label class="f-13 mt-1">Despesas Total</label>
                 <strong><button type="button" class="mb-0 ml-0" pButton pRipple
                         style="width:100% ; height: 30px; background:red ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
                         {{ totalDebitos | currency:'BRL' }}</button></strong>
             </div>
 
-            <!-- Espaço -->
             <div class=" form-group col-sm-2 float-end mb-0 "></div>
 
-            <!-- Troca | Permuta -->
             <div class=" form-group col-sm-1 float-end ">
-                <label class="f-13"> </label>
+                <label class="f-13  mt-1"> </label>
                 <button (click)="visibleModalPermuta = true; limpaCheckbox(); setModalInclusao('Permuta'); imodo.set(0)"
-                    class="btn btn-icon  btn-outline-warning p-0 float-end " type="button"
+                    class="btn btn-icon btn-outline-warning p-0 float-end" type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Permuta
                 </button>
             </div>
 
             <div class=" form-group col-sm-1 float-end ">
-                <label class="f-13"> </label>
+                <label class="f-13  mt-1"> </label>
                 <button
                     (click)="visibleModalTransferencia = true; limpaCheckbox(); setModalInclusao('Transferencia'); imodo.set(0)"
-                    class="btn btn-icon  btn-outline-secondary p-0 float-end" type="button"
+                    class="btn btn-icon btn-outline-secondary p-0 float-end" type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Transferir
                 </button>
             </div>
 
             <div class=" form-group col-sm-1 float-end ">
-                <label class="f-13"> </label>
-                <button routerLink="/cadastros" class="btn btn-icon  btn-outline-dark p-0 float-end " type="button"
+                <label class="f-13  mt-1"> </label>
+                <button routerLink="/cadastros" class="btn btn-icon btn-outline-dark p-0 float-end" type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Contas
                 </button>
             </div>
 
-
-            <!-- Espaço -->
             <div class=" form-group col-sm-1 float-end mb-0 "></div>
 
             <div class=" form-group col-sm-1 float-end mb-0">
-                <label class="f-13"> </label>
+                <label class="f-13  mt-1"> </label>
                 <button (click)="visibleLancamento = true; limpaCheckbox(); setModalInclusao('Receita'); imodo.set(0)"
-                    class="btn btn-icon  btn-outline-success p-0 float-end mb-0" type="button"
+                    class="btn btn-icon btn-outline-success p-0 float-end mb-0" type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Dízimo
                 </button>
             </div>
 
             <div class=" form-group col-sm-1 float-end mb-0">
-                <label class="f-13"> </label>
+                <label class="f-13  mt-1"> </label>
                 <button (click)="visibleLancamento = true; limpaCheckbox(); setModalInclusao('Oferta'); imodo.set(0)"
-                    class="btn btn-icon  btn-outline-primary p-0 float-end mb-0" type="button"
+                    class="btn btn-icon btn-outline-primary p-0 float-end mb-0" type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Oferta
                 </button>
             </div>
 
             <div class=" form-group col-sm-1 float-end mb-0">
-                <label class="f-13"> </label>
+                <label class="f-13  mt-1"> </label>
                 <button (click)="visibleLancamento = true; limpaCheckbox(); setModalInclusao('Receita'); imodo.set(0)"
-                    class="btn btn-icon  btn-outline-success p-0 float-end mb-0 " type="button"
+                    class="btn btn-icon btn-outline-success p-0 float-end mb-0" type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Receita
                 </button>
             </div>
 
             <div class=" form-group col-sm-1 float-end mb-0">
-                <label class="f-13"> </label>
+                <label class="f-13  mt-1"> </label>
                 <button (click)="visibleLancamento = true; limpaCheckbox(); setModalInclusao('Despesa'); imodo.set(0)"
-                    class="btn btn-icon  btn-outline-danger p-0 float-end mb-0 " type="button"
+                    class="btn btn-icon btn-outline-danger p-0 float-end mb-0" type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Despesa
                 </button>
             </div>
         </div>
 
-        <div class="form-group row col-md-12 mb-0 " style="align-items: center;">
-
-            <!-- Espaço -->
+        <div class="form-group row col-md-12 mb-0" style="align-items: center;">
             <div class=" form-group col-sm-9 mb-0 "></div>
-
         </div>
 
-        <!-- <div class="form-group row col-md-12 mt-0"> -->
-
-        <!-- FILTROS -->
+        <!-- FILTROS ACCORDION -->
         <div class="flex justify-center">
             <p-accordion>
                 <p-accordion-panel value="0">
                     <p-accordion-header class=" border-1 mb-3 py-2"
-                        [style.color]="saldoFinalContas >= 0  ? 'green' : 'red'"
-                        style="background-color: rgb(242, 245, 247); ">Saldo Final Contas:
-                                {{ saldoFinalContas | currency:' ' }}
+                        [style.color]="saldoFinalContas >= 0 ? 'green' : 'red'"
+                        style="background-color: rgb(242, 245, 247);">Saldo Final Contas:
+                        {{ saldoFinalContas | currency:' ' }}
                     </p-accordion-header>
                     <p-accordion-content>
-
-                        <!-- Gride Lancamentos  -->
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="table-responsive">
@@ -245,12 +232,13 @@
                                         <tbody>
                                             @for (conta of contas; track conta.id) {
                                             <tr>
-                                                <td class="py-2" style="font-size: 13px; height: 27px; ">{{ conta.nome
-                                                    }}</td>
-                                                <td class="col-data-rigth-100 py-2 "
-                                                    style=" font-size: 13px; height: 27px;"
-                                                    [style.color]="conta.saldoCalculado >= 0  ? 'green' : 'red'">
-                                                    {{ conta.saldoCalculado | number: '1.2-2' }}<br></td>
+                                                <td class="py-2" style="font-size: 13px; height: 27px;">{{ conta.nome }}
+                                                </td>
+                                                <td class="col-data-rigth-100 py-2"
+                                                    style="font-size: 13px; height: 27px;"
+                                                    [style.color]="conta.saldoCalculado >= 0 ? 'green' : 'red'">
+                                                    {{ conta.saldoCalculado | number: '1.2-2' }}<br>
+                                                </td>
                                             </tr>
                                             }
                                         </tbody>
@@ -262,11 +250,9 @@
                 </p-accordion-panel>
             </p-accordion>
         </div>
-        <!-- FIM FILTROS -->
 
         <p-toolbar styleClass="border-0">
             <ng-template #start>
-                <!-- Ação Selecionados -->
                 @if(length() === 1){
                 <div class="flex justify-between">
                     <p-button [model]="selecaoItemsIndividual" icon="pi pi-trash" severity="warn" label="Deletar"
@@ -274,86 +260,66 @@
                         (click)="deleteIndividual()" />
                 </div>
                 }
-
                 @if(length() < 1){ <div class="flex justify-between">
                     <p-button [style]="{'height':'32px', 'margin-right':'20px'}" disabled severity="secondary"
-                        [outlined]="true" icon="pi pi-trash" label="Limpar" label="Deletar"
-                        (click)="deleteMultiplos()" />
+                        [outlined]="true" icon="pi pi-trash" label="Deletar" (click)="deleteMultiplos()" />
 </div>
 }
-
-
 @if(length() > 1){
 <div class="flex justify-between">
     <p-button (click)="deleteMultiplos()" [model]="selecaoItemsMultiplos" icon="pi pi-trash" label="Deletar"
         [style]="{'height':'32px', 'margin-right':'20px'}" severity="danger" [outlined]="true" />
 </div>
-
 }
-
-<!-- Fim Ação Selecionados -->
 </ng-template>
 
 <ng-template pTemplate="caption">
     <div class="flex align-items-center justify-content-between">
         <h5 class="m-0">Lançamentos Financeiros</h5>
-
-        <!-- Campo de Busca Global -->
         <span class="p-input-icon-left">
             <i class="pi pi-search"></i>
             <input pInputText type="text" style="height: 32px; width:400px;" [(ngModel)]="filtro.nome"
-                (input)="onGlobalFilter()" placeholder="Pesquisar nome, valor ou histórico..."
-                class="w-full sm:w-auto" />
+                [ngModelOptions]="{standalone: true}" (input)="onGlobalFilter()"
+                placeholder="Pesquisar nome, valor ou histórico..." class="w-full sm:w-auto" />
         </span>
     </div>
 </ng-template>
 
-
 <ng-template #center>
-    <!-- Pesquisa -->
     <p-iconfield iconPosition="left">
         <p-inputicon class="pi pi-search" />
         <input pInputText type="text" style="height: 32px; width:400px;" [(ngModel)]="filtro.nome"
-            (input)="onGlobalFilter()" placeholder="Pesquisar nome, valor ou histórico..." class="w-full sm:w-auto" />
+            [ngModelOptions]="{standalone: true}" (input)="onGlobalFilter()"
+            placeholder="Pesquisar nome, valor ou histórico..." class="w-full sm:w-auto" />
     </p-iconfield>
 </ng-template>
 
-
 <ng-template #end>
-
-    <!-- Impressão sintetico -->
     <div class="flex justify-between">
         <p-button [style]="{'height':'32px', 'background':'black','margin-right':'20px'}" [outlined]="false"
             icon="pi pi-print" class="text-white" label="Sintetico" (click)="imprimirSintetico()" />
     </div>
-
-    <!-- Botão Imprimir -->
-    <!-- [placement]="'top'" ngbTooltip="Permutas não são consideradas" -->
     <div class="flex justify-between">
         <p-button [style]="{'height':'32px', 'background':'black','margin-right':'20px'}" [outlined]="false"
             icon="pi pi-print" class="text-white" label="Imprimir" (click)="imprimirLancamentos()" />
     </div>
-
-    <!-- Busca  -->
-    <strong><button (click)="filtraLancamentos()" icon="pi pi-search" type="button" class=" mb-0 mx-3" pButton pRipple
+    <strong><button (click)="filtraLancamentos()" icon="pi pi-search" type="button" class="mb-0 mx-3" pButton pRipple
             label="Buscar"
-            style=" height: 32px; background:green ; font-size: small; border-radius: 5px; color: aliceblue;">
+            style="height: 32px; background:green; font-size: small; border-radius: 5px; color: aliceblue;">
         </button></strong>
-
-    <p-splitButton class="float-end mr-0 mb-1" label="   Relatórios          " icon="pi pi-print" [model]="printItems"
+    <p-splitButton class="float-end mr-0 mb-1" label="   Relatórios          " icon="pi pi-print" [model]="printItems"
         [style]="{'height':'32px'}" outlined severity="contrast" />
-
-
 </ng-template>
 </p-toolbar>
 
+<!-- GRID -->
 <div class="col-sm-12">
-    <div class=" mb-0 ">
+    <div class="mb-0">
         <p-table #dtlancamento [value]="lancamentos" [(selection)]="selectedLancamentos" dataKey="id" [lazy]="true"
             [rows]="filtro.linesPerPage" responsiveLayout="stack" (onLazyLoad)="aoMudarPagina($event)"
             [showCurrentPageReport]="true" [totalRecords]="totalRegistros" showGridlines stripedRows
             [rowsPerPageOptions]="[6, 10, 20, 30, 50]" [tableStyle]="{ 'min-width': '30rem' }"
-            currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros " [paginator]="true"
+            currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
             emptyMessage="Nenhum registro encontrado" selectionMode="multiple"
             (onRowSelect)="linhasSelecionada(selectedLancamentos)" (onRowUnselect)="aoDesmarcar($event)"
             (onHeaderCheckboxToggle)="linhasSelecionada(selectedLancamentos)">
@@ -361,47 +327,39 @@
             <ng-template #header>
                 <tr>
                     <th class="py-2"
-                        style="width: 3rem; background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; ; border-top-left-radius: 5px">
+                        style="width: 3rem; background-color:rgb(77, 83, 90); font-size: 13px; color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-left-radius: 5px">
                         <p-tableHeaderCheckbox />
                     </th>
-
                     <th class="col-data-100 py-2"
-                        style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
+                        style="background-color:rgb(77, 83, 90); font-size: 13px; color: aliceblue; padding-top: 6px; padding-bottom: 6px;">
                         <b>Data</b>
                     </th>
-
                     <th class="py-2" style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue;">
                         <b>Nome/Fornecedor</b>
                     </th>
-
                     <th class="py-2" style="font-size: 13px; background-color:rgb(77, 83, 90); color: aliceblue;">
                         <b>Histórico</b>
                     </th>
-
                     <th class="col-data-150 py-2"
-                        style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
+                        style="background: rgb(77, 83, 90); font-size: 13px; color: aliceblue;">
                         <b>Forma Pgto</b>
                     </th>
-
                     <th class="col-data-150 py-2"
-                        style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
+                        style="background: rgb(77, 83, 90); font-size: 13px; color: aliceblue;">
                         <b>Conta</b>
                     </th>
-
                     <th class="col-data-150 py-2"
-                        style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
+                        style="background: rgb(77, 83, 90); font-size: 13px; color: aliceblue;">
                         <b>Natureza</b>
                     </th>
                     <th class="col-data-rigth-150 py-2"
-                        style="background: rgb(77, 83, 90); font-size: 13px ;color: aliceblue;">
+                        style="background: rgb(77, 83, 90); font-size: 13px; color: aliceblue;">
                         <b>Valor R$</b>
                     </th>
-
                     <th class="col-acoes py-2"
-                        style=" background-color:rgb(77, 83, 90); font-size: 13px ; color: aliceblue; padding-top: 6px; padding-bottom: 6px; ; border-top-right-radius: 5px">
+                        style="background-color:rgb(77, 83, 90); font-size: 13px; color: aliceblue; padding-top: 6px; padding-bottom: 6px; border-top-right-radius: 5px">
                         <b>Ações</b>
                     </th>
-
                 </tr>
             </ng-template>
 
@@ -410,133 +368,105 @@
                     <td class="col-check-box py-1" style="width: 3rem;">
                         <p-tableCheckbox [value]="lancamento" [index]="rowIndex" />
                     </td>
-
-                    <td class="col-data-100 py-1" style=" font-size: 13px">{{ lancamento.data }}
-                    </td>
-
-                    <td class="py-1" style=" font-size: 13px ">{{
-                        lancamento.nome }}</td>
-                    <td class="py-1" style=" font-size: 13px">{{
-                        lancamento.historico }}</td>
-
+                    <td class="col-data-100 py-1" style="font-size: 13px">{{ lancamento.data }}</td>
+                    <td class="py-1" style="font-size: 13px">{{ lancamento.nome }}</td>
+                    <td class="py-1" style="font-size: 13px">{{ lancamento.historico }}</td>
                     <td class="col-data-150 py-1" style="font-size: 13px">
-                        <span [ngStyle]="getCorForma(lancamento.formaId)">
-                            {{ lancamento.nomeForma }}
-                        </span>
+                        <span [ngStyle]="getCorForma(lancamento.formaId)">{{ lancamento.nomeForma }}</span>
                     </td>
-
-                    <td class="col-data-150 py-1" style=" font-size: 13px">{{
-                        lancamento.nomeConta }}<br>
+                    <td class="col-data-150 py-1" style="font-size: 13px">{{ lancamento.nomeConta }}</td>
+                    <td class="col-data-150 py-1" style="font-size: 13px">{{ lancamento.tipoLancamento }}</td>
+                    <td class="col-data-rigth-150 py-1" style="font-size: 13px;" [style.color]="lancamento.tipoLancamento === 'Receita' ? 'green' :
+                                               lancamento.tipoLancamento === 'Despesa' ? 'red' :
+                                               lancamento.tipoLancamento === 'Livro Caixa' ? 'purple' : 'blue'">
+                        {{ lancamento.valor | currency:' ' }}
                     </td>
-                    <td class="col-data-150 py-1" style=" font-size: 13px;">{{
-                        lancamento.tipoLancamento }}<br>
-                    </td>
-                    <!-- Impressão Disabled -->
-                    <td class="col-data-rigth-150 py-1" style=" font-size: 13px;" [style.color]="lancamento.tipoLancamento === 'Receita' ? 'green' : 
-                    lancamento.tipoLancamento === 'Despesa' ? 'red' : 
-                    lancamento.tipoLancamento === 'Livro Caixa' ? 'purple' : 'blue'">
-                        {{ lancamento.valor | currency:' '}}<br></td>
-
-                    <!-- Editar -->
                     <td class="col-acoes-4-botao py-1">
                         <button [disabled]="lancamento.nome == 'Transferencia' || lancamento.nome == 'Permuta'" (click)="limpaCheckbox();
-                            lancamento.nome == 'Transferencia' ? visibleModalTransferencia = true : 
-                            lancamento.nome == 'Permuta' ? visibleModalPermuta = true : visibleLancamento = true; 
-                            loadLancamento(lancamento); setModalEdicao(lancamento.tipoLancamento) " type="button"
-                            class="btn btn-icon  btn-outline-success p-1 mb-0 mt-0 "
-                            [style]="{'margin-right': '10px','height': '26px', 'width': '26px'} " [placement]="'top'"
+                                        lancamento.nome == 'Transferencia' ? visibleModalTransferencia = true :
+                                        lancamento.nome == 'Permuta' ? visibleModalPermuta = true : visibleLancamento = true;
+                                        loadLancamento(lancamento); setModalEdicao(lancamento.tipoLancamento)"
+                            type="button" class="btn btn-icon btn-outline-success p-1 mb-0 mt-0"
+                            [style]="{'margin-right': '10px','height': '26px', 'width': '26px'}" [placement]="'top'"
                             ngbTooltip="Editar">
                             <i class="pi pi-pencil"></i>
                         </button>
 
-                        <!-- Recibo -->
-                        @if(lancamento.tipoLancamento == "Despesa" ){
+                        @if(lancamento.tipoLancamento == "Despesa"){
                         <button (click)="limpaCheckbox(); imprimirRecibo(lancamento.id)" type="button"
-                            class="btn btn-icon  btn-outline-primary p-1 mb-0 mt-0 "
-                            [style]="{'height': '26px', 'width': '26px'} " [placement]="'top'" ngbTooltip="Recibo">
+                            class="btn btn-icon btn-outline-primary p-1 mb-0 mt-0"
+                            [style]="{'height': '26px', 'width': '26px'}" [placement]="'top'" ngbTooltip="Recibo">
                             <i class="pi pi-print"></i>
                         </button>
                         }
-
-                        <!-- Recibo Disabled-->
                         @if(lancamento.tipoLancamento !== "Despesa"){
-                        <button type="button" class="btn btn-icon  btn-outline-secondary p-1 mb-0 mt-0"
-                            [style]="{'height': '26px', 'width': '26px'} " [placement]="'top'" ngbTooltip="Sem recibo">
+                        <button type="button" class="btn btn-icon btn-outline-secondary p-1 mb-0 mt-0"
+                            [style]="{'height': '26px', 'width': '26px'}" [placement]="'top'" ngbTooltip="Sem recibo">
                             <i class="pi pi-print"></i>
                         </button>
                         }
 
                         @if (lancamento.comprovanteNome) {
                         <button (click)="visualizarComprovante(lancamento.id)" type="button"
-                            class="ml-1 col-acoes-4-botao py-1 btn btn-icon  btn-outline-danger p-1 mb-0 mt-0"
-                            icon="pi pi-file-pdf" [style]="{'margin-left': '7px', 'height': '26px', 'width': '26px'} "
-                            [placement]="'top'" ngbTooltip="Visualizar Comprovante">
+                            class="ml-1 col-acoes-4-botao py-1 btn btn-icon btn-outline-danger p-1 mb-0 mt-0"
+                            [style]="{'margin-left': '7px', 'height': '26px', 'width': '26px'}" [placement]="'top'"
+                            ngbTooltip="Visualizar Comprovante">
                             <i class="pi pi-file-pdf"></i>
                         </button>
                         } @else {
                         <button type="button"
-                            class="ml-1 col-acoes-4-botao py-1 btn btn-icon  btn-outline-dark p-1 mb-0 mt-0"
-                            icon="pi pi-file-pdf" [style]="{'margin-left': '7px', 'height': '26px', 'width': '26px'} "
-                            [placement]="'top'" ngbTooltip="Sem anexo">
+                            class="ml-1 col-acoes-4-botao py-1 btn btn-icon btn-outline-dark p1 mb-0 mt-0"
+                            [style]="{'margin-left': '7px', 'height': '26px', 'width': '26px'}" [placement]="'top'"
+                            ngbTooltip="Sem anexo">
                             <i class="pi pi-file-pdf"></i>
                         </button>
                         }
 
-                        <!-- Botão de Deletar Anexo (Lixeira Vermelha) -->
                         @if (lancamento.comprovanteNome) {
                         <button (click)="excluirComprovante(lancamento.id)" type="button"
-                            class="ml-1 col-acoes-4-botao py-1 btn btn-icon  btn-outline-danger p-1 mb-0 mt-0"
-                            icon="pi pi-file-pdf" [style]="{'margin-left': '7px', 'height': '26px', 'width': '26px'} "
-                            [placement]="'top'" ngbTooltip="Excluir Anexo">
+                            class="ml-1 col-acoes-4-botao py-1 btn btn-icon btn-outline-danger p-1 mb-0 mt-0"
+                            [style]="{'margin-left': '7px', 'height': '26px', 'width': '26px'}" [placement]="'top'"
+                            ngbTooltip="Excluir Anexo">
                             <i class="pi pi-trash"></i>
                         </button>
                         } @else {
                         <button disabled type="button"
-                            class="ml-1 col-acoes-4-botao py-1 btn btn-icon  btn-outline-dark p-1 mb-0 mt-0"
-                            icon="pi pi-file-pdf" [style]="{'margin-left': '7px', 'height': '26px', 'width': '26px'} "
-                            [placement]="'top'" ngbTooltip="Sem comprovante">
+                            class="ml-1 col-acoes-4-botao py-1 btn btn-icon btn-outline-dark p-1 mb-0 mt-0"
+                            [style]="{'margin-left': '7px', 'height': '26px', 'width': '26px'}" [placement]="'top'"
+                            ngbTooltip="Sem comprovante">
                             <i class="pi pi-trash"></i>
                         </button>
                         }
-
                     </td>
                 </tr>
             </ng-template>
         </p-table>
     </div>
 </div>
-<!-- </div> -->
 
 <!-- Totalização -->
 <div class="col-md-4 float-end border border-top-0 mt-0 mb-2" style="background-color: #fafafa;">
     <span class="row mb-0 float-end">
-        <!-- Crédito -->
         <div class=" form-group col-sm-4 mt-0 mb-0 ">
             <label class="f-13 mt-1" style="width:100%; text-align:left">Crédito</label>
-            <strong><label class="mb-0 mt-0 ml-0  text-success "
-                    style="width:100% ; height: 30px;  text-align:left; background:#fafafa ; border: 0px; font-size: 13px; border-radius: 6px;">
+            <strong><label class="mb-0 mt-0 ml-0 text-success"
+                    style="width:100%; height: 30px; text-align:left; background:#fafafa; border: 0px; font-size: 13px; border-radius: 6px;">
                     {{ totalCreditos | currency:'BRL' }}</label></strong>
         </div>
-
-        <!-- Débito -->
-        <div class=" form-group col-sm-4  mb-0 ">
-            <label class="f-13 mt-1 mb-0" style="width:100%;  text-align:left">Débito</label>
+        <div class=" form-group col-sm-4 mb-0 ">
+            <label class="f-13 mt-1 mb-0" style="width:100%; text-align:left">Débito</label>
             <strong><label class="mb-0 ml-0 mt-0 text-danger"
-                    style="width:100% ; height: 30px; text-align:left; background:#fafafa ;  border: 0px; font-size: 13px; border-radius: 6px; ">
+                    style="width:100%; height: 30px; text-align:left; background:#fafafa; border: 0px; font-size: 13px; border-radius: 6px;">
                     {{ totalDebitos | currency:'BRL' }}</label></strong>
         </div>
-
-        <!-- Diferença -->
-        <div class=" form-group  col-sm-4  mb-0 ">
-            <label class="f-13  mt-1" style="width:100%;  text-align:left">Saldo</label>
+        <div class=" form-group col-sm-4 mb-0 ">
+            <label class="f-13 mt-1" style="width:100%; text-align:left">Saldo</label>
             <strong><label class="mb-0 ml-0 text-primary"
-                    style="width:100% ; height: 30px; text-align:left; background:#fafafa ; border: 0px; font-size: 13px; border-radius: 6px;">
-                    {{ totalCreditos - totalDebitos | currency:'BRL' }}
-                </label></strong>
+                    style="width:100%; height: 30px; text-align:left; background:#fafafa; border: 0px; font-size: 13px; border-radius: 6px;">
+                    {{ totalCreditos - totalDebitos | currency:'BRL' }}</label></strong>
         </div>
     </span>
 </div>
-<!-- Lancamentos Fim -->
 
 </app-card>
 </div>
@@ -544,22 +474,17 @@
 
 <form [formGroup]="lancamentoForm" autocomplete="off">
 
-    <!-- INICIO MODAL  LANCAMENTO -->
+    <!-- MODAL LANCAMENTO -->
     <div class="col-md-12 col-xl-12" data-backdrop="static">
-
         <div class="card flex justify-center">
-            <p-dialog header="LANÇAMENTO DE - {{  pageTitle }}" [modal]="true" [(visible)]="visibleLancamento"
+            <p-dialog header="LANÇAMENTO DE - {{ pageTitle }}" [modal]="true" [(visible)]="visibleLancamento"
                 [position]="positionLancamento" [dismissableMask]="false"
                 [style]="{width: '60vw', 'min-height': '30vh', height: 'auto'}" [closeOnEscape]="false"
                 [breakpoints]="{'960px': '95vw', '640px': '100vw'}" [draggable]="false" [resizable]="false"
                 [contentStyle]="{ 'overflow': 'auto' }" [transitionOptions]="'500ms ease-out'">
                 <hr class="mt-1 mb-2">
-
-                <!-- Modal Body Inicio -->
-
                 <div class="row col-12">
-                    <!-- date -->
-                    <div class="form-group col-md-4 mb-3 ">
+                    <div class="form-group col-md-4 mb-3">
                         <label class="mb-1" for="data">Data</label>
                         <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
                             [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
@@ -567,32 +492,27 @@
                             formControlName="data" appendTo="body" />
                     </div>
 
-                    <div class="row form-group col-md-6  mb-2">
+                    <div class="row form-group col-md-6 mb-2">
                         <div class="flex flex-wrap">
                             <div class="flex align-items-center mb-0">
-                                <label class="text-dark mr-5">Nome/Historico               </label>
+                                <label class="text-dark mr-5">Nome/Historico</label>
                                 <p-radioButton (click)="cadastradoNC()" value="nao" formControlName="cadastrado"
                                     inputId="naocadastrado"></p-radioButton>
-
-                                <label for="naocadastrado" class="ml-2 text-c-blue">  Não Cadastrado       </label>
+                                <label for="naocadastrado" class="ml-2 text-c-blue">Não Cadastrado</label>
                                 <p-radioButton (click)="cadastradoC()" value="sim" formControlName="cadastrado"
                                     inputId="cadastrado"></p-radioButton>
-                                <label for="cadastrado" class="ml-2 text-success">  Cadastrado</label>
+                                <label for="cadastrado" class="ml-2 text-success">Cadastrado</label>
                             </div>
-
-
                             @if(lancamentoForm.controls['cadastrado'].value == 'sim'){
                             <p-select [style]="{'width':'100%','height':'30px'}" formControlName="pessoaId"
-                                (onChange)="onChangeNomeHistorico($event)" class="w-full md mb-3 " [options]="pessoas"
+                                (onChange)="onChangeNomeHistorico($event)" class="w-full md mb-3" [options]="pessoas"
                                 [editable]="false" [filter]="true" filterBy="nome" [showClear]="false"
                                 optionLabel="nome" resetFilterOnHide="true" dateFormat="dd/mm/yy"
                                 dropdownIcon="pi pi-users" [autofocus]="false" optionValue="id"
-                                placeholder="Selecione um provedor" class="mt-1 " appendTo="body" />
+                                placeholder="Selecione um provedor" class="mt-1" appendTo="body" />
                             }
-
-                            <!-- Nome/Histórico Não Cadastrado -->
                             @if(lancamentoForm.controls['cadastrado'].value == 'nao'){
-                            <div class="form-group  mb-0">
+                            <div class="form-group mb-0">
                                 <input type="text" style="text-transform: uppercase" class="form-control mt-1"
                                     formControlName="nome">
                             </div>
@@ -600,244 +520,266 @@
                         </div>
                     </div>
 
-                    <!-- Competencia -->
                     <div class="form-group col-md-2 mb-2">
                         <label class="mb-1">Competência</label>
                         <p-inputMask class="float-end"
-                            [style]="{'width':'100%','height':'30px', 'border-radius':'6px', 'font-size':'13px' }"
+                            [style]="{'width':'100%','height':'30px', 'border-radius':'6px', 'font-size':'13px'}"
                             ariaRequired="false" mask="99/9999" formControlName="competencia"
                             placeholder="MM/AAAA"></p-inputMask>
                         @if(lancamentoForm.controls['competencia'].errors){
-                        <p class="danger" [style]="{'font-size':'10px' }" margin-left>
-                            Informe mês e ano.</p>
+                        <p class="danger" [style]="{'font-size':'10px'}">Informe mês e ano.</p>
                         }
                     </div>
 
-                    <!-- Histórico -->
                     <div class="form-group col-md-5 mb-3">
                         <label class="mb-1">Descrição</label>
                         <input type="text" class="form-control mb-0" formControlName="historico">
                     </div>
 
-                    <!-- Forma de Pagamento -->
                     <div class="form-group col-md-4 mb-2">
                         <label class="m-b-9 mb-1">Forma de Contribuição</label>
-                        <p-select [style]="{'width':'100%','height':'30px'}" formControlName="formaId"
-                            class="w-full md  " [options]="formas" [editable]="false" [filter]="false" filterBy="nome"
-                            [showClear]="false" optionLabel="nome" resetFilterOnHide="false" dateFormat="dd/mm/yy"
+                        <p-select [style]="{'width':'100%','height':'30px'}" formControlName="formaId" class="w-full md"
+                            [options]="formas" [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
+                            optionLabel="nome" resetFilterOnHide="false" dateFormat="dd/mm/yy"
                             dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id" placeholder="Selecione..."
                             appendTo="body" />
-
                     </div>
 
-                    <!-- Valor Principal -->
-                    <div class="form-group col-md-3  mb-3">
-                        <label class="mb-1">Valor R$</label>
+                    <div class="form-group col-md-3 mb-3">
+                        <label class="mb-1">Valor R\$</label>
                         <p-inputnumber size="small" formControlName="valor" inputId="valor" mode="decimal"
                             locale="pt-BR" class="mb-0" [minFractionDigits]="2"
                             [style]="{'width':'100%','height':'30px'}" />
-
                         @if(lancamentoForm.controls['valor'].errors){
-                        <p class="danger" [style]="{'font-size':'12px' }" margin-left>
-                            Informe um valor.</p>
+                        <p class="danger" [style]="{'font-size':'12px'}">Informe um valor.</p>
                         }
                     </div>
 
-                    <!-- Conta -->
                     <div class="form-group col-md-4 mb-3">
-                        <label class="mb-1">Conta </label>
+                        <label class="mb-1">Conta</label>
                         <p-select [style]="{'width':'100%','height':'30px'}" formControlName="contaId"
-                            (onChange)="onChangeTPConta($event)" class="w-full md   mb-0" [options]="contas"
+                            (onChange)="onChangeTPConta($event)" class="w-full md mb-0" [options]="contas"
                             [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
                             resetFilterOnHide="true" dateFormat="dd/mm/yy" dropdownIcon="pi pi-users"
-                            [autofocus]="false" optionValue="id" placeholder="Selecione uma categoriar"
-                            appendTo="body" />
-
+                            [autofocus]="false" optionValue="id" placeholder="Selecione uma conta" appendTo="body" />
                     </div>
 
-                    <!-- Categoria -->
                     <div class="form-group col-md-4 mb-0">
-                        <label class="mb-1">Categoria </label>
+                        <label class="mb-1">Categoria</label>
                         <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangeTPCategorias($event)"
-                            formControlName="categoriaId" class="w-full md  mb-1" [options]="categoriasFiltradas"
+                            formControlName="categoriaId" class="w-full md mb-1" [options]="categoriasFiltradas"
                             [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
                             resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
                             [autofocus]="false" optionValue="id" placeholder="Selecione uma categoria"
                             appendTo="body" />
                     </div>
 
-                    <!-- Centro de Custo -->
                     <div class="form-group col-md-4 m-b-09">
-                        <label class="mb-1">Centro de Custo </label>
+                        <label class="mb-1">Centro de Custo</label>
                         <p-select [style]="{'width':'100%','height':'30px'}" formControlName="centroCustoId"
-                            class="w-full md  mb-1" [options]="centroCustos" [editable]="false" [filter]="true"
+                            class="w-full md mb-1" [options]="centroCustos" [editable]="false" [filter]="true"
                             filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
                             dateFormat="dd/mm/yy" dropdownIcon="pi pi-check" [autofocus]="false" optionValue="id"
                             placeholder="Selecione um centro de custo" appendTo="body" />
                     </div>
 
-                    <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
                     <div class="modal-footer" style="height: 38px;">
-
-                        <!-- Fechar -->
-                        <button (click)="visibleLancamento = false" type="button" class=" ml-4 mb-0" pButton pRipple
-                            (click)="visibleLancamento = false;
-                                      resetModal()" label="Fechar" style="width: 7em; height: 30px; font-size: small;
-                                      border-radius: 6px; border: 0;background: #1a82ce;" icon='pi pi-wallet'>
+                        <button (click)="visibleLancamento = false; resetModal()" type="button" class="ml-4 mb-0"
+                            pButton pRipple label="Fechar"
+                            style="width: 7em; height: 30px; font-size: small; border-radius: 6px; border: 0; background: #1a82ce;"
+                            icon='pi pi-wallet'>
                         </button>
-
-                        <!-- Salvar -->
                         <strong><button (click)="visibleLancamento = false; submitFormLancamento()"
                                 [disabled]="lancamentoForm.invalid" type="button" class="mx-3 float-end mb-0" pButton
                                 pRipple label="Salvar"
-                                style="width: 7em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
+                                style="width: 7em; background:#388669; height: 30px; border-radius: 6px; font-size: small;"
                                 icon='pi pi-check'>
                             </button></strong>
-
-                        <!-- Salvar e Novo Receita -->
                         @if(imodo() == 0 && lancamentoForm.controls['tipoLancamento'].value == 'Receita'){
                         <strong><button (click)="visibleLancamento = true; submitFormLancamento()"
                                 [disabled]="lancamentoForm.invalid" type="button" class="ml-4 float-end mb-0" pButton
                                 pRipple label="Salvar e Novo"
-                                style="width: 11em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
+                                style="width: 11em; background:#388669; height: 30px; border-radius: 6px; font-size: small;"
                                 icon='pi pi-check'>
                             </button></strong>
                         }
-
-                        <!-- Salvar e Novo Despesa -->
                         @if(imodo() == 0 && lancamentoForm.controls['tipoLancamento'].value == 'Despesa'){
                         <strong><button (click)="visibleLancamento = true; submitFormLancamento()"
                                 [disabled]="lancamentoForm.invalid" type="button" class="ml-4 float-end mb-0" pButton
                                 pRipple label="Salvar e Novo"
-                                style="width: 11em;  background:#fd0505; height: 30px; border-radius: 6px; font-size: small; "
+                                style="width: 11em; background:#fd0505; height: 30px; border-radius: 6px; font-size: small;"
                                 icon='pi pi-check'>
                             </button></strong>
                         }
-
                     </div>
                 </div>
             </p-dialog>
         </div>
-
-        <!-- FIM MODAL  LANCAMENTO -->
     </div>
 
-
-    <!-- BOTÃO NO SPLIT BUTTON -->
-    <!-- Adicione este item no seu printItems / getPrintItems -->
-
-    <!-- ═══ MODAL RELATÓRIO SINTÉTICO ═══ -->
+    <!-- ═══ MODAL RELATÓRIO ═══ -->
     <div class="col-md-12 col-xl-12">
         <div class="card flex justify-center">
-            <p-dialog header="RELATÓRIO SINTÉTICO DE MOVIMENTAÇÃO" [modal]="true"
+            <p-dialog header="RELATÓRIO DE MOVIMENTAÇÃO FINANCEIRA" [modal]="true"
                 [(visible)]="visibleRelatorioSintetico" [position]="positionRelatorioSintetico"
-                [dismissableMask]="false" [style]="{ width: '55vw', 'min-height': '30vh', height: 'auto' }"
+                [dismissableMask]="false" [style]="{ width: '60vw', 'min-height': '30vh', height: 'auto' }"
                 [closeOnEscape]="false" [breakpoints]="{ '1199px': '75vw', '575px': '95vw' }" [draggable]="false"
                 [resizable]="false" [contentStyle]="{ overflow: 'visible' }" [transitionOptions]="'500ms ease-out'">
 
                 <hr class="mt-1 mb-2" />
 
-                <form [formGroup]="relatorioSinteticoForm">
-                    <div class="row">
-
-                        <!-- Data Início -->
-                        <div class="form-group col-md-3 mb-2">
-                            <label class="mb-1">Data Início <span class="text-danger">*</span></label>
-                            <p-datepicker formControlName="dtinicio" [style]="{ width: '100%', height: '30px' }"
-                                [showIcon]="true" dateFormat="dd/mm/yy" dataType="string" placeholder="dd/mm/aaaa"
-                                [showButtonBar]="true" />
-                            <small class="text-danger" *ngIf="relatorioSinteticoForm.get('dtinicio')?.invalid &&
-                     relatorioSinteticoForm.get('dtinicio')?.touched">
-                                Informe a data início.
-                            </small>
-                        </div>
-
-                        <!-- Data Fim -->
-                        <div class="form-group col-md-3 mb-2">
-                            <label class="mb-1">Data Fim <span class="text-danger">*</span></label>
-                            <p-datepicker formControlName="dtfim" [style]="{ width: '100%', height: '30px' }"
-                                [showIcon]="true" dateFormat="dd/mm/yy" dataType="string" placeholder="dd/mm/aaaa"
-                                [showButtonBar]="true" />
-                            <small class="text-danger" *ngIf="relatorioSinteticoForm.get('dtfim')?.invalid &&
-                     relatorioSinteticoForm.get('dtfim')?.touched">
-                                Informe a data fim.
-                            </small>
-                        </div>
-
-                        <!-- Tipo -->
-                        <div class="form-group col-md-3 mb-2">
-                            <label class="mb-1">Tipo</label>
-                            <p-select formControlName="tipo" [options]="tiposRelatorio" optionLabel="label"
-                                optionValue="value" placeholder="Todos" [showClear]="true"
-                                [style]="{ width: '100%', height: '30px' }" />
-                        </div>
-
-                        <!-- Conta -->
-                        <div class="form-group col-md-3 mb-2">
-                            <label class="mb-1">Conta</label>
-                            <p-select formControlName="contaId" [options]="contasRelatorio" optionLabel="nome"
-                                optionValue="id" placeholder="Todas" [showClear]="true" [filter]="true"
-                                filterPlaceholder="Buscar conta..." [style]="{ width: '100%', height: '30px' }" />
-                        </div>
-
-                        <!-- Setor -->
-                        <div class="form-group col-md-4 mb-2">
-                            <label class="mb-1">Setor</label>
-                            <p-select formControlName="setorId" [options]="setoresRelatorio" optionLabel="nome"
-                                optionValue="id" placeholder="Todos" [showClear]="true" [filter]="true"
-                                filterPlaceholder="Buscar setor..." [style]="{ width: '100%', height: '30px' }" />
-                        </div>
-
-                        <!-- Formato -->
-                        <div class="form-group col-md-4 mb-2">
-                            <label class="mb-1">Formato <span class="text-danger">*</span></label>
-                            <p-select formControlName="formato" [options]="formatosRelatorio" optionLabel="label"
-                                optionValue="value" placeholder="Selecione"
-                                [style]="{ width: '100%', height: '30px' }" />
-                            <small class="text-danger" *ngIf="relatorioSinteticoForm.get('formato')?.invalid &&
-                     relatorioSinteticoForm.get('formato')?.touched">
-                                Selecione o formato.
-                            </small>
-                        </div>
-
+                <!-- FILTROS COMPARTILHADOS -->
+                <div class="row mb-2">
+                    <div class="form-group col-md-3 mb-2">
+                        <label class="mb-1">Data Início <span class="text-danger">*</span></label>
+                        <p-datepicker [(ngModel)]="filtro.dtinicio" [style]="{ width: '100%', height: '30px' }"
+                            [ngModelOptions]="{standalone: true}" [showIcon]="true" dateFormat="dd/mm/yy"
+                            dataType="string" placeholder="dd/mm/aaaa" [showButtonBar]="true" />
                     </div>
-                </form>
-
-                <!-- Footer -->
-                <div class="modal-footer mt-2">
-                    <button (click)="fecharRelatorioSintetico()" icon="pi pi-times"
-                        style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton pRipple
-                        type="button" label="Fechar" class="p-button-primary mx-3 p-button-outlined mt-1">
-                    </button>
-                    <button (click)="gerarRelatorioSintetico()" icon="pi pi-print"
-                        style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton pRipple
-                        type="button" label="Gerar" class="p-button-success mt-1"
-                        [disabled]="relatorioSinteticoForm.invalid || gerandoRelatorio" [loading]="gerandoRelatorio">
-                    </button>
+                    <div class="form-group col-md-3 mb-2">
+                        <label class="mb-1">Data Fim <span class="text-danger">*</span></label>
+                        <p-datepicker [(ngModel)]="filtro.dtfim" [style]="{ width: '100%', height: '30px' }"
+                            [ngModelOptions]="{standalone: true}" [showIcon]="true" dateFormat="dd/mm/yy"
+                            dataType="string" placeholder="dd/mm/aaaa" [showButtonBar]="true" />
+                    </div>
+                    <div class="form-group col-md-3 mb-2">
+                        <label class="mb-1">Conta</label>
+                        <p-select [(ngModel)]="relatorioAnalitico.contaId" [options]="contasRelatorio"
+                            optionLabel="nome" [ngModelOptions]="{standalone: true}" optionValue="id"
+                            placeholder="Todas" [showClear]="true" [filter]="true" filterPlaceholder="Buscar conta..."
+                            [style]="{ width: '100%', height: '30px' }" />
+                    </div>
+                    <div class="form-group col-md-3 mb-2">
+                        <label class="mb-1">Setor</label>
+                        <input readonly pInputText type="text" style="height: 32px" formControlName="nomeSetor"
+                               class="w-full sm:w-auto" />
+                    </div>
                 </div>
 
+                <!-- ABAS -->
+                <p-tabs value="0">
+                    <p-tablist>
+                        <p-tab value="0" class="f-18">📊 Sintético</p-tab>
+                        <p-tab value="1" class="f-18">📋 Analítico</p-tab>
+                    </p-tablist>
+
+                    <p-tabpanels>
+
+                        <!-- ABA SINTÉTICO -->
+                        <p-tabpanel value="0">
+                            <div class="row mt-2">
+                                <div class="form-group col-md-6 mb-2">
+                                    <label class="mb-1">Tipo de Lançamento</label>
+                                    <p-select [(ngModel)]="filtro.tipoLancamento" [options]="tiposRelatorio"
+                                        [ngModelOptions]="{standalone: true}" optionLabel="label" optionValue="value"
+                                        placeholder="Todos" [showClear]="true"
+                                        [style]="{ width: '100%', height: '30px' }" />
+                                </div>
+                                <div class="form-group col-md-6 mb-2">
+                                    <label class="mb-1">Formato <span class="text-danger">*</span></label>
+                                    <p-select [(ngModel)]="formatoSintetico" [options]="formatosRelatorio"
+                                        [ngModelOptions]="{standalone: true}" optionLabel="label" optionValue="value"
+                                        placeholder="Selecione" [style]="{ width: '100%', height: '30px' }" />
+                                </div>
+                            </div>
+                            <div class="modal-footer mt-2">
+                                <button (click)="fecharRelatorioSintetico()" icon="pi pi-times"
+                                    style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton
+                                    pRipple type="button" label="Fechar"
+                                    class="p-button-primary mx-3 p-button-outlined mt-1">
+                                </button>
+                                <button (click)="gerarRelatorioSintetico()" icon="pi pi-print"
+                                    style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton
+                                    pRipple type="button" label="Gerar" class="p-button-success mt-1"
+                                    [disabled]="!filtro.dtinicio || !filtro.dtfim || !formatoSintetico || gerandoRelatorio"
+                                    [loading]="gerandoRelatorio">
+                                </button>
+                            </div>
+                        </p-tabpanel>
+
+                        <!-- ════ ABA ANALÍTICO — ALTERADA ════ -->
+                        <p-tabpanel value="1">
+                            <div class="row mt-2">
+
+                                <!-- Tipo de Lançamento -->
+                                <div class="form-group col-md-3 mb-2">
+                                    <label class="mb-1">Tipo de Lançamento</label>
+                                    <p-select [(ngModel)]="relatorioAnalitico.tipoLancamento"
+                                        [ngModelOptions]="{standalone: true}" [options]="tiposRelatorio"
+                                        optionLabel="label" optionValue="value" placeholder="Todos" [showClear]="true"
+                                        [style]="{ width: '100%', height: '30px' }" />
+                                </div>
+
+                                <!-- Categoria — MULTISELECT com variável própria -->
+                                <div class="form-group col-md-3 mb-2">
+                                    <label class="mb-1">Categoria</label>
+                                    <p-multiselect [(ngModel)]="relatorioAnalitico.categoriasIds"
+                                        [ngModelOptions]="{standalone: true}" [options]="categorias" optionLabel="nome"
+                                        optionValue="id" placeholder="Todas" [showClear]="true" [filter]="true"
+                                        filterPlaceholder="Buscar categoria..." [style]="{ width: '100%', height: '30px' }" />
+                                </div>
+
+                                <!-- Forma de Pagamento — MULTISELECT com variável própria -->
+                                <div class="form-group col-md-3 mb-2">
+                                    <label class="mb-1">Forma de Pagamento</label>
+                                    <p-multiselect [(ngModel)]="relatorioAnalitico.formasIds"
+                                        [ngModelOptions]="{standalone: true}" [options]="formas" optionLabel="nome"
+                                        optionValue="id" placeholder="Todas" [showClear]="true"
+                                        [style]="{ width: '100%', height: '30px' }" />
+                                </div>
+
+                                <!-- Centro de custo -->
+                                <div class="form-group col-md-3 mb-2">
+                                    <label class="mb-1">Centro de Custo</label>
+                                    <p-multiselect [(ngModel)]="relatorioAnalitico.centroCustoIds"
+                                        [ngModelOptions]="{standalone: true}" [options]="centroCustos" optionLabel="nome"
+                                        optionValue="id" placeholder="Todas" [showClear]="true"
+                                        [style]="{ width: '100%', height: '30px' }" />
+                                </div>
+
+                                <!-- Formato -->
+                                <div class="form-group col-md-3 mb-2">
+                                    <label class="mb-1">Formato <span class="text-danger">*</span></label>
+                                    <p-select [(ngModel)]="relatorioAnalitico.formato"
+                                        [ngModelOptions]="{standalone: true}" [options]="formatosRelatorio"
+                                        optionLabel="label" optionValue="value" placeholder="Selecione"
+                                        [style]="{ width: '100%', height: '30px' }" />
+                                </div>
+
+                            </div>
+                            <div class="modal-footer mt-2">
+                                <button (click)="fecharRelatorioSintetico()" icon="pi pi-times"
+                                    style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton
+                                    pRipple type="button" label="Fechar"
+                                    class="p-button-primary mx-3 p-button-outlined mt-1">
+                                </button>
+                                <button (click)="gerarRelatorioAnalitico()" icon="pi pi-print"
+                                    style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton
+                                    pRipple type="button" label="Gerar" class="p-button-success mt-1"
+                                    [disabled]="!filtro.dtinicio || !filtro.dtfim || !relatorioAnalitico.formato || gerandoRelatorio"
+                                    [loading]="gerandoRelatorio">
+                                </button>
+                            </div>
+                        </p-tabpanel>
+
+                    </p-tabpanels>
+                </p-tabs>
             </p-dialog>
         </div>
     </div>
-    <!-- FIM MODAL RELATÓRIO SINTÉTICO -->
+    <!-- FIM MODAL RELATÓRIO -->
 
-    <!-- INICIO MODAL  TRANSFERENCIA -->
+    <!-- MODAL TRANSFERENCIA -->
     <div class="col-md-12 col-xl-12" data-backdrop="static">
-
         <div class="card flex justify-center">
-            <p-dialog header="LANÇAMENTO DE - {{  pageTitle }}" [modal]="true" [(visible)]="visibleModalTransferencia"
+            <p-dialog header="LANÇAMENTO DE - {{ pageTitle }}" [modal]="true" [(visible)]="visibleModalTransferencia"
                 [position]="positionModalTransferencia" [dismissableMask]="false"
                 [style]="{width: '60vw', 'min-height': '30vh', height: 'auto'}" [closeOnEscape]="false"
                 [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false"
                 [contentStyle]="{ 'overflow': 'visible' }" [transitionOptions]="'500ms ease-out'">
                 <hr class="mt-1 mb-2">
-
-                <!-- Modal Body Inicio -->
-
                 <div class="row col-12">
-
-                    <!-- Data da Transferencia -->
-                    <div class="form-group col-md-4 ">
+                    <div class="form-group col-md-4">
                         <label class="m-b-09" for="data">Data</label>
                         <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
                             [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
@@ -845,58 +787,40 @@
                             formControlName="data" appendTo="body" />
                     </div>
 
-                    <!--  Origem da Transferencia-->
                     @if(lancamentoForm.controls['id'].value == null){
-                    <div class="form-group col-md-4 ">
-                        <label class="m-b-9 text-danger">Transferir da conta </label>
+                    <div class="form-group col-md-4">
+                        <label class="m-b-9 text-danger">Transferir da conta</label>
                         <p-select [style]="{'width':'100%','height':'30px'}"
                             (onChange)="onChangeTransferenciaOrigem($event)" formControlName="contaId"
-                            class="w-full md  mb-2" [options]="contas" [editable]="false" [filter]="false"
+                            class="w-full md mb-2" [options]="contas" [editable]="false" [filter]="false"
                             filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
                             dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id"
                             placeholder="Selecione..." appendTo="body" />
                     </div>
                     }
 
-                    <!-- Destino -->
                     @if(lancamentoForm.controls['id'].value == null){
-                    <div class="form-group col-md-4 ">
+                    <div class="form-group col-md-4">
                         <label class="m-b-9 text-success">Para</label>
                         <p-select [style]="{'width':'100%','height':'30px'}"
                             (onChange)="onChangeTransferenciaDestino($event)" formControlName="contaIdTransferencia"
-                            class="w-full md  mb-2" [options]="contasTransferencia" [editable]="false" [filter]="false"
+                            class="w-full md mb-2" [options]="contasTransferencia" [editable]="false" [filter]="false"
                             filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
                             dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id"
                             placeholder="Selecione..." appendTo="body" />
-
-
                         @if(lancamentoForm.controls['contaId'].value ==
                         lancamentoForm.controls['contaIdTransferencia'].value){
-                        <p class="danger" [style]="{'font-size':'12px' }" margin-left>
-                            Impossível para a mesma conta.</p>
+                        <p class="danger" [style]="{'font-size':'12px'}">Impossível para a mesma conta.</p>
                         }
                     </div>
                     }
 
-                    <!-- Historico -->
                     @if(lancamentoForm.controls['contaId'].value == null){
                     <div class="form-group col-md-8 mb-5">
                         <label>Historico</label>
                         <input readonly type="text" class="form-control" formControlName="historico">
                     </div>
                     }
-
-                    <!-- Categoria de Receita -->
-                    <!-- <div class="form-group col-md-4 mb-0">
-                        <label>Categoria de Receitas</label><label class="text-danger"> (Mude apenas se necessário)</label>
-                        <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangeTransferencia($event)"
-                            formControlName="categoriaId" class="w-full md  mb-1" [options]="categoriasFiltradas"
-                            [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
-                            resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
-                            [autofocus]="false" optionValue="id" placeholder="Selecione uma categoria"
-                            appendTo="body" />
-                    </div> -->
-
                     @if(lancamentoForm.controls['contaId'].value !== null){
                     <div class="form-group col-md-8 mb-5">
                         <label>Historico</label>
@@ -904,175 +828,135 @@
                     </div>
                     }
 
-                    <!-- Valor Principal -->
-                    <div class="form-group col-md-4 p-fluid ">
-                        <label>Valor R$</label>
+                    <div class="form-group col-md-4 p-fluid">
+                        <label>Valor R\$</label>
                         <p-inputNumber formControlName="valor" inputId="valor" mode="decimal" locale="pt-BR"
                             class="ml-auto" [minFractionDigits]="2"
                             [style]="{'width':'100%','height':'30px', 'border-radius':'10px'}">
                         </p-inputNumber>
-                        @if(lancamentoForm.controls['valor'].errors || this.lancamentoForm.controls['valor'].value
-                        <= 0){ <p class="danger" [style]="{'font-size':'12px' }" margin-left>
-                            Informe um valor válido.</p>
+                        @if(lancamentoForm.controls['valor'].errors || lancamentoForm.controls['valor'].value <= 0){ <p
+                            class="danger" [style]="{'font-size':'12px'}">Informe um valor válido.</p>
                             }
                     </div>
 
-
-                    <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
                     <div class="modal-footer" style="height: 38px;">
-
-                        <!-- Excluir -->
                         @if(lancamentoForm.controls['id'].value > 0){
                         <button type="button" pButton pRipple
                             (click)="confirmarExclusaoLancamentoTransferencia(lancamento); visibleModalTransferencia = false; resetModal()"
-                            styleClass="p-button-sm" icon='pi pi-times'
-                            style="width: 7em; height: 30px; border-radius: 6px;" pButton pRipple label="Excluir"
-                            class="ml-4 p-button-danger  p-button-outlined   mb-0">
+                            icon='pi pi-times' style="width: 7em; height: 30px; border-radius: 6px;" label="Excluir"
+                            class="ml-4 p-button-danger p-button-outlined mb-0">
                         </button>
                         }
-
-                        <!-- Fechar -->
-                        <button data-dismiss="modal" type="button" class=" mx-4 mb-0" pButton pRipple (click)="visibleModalTransferencia = false;
-                                      resetModal()" label="Fechar" style="width: 7em; height: 30px; font-size: small;
-                                      border-radius: 6px; border: 0;background: #1a82ce;" icon='pi pi-wallet'>
+                        <button data-dismiss="modal" type="button" class="mx-4 mb-0" pButton pRipple
+                            (click)="visibleModalTransferencia = false; resetModal()" label="Fechar"
+                            style="width: 7em; height: 30px; font-size: small; border-radius: 6px; border: 0; background: #1a82ce;"
+                            icon='pi pi-wallet'>
                         </button>
-
-                        <!-- Salvar -->
                         @if(lancamentoForm.controls['id'].value == null){
                         <strong><button (click)="visibleModalTransferencia = false; submitFormTransferencia()"
-                                [disabled]="lancamentoForm.invalid 
-                                || this.lancamentoForm.controls['valor'].value <= 0 || this.lancamentoForm.controls['contaIdTransferencia'].value == null 
-                                || (lancamentoForm.controls['contaId'].value == lancamentoForm.controls['contaIdTransferencia'].value)"
+                                [disabled]="lancamentoForm.invalid
+                                    || lancamentoForm.controls['valor'].value <= 0
+                                    || lancamentoForm.controls['contaIdTransferencia'].value == null
+                                    || (lancamentoForm.controls['contaId'].value == lancamentoForm.controls['contaIdTransferencia'].value)"
                                 type="button" class="ml-4 float-end mb-0" pButton pRipple label="Salvar"
-                                style="width: 7em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
+                                style="width: 7em; background:#388669; height: 30px; border-radius: 6px; font-size: small;"
                                 icon='pi pi-check'>
                             </button></strong>
                         }
-                        <!-- <div class="form-group ">
-                        <pre> {{ lancamentoForm.value | json}} </pre>
-                    </div> -->
-
                     </div>
                 </div>
             </p-dialog>
         </div>
-
-        <!-- FIM MODAL  TRANSFERENCIA -->
     </div>
 
-    <!-- INICIO MODAL  PERMUTA -->
+    <!-- MODAL PERMUTA -->
     <div class="col-md-12 col-xl-12" data-backdrop="static">
-
         <div class="card flex justify-center">
-            <p-dialog header="LANÇAMENTO DE - {{  pageTitle }}" [modal]="true" [(visible)]="visibleModalPermuta"
+            <p-dialog header="LANÇAMENTO DE - {{ pageTitle }}" [modal]="true" [(visible)]="visibleModalPermuta"
                 [position]="positionModalPermuta" [dismissableMask]="false"
                 [style]="{width: '60vw', 'min-height': '30vh', height: 'auto'}" [closeOnEscape]="false"
                 [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [draggable]="false" [resizable]="false"
                 [contentStyle]="{ 'overflow': 'auto' }" [transitionOptions]="'500ms ease-out'">
                 <hr class="mt-1 mb-2">
-
-                <!-- Modal Body Inicio -->
-
                 <div class="row col-12">
-
-                    <!-- Data da Permuta -->
-                    <div class="form-group col-md-4 ">
+                    <div class="form-group col-md-4">
                         <label class="m-b-09" for="data">Data</label>
                         <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
                             [yearNavigator]="true" yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true"
                             inputId="icondisplay" dataType="string" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
                             formControlName="data" appendTo="body" />
-
                     </div>
 
-                    <!--  Origem da Permuta-->
                     @if(lancamentoForm.controls['id'].value == null){
-                    <div class="form-group col-md-4 ">
-                        <label class="m-b-9 text-primary">Trocar </label>
+                    <div class="form-group col-md-4">
+                        <label class="m-b-9 text-primary">Trocar</label>
                         <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangePermutaDestino($event)"
-                            formControlName="formaIdTransferencia" class="w-full md  mb-2" [options]="formasPermuta"
+                            formControlName="formaIdTransferencia" class="w-full md mb-2" [options]="formasPermuta"
                             [editable]="false" [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
                             resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
                             [autofocus]="false" optionValue="formaIdTransferencia" placeholder="Selecione..."
                             appendTo="body" />
-
                         @if(lancamentoForm.controls['formaId'].value ==
                         lancamentoForm.controls['formaIdTransferencia'].value){
-                        <p class="danger" [style]="{'font-size':'12px' }" margin-left>
-                            Impossível para a mesma conta.</p>
+                        <p class="danger" [style]="{'font-size':'12px'}">Impossível para a mesma forma.</p>
                         }
                     </div>
                     }
 
-                    <!-- Destino -->
                     @if(lancamentoForm.controls['id'].value == null){
-                    <div class="form-group col-md-4 ">
+                    <div class="form-group col-md-4">
                         <label class="m-b-9 text-success">Por</label>
                         <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangePermutaOrigem($event)"
-                            formControlName="formaId" class="w-full md  mb-2" [options]="formas" [editable]="false"
+                            formControlName="formaId" class="w-full md mb-2" [options]="formas" [editable]="false"
                             [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
                             resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
-                            [autofocus]="false" readonly="true" optionValue="id" placeholder="Selecione..."
-                            appendTo="body" />
-
+                            [autofocus]="false" optionValue="id" placeholder="Selecione..." appendTo="body" />
                     </div>
                     }
 
-                    <!-- Historico -->
                     <div class="form-group col-md-8 mb-5">
                         <label>Historico</label>
                         <input readonly type="text" class="form-control" formControlName="historico">
                     </div>
 
-                    <!-- Valor Principal -->
-                    <div class="form-group col-md-4 p-fluid ">
-                        <label>Valor R$</label>
+                    <div class="form-group col-md-4 p-fluid">
+                        <label>Valor R\$</label>
                         <p-inputNumber formControlName="valor" inputId="valor" mode="decimal" locale="pt-BR"
                             class="ml-auto" [minFractionDigits]="2"
                             [style]="{'width':'100%','height':'30px', 'border-radius':'10px'}">
                         </p-inputNumber>
-                        @if(lancamentoForm.controls['valor'].errors || this.lancamentoForm.controls['valor'].value
-                        <= 0){ <p class="danger" [style]="{'font-size':'12px' }" margin-left>
-                            Informe um valor válido.</p>
+                        @if(lancamentoForm.controls['valor'].errors || lancamentoForm.controls['valor'].value <= 0){ <p
+                            class="danger" [style]="{'font-size':'12px'}">Informe um valor válido.</p>
                             }
                     </div>
                 </div>
 
-
-                <!-- Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  Footer Modal  -->
                 <div class="modal-footer" style="height: 38px;">
-
-                    <!-- Excluir -->
                     @if(lancamentoForm.controls['id'].value > 0){
                     <button type="button" pButton pRipple
                         (click)="confirmarExclusaoLancamentoPermuta(lancamento); visibleModalPermuta = false; resetModal()"
-                        styleClass="p-button-sm" icon='pi pi-times'
-                        style="width: 7em; height: 30px; border-radius: 6px;" pButton pRipple label="Excluir"
-                        class="ml-4 p-button-danger  p-button-outlined   mb-0">
+                        icon='pi pi-times' style="width: 7em; height: 30px; border-radius: 6px;" label="Excluir"
+                        class="ml-4 p-button-danger p-button-outlined mb-0">
                     </button>
                     }
-
-                    <!-- Fechar -->
-                    <button data-dismiss="modal" type="button" class=" ml-4 mb-0" pButton pRipple (click)="visibleModalPermuta = false;
-                                      resetModal()" label="Fechar" style="width: 7em; height: 30px; font-size: small;
-                                      border-radius: 6px; border: 0;background: #1a82ce;" icon='pi pi-wallet'>
+                    <button data-dismiss="modal" type="button" class="ml-4 mb-0" pButton pRipple
+                        (click)="visibleModalPermuta = false; resetModal()" label="Fechar"
+                        style="width: 7em; height: 30px; font-size: small; border-radius: 6px; border: 0; background: #1a82ce;"
+                        icon='pi pi-wallet'>
                     </button>
-
-                    <!-- Salvar -->
                     @if(lancamentoForm.controls['id'].value == null){
                     <strong><button (click)="visibleModalPermuta = false; submitFormPermuta()"
-                            [disabled]="lancamentoForm.invalid 
-                                || this.lancamentoForm.controls['valor'].value <= 0 
+                            [disabled]="lancamentoForm.invalid
+                                || lancamentoForm.controls['valor'].value <= 0
                                 || (lancamentoForm.controls['formaId'].value == lancamentoForm.controls['formaIdTransferencia'].value)" type="button" class="mx-4 float-end mb-0" pButton
                             pRipple label="Salvar"
-                            style="width: 7em;  background:#388669; height: 30px; border-radius: 6px; font-size: small; "
+                            style="width: 7em; background:#388669; height: 30px; border-radius: 6px; font-size: small;"
                             icon='pi pi-check'>
                         </button></strong>
                     }
                 </div>
             </p-dialog>
         </div>
-
-        <!-- FIM MODAL  PERMUTA -->
     </div>
+
 </form>

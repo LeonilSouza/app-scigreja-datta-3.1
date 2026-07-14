@@ -11,13 +11,9 @@ import { TotaisDTO } from "../models/totais.dto";
   providedIn: 'root'
 })
 export class LancamentoService {
-
   private apiPath: string = `${API_CONFIG.baseUrl}/lancamentos`;
 
-  constructor(
-    public http: HttpClient) {
-  }
-
+  constructor(public http: HttpClient) {}
 
   findById(id: number): Observable<LancamentoDTO> {
 
@@ -173,7 +169,7 @@ export class LancamentoService {
     });
   }
 
-  // METODOS COM CLUDE APOIO
+  // METODOS COM CLAUDE APOIO
   gerarRelatorioSinteticoPdf(filtro: LancamentoFiltro): Observable<Blob> {
   let params = new HttpParams()
       .set('igreja',  filtro.igrejaId.toString())
@@ -187,7 +183,7 @@ export class LancamentoService {
   /* Quais filtros adicionais o backend aceita?
      No nosso controller ele só espera igreja, setor, dtinicio, dtfim.
      Então não precisamos mandar contas, formas, etc.
-     Mas, se amanhã você ajustar o controller para aceitar mais,
+     Mas, se amanhã ajustar o controller para aceitar mais,
      basta adicionar aqui da mesma forma. */
 
   return this.http.get(
@@ -195,40 +191,82 @@ export class LancamentoService {
       { params, responseType: 'blob' });
 }
 
-gerarRelatorioAnaliticoPdf(filtro: LancamentoFiltro): Observable<Blob> {
+gerarRelatorioSinteticoExcel(filtro: LancamentoFiltro): Observable<Blob> {
     let params = new HttpParams()
         .set('igreja',   filtro.igrejaId.toString())
         .set('dtinicio', filtro.dtinicio)
         .set('dtfim',    filtro.dtfim)
-        .set('setorId',  filtro.setorId.toString()); // vem automático do signal
+        .set('setorId',  filtro.setorId.toString());
 
-    if (filtro.tipoLancamento != '') params = params.set('tipoLancamento', filtro.tipoLancamento);
-    if (filtro.contas         != '') params = params.set('contaId',        filtro.contas);
-    if (filtro.categorias     != '') params = params.set('categoriaId',    filtro.categorias);
-    if (filtro.formas         != '') params = params.set('formaId',        filtro.formas);
+    if (filtro.tipoLancamento != '') params = params.set('tipo',    filtro.tipoLancamento);
+    if (filtro.contas         != '') params = params.set('contaId', filtro.contas);
 
     return this.http.get(
-        `${API_CONFIG.baseUrl}/relatorios/gerar-pdf-analitico`,
+        `${API_CONFIG.baseUrl}/relatorios/gerar-excel-sintetico`,
         { params, responseType: 'blob' });
 }
 
-gerarRelatorioAnaliticoExcel(filtro: LancamentoFiltro): Observable<Blob> {
+
+// Método para gerar relatório analítico em PDF
+  gerarRelatorioAnaliticoPdf(
+filtro: LancamentoFiltro, categoriasIds: number[], formasIds: number[], tipoLancamento: string, contaId: number | null, centroCustoIds: number | null  ): Observable<Blob> {
     let params = new HttpParams()
-        .set('igreja',   filtro.igrejaId.toString())
-        .set('dtinicio', filtro.dtinicio)
-        .set('dtfim',    filtro.dtfim)
-        .set('setorId',  filtro.setorId.toString()); // vem automático do signal
+      .set('igreja', filtro.igrejaId.toString())
+      .set('dtinicio', filtro.dtinicio)
+      .set('dtfim', filtro.dtfim)
+      .set('setorId', filtro.setorId.toString());
 
-    if (filtro.tipoLancamento != '') params = params.set('tipoLancamento', filtro.tipoLancamento);
-    if (filtro.contas         != '') params = params.set('contaId',        filtro.contas);
-    if (filtro.categorias     != '') params = params.set('categoriaId',    filtro.categorias);
-    if (filtro.formas         != '') params = params.set('formaId',        filtro.formas);
+    if (tipoLancamento) {
+      params = params.set('tipoLancamento', tipoLancamento);
+    }
 
-    return this.http.get(
-        `${API_CONFIG.baseUrl}/relatorios/gerar-excel-analitico`,
-        { params, responseType: 'blob' });
-}
+      if (contaId) {
+        params = params.set('contaId', contaId.toString()); 
+    }
 
+     if (centroCustoIds) {
+        params = params.set('contaId', centroCustoIds.toString()); 
+    }
+
+    // Enviando IDs de categorias e formas como múltiplos parâmetros
+    categoriasIds.forEach(id => params = params.append('categorias', id.toString()));
+    formasIds.forEach(id => params = params.append('formas', id.toString()));
+
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-analitico`, {
+      params,
+      responseType: 'blob'
+    });
+  }
+
+  // Método para gerar relatório analítico em Excel
+  gerarRelatorioAnaliticoExcel(
+filtro: LancamentoFiltro, categoriasIds: number[], formasIds: number[], tipoLancamento: string, contaId: number | null, centroCustoIds: number | null  ): Observable<Blob> {
+    let params = new HttpParams()
+      .set('igreja', filtro.igrejaId.toString())
+      .set('dtinicio', filtro.dtinicio)
+      .set('dtfim', filtro.dtfim)
+      .set('setorId', filtro.setorId.toString());
+
+    if (tipoLancamento) {
+      params = params.set('tipoLancamento', tipoLancamento);
+    }
+
+    if (contaId) {
+        params = params.set('contaId', contaId.toString()); 
+    }
+
+     if (centroCustoIds) {
+        params = params.set('contaId', centroCustoIds.toString()); 
+    }
+
+    categoriasIds.forEach(id => params = params.append('categorias', id.toString()));
+    formasIds.forEach(id => params = params.append('formas', id.toString()));
+
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-excel-analitico`, {
+      params,
+      responseType: 'blob'
+    });
+  }
 
 // FIM CLADE
 
