@@ -13,303 +13,201 @@ import { TotaisDTO } from "../models/totais.dto";
 export class LancamentoService {
   private apiPath: string = `${API_CONFIG.baseUrl}/lancamentos`;
 
-  constructor(public http: HttpClient) {}
+  constructor(public http: HttpClient) { }
+
+  // ════════════════════════════════════════════════════
+  // RELATÓRIOS — SINTÉTICO
+  // ════════════════════════════════════════════════════
+
+  gerarRelatorioSintetico(filtro: LancamentoFiltro): Observable<Blob> {
+    let params = new HttpParams()
+      .set('igreja',   filtro.igrejaId.toString())
+      .set('dtinicio', filtro.dtinicio)
+      .set('dtfim',    filtro.dtfim)
+      .set('setorId',  filtro.setorId.toString());
+
+    if (filtro.tipoLancamento) params = params.set('tipo', filtro.tipoLancamento);
+    if (filtro.contas && filtro.contas.length > 0){
+       filtro.contas.split(',').forEach(id => {
+       params = params.append('contaId', id.trim());
+       console.log(filtro)
+  });
+}
+
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-sintetico`,
+      { params, responseType: 'blob' });
+  }
+
+  gerarRelatorioSinteticoExcel(filtro: LancamentoFiltro): Observable<Blob> {
+    let params = new HttpParams()
+      .set('igreja',   filtro.igrejaId.toString())
+      .set('dtinicio', filtro.dtinicio)
+      .set('dtfim',    filtro.dtfim)
+      .set('setorId',  filtro.setorId.toString());
+
+    if (filtro.tipoLancamento) params = params.set('tipo', filtro.tipoLancamento);
+    if (filtro.contaId)         params = params.set('contaId', filtro.contas);
+
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-excel-sintetico`,
+      { params, responseType: 'blob' });
+  }
+
+  // ════════════════════════════════════════════════════
+  // RELATÓRIOS — ANALÍTICO
+  // ════════════════════════════════════════════════════
+
+  gerarRelatorioAnaliticoPdf(filtro: LancamentoFiltro): Observable<Blob> {
+    const params = this.montarParamsAnalitico(filtro);
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-analitico`,
+      { params, responseType: 'blob' });
+  }
+
+  gerarRelatorioAnaliticoExcel(filtro: LancamentoFiltro): Observable<Blob> {
+    const params = this.montarParamsAnalitico(filtro);
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-excel-analitico`,
+      { params, responseType: 'blob' });
+  }
+
+  private montarParamsAnalitico(filtro: LancamentoFiltro): HttpParams {
+    let params = new HttpParams()
+      .set('igreja',   filtro.igrejaId.toString())
+      .set('dtinicio', filtro.dtinicio)
+      .set('dtfim',    filtro.dtfim)
+      .set('setorId',  filtro.setorId.toString())
+
+    if (filtro.tipoLancamento) params = params.set('tipo', filtro.tipoLancamento);
+    if (filtro.contaId)        params = params.set('contaId', filtro.contaId.toString());
+
+    filtro.categoriasIds?.forEach(id  => params = params.append('categorias',    id.toString()));
+    filtro.formasIds?.forEach(id      => params = params.append('formas',        id.toString()));
+    // filtro.centroCustoIds?.forEach(id => params = params.append('centroCustos',  id.toString()));
+
+    return params;
+  }
+
+  // ════════════════════════════════════════════════════
+  // DEMAIS MÉTODOS (sem alteração)
+  // ════════════════════════════════════════════════════
 
   findById(id: number): Observable<LancamentoDTO> {
-
-    const url = `${this.apiPath}/${id}`;
-
-    return this.http.get(url).pipe(
+    return this.http.get(`${this.apiPath}/${id}`).pipe(
       catchError(this.handleError),
       map(this.jsonDataToLancamento)
-    )
+    );
   }
 
   uploadComprovante(lancamentoId: number, arquivo: File): Observable<any> {
     const formData = new FormData();
     formData.append('arquivo', arquivo, arquivo.name);
-
-    return this.http.put(`${API_CONFIG.baseUrl}/lancamentos/${lancamentoId}/comprovante`, formData);
+    return this.http.put(`${this.apiPath}/${lancamentoId}/comprovante`, formData);
   }
 
   baixarComprovante(lancamentoId: number): Observable<Blob> {
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/${lancamentoId}/comprovante`, {
-      responseType: 'blob' // ESSENCIAL para o Angular aceitar arquivos binários
-    });
-  }
-
-  getTotaisFromIgreja(filtro: LancamentoFiltro): Observable<TotaisDTO> {
-    return this.http.get<TotaisDTO>(`${API_CONFIG.baseUrl}/lancamentos/totais`, {
-      params: {
-        igreja: filtro.igrejaId,
-        setorId: filtro.setorId,
-        nome: filtro.nome,
-        contas: filtro.contas,
-        dtinicio: filtro.dtinicio,
-        dtfim: filtro.dtfim,
-        formas: filtro.formas,
-        categorias: filtro.categorias,
-        centroCustos: filtro.centroCustos,
-        tipoLancamento: filtro.tipoLancamento
-      }
-    });
+    return this.http.get(`${this.apiPath}/${lancamentoId}/comprovante`, { responseType: 'blob' });
   }
 
   deletarComprovante(lancamentoId: number): Observable<any> {
-    return this.http.delete(`${API_CONFIG.baseUrl}/lancamentos/${lancamentoId}/comprovante`);
+    return this.http.delete(`${this.apiPath}/${lancamentoId}/comprovante`);
   }
 
-  // Estatisticas
+  getTotaisFromIgreja(filtro: LancamentoFiltro): Observable<TotaisDTO> {
+    return this.http.get<TotaisDTO>(`${this.apiPath}/totais`, {
+      params: {
+        igreja:          filtro.igrejaId,
+        setorId:         filtro.setorId,
+        nome:            filtro.nome,
+        contas:          filtro.contas,
+        dtinicio:        filtro.dtinicio,
+        dtfim:           filtro.dtfim,
+        formas:          filtro.formas,
+        categorias:      filtro.categorias,
+        centroCustos:    filtro.centroCustos,
+        tipoLancamento:  filtro.tipoLancamento
+      }
+    });
+  }
+
   buscarFaturamentoMensal(igrejaId: number, setorId?: number): Observable<any[]> {
     let params = new HttpParams().set('igreja', igrejaId.toString());
-
-    if (setorId) {
-      params = params.set('setorId', setorId.toString());
-    }
-
-    return this.http.get<any[]>(`${API_CONFIG.baseUrl}/lancamentos/dashboard/faturamento-mensal`, { params });
+    if (setorId) params = params.set('setorId', setorId.toString());
+    return this.http.get<any[]>(`${this.apiPath}/dashboard/faturamento-mensal`, { params });
   }
 
-  // Estatisticas
   buscarGastosPorCategoria(filtro: any): Observable<any[]> {
     let params = new HttpParams()
-      .set('igreja', filtro.igrejaId.toString())
-      .set('dtinicio', filtro.dtinicio)
-      .set('dtfim', filtro.dtfim);
-
-    if (filtro.setorId) {
-      params = params.set('setorId', filtro.setorId.toString());
-    }
-
-    return this.http.get<any[]>(`${API_CONFIG.baseUrl}/lancamentos/dashboard/gastos-por-categoria`, { params });
-  }
-
-
-  getPageLancamentoFromIgreja(filtro: LancamentoFiltro) {
-    const headers = new HttpHeaders()
-    let params = new HttpParams()
-      .set('page', filtro.page)
-      .set('linesPerPage', filtro.linesPerPage);
-
-    if (filtro.nome) { params = params.set('nome', filtro.nome); }
-    if (filtro.igrejaId) { params = params.set('igreja', filtro.igrejaId); }
-    if (filtro.contas) { params = params.set('contas', filtro.contas); }
-    if (filtro.formas) { params = params.set('formas', filtro.formas); }
-    if (filtro.categorias) { params = params.set('categorias', filtro.categorias); }
-    if (filtro.centroCustos) { params = params.set('centroCustos', filtro.centroCustos); }
-    if (filtro.tipoLancamento) { params = params.set('tipoLancamento', filtro.tipoLancamento); }
-    if (filtro.dtinicio) { params = params.set('dtinicio', filtro.dtinicio); }
-    if (filtro.dtfim) { params = params.set('dtfim', filtro.dtfim); }
-    if (filtro.setorId) { params = params.set('setor', filtro.setorId); }
-
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/page`, { headers, params })
-      .pipe(
-        catchError(this.handleError)
-      );
-  }
-
-  // MODELO USANDO  A SEGUNDA FABRICA - (ESTATICA/CONSOLIDADA) 
-  // MODELO PARA GERAÇÃO DE RELATORIOS - PASSANDO NOME DO RELATORIO
-  gerarLivroCaixaSimplificado(
-    filtro: LancamentoFiltro,
-    nomeRelatorio: string
-  ): Observable<Blob> {
-    let params = new HttpParams()
-      .set('nomeRelatorio', nomeRelatorio)
-      .set('igreja', filtro.igrejaId.toString())
-      .set('dtinicio', filtro.dtinicio)
-      .set('dtfim', filtro.dtfim)
-      .set('nome', filtro.nome || '');
-
-    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-consolidado`, {
-      params,
-      responseType: 'blob'
-    });
-  }
-
-  // MODELO USANDO  A SEGUNDA FABRICA - (ESTATICA/CONSOLIDADA) 
-  // MODELO PARA GERAÇÃO DE RELATORIOS - PASSANDO NOME DO RELATORIO
-  gerarLivroCaixaDetalhado(
-    filtro: LancamentoFiltro,
-    nomeRelatorio: string
-  ): Observable<Blob> {
-    let params = new HttpParams()
-      .set('nomeRelatorio', nomeRelatorio)
-      .set('igreja', filtro.igrejaId.toString())
-      .set('dtinicio', filtro.dtinicio)
-      .set('dtfim', filtro.dtfim)
-      .set('nome', filtro.nome || '');
-
-    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-consolidado`, {
-      params,
-      responseType: 'blob'
-    });
-  }
-
-  // MODELO USANDO PRIMEIRA FABRICA - (DINÂMICA)  
-  // MODELO DE GERAÇÃO DE RELATORIOS QUE FORAM FILTRADO NA GRID - PASSANDO NOME DO RELATORIO
-  gerarMovimentacaoFinanceiraPdf(filtro: LancamentoFiltro, nomeRelatorio: string): Observable<Blob> {
-    let params = new HttpParams()
-      .set('nomeRelatorio', nomeRelatorio) // O Java espera 'nomeRelatorio' para carregar o .jasper
-      .set('igreja', filtro.igrejaId.toString())
-      .set('setorId', filtro.setorId.toString())
-      .set('dtinicio', filtro.dtinicio)
-      .set('dtfim', filtro.dtfim)
-      .set('nome', filtro.nome || '')
-      .set('tipoLancamento', filtro.tipoLancamento || '')
-    // Adiciona as listas de IDs (que o Java usa na Specification)
-    if (filtro.contas) params = params.set('contas', filtro.contas);
-    if (filtro.formas) params = params.set('formas', filtro.formas);
-    if (filtro.categorias) params = params.set('categorias', filtro.categorias);
-    if (filtro.centroCustos) params = params.set('centroCustoIds', filtro.centroCustos);
-
-    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-dinamico`, { //endpoint Primeira Fabrica de relatorios basta criar o relatorio no jasper e passar o nome aqui
-      params,
-      responseType: 'blob'
-    });
-  }
-
-  // METODOS COM CLAUDE APOIO
-  gerarRelatorioSinteticoPdf(filtro: LancamentoFiltro): Observable<Blob> {
-  let params = new HttpParams()
-      .set('igreja',  filtro.igrejaId.toString())
+      .set('igreja',   filtro.igrejaId.toString())
       .set('dtinicio', filtro.dtinicio)
       .set('dtfim',    filtro.dtfim);
-  // setor é opcional
-  if (filtro.setorId != null) {
-    params = params.set('setorId', filtro.setorId.toString());
+    if (filtro.setorId) params = params.set('setorId', filtro.setorId.toString());
+    return this.http.get<any[]>(`${this.apiPath}/dashboard/gastos-por-categoria`, { params });
   }
 
-  /* Quais filtros adicionais o backend aceita?
-     No nosso controller ele só espera igreja, setor, dtinicio, dtfim.
-     Então não precisamos mandar contas, formas, etc.
-     Mas, se amanhã ajustar o controller para aceitar mais,
-     basta adicionar aqui da mesma forma. */
+  getPageLancamentoFromIgreja(filtro: LancamentoFiltro) {
+    let params = new HttpParams()
+      .set('page',          filtro.page)
+      .set('linesPerPage',  filtro.linesPerPage);
 
-  return this.http.get(
-      `${API_CONFIG.baseUrl}/relatorios/gerar-pdf-sintetico`,
+    if (filtro.nome)            params = params.set('nome',           filtro.nome);
+    if (filtro.igrejaId)        params = params.set('igreja',         filtro.igrejaId);
+    if (filtro.contas)          params = params.set('contas',         filtro.contas);
+    if (filtro.formas)          params = params.set('formas',         filtro.formas);
+    if (filtro.categorias)      params = params.set('categorias',     filtro.categorias);
+    if (filtro.centroCustos)    params = params.set('centroCustos',   filtro.centroCustos);
+    if (filtro.tipoLancamento)  params = params.set('tipoLancamento', filtro.tipoLancamento);
+    if (filtro.dtinicio)        params = params.set('dtinicio',       filtro.dtinicio);
+    if (filtro.dtfim)           params = params.set('dtfim',          filtro.dtfim);
+    if (filtro.setorId)         params = params.set('setor',          filtro.setorId);
+
+    return this.http.get(`${this.apiPath}/page`, { params }).pipe(catchError(this.handleError));
+  }
+
+  gerarLivroCaixaSimplificado(filtro: LancamentoFiltro, nomeRelatorio: string): Observable<Blob> {
+    let params = new HttpParams()
+      .set('nomeRelatorio', nomeRelatorio)
+      .set('igreja',        filtro.igrejaId.toString())
+      .set('dtinicio',      filtro.dtinicio)
+      .set('dtfim',         filtro.dtfim)
+      .set('nome',          filtro.nome || '');
+
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-consolidado`,
       { params, responseType: 'blob' });
-}
-
-gerarRelatorioSinteticoExcel(filtro: LancamentoFiltro): Observable<Blob> {
-    let params = new HttpParams()
-        .set('igreja',   filtro.igrejaId.toString())
-        .set('dtinicio', filtro.dtinicio)
-        .set('dtfim',    filtro.dtfim)
-        .set('setorId',  filtro.setorId.toString());
-
-    if (filtro.tipoLancamento != '') params = params.set('tipo',    filtro.tipoLancamento);
-    if (filtro.contas         != '') params = params.set('contaId', filtro.contas);
-
-    return this.http.get(
-        `${API_CONFIG.baseUrl}/relatorios/gerar-excel-sintetico`,
-        { params, responseType: 'blob' });
-}
-
-
-// Método para gerar relatório analítico em PDF
-  gerarRelatorioAnaliticoPdf(
-filtro: LancamentoFiltro, categoriasIds: number[], formasIds: number[], tipoLancamento: string, contaId: number | null, centroCustoIds: number | null  ): Observable<Blob> {
-    let params = new HttpParams()
-      .set('igreja', filtro.igrejaId.toString())
-      .set('dtinicio', filtro.dtinicio)
-      .set('dtfim', filtro.dtfim)
-      .set('setorId', filtro.setorId.toString());
-
-    if (tipoLancamento) {
-      params = params.set('tipoLancamento', tipoLancamento);
-    }
-
-      if (contaId) {
-        params = params.set('contaId', contaId.toString()); 
-    }
-
-     if (centroCustoIds) {
-        params = params.set('contaId', centroCustoIds.toString()); 
-    }
-
-    // Enviando IDs de categorias e formas como múltiplos parâmetros
-    categoriasIds.forEach(id => params = params.append('categorias', id.toString()));
-    formasIds.forEach(id => params = params.append('formas', id.toString()));
-
-    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-analitico`, {
-      params,
-      responseType: 'blob'
-    });
   }
 
-  // Método para gerar relatório analítico em Excel
-  gerarRelatorioAnaliticoExcel(
-filtro: LancamentoFiltro, categoriasIds: number[], formasIds: number[], tipoLancamento: string, contaId: number | null, centroCustoIds: number | null  ): Observable<Blob> {
+  gerarLivroCaixaDetalhado(filtro: LancamentoFiltro, nomeRelatorio: string): Observable<Blob> {
     let params = new HttpParams()
-      .set('igreja', filtro.igrejaId.toString())
-      .set('dtinicio', filtro.dtinicio)
-      .set('dtfim', filtro.dtfim)
-      .set('setorId', filtro.setorId.toString());
+      .set('nomeRelatorio', nomeRelatorio)
+      .set('igreja',        filtro.igrejaId.toString())
+      .set('dtinicio',      filtro.dtinicio)
+      .set('dtfim',         filtro.dtfim)
+      .set('nome',          filtro.nome || '');
 
-    if (tipoLancamento) {
-      params = params.set('tipoLancamento', tipoLancamento);
-    }
-
-    if (contaId) {
-        params = params.set('contaId', contaId.toString()); 
-    }
-
-     if (centroCustoIds) {
-        params = params.set('contaId', centroCustoIds.toString()); 
-    }
-
-    categoriasIds.forEach(id => params = params.append('categorias', id.toString()));
-    formasIds.forEach(id => params = params.append('formas', id.toString()));
-
-    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-excel-analitico`, {
-      params,
-      responseType: 'blob'
-    });
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-consolidado`,
+      { params, responseType: 'blob' });
   }
 
-// FIM CLADE
-
-  //Separado
   getSaldoFinalContasFromIgreja(igrejaId: any) {
-    return this.http.get(`${API_CONFIG.baseUrl}/lancamentos/saldocontas/?igreja=${igrejaId}`)
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http.get(`${this.apiPath}/saldocontas/?igreja=${igrejaId}`)
+      .pipe(catchError(this.handleError));
   }
-
 
   create(lancamento: LancamentoDTO) {
-    return this.http.post(this.apiPath,
-      lancamento,
-      {
-        observe: 'response',
-        responseType: 'text'
-      }
-    );
+    return this.http.post(this.apiPath, lancamento, { observe: 'response', responseType: 'text' });
   }
 
   update(lancamento: LancamentoDTO): Observable<LancamentoDTO> {
-    const url = `${this.apiPath}/${lancamento.id}`;
-
-    return this.http.put(url, lancamento)
-      .pipe(
-        map(this.jsonDataToLancamento),
-        catchError(this.handleError),
-        map(() => lancamento)
-      )
+    return this.http.put(`${this.apiPath}/${lancamento.id}`, lancamento).pipe(
+      map(this.jsonDataToLancamento),
+      catchError(this.handleError),
+      map(() => lancamento)
+    );
   }
 
   delete(id: number): Observable<any> {
-
-    const url = `${this.apiPath}/${id}`;
-
-    return this.http.delete(url).pipe(
+    return this.http.delete(`${this.apiPath}/${id}`).pipe(
       catchError(this.handleError),
       map(() => null)
-    )
+    );
   }
-
 
   private jsonDataToLancamento(jsonData: any): LancamentoDTO {
     return (new LancamentoDTO(), jsonData);
@@ -319,5 +217,4 @@ filtro: LancamentoFiltro, categoriasIds: number[], formasIds: number[], tipoLanc
     console.log("ERRO NA REQUISIÇÃO => ", error);
     return throwError(error);
   }
-
 }

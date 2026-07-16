@@ -14,20 +14,28 @@
         <div class="form-group row col-md-12 mt-2 mb-2">
 
             <!-- Periodo -->
-            <div class="col-sm-2 ">
-                <label class="f-13"> Período de lançamentos</label>
-                <p-datepicker (click)="periodo()" [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true"
-                    [ngModelOptions]="{standalone: true}" [yearNavigator]="true" yearRange="1900:2100"
-                    [showButtonBar]="true" [showIcon]="true" inputId="icondisplay" dataType="string"
-                    dateFormat="dd/mm/yy" [(ngModel)]="rangeDates" placeholder="dd/mm/aaaa" selectionMode="range" />
+            <div class="col-sm-2">
+                <label class="f-13">Data Início</label>
+                <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true" [yearNavigator]="true"
+                    [ngModelOptions]="{standalone: true}" [showButtonBar]="true" [showIcon]="true" dataType="string"
+                    dateFormat="dd/mm/yy" [(ngModel)]="dtinicio" placeholder="dd/mm/aaaa"
+                    (onSelect)="onSelecionarData()" (onClearClick)="onSelecionarData()" />
+            </div>
+
+            <div class="col-sm-2">
+                <label class="f-13">Data Fim</label>
+                <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true" [yearNavigator]="true"
+                    [ngModelOptions]="{standalone: true}" [showButtonBar]="true" [showIcon]="true" dataType="string"
+                    dateFormat="dd/mm/yy" [(ngModel)]="dtfim" placeholder="dd/mm/aaaa" (onSelect)="onSelecionarData()"
+                    (onClearClick)="onSelecionarData()" />
             </div>
 
             <!-- Conta -->
-            <span class=" col-sm-2">
+            <span class="col-sm-2">
                 <form [formGroup]="contaForm">
                     <label class="f-13">Conta corrente</label>
-                    <p-multiSelect class="mb-0"
-                        [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                    <p-multiSelect
+                        [style]="{'width':'100%','height':'30px','align-items':'center','border-radius':'6px','font-size':'13px'}"
                         [options]="contas" formControlName="selectedContas" optionLabel="nome" optionValue="id"
                         placeholder="Todas" (onChange)="atualizarFiltrosStrings($event, 'contas')" [showClear]="false"
                         appendTo="body">
@@ -39,15 +47,13 @@
             <div class="col-sm-2">
                 <label class="f-13">Débito | Crédito</label>
                 <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangeTipoLancamento($event)"
-                    class="w-full md  " [options]="tpLancamento" [editable]="false" [filter]="false" filterBy="nome"
-                    [showClear]="false" optionLabel="nome" resetFilterOnHide="true" dateFormat="dd/mm/yy"
-                    dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="nome" placeholder="Todas"
-                    appendTo="body" />
+                    [options]="tpLancamento" [editable]="false" [filter]="false" [showClear]="false" optionLabel="nome"
+                    optionValue="nome" placeholder="Todas" appendTo="body" />
             </div>
 
             <!-- Categorias -->
             @if(crtCategoria !== 3){
-            <div class="col-sm-2 ">
+            <div class="col-sm-2">
                 <form [formGroup]="categoriaForm">
                     @if(crtCategoria == 1){
                     <label class="f-13" style="color: green;">Categorias | Crédito</label>
@@ -55,13 +61,10 @@
                     @if(crtCategoria == 2){
                     <label class="f-13" style="color: red;">Categorias | Débito</label>
                     }
-                    @if(crtCategoria == 3){
-                    <label class="f-13">Categorias</label>
-                    }
-                    <p-multiSelect [filter]="true" [style]="{'width':'100%','height':'30px', 'align-items':
-                        'center', 'border-radius': '6px','font-size': '13px'}" [options]="categoriasFiltradas"
-                        formControlName="selectedCategorias" optionLabel="nome" optionValue="id" placeholder="Todas"
-                        [showClear]="false" [autofocus]="false" display="chip"
+                    <p-multiSelect [filter]="true"
+                        [style]="{'width':'100%','height':'30px','align-items':'center','border-radius':'6px','font-size':'13px'}"
+                        [options]="categoriasFiltradas" formControlName="selectedCategorias" optionLabel="nome"
+                        optionValue="id" placeholder="Todas" [showClear]="false" display="chip"
                         (onChange)="atualizarFiltrosStrings($event, 'categorias')" appendTo="body">
                     </p-multiSelect>
                 </form>
@@ -73,7 +76,7 @@
                 <form [formGroup]="formaForm">
                     <label class="f-13">Forma de contribuição</label>
                     <p-multiSelect
-                        [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                        [style]="{'width':'100%','height':'30px','align-items':'center','border-radius':'6px','font-size':'13px'}"
                         [options]="formas" formControlName="selectedFormas" optionLabel="nome" optionValue="id"
                         placeholder="Todas" (onChange)="atualizarFiltrosStrings($event, 'formas')" [showClear]="false"
                         appendTo="body">
@@ -81,19 +84,22 @@
                 </form>
             </div>
 
-            <span class=" col-sm-2">
+            <!-- Centro de Custo -->
+            <!-- <span class="col-sm-2">
                 <form [formGroup]="centroCustoForm">
                     <label class="f-13">Centro de Custo</label>
-                    <p-multiSelect class="mb-0"
-                        [style]="{'width':'100%','height':'30px', 'align-items': 'center', 'border-radius': '6px','font-size': '13px'}"
+                    <p-multiSelect
+                        [style]="{'width':'100%','height':'30px','align-items':'center','border-radius':'6px','font-size':'13px'}"
                         [options]="centroCustos" formControlName="selectedCentroCustos" optionLabel="nome"
                         optionValue="id" placeholder="Todas"
                         (onChange)="atualizarFiltrosStrings($event, 'centroCustos')" [showClear]="false"
                         appendTo="body">
                     </p-multiSelect>
                 </form>
-            </span>
+            </span> -->
         </div>
+
+
 
         <div class="form-group row col-md-12 mt-2 mb-0">
 
@@ -225,10 +231,10 @@
                         {{ saldoFinalContas | currency:' ' }}
                     </p-accordion-header>
                     <p-accordion-content>
-                        <div class="row">
+                        <div class="row ">
                             <div class="col-sm-12">
                                 <div class="table-responsive">
-                                    <table class="table table-bordered table-striped borde">
+                                    <table class="table table-bordered table-striped borde ">
                                         <tbody>
                                             @for (conta of contas; track conta.id) {
                                             <tr>
@@ -237,7 +243,8 @@
                                                 <td class="col-data-rigth-100 py-2"
                                                     style="font-size: 13px; height: 27px;"
                                                     [style.color]="conta.saldoCalculado >= 0 ? 'green' : 'red'">
-                                                    {{ conta.saldoCalculado | number: '1.2-2' }}<br>
+                                                    <span class="float-end">{{ conta.saldoCalculado | number: '1.2-2'
+                                                        }}</span><br>
                                                 </td>
                                             </tr>
                                             }
@@ -295,21 +302,31 @@
 </ng-template>
 
 <ng-template #end>
+
+    <!-- Sintético → direto PDF -->
     <div class="flex justify-between">
-        <p-button [style]="{'height':'32px', 'background':'black','margin-right':'20px'}" [outlined]="false"
-            icon="pi pi-print" class="text-white" label="Sintetico" (click)="imprimirSintetico()" />
+        <p-button [style]="{'height':'32px','background':'#5a5f66','margin-right':'8px'}" icon="pi pi-print"
+            label="Sintético" [loading]="gerandoRelatorio" (click)="gerarRelatorioSintetico()" />
     </div>
+
+    <!-- Analítico → dropdown PDF / Excel -->
     <div class="flex justify-between">
-        <p-button [style]="{'height':'32px', 'background':'black','margin-right':'20px'}" [outlined]="false"
-            icon="pi pi-print" class="text-white" label="Imprimir" (click)="imprimirLancamentos()" />
+        <p-splitButton label="Analítico" icon="pi pi-print" [model]="analiticoItems" 
+            [style]="{'height':'32px','margin-right':'8px'}" severity="contrast" [outlined]="false" />
     </div>
-    <strong><button (click)="filtraLancamentos()" icon="pi pi-search" type="button" class="mb-0 mx-3" pButton pRipple
-            label="Buscar"
-            style="height: 32px; background:green; font-size: small; border-radius: 5px; color: aliceblue;">
-        </button></strong>
-    <p-splitButton class="float-end mr-0 mb-1" label="   Relatórios          " icon="pi pi-print" [model]="printItems"
+
+    <!-- Relatórios -->
+    <p-splitButton class="float-end mx-3" label="   Relatórios " icon="pi pi-print" [model]="printItems"
         [style]="{'height':'32px'}" outlined severity="contrast" />
+
+    <strong>
+        <button (click)="filtraLancamentos()" type="button" class="mb-0 " pButton pRipple label=" Buscar "
+            style="height:32px; background:green; font-size:small; border-radius:5px; color:aliceblue;">
+        </button>
+    </strong>
 </ng-template>
+
+
 </p-toolbar>
 
 <!-- GRID -->
@@ -406,23 +423,22 @@
                         </button>
                         }
 
-                        @if (lancamento.comprovanteNome) {
+                        @if(lancamento.comprovanteNome){
                         <button (click)="visualizarComprovante(lancamento.id)" type="button"
-                            class="ml-1 col-acoes-4-botao py-1 btn btn-icon btn-outline-danger p-1 mb-0 mt-0"
+                            class="btn btn-icon btn-outline-dark  p-1 mb-0 mt-0"
                             [style]="{'margin-left': '7px', 'height': '26px', 'width': '26px'}" [placement]="'top'"
                             ngbTooltip="Visualizar Comprovante">
                             <i class="pi pi-file-pdf"></i>
                         </button>
-                        } @else {
-                        <button type="button"
-                            class="ml-1 col-acoes-4-botao py-1 btn btn-icon btn-outline-dark p1 mb-0 mt-0"
+                        } @else{
+                        <button type="button" class="btn btn-icon btn-outline-dark p-1 mb-0 mt-0"
                             [style]="{'margin-left': '7px', 'height': '26px', 'width': '26px'}" [placement]="'top'"
                             ngbTooltip="Sem anexo">
                             <i class="pi pi-file-pdf"></i>
                         </button>
                         }
 
-                        @if (lancamento.comprovanteNome) {
+                        @if(lancamento.comprovanteNome){
                         <button (click)="excluirComprovante(lancamento.id)" type="button"
                             class="ml-1 col-acoes-4-botao py-1 btn btn-icon btn-outline-danger p-1 mb-0 mt-0"
                             [style]="{'margin-left': '7px', 'height': '26px', 'width': '26px'}" [placement]="'top'"
@@ -616,158 +632,6 @@
             </p-dialog>
         </div>
     </div>
-
-    <!-- ═══ MODAL RELATÓRIO ═══ -->
-    <div class="col-md-12 col-xl-12">
-        <div class="card flex justify-center">
-            <p-dialog header="RELATÓRIO DE MOVIMENTAÇÃO FINANCEIRA" [modal]="true"
-                [(visible)]="visibleRelatorioSintetico" [position]="positionRelatorioSintetico"
-                [dismissableMask]="false" [style]="{ width: '60vw', 'min-height': '30vh', height: 'auto' }"
-                [closeOnEscape]="false" [breakpoints]="{ '1199px': '75vw', '575px': '95vw' }" [draggable]="false"
-                [resizable]="false" [contentStyle]="{ overflow: 'visible' }" [transitionOptions]="'500ms ease-out'">
-
-                <hr class="mt-1 mb-2" />
-
-                <!-- FILTROS COMPARTILHADOS -->
-                <div class="row mb-2">
-                    <div class="form-group col-md-3 mb-2">
-                        <label class="mb-1">Data Início <span class="text-danger">*</span></label>
-                        <p-datepicker [(ngModel)]="filtro.dtinicio" [style]="{ width: '100%', height: '30px' }"
-                            [ngModelOptions]="{standalone: true}" [showIcon]="true" dateFormat="dd/mm/yy"
-                            dataType="string" placeholder="dd/mm/aaaa" [showButtonBar]="true" />
-                    </div>
-                    <div class="form-group col-md-3 mb-2">
-                        <label class="mb-1">Data Fim <span class="text-danger">*</span></label>
-                        <p-datepicker [(ngModel)]="filtro.dtfim" [style]="{ width: '100%', height: '30px' }"
-                            [ngModelOptions]="{standalone: true}" [showIcon]="true" dateFormat="dd/mm/yy"
-                            dataType="string" placeholder="dd/mm/aaaa" [showButtonBar]="true" />
-                    </div>
-                    <div class="form-group col-md-3 mb-2">
-                        <label class="mb-1">Conta</label>
-                        <p-select [(ngModel)]="relatorioAnalitico.contaId" [options]="contasRelatorio"
-                            optionLabel="nome" [ngModelOptions]="{standalone: true}" optionValue="id"
-                            placeholder="Todas" [showClear]="true" [filter]="true" filterPlaceholder="Buscar conta..."
-                            [style]="{ width: '100%', height: '30px' }" />
-                    </div>
-                    <div class="form-group col-md-3 mb-2">
-                        <label class="mb-1">Setor</label>
-                        <input readonly pInputText type="text" style="height: 32px" formControlName="nomeSetor"
-                               class="w-full sm:w-auto" />
-                    </div>
-                </div>
-
-                <!-- ABAS -->
-                <p-tabs value="0">
-                    <p-tablist>
-                        <p-tab value="0" class="f-18">📊 Sintético</p-tab>
-                        <p-tab value="1" class="f-18">📋 Analítico</p-tab>
-                    </p-tablist>
-
-                    <p-tabpanels>
-
-                        <!-- ABA SINTÉTICO -->
-                        <p-tabpanel value="0">
-                            <div class="row mt-2">
-                                <div class="form-group col-md-6 mb-2">
-                                    <label class="mb-1">Tipo de Lançamento</label>
-                                    <p-select [(ngModel)]="filtro.tipoLancamento" [options]="tiposRelatorio"
-                                        [ngModelOptions]="{standalone: true}" optionLabel="label" optionValue="value"
-                                        placeholder="Todos" [showClear]="true"
-                                        [style]="{ width: '100%', height: '30px' }" />
-                                </div>
-                                <div class="form-group col-md-6 mb-2">
-                                    <label class="mb-1">Formato <span class="text-danger">*</span></label>
-                                    <p-select [(ngModel)]="formatoSintetico" [options]="formatosRelatorio"
-                                        [ngModelOptions]="{standalone: true}" optionLabel="label" optionValue="value"
-                                        placeholder="Selecione" [style]="{ width: '100%', height: '30px' }" />
-                                </div>
-                            </div>
-                            <div class="modal-footer mt-2">
-                                <button (click)="fecharRelatorioSintetico()" icon="pi pi-times"
-                                    style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton
-                                    pRipple type="button" label="Fechar"
-                                    class="p-button-primary mx-3 p-button-outlined mt-1">
-                                </button>
-                                <button (click)="gerarRelatorioSintetico()" icon="pi pi-print"
-                                    style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton
-                                    pRipple type="button" label="Gerar" class="p-button-success mt-1"
-                                    [disabled]="!filtro.dtinicio || !filtro.dtfim || !formatoSintetico || gerandoRelatorio"
-                                    [loading]="gerandoRelatorio">
-                                </button>
-                            </div>
-                        </p-tabpanel>
-
-                        <!-- ════ ABA ANALÍTICO — ALTERADA ════ -->
-                        <p-tabpanel value="1">
-                            <div class="row mt-2">
-
-                                <!-- Tipo de Lançamento -->
-                                <div class="form-group col-md-3 mb-2">
-                                    <label class="mb-1">Tipo de Lançamento</label>
-                                    <p-select [(ngModel)]="relatorioAnalitico.tipoLancamento"
-                                        [ngModelOptions]="{standalone: true}" [options]="tiposRelatorio"
-                                        optionLabel="label" optionValue="value" placeholder="Todos" [showClear]="true"
-                                        [style]="{ width: '100%', height: '30px' }" />
-                                </div>
-
-                                <!-- Categoria — MULTISELECT com variável própria -->
-                                <div class="form-group col-md-3 mb-2">
-                                    <label class="mb-1">Categoria</label>
-                                    <p-multiselect [(ngModel)]="relatorioAnalitico.categoriasIds"
-                                        [ngModelOptions]="{standalone: true}" [options]="categorias" optionLabel="nome"
-                                        optionValue="id" placeholder="Todas" [showClear]="true" [filter]="true"
-                                        filterPlaceholder="Buscar categoria..." [style]="{ width: '100%', height: '30px' }" />
-                                </div>
-
-                                <!-- Forma de Pagamento — MULTISELECT com variável própria -->
-                                <div class="form-group col-md-3 mb-2">
-                                    <label class="mb-1">Forma de Pagamento</label>
-                                    <p-multiselect [(ngModel)]="relatorioAnalitico.formasIds"
-                                        [ngModelOptions]="{standalone: true}" [options]="formas" optionLabel="nome"
-                                        optionValue="id" placeholder="Todas" [showClear]="true"
-                                        [style]="{ width: '100%', height: '30px' }" />
-                                </div>
-
-                                <!-- Centro de custo -->
-                                <div class="form-group col-md-3 mb-2">
-                                    <label class="mb-1">Centro de Custo</label>
-                                    <p-multiselect [(ngModel)]="relatorioAnalitico.centroCustoIds"
-                                        [ngModelOptions]="{standalone: true}" [options]="centroCustos" optionLabel="nome"
-                                        optionValue="id" placeholder="Todas" [showClear]="true"
-                                        [style]="{ width: '100%', height: '30px' }" />
-                                </div>
-
-                                <!-- Formato -->
-                                <div class="form-group col-md-3 mb-2">
-                                    <label class="mb-1">Formato <span class="text-danger">*</span></label>
-                                    <p-select [(ngModel)]="relatorioAnalitico.formato"
-                                        [ngModelOptions]="{standalone: true}" [options]="formatosRelatorio"
-                                        optionLabel="label" optionValue="value" placeholder="Selecione"
-                                        [style]="{ width: '100%', height: '30px' }" />
-                                </div>
-
-                            </div>
-                            <div class="modal-footer mt-2">
-                                <button (click)="fecharRelatorioSintetico()" icon="pi pi-times"
-                                    style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton
-                                    pRipple type="button" label="Fechar"
-                                    class="p-button-primary mx-3 p-button-outlined mt-1">
-                                </button>
-                                <button (click)="gerarRelatorioAnalitico()" icon="pi pi-print"
-                                    style="width: 9em; height: 30px; border-radius: 5px; font-size: small;" pButton
-                                    pRipple type="button" label="Gerar" class="p-button-success mt-1"
-                                    [disabled]="!filtro.dtinicio || !filtro.dtfim || !relatorioAnalitico.formato || gerandoRelatorio"
-                                    [loading]="gerandoRelatorio">
-                                </button>
-                            </div>
-                        </p-tabpanel>
-
-                    </p-tabpanels>
-                </p-tabs>
-            </p-dialog>
-        </div>
-    </div>
-    <!-- FIM MODAL RELATÓRIO -->
 
     <!-- MODAL TRANSFERENCIA -->
     <div class="col-md-12 col-xl-12" data-backdrop="static">
