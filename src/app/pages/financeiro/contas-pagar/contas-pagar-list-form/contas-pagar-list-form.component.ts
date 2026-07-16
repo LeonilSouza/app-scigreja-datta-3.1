@@ -89,6 +89,10 @@ export class ContasPagarListFormComponent implements OnInit {
   imodo = signal<number>(0);
   nome?: string = ''.toLowerCase();
 
+  // Adicione junto às outras propriedades
+  private searchTimer: any;
+  busca: string = ''; // campo de busca unificado
+
   descricao!: string;
 
   contaPagarId!: number;
@@ -210,11 +214,20 @@ export class ContasPagarListFormComponent implements OnInit {
   }
 
 
-  loadContasPagarLazy(event: any) {
-    this.page = event!.first! / event!.rows!;
-    this.linesPerPage = event.rows;
-    this.loadContasPagar(this.igrejaId, (this.nome as any).toLowerCase(), this.dtInicio, this.dtFim, this.page, this.linesPerPage);
-  }
+  loadContasPagarLazy(event: any): void {
+  this.page = event!.first! / event!.rows!;
+  this.linesPerPage = event.rows;
+  this.loadContasPagar(
+    this.igrejaId,
+    this.busca.toLowerCase(),
+    this.dtInicio,
+    this.dtFim,
+    this.page,
+    this.linesPerPage
+  );
+}
+
+
 
   aplicarFiltroDatas() {
     this.hoje = this.sharedService.dataAtualFormatada();
@@ -402,9 +415,9 @@ export class ContasPagarListFormComponent implements OnInit {
 
   }
 
-  loadContasPagar(igrejaId: number, nome: string, dtInicio: string, dtFim: string, page: number, linesPerPage: number) {
+  loadContasPagar(igrejaId: number, busca: string, dtInicio: string, dtFim: string, page: number, linesPerPage: number) {
     this.contasPagarService
-      .getByPageContasPagarFromIgreja(igrejaId, nome.toLowerCase(), dtInicio, dtFim, page, linesPerPage)
+      .getByPageContasPagarFromIgreja(igrejaId, busca.toLowerCase(), dtInicio, dtFim, page, linesPerPage)
       .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
       .subscribe({
         next: (response) => {
@@ -420,21 +433,22 @@ export class ContasPagarListFormComponent implements OnInit {
 
   }
 
-  loadResumo() {
-    this.contasPagarService
-      .getResumoContasPagarFromIgreja(this.igrejaId, this.nome, this.dtInicio, this.dtFim)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-      .subscribe({
-        next: (response) => {
-          this.resumo = response;
-        },
-        error: (error) => {
-          this.error = error;
-          this.showError(error)
-        }
-      });
+loadResumo(): void {
+  this.contasPagarService
+    .getResumoContasPagarFromIgreja(
+      this.igrejaId,
+      this.busca,
+      this.dtInicio,
+      this.dtFim
+    )
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
+      next: (response) => { this.resumo = response; },
+      error: (error) => { this.showError(error); }
+    });
+}
 
-  }
+
 
   loadContaPagar(contaPagar: ContasPagarDTO) {
     this.contaPagarId = contaPagar.id!;
@@ -688,9 +702,37 @@ export class ContasPagarListFormComponent implements OnInit {
     this.arquivoSelecionado = null;
   }
 
-  buscaContasPagar() {
-    this.loadContasPagar(this.igrejaId, (this.nome as any).toLowerCase(), this.dtInicio, this.dtFim, this.page, this.linesPerPage);
-  }
+ // Substitui o buscaContasPagar() existente
+buscaContasPagar(): void {
+  this.page = 0;
+  if (this.grid) this.grid.first = 0;
+  this.loadContasPagar(
+    this.igrejaId,
+    this.busca.toLowerCase(),
+    this.dtInicio,
+    this.dtFim,
+    this.page,
+    this.linesPerPage
+  );
+}
+
+// Novo método com debounce — igual ao financeiro
+onGlobalFilter(): void {
+  clearTimeout(this.searchTimer);
+  this.searchTimer = setTimeout(() => {
+    this.page = 0;
+    if (this.grid) this.grid.first = 0;
+    this.loadContasPagar(
+      this.igrejaId,
+      this.busca.toLowerCase(),
+      this.dtInicio,
+      this.dtFim,
+      this.page,
+      this.linesPerPage
+    );
+  }, 400);
+}
+
 
 
   public updateContasPagar() {

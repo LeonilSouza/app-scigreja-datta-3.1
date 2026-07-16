@@ -55,6 +55,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import localePt from '@angular/common/locales/pt';
 import { DialogModule } from 'primeng/dialog';
 import { TabsModule } from 'primeng/tabs';
+import { PaginasPipe } from './_helpers/paginas.pipe';
 
 registerLocaleData(localePt);
 
@@ -86,7 +87,7 @@ registerLocaleData(localePt);
     RadioButtonModule,
     CheckboxModule,
     ToastModule,
-    // TabViewModule,
+    PaginasPipe,
     TabsModule,
     ToolbarModule,
     TableModule,
@@ -133,7 +134,8 @@ registerLocaleData(localePt);
     SplitButtonModule,
     SelectModule,
     DialogModule,
-    TabsModule
+    TabsModule,
+    PaginasPipe,
   ],
   providers: [
     UsuarioService,

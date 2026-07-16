@@ -1,1 +1,23 @@
 .cursor-move:active { cursor: grabbing; /* Transforma o mouse em uma mão fechada enquanto arrasta */ }
+
+/* primNG select Maravilha - Configura tudo no select
+TEM que colocar no scss do componente*/
+:host ::ng-deep.p-select {
+  align-items: center  !important;
+  // width: 100% !important;
+  height: 30px !important;
+  border-radius: 4px !important;
+  padding-bottom: 2px !important;
+}
+:host ::ng-deep.p-select-label {
+  font-size: 14px !important;
+}
+
+:host ::ng-deep.p-select-panel {
+  font-size: 13px !important;
+}
+
+:host ::ng-deep.p-select-filter {
+  max-height: 30px !important;
+}
+//Fim select
