@@ -74,6 +74,7 @@ export class LancamentoService {
       .set('dtinicio', filtro.dtinicio)
       .set('dtfim',    filtro.dtfim)
       .set('setorId',  filtro.setorId.toString())
+      .set('nome',  filtro.nome)
 
     if (filtro.tipoLancamento) params = params.set('tipo', filtro.tipoLancamento);
     if (filtro.contaId)        params = params.set('contaId', filtro.contaId.toString());
@@ -81,7 +82,7 @@ export class LancamentoService {
     filtro.categoriasIds?.forEach(id  => params = params.append('categorias',    id.toString()));
     filtro.formasIds?.forEach(id      => params = params.append('formas',        id.toString()));
     // filtro.centroCustoIds?.forEach(id => params = params.append('centroCustos',  id.toString()));
-
+ console.log(filtro)
     return params;
   }
 
