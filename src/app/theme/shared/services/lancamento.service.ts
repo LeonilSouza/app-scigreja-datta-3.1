@@ -87,7 +87,7 @@ export class LancamentoService {
   }
 
   // ════════════════════════════════════════════════════
-  // DEMAIS MÉTODOS (sem alteração)
+  // DEMAIS MÉTODOS 
   // ════════════════════════════════════════════════════
 
   findById(id: number): Observable<LancamentoDTO> {
@@ -97,6 +97,7 @@ export class LancamentoService {
     );
   }
 
+  // Usado no Contas a Pagar
   uploadComprovante(lancamentoId: number, arquivo: File): Observable<any> {
     const formData = new FormData();
     formData.append('arquivo', arquivo, arquivo.name);
@@ -161,6 +162,7 @@ export class LancamentoService {
 
     return this.http.get(`${this.apiPath}/page`, { params }).pipe(catchError(this.handleError));
   }
+
 
   gerarLivroCaixaSimplificado(filtro: LancamentoFiltro, nomeRelatorio: string): Observable<Blob> {
     let params = new HttpParams()

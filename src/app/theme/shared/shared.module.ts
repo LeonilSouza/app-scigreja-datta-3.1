@@ -50,7 +50,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
 import { CheckboxModule } from 'primeng/checkbox';
-
+import { FileUploadModule } from 'primeng/fileupload';
 
 import localePt from '@angular/common/locales/pt';
 import { DialogModule } from 'primeng/dialog';
@@ -93,6 +93,7 @@ registerLocaleData(localePt);
     TableModule,
     AccordionModule,
     SplitButtonModule,
+    FileUploadModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -136,6 +137,7 @@ registerLocaleData(localePt);
     DialogModule,
     TabsModule,
     PaginasPipe,
+    FileUploadModule,
   ],
   providers: [
     UsuarioService,

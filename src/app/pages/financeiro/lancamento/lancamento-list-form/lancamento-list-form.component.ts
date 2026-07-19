@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -135,7 +135,6 @@ export class LancamentoListFormComponent implements OnInit {
   categoriasFiltradas: CategoriaDTO[] = [];
   centroCustos: CentroCustoDTO[] = [];
   pessoas: PessoaDTO[] = [];
-
   // ════════════════════════════════════════════════════
   // TOTAIS
   // ════════════════════════════════════════════════════
@@ -182,6 +181,10 @@ export class LancamentoListFormComponent implements OnInit {
   lancamentoIdTransferencia: number = 0;
   indexId: number = 0;
   indexIdTransferencia: number = 0;
+
+  contaIdSelecionada: number | null = null;
+  formaIdSelecionada: number | null = null;
+  tipoLancamentoSelecionado: string = 'R';
 
   // ════════════════════════════════════════════════════
   // CONTROLES DE UI
@@ -361,7 +364,6 @@ export class LancamentoListFormComponent implements OnInit {
 
         // ── Restaura seleção ou usa todos ────────────────
         this.restaurarSelecao(selecaoAtual);
-
         this.refreshAll();
       });
   }

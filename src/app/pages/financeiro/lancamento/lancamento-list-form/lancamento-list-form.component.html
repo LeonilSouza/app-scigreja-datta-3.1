@@ -277,9 +277,16 @@
         [style]="{'height':'32px', 'margin-right':'20px'}" severity="danger" [outlined]="true" />
 </div>
 }
+
+<!-- <button pButton pRipple icon="pi pi-upload" label="Importar Comprovantes PIX"
+    style="height: 30px; font-size: small; border-radius: 6px; background: #388669;"
+    (click)="visibleModalUploadPix = true">
+</button> -->
+
+
 </ng-template>
 
-<ng-template pTemplate="caption">
+<!-- <ng-template pTemplate="caption">
     <div class="flex align-items-center justify-content-between">
         <h5 class="m-0">Lançamentos Financeiros</h5>
         <span class="p-input-icon-left">
@@ -289,7 +296,7 @@
                 placeholder="Pesquisar nome, valor ou histórico..." class="w-full sm:w-auto" />
         </span>
     </div>
-</ng-template>
+</ng-template> -->
 
 <ng-template #center>
     <p-iconfield iconPosition="left">
@@ -310,7 +317,7 @@
 
     <!-- Analítico → dropdown PDF / Excel -->
     <div class="flex justify-between">
-        <p-splitButton label="Analítico" icon="pi pi-print" [model]="analiticoItems" 
+        <p-splitButton label="Analítico" icon="pi pi-print" [model]="analiticoItems"
             [style]="{'height':'32px','margin-right':'8px'}" severity="contrast" [outlined]="false" />
     </div>
 
@@ -492,11 +499,18 @@
     <!-- MODAL LANCAMENTO -->
     <div class="col-md-12 col-xl-12" data-backdrop="static">
         <div class="card flex justify-center">
-            <p-dialog header="LANÇAMENTO DE - {{ pageTitle }}" [modal]="true" [(visible)]="visibleLancamento"
-                [position]="positionLancamento" [dismissableMask]="false"
-                [style]="{width: '60vw', 'min-height': '30vh', height: 'auto'}" [closeOnEscape]="false"
-                [breakpoints]="{'960px': '95vw', '640px': '100vw'}" [draggable]="false" [resizable]="false"
-                [contentStyle]="{ 'overflow': 'auto' }" [transitionOptions]="'500ms ease-out'">
+            <p-dialog header="LANÇAMENTO DE - {{ pageTitle }}" 
+                [modal]="true" 
+                [(visible)]="visibleLancamento"
+                [position]="positionLancamento" 
+                [dismissableMask]="false"
+                [style]="{width: '60vw', 'min-height': '30vh', height: 'auto'}" 
+                [closeOnEscape]="false"
+                [breakpoints]="{'960px': '95vw', '640px': '100vw'}" 
+                [draggable]="false" [resizable]="false"
+                [contentStyle]="{ 'overflow': 'auto' }" 
+                [transitionOptions]="'500ms ease-out'">
+
                 <hr class="mt-1 mb-2">
                 <div class="row col-12">
                     <div class="form-group col-md-4 mb-3">
@@ -510,12 +524,12 @@
                     <div class="row form-group col-md-6 mb-2">
                         <div class="flex flex-wrap">
                             <div class="flex align-items-center mb-0">
-                                <label class="text-dark mr-5">Nome/Historico</label>
+                                <label class="text-dark mr-5">Nome/Historico</label>  
                                 <p-radioButton (click)="cadastradoNC()" value="nao" formControlName="cadastrado"
-                                    inputId="naocadastrado"></p-radioButton>
-                                <label for="naocadastrado" class="ml-2 text-c-blue">Não Cadastrado</label>
+                                    inputId="naocadastrado"></p-radioButton> 
+                                <label for="naocadastrado" class="ml-2 text-c-blue">Não Cadastrado</label>    
                                 <p-radioButton (click)="cadastradoC()" value="sim" formControlName="cadastrado"
-                                    inputId="cadastrado"></p-radioButton>
+                                    inputId="cadastrado"></p-radioButton> 
                                 <label for="cadastrado" class="ml-2 text-success">Cadastrado</label>
                             </div>
                             @if(lancamentoForm.controls['cadastrado'].value == 'sim'){
@@ -631,6 +645,7 @@
             </p-dialog>
         </div>
     </div>
+
 
     <!-- MODAL TRANSFERENCIA -->
     <div class="col-md-12 col-xl-12" data-backdrop="static">
