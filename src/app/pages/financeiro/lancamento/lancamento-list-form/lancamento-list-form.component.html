@@ -278,25 +278,7 @@
 </div>
 }
 
-<!-- <button pButton pRipple icon="pi pi-upload" label="Importar Comprovantes PIX"
-    style="height: 30px; font-size: small; border-radius: 6px; background: #388669;"
-    (click)="visibleModalUploadPix = true">
-</button> -->
-
-
 </ng-template>
-
-<!-- <ng-template pTemplate="caption">
-    <div class="flex align-items-center justify-content-between">
-        <h5 class="m-0">Lançamentos Financeiros</h5>
-        <span class="p-input-icon-left">
-            <i class="pi pi-search"></i>
-            <input pInputText type="text" style="height: 32px; width:400px;" [(ngModel)]="filtro.nome"
-                [ngModelOptions]="{standalone: true}" (input)="onGlobalFilter()"
-                placeholder="Pesquisar nome, valor ou histórico..." class="w-full sm:w-auto" />
-        </span>
-    </div>
-</ng-template> -->
 
 <ng-template #center>
     <p-iconfield iconPosition="left">
@@ -405,7 +387,7 @@
                         {{ lancamento.valor | currency:' ' }}
                     </td>
                     <td class="col-acoes-4-botao py-1">
-                        <button [disabled]="lancamento.nome == 'Transferencia' || lancamento.nome == 'Permuta'" (click)="limpaCheckbox();
+                        <button [disabled]= "lancamento.nome == 'Permuta'" (click)="limpaCheckbox(); imodo.set(1);
                                         lancamento.nome == 'Transferencia' ? visibleModalTransferencia = true :
                                         lancamento.nome == 'Permuta' ? visibleModalPermuta = true : visibleLancamento = true;
                                         loadLancamento(lancamento); setModalEdicao(lancamento.tipoLancamento)"
@@ -499,17 +481,11 @@
     <!-- MODAL LANCAMENTO -->
     <div class="col-md-12 col-xl-12" data-backdrop="static">
         <div class="card flex justify-center">
-            <p-dialog header="LANÇAMENTO DE - {{ pageTitle }}" 
-                [modal]="true" 
-                [(visible)]="visibleLancamento"
-                [position]="positionLancamento" 
-                [dismissableMask]="false"
-                [style]="{width: '60vw', 'min-height': '30vh', height: 'auto'}" 
-                [closeOnEscape]="false"
-                [breakpoints]="{'960px': '95vw', '640px': '100vw'}" 
-                [draggable]="false" [resizable]="false"
-                [contentStyle]="{ 'overflow': 'auto' }" 
-                [transitionOptions]="'500ms ease-out'">
+            <p-dialog header="LANÇAMENTO DE - {{ pageTitle }}" [modal]="true" [(visible)]="visibleLancamento"
+                [position]="positionLancamento" [dismissableMask]="false"
+                [style]="{width: '60vw', 'min-height': '30vh', height: 'auto'}" [closeOnEscape]="false"
+                [breakpoints]="{'960px': '95vw', '640px': '100vw'}" [draggable]="false" [resizable]="false"
+                [contentStyle]="{ 'overflow': 'auto' }" [transitionOptions]="'500ms ease-out'">
 
                 <hr class="mt-1 mb-2">
                 <div class="row col-12">
@@ -575,7 +551,7 @@
                     </div>
 
                     <div class="form-group col-md-3 mb-3">
-                        <label class="mb-1">Valor R\$</label>
+                        <label class="mb-1">Valor R$</label>
                         <p-inputnumber size="small" formControlName="valor" inputId="valor" mode="decimal"
                             locale="pt-BR" class="mb-0" [minFractionDigits]="2"
                             [style]="{'width':'100%','height':'30px'}" />
@@ -618,12 +594,14 @@
                             style="width: 7em; height: 30px; font-size: small; border-radius: 6px; border: 0; background: #1a82ce;"
                             icon='pi pi-wallet'>
                         </button>
-                        <strong><button (click)="visibleLancamento = false; submitFormLancamento()"
+
+                        <strong><button (click)=" visibleLancamento = false; submitFormLancamento()" 
                                 [disabled]="lancamentoForm.invalid" type="button" class="mx-3 float-end mb-0" pButton
                                 pRipple label="Salvar"
                                 style="width: 7em; background:#388669; height: 30px; border-radius: 6px; font-size: small;"
                                 icon='pi pi-check'>
                             </button></strong>
+
                         @if(imodo() == 0 && lancamentoForm.controls['tipoLancamento'].value == 'Receita'){
                         <strong><button (click)="visibleLancamento = true; submitFormLancamento()"
                                 [disabled]="lancamentoForm.invalid" type="button" class="ml-4 float-end mb-0" pButton
@@ -684,8 +662,8 @@
                             (onChange)="onChangeTransferenciaDestino($event)" formControlName="contaIdTransferencia"
                             class="w-full md mb-2" [options]="contasTransferencia" [editable]="false" [filter]="false"
                             filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
-                            dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id"
-                            placeholder="Selecione..." appendTo="body" />
+                            dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar" [autofocus]="false"
+                            optionValue="contaIdTransferencia" placeholder="Selecione..." appendTo="body" />
                         @if(lancamentoForm.controls['contaId'].value ==
                         lancamentoForm.controls['contaIdTransferencia'].value){
                         <p class="danger" [style]="{'font-size':'12px'}">Impossível para a mesma conta.</p>
@@ -699,6 +677,7 @@
                         <input readonly type="text" class="form-control" formControlName="historico">
                     </div>
                     }
+
                     @if(lancamentoForm.controls['contaId'].value !== null){
                     <div class="form-group col-md-8 mb-5">
                         <label>Historico</label>
@@ -706,8 +685,20 @@
                     </div>
                     }
 
+                     @if(lancamentoForm.controls['id'].value !== null){
+                    <div class="form-group col-md-4 mb-0">
+                        <label class="mb-1">Categoria</label>
+                        <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangeTPCategorias($event)"
+                            formControlName="categoriaId" class="w-full md mb-1" [options]="categoriasFiltradas"
+                            [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
+                            resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
+                            [autofocus]="false" optionValue="id" placeholder="Selecione uma categoria"
+                            appendTo="body" />
+                    </div>
+                    }
+
                     <div class="form-group col-md-4 p-fluid">
-                        <label>Valor R\$</label>
+                        <label>Valor R$</label>
                         <p-inputNumber formControlName="valor" inputId="valor" mode="decimal" locale="pt-BR"
                             class="ml-auto" [minFractionDigits]="2"
                             [style]="{'width':'100%','height':'30px', 'border-radius':'10px'}">
@@ -725,12 +716,14 @@
                             class="ml-4 p-button-danger p-button-outlined mb-0">
                         </button>
                         }
+
                         <button data-dismiss="modal" type="button" class="mx-4 mb-0" pButton pRipple
                             (click)="visibleModalTransferencia = false; resetModal()" label="Fechar"
                             style="width: 7em; height: 30px; font-size: small; border-radius: 6px; border: 0; background: #1a82ce;"
                             icon='pi pi-wallet'>
                         </button>
-                        @if(lancamentoForm.controls['id'].value == null){
+
+                        <!-- @if(lancamentoForm.controls['id'].value == null){ -->
                         <strong><button (click)="visibleModalTransferencia = false; submitFormTransferencia()"
                                 [disabled]="lancamentoForm.invalid
                                     || lancamentoForm.controls['valor'].value <= 0
@@ -740,9 +733,12 @@
                                 style="width: 7em; background:#388669; height: 30px; border-radius: 6px; font-size: small;"
                                 icon='pi pi-check'>
                             </button></strong>
-                        }
+                        <!-- } -->
                     </div>
                 </div>
+                <!-- <div class="form-group ">
+                    <pre> {{ lancamentoForm.value | json}} </pre>
+                </div> -->
             </p-dialog>
         </div>
     </div>
@@ -798,7 +794,7 @@
                     </div>
 
                     <div class="form-group col-md-4 p-fluid">
-                        <label>Valor R\$</label>
+                        <label>Valor R$</label>
                         <p-inputNumber formControlName="valor" inputId="valor" mode="decimal" locale="pt-BR"
                             class="ml-auto" [minFractionDigits]="2"
                             [style]="{'width':'100%','height':'30px', 'border-radius':'10px'}">

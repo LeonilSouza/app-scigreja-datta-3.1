@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { ConfirmationService, LazyLoadEvent, MenuItem, MessageService } from 'primeng/api';
-import { finalize, forkJoin } from 'rxjs';
+import { finalize, forkJoin, switchMap } from 'rxjs';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import { ButtonModule } from 'primeng/button';
@@ -30,6 +30,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Table } from 'primeng/table';
 import { FileUploadModule } from 'primeng/fileupload';
 import { HttpClient } from '@angular/common/http';
+import { C } from '@angular/cdk/scrolling-module.d-C_w4tIrZ';
 
 // ═══════════════════════════════════════════════════════
 // FILTRO PRINCIPAL — usado pela grid, totais e relatórios
@@ -341,6 +342,8 @@ export class LancamentoListFormComponent implements OnInit {
         this.formasIds = res.formas.map((f: any) => f.id).join(',');
         this.formaIdsAux = this.formasIds;
 
+        this.loadFormasPermuta();
+
         // ── CATEGORIAS ──────────────────────────────────
         this.categorias = res.categorias;
         this.categoriaIds = res.categorias.map((c: any) => c.id).join(',');
@@ -355,12 +358,12 @@ export class LancamentoListFormComponent implements OnInit {
           return;
         }
         this.contas = res.contas;
-        this.loadContasTransferencia();
         this.saldoFinalContas = res.contas.reduce(
           (total: number, c: any) => total + (c.saldoCalculado || 0), 0
         );
         this.contaIds = res.contas.map((c: any) => c.id).join(',');
         this.contaIdsAux = this.contaIds;
+        this.loadContasTransferencia();
 
         // ── Restaura seleção ou usa todos ────────────────
         this.restaurarSelecao(selecaoAtual);
@@ -883,6 +886,19 @@ export class LancamentoListFormComponent implements OnInit {
       });
   }
 
+  updateLancamentoTransferencia(): void {
+    const lancamento: LancamentoDTO = Object.assign(new LancamentoDTO(), this.lancamentoForm.value);
+    lancamento.contaId = 1;
+    this.lancamentoService.update(lancamento)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.toastr.success('Registro atualizado com sucesso!', 'Atualização');
+          this.inicializarDados();
+        }
+      });
+  }
+
   resetLancamento(): void { this.refreshAll(); }
 
   // ════════════════════════════════════════════════════
@@ -892,64 +908,95 @@ export class LancamentoListFormComponent implements OnInit {
   submitFormTransferencia(): void {
     this.submittingForm = true;
     if (this.imodo() === 0) this.createLancamentoTransferencia();
+    else
+      this.updateLancamentoTransferencia();
   }
 
-  createLancamentoTransferencia(): void {
-    this.lancamentoForm.controls['valor'].setValue(
-      this.lancamentoForm.controls['valor'].value * -1
-    );
-    const lancamento: LancamentoDTO = this.lancamentoForm.value;
+  //═══════════════════════════════════════════════════
+  // CRIA TRANFERENCIA
+  //═══════════════════════════════════════════════════
 
-    this.lancamentoService.create(lancamento)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: response => {
-          this.lancamentoIdOrigem = parseInt(this.extractId((response as any).headers.get('location')));
+createLancamentoTransferencia(): void {
+  const valorOriginal: number = Math.abs(this.lancamentoForm.controls['valor'].value);
 
-          this.lancamentoForm.controls['contaId'].setValue(this.contaIdTransferencia);
-          lancamento.contaIdTransferencia = this.contaId;
-          lancamento.categoriaId = this.lancamentoForm.controls['categoriaId'].value;
-          lancamento.valor = String(this.lancamentoForm.controls['valor'].value * -1);
-          lancamento.contaId = this.contaIdTransferencia;
+  const contaOrigem = this.contas.find(c => c.id === this.contaId);
+  const contaDestino = this.contas.find(c => c.id === this.contaIdTransferencia);
 
-          this.lancamentoService.create(lancamento)
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe({
-              next: response => {
-                this.lancamentoIdTransferencia = parseInt(this.extractId((response as any).headers.get('location')));
+  const historicoDespesa = `Transferência do  ${contaOrigem?.nome ?? ''}`;
+  const historicoCredito = `Transferência para o ${contaDestino?.nome ?? ''}`;
 
-                lancamento.id = this.lancamentoIdTransferencia;
-                lancamento.contaId = this.contaIdTransferencia;
-                lancamento.contaIdTransferencia = this.contaId;
-                lancamento.lancamentoIdTransferencia = this.lancamentoIdOrigem;
+  const lancamentoDespesa: LancamentoDTO = {
+    ...this.lancamentoForm.value,
+    valor: String(-valorOriginal),
+    categoriaId: 29,
+    tipoLancamento: 'Despesa',
+    contaId: this.contaId,
+    contaIdTransferencia: this.contaIdTransferencia,
+    historico: historicoDespesa, // 👈 perspectiva da Origem
+  };
 
-                this.lancamentoService.update(lancamento)
-                  .pipe(takeUntilDestroyed(this.destroyRef))
-                  .subscribe({
-                    next: () => {
-                      lancamento.contaId = this.contaId;
-                      lancamento.id = this.lancamentoIdOrigem;
-                      lancamento.contaIdTransferencia = this.contaIdTransferencia;
-                      lancamento.lancamentoIdTransferencia = this.lancamentoIdTransferencia;
-                      lancamento.categoriaId = 29;
-                      lancamento.tipoLancamento = 'Despesa';
+  const lancamentoCredito: LancamentoDTO = {
+    ...this.lancamentoForm.value,
+    valor: String(valorOriginal),
+    categoriaId: this.lancamentoForm.controls['categoriaId'].value,
+    tipoLancamento: 'Receita',
+    contaId: this.contaIdTransferencia,
+    contaIdTransferencia: this.contaId,
+    historico: historicoCredito, // 👈 perspectiva do Destino
+  };
 
-                      this.lancamentoService.update(lancamento)
-                        .pipe(takeUntilDestroyed(this.destroyRef))
-                        .subscribe({
-                          next: () => {
-                            this.toastr.success('Operação realizada com sucesso!', 'Transferência');
-                            this.inicializarDados();
-                            this.resetLancamento();
-                          }
-                        });
-                    }
-                  });
-              }
-            });
-        }
-      });
-  }
+  // 1️⃣ Cria a Despesa
+  this.lancamentoService.create(lancamentoDespesa)
+    .pipe(
+      takeUntilDestroyed(this.destroyRef),
+      switchMap(responseDespesa => {
+        this.lancamentoIdOrigem = parseInt(
+          this.extractId((responseDespesa as any).headers.get('location'))
+        );
+
+        // 2️⃣ Cria o Crédito
+        return this.lancamentoService.create(lancamentoCredito);
+      }),
+      switchMap(responseCredito => {
+        this.lancamentoIdTransferencia = parseInt(
+          this.extractId((responseCredito as any).headers.get('location'))
+        );
+
+        // 3️⃣ Atualiza o Crédito com o vínculo da Despesa
+        const creditoAtualizado: LancamentoDTO = {
+          ...lancamentoCredito,
+          id: this.lancamentoIdTransferencia,
+          lancamentoIdTransferencia: this.lancamentoIdOrigem,
+        };
+
+        return this.lancamentoService.update(creditoAtualizado);
+      }),
+      switchMap(() => {
+        // 4️⃣ Atualiza a Despesa com o vínculo do Crédito
+        const despesaAtualizada: LancamentoDTO = {
+          ...lancamentoDespesa,
+          id: this.lancamentoIdOrigem,
+          lancamentoIdTransferencia: this.lancamentoIdTransferencia,
+        };
+
+        return this.lancamentoService.update(despesaAtualizada);
+      })
+    )
+    .subscribe({
+      next: () => {
+        this.toastr.success('Operação realizada com sucesso!', 'Transferência');
+        this.inicializarDados();
+        this.resetLancamento();
+      },
+      error: err => {
+        console.error('Erro ao criar transferência:', err);
+        this.toastr.error('Erro ao realizar a transferência. Tente novamente.', 'Transferência');
+      }
+    });
+}
+
+
+
 
   // ════════════════════════════════════════════════════
   // PERMUTA
@@ -960,62 +1007,78 @@ export class LancamentoListFormComponent implements OnInit {
     if (this.imodo() === 0) this.createLancamentoPermuta();
   }
 
+  // ════════════════════════════════════════════════════
+  // CRIA LANÇAMENTO 
+  // ════════════════════════════════════════════════════
+
   createLancamentoPermuta(): void {
-    this.lancamentoForm.controls['valor'].setValue(
-      this.lancamentoForm.controls['valor'].value * -1
-    );
-    const lancamento: LancamentoDTO = this.lancamentoForm.value;
+    const valorOriginal: number = Math.abs(this.lancamentoForm.controls['valor'].value);
 
-    this.lancamentoService.create(lancamento)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+    const lancamentoDespesa: LancamentoDTO = {
+      ...this.lancamentoForm.value,
+      valor: String(-valorOriginal),
+      categoriaId: 28,
+      tipoLancamento: 'Despesa',
+    };
+
+    const lancamentoCredito: LancamentoDTO = {
+      ...this.lancamentoForm.value,
+      valor: String(valorOriginal),
+      categoriaId: 6,
+      formaId: this.formaIdTransferencia,
+      formaIdTransferencia: this.formaId,
+    };
+
+    // 1️⃣ Cria a Despesa
+    this.lancamentoService.create(lancamentoDespesa)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        switchMap(responseDespesa => {
+          this.lancamentoIdOrigem = parseInt(
+            this.extractId((responseDespesa as any).headers.get('location'))
+          );
+
+          // 2️⃣ Cria o Crédito
+          return this.lancamentoService.create(lancamentoCredito);
+        }),
+        switchMap(responseCredito => {
+          this.lancamentoIdTransferencia = parseInt(
+            this.extractId((responseCredito as any).headers.get('location'))
+          );
+
+          // 3️⃣ Atualiza o Crédito com o vínculo da Despesa
+          const creditoAtualizado: LancamentoDTO = {
+            ...lancamentoCredito,
+            id: this.lancamentoIdTransferencia,
+            lancamentoIdTransferencia: this.lancamentoIdOrigem,
+          };
+
+          return this.lancamentoService.update(creditoAtualizado);
+        }),
+        switchMap(() => {
+          // 4️⃣ Atualiza a Despesa com o vínculo do Crédito
+          const despesaAtualizada: LancamentoDTO = {
+            ...lancamentoDespesa,
+            id: this.lancamentoIdOrigem,
+            lancamentoIdTransferencia: this.lancamentoIdTransferencia,
+          };
+
+          return this.lancamentoService.update(despesaAtualizada);
+        })
+      )
       .subscribe({
-        next: response => {
-          this.lancamentoIdOrigem = parseInt(this.extractId((response as any).headers.get('location')));
-
-          this.lancamentoForm.controls['formaId'].setValue(this.formaIdTransferencia);
-          lancamento.formaIdTransferencia = this.formaId;
-          lancamento.valor = String(this.lancamentoForm.controls['valor'].value * -1);
-          lancamento.categoriaId = 6;
-          lancamento.formaId = this.formaIdTransferencia;
-
-          this.lancamentoService.create(lancamento)
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe({
-              next: response => {
-                this.lancamentoIdTransferencia = parseInt(this.extractId((response as any).headers.get('location')));
-
-                lancamento.id = this.lancamentoIdTransferencia;
-                lancamento.formaId = this.formaIdTransferencia;
-                lancamento.formaIdTransferencia = this.formaId;
-                lancamento.lancamentoIdTransferencia = this.lancamentoIdOrigem;
-
-                this.lancamentoService.update(lancamento)
-                  .pipe(takeUntilDestroyed(this.destroyRef))
-                  .subscribe({
-                    next: () => {
-                      lancamento.formaId = this.formaId;
-                      lancamento.id = this.lancamentoIdOrigem;
-                      lancamento.formaIdTransferencia = this.formaIdTransferencia;
-                      lancamento.lancamentoIdTransferencia = this.lancamentoIdTransferencia;
-                      lancamento.categoriaId = 28;
-                      lancamento.tipoLancamento = 'Despesa';
-
-                      this.lancamentoService.update(lancamento)
-                        .pipe(takeUntilDestroyed(this.destroyRef))
-                        .subscribe({
-                          next: () => {
-                            this.toastr.success('Operação realizada com sucesso!', 'Permuta');
-                            this.resetLancamento();
-                            this.inicializarDados();
-                          }
-                        });
-                    }
-                  });
-              }
-            });
+        next: () => {
+          this.toastr.success('Operação realizada com sucesso!', 'Permuta');
+          this.resetLancamento();
+          this.inicializarDados();
+        },
+        error: err => {
+          console.error('Erro ao criar permuta:', err);
+          this.toastr.error('Erro ao realizar a permuta. Tente novamente.', 'Permuta');
         }
       });
   }
+
 
   // ════════════════════════════════════════════════════
   // EXCLUSÃO
@@ -1296,13 +1359,17 @@ export class LancamentoListFormComponent implements OnInit {
         const catTransf = this.categorias.find(c => c.id === 8);
         this.pageTitle = 'TRANSFERÊNCIA';
         this.contaId = this.contas[0]?.id ?? 0;
+
+        const contaDestino = this.contas[0]; // 👈 pega direto, igual ao base
+
         this.lancamentoForm.patchValue({
           ...base, cadastrado: 'nao', tipoLancamento: 'Receita',
           categoriaId: catTransf?.id ?? 8,
-          historico: 'Transferencia entre contas',
+          historico: `Transferência ${contaDestino?.nome ?? ''}`,
           nome: 'Transferencia', tituloMin: 'Membro'
         });
         break;
+
 
       case 'Permuta':
         this.pageTitle = 'PERMUTA | TROCA';
