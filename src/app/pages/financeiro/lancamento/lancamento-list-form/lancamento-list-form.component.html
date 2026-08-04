@@ -387,7 +387,7 @@
                         {{ lancamento.valor | currency:' ' }}
                     </td>
                     <td class="col-acoes-4-botao py-1">
-                        <button [disabled]= "lancamento.nome == 'Permuta'" (click)="limpaCheckbox(); imodo.set(1);
+                        <button [disabled]= "lancamento.nome == 'Transferencia' || lancamento.nome == 'Permuta'" (click)="limpaCheckbox(); imodo.set(1);
                                         lancamento.nome == 'Transferencia' ? visibleModalTransferencia = true :
                                         lancamento.nome == 'Permuta' ? visibleModalPermuta = true : visibleLancamento = true;
                                         loadLancamento(lancamento); setModalEdicao(lancamento.tipoLancamento)"
@@ -726,7 +726,6 @@
                         <!-- @if(lancamentoForm.controls['id'].value == null){ -->
                         <strong><button (click)="visibleModalTransferencia = false; submitFormTransferencia()"
                                 [disabled]="lancamentoForm.invalid
-                                    || lancamentoForm.controls['valor'].value <= 0
                                     || lancamentoForm.controls['contaIdTransferencia'].value == null
                                     || (lancamentoForm.controls['contaId'].value == lancamentoForm.controls['contaIdTransferencia'].value)"
                                 type="button" class="ml-4 float-end mb-0" pButton pRipple label="Salvar"

@@ -886,9 +886,15 @@ export class LancamentoListFormComponent implements OnInit {
       });
   }
 
-  updateLancamentoTransferencia(): void {
+ updateLancamentoTransferencia(): void {
     const lancamento: LancamentoDTO = Object.assign(new LancamentoDTO(), this.lancamentoForm.value);
-    lancamento.contaId = 1;
+    if (lancamento.tipoLancamento === 'Receita') {
+      lancamento.contaId = 1;
+    } else {
+      if (lancamento.valor) {
+        lancamento.valor = (parseFloat(lancamento.valor) * -1).toFixed(2);
+      }
+    }
     this.lancamentoService.update(lancamento)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
