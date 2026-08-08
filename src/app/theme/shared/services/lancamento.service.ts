@@ -6,12 +6,14 @@ import { LancamentoDTO } from "../models/lancamento.dto";
 import { API_CONFIG } from "src/app/app-config";
 import { LancamentoFiltro } from "src/app/pages/financeiro/lancamento/lancamento-list-form/lancamento-list-form.component";
 import { TotaisDTO } from "../models/totais.dto";
+import { RelatorioCentroCusto } from "../models/relatorio-centro-custo.dto";
 
 @Injectable({
   providedIn: 'root'
 })
 export class LancamentoService {
   private apiPath: string = `${API_CONFIG.baseUrl}/lancamentos`;
+  private apiPath2: string = `${API_CONFIG.baseUrl}/relatorios/centro-custo`;
 
   constructor(public http: HttpClient) { }
 
@@ -21,18 +23,18 @@ export class LancamentoService {
 
   gerarRelatorioSintetico(filtro: LancamentoFiltro): Observable<Blob> {
     let params = new HttpParams()
-      .set('igreja',   filtro.igrejaId.toString())
+      .set('igreja', filtro.igrejaId.toString())
       .set('dtinicio', filtro.dtinicio)
-      .set('dtfim',    filtro.dtfim)
-      .set('setorId',  filtro.setorId.toString());
+      .set('dtfim', filtro.dtfim)
+      .set('setorId', filtro.setorId.toString());
 
     if (filtro.tipoLancamento) params = params.set('tipo', filtro.tipoLancamento);
-    if (filtro.contas && filtro.contas.length > 0){
-       filtro.contas.split(',').forEach(id => {
-       params = params.append('contaId', id.trim());
-       console.log(filtro)
-  });
-}
+    if (filtro.contas && filtro.contas.length > 0) {
+      filtro.contas.split(',').forEach(id => {
+        params = params.append('contaId', id.trim());
+        console.log(filtro)
+      });
+    }
 
     return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-sintetico`,
       { params, responseType: 'blob' });
@@ -40,13 +42,13 @@ export class LancamentoService {
 
   gerarRelatorioSinteticoExcel(filtro: LancamentoFiltro): Observable<Blob> {
     let params = new HttpParams()
-      .set('igreja',   filtro.igrejaId.toString())
+      .set('igreja', filtro.igrejaId.toString())
       .set('dtinicio', filtro.dtinicio)
-      .set('dtfim',    filtro.dtfim)
-      .set('setorId',  filtro.setorId.toString());
+      .set('dtfim', filtro.dtfim)
+      .set('setorId', filtro.setorId.toString());
 
     if (filtro.tipoLancamento) params = params.set('tipo', filtro.tipoLancamento);
-    if (filtro.contaId)         params = params.set('contaId', filtro.contas);
+    if (filtro.contaId) params = params.set('contaId', filtro.contas);
 
     return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-excel-sintetico`,
       { params, responseType: 'blob' });
@@ -70,20 +72,20 @@ export class LancamentoService {
 
   private montarParamsAnalitico(filtro: LancamentoFiltro): HttpParams {
     let params = new HttpParams()
-      .set('igreja',   filtro.igrejaId.toString())
+      .set('igreja', filtro.igrejaId.toString())
       .set('dtinicio', filtro.dtinicio)
-      .set('dtfim',    filtro.dtfim)
+      .set('dtfim', filtro.dtfim)
 
-      
-   // ✅ Só adiciona se tiver valor real
-    if (filtro.setorId)  params = params.set('setorId', filtro.setorId.toString());
-    if (filtro.nome)     params = params.set('nome', filtro.nome);
+
+    // ✅ Só adiciona se tiver valor real
+    if (filtro.setorId) params = params.set('setorId', filtro.setorId.toString());
+    if (filtro.nome) params = params.set('nome', filtro.nome);
 
     if (filtro.tipoLancamento) params = params.set('tipo', filtro.tipoLancamento);
-    if (filtro.contaId)        params = params.set('contaId', filtro.contaId.toString());
+    if (filtro.contaId) params = params.set('contaId', filtro.contaId.toString());
 
-    filtro.categoriasIds?.forEach(id  => params = params.append('categorias',    id.toString()));
-    filtro.formasIds?.forEach(id      => params = params.append('formas',        id.toString()));
+    filtro.categoriasIds?.forEach(id => params = params.append('categorias', id.toString()));
+    filtro.formasIds?.forEach(id => params = params.append('formas', id.toString()));
     // filtro.centroCustoIds?.forEach(id => params = params.append('centroCustos',  id.toString()));
     return params;
   }
@@ -110,6 +112,34 @@ export class LancamentoService {
     return this.http.get(`${this.apiPath}/${lancamentoId}/comprovante`, { responseType: 'blob' });
   }
 
+  // relatorio-cc-periodo.service.ts
+  gerarPdfPeriodo(
+    igrejaId: number,
+    setorId: number,
+    dataInicio: string,
+    dataFim: string,
+    centrosCustoIds: number[],
+    contasIds: number[],
+    categoriasIds: number[]
+  ): Observable<Blob> {
+
+    let params = new HttpParams()
+      .set('igrejaId', String(igrejaId))
+      .set('setorId', String(setorId))
+      .set('dataInicio', dataInicio)
+      .set('dataFim', dataFim);
+
+    centrosCustoIds.forEach(id => params = params.append('centrosCustoIds', String(id)));
+    contasIds.forEach(id => params = params.append('contasIds', String(id)));
+    categoriasIds.forEach(id => params = params.append('categoriasIds', String(id)));
+
+    return this.http.get(
+      `${API_CONFIG.baseUrl}/relatorios/centro-custo-periodo/pdf`,
+      { params, responseType: 'blob' }
+    );
+  }
+
+
   deletarComprovante(lancamentoId: number): Observable<any> {
     return this.http.delete(`${this.apiPath}/${lancamentoId}/comprovante`);
   }
@@ -117,16 +147,16 @@ export class LancamentoService {
   getTotaisFromIgreja(filtro: LancamentoFiltro): Observable<TotaisDTO> {
     return this.http.get<TotaisDTO>(`${this.apiPath}/totais`, {
       params: {
-        igreja:          filtro.igrejaId,
-        setorId:         filtro.setorId,
-        nome:            filtro.nome,
-        contas:          filtro.contas,
-        dtinicio:        filtro.dtinicio,
-        dtfim:           filtro.dtfim,
-        formas:          filtro.formas,
-        categorias:      filtro.categorias,
-        centroCustos:    filtro.centroCustos,
-        tipoLancamento:  filtro.tipoLancamento
+        igreja: filtro.igrejaId,
+        setorId: filtro.setorId,
+        nome: filtro.nome,
+        contas: filtro.contas,
+        dtinicio: filtro.dtinicio,
+        dtfim: filtro.dtfim,
+        formas: filtro.formas,
+        categorias: filtro.categorias,
+        centroCustos: filtro.centroCustos,
+        tipoLancamento: filtro.tipoLancamento
       }
     });
   }
@@ -139,28 +169,28 @@ export class LancamentoService {
 
   buscarGastosPorCategoria(filtro: any): Observable<any[]> {
     let params = new HttpParams()
-      .set('igreja',   filtro.igrejaId.toString())
+      .set('igreja', filtro.igrejaId.toString())
       .set('dtinicio', filtro.dtinicio)
-      .set('dtfim',    filtro.dtfim);
+      .set('dtfim', filtro.dtfim);
     if (filtro.setorId) params = params.set('setorId', filtro.setorId.toString());
     return this.http.get<any[]>(`${this.apiPath}/dashboard/gastos-por-categoria`, { params });
   }
 
   getPageLancamentoFromIgreja(filtro: LancamentoFiltro) {
     let params = new HttpParams()
-      .set('page',          filtro.page)
-      .set('linesPerPage',  filtro.linesPerPage);
+      .set('page', filtro.page)
+      .set('linesPerPage', filtro.linesPerPage);
 
-    if (filtro.nome)            params = params.set('nome',           filtro.nome);
-    if (filtro.igrejaId)        params = params.set('igreja',         filtro.igrejaId);
-    if (filtro.contas)          params = params.set('contas',         filtro.contas);
-    if (filtro.formas)          params = params.set('formas',         filtro.formas);
-    if (filtro.categorias)      params = params.set('categorias',     filtro.categorias);
-    if (filtro.centroCustos)    params = params.set('centroCustos',   filtro.centroCustos);
-    if (filtro.tipoLancamento)  params = params.set('tipoLancamento', filtro.tipoLancamento);
-    if (filtro.dtinicio)        params = params.set('dtinicio',       filtro.dtinicio);
-    if (filtro.dtfim)           params = params.set('dtfim',          filtro.dtfim);
-    if (filtro.setorId)         params = params.set('setor',          filtro.setorId);
+    if (filtro.nome) params = params.set('nome', filtro.nome);
+    if (filtro.igrejaId) params = params.set('igreja', filtro.igrejaId);
+    if (filtro.contas) params = params.set('contas', filtro.contas);
+    if (filtro.formas) params = params.set('formas', filtro.formas);
+    if (filtro.categorias) params = params.set('categorias', filtro.categorias);
+    if (filtro.centroCustos) params = params.set('centroCustos', filtro.centroCustos);
+    if (filtro.tipoLancamento) params = params.set('tipoLancamento', filtro.tipoLancamento);
+    if (filtro.dtinicio) params = params.set('dtinicio', filtro.dtinicio);
+    if (filtro.dtfim) params = params.set('dtfim', filtro.dtfim);
+    if (filtro.setorId) params = params.set('setor', filtro.setorId);
 
     return this.http.get(`${this.apiPath}/page`, { params }).pipe(catchError(this.handleError));
   }
@@ -169,10 +199,10 @@ export class LancamentoService {
   gerarLivroCaixaSimplificado(filtro: LancamentoFiltro, nomeRelatorio: string): Observable<Blob> {
     let params = new HttpParams()
       .set('nomeRelatorio', nomeRelatorio)
-      .set('igreja',        filtro.igrejaId.toString())
-      .set('dtinicio',      filtro.dtinicio)
-      .set('dtfim',         filtro.dtfim)
-      .set('nome',          filtro.nome || '');
+      .set('igreja', filtro.igrejaId.toString())
+      .set('dtinicio', filtro.dtinicio)
+      .set('dtfim', filtro.dtfim)
+      .set('nome', filtro.nome || '');
 
     return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-consolidado`,
       { params, responseType: 'blob' });
@@ -181,10 +211,10 @@ export class LancamentoService {
   gerarLivroCaixaDetalhado(filtro: LancamentoFiltro, nomeRelatorio: string): Observable<Blob> {
     let params = new HttpParams()
       .set('nomeRelatorio', nomeRelatorio)
-      .set('igreja',        filtro.igrejaId.toString())
-      .set('dtinicio',      filtro.dtinicio)
-      .set('dtfim',         filtro.dtfim)
-      .set('nome',          filtro.nome || '');
+      .set('igreja', filtro.igrejaId.toString())
+      .set('dtinicio', filtro.dtinicio)
+      .set('dtfim', filtro.dtfim)
+      .set('nome', filtro.nome || '');
 
     return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-consolidado`,
       { params, responseType: 'blob' });

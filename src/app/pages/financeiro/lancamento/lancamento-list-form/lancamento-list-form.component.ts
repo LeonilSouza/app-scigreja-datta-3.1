@@ -29,12 +29,16 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Table } from 'primeng/table';
 import { FileUploadModule } from 'primeng/fileupload';
-import { HttpClient } from '@angular/common/http';
-import { C } from '@angular/cdk/scrolling-module.d-C_w4tIrZ';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { SelectButtonModule } from 'primeng/selectbutton';
+
+
+// safe-url.pipe.ts
+import { Pipe, PipeTransform } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 
 // ═══════════════════════════════════════════════════════
-// FILTRO PRINCIPAL — usado pela grid, totais e relatórios
-// NÃO ALTERAR OS TIPOS (string) — backend depende disso
+// FILTRO PRINCIPAL
 // ═══════════════════════════════════════════════════════
 export class LancamentoFiltro {
   igrejaId: number = igrejaIdSignal();
@@ -45,17 +49,24 @@ export class LancamentoFiltro {
   dtfim: string = '';
   page: number = 0;
   linesPerPage: number = 10;
-  contas: string = '';   // string para grid/totais
+  contas: string = '';
   categorias: string = '';
   formas: string = '';
   centroCustos: string = '';
   tipoLancamento: string = '';
   nomeRelatorio: string = '';
-  // ── Para relatórios (arrays/id único) ──
   contaId: number | null = null;
   categoriasIds: number[] = [];
   formasIds: number[] = [];
   centroCustoIds: number[] = [];
+}
+
+@Pipe({ name: 'safeUrl', standalone: true })
+export class SafeUrlPipe implements PipeTransform {
+  constructor(private sanitizer: DomSanitizer) { }
+  transform(url: string) {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  }
 }
 
 @Component({
@@ -70,7 +81,9 @@ export class LancamentoFiltro {
     RouterLink,
     SharedModule,
     InputNumberModule,
-    FileUploadModule
+    FileUploadModule,
+    SelectButtonModule,
+    SafeUrlPipe
   ],
   providers: [
     LancamentoService,
@@ -81,6 +94,7 @@ export class LancamentoFiltro {
     FormaService
   ]
 })
+
 export class LancamentoListFormComponent implements OnInit {
 
   // ════════════════════════════════════════════════════
@@ -91,7 +105,7 @@ export class LancamentoListFormComponent implements OnInit {
   private searchTimer: any;
 
   // ════════════════════════════════════════════════════
-  // SIGNALS
+  // SIGNALS — CONTEXTO
   // ════════════════════════════════════════════════════
 
   nomeIgrejaSignal = nomeIgrejaSignal;
@@ -108,13 +122,40 @@ export class LancamentoListFormComponent implements OnInit {
   length = signal<number>(0);
 
   // ════════════════════════════════════════════════════
+  // SIGNALS — LISTAS DE DADOS
+  // ════════════════════════════════════════════════════
+
+  lancamentos = signal<LancamentoDTO[]>([]);
+  selectedLancamentos = signal<LancamentoDTO[]>([]);
+  contas = signal<ContaDTO[]>([]);
+  contasTransferencia = signal<ContaDTO[]>([]);
+  formas = signal<FormaDTO[]>([]);
+  formasPermuta = signal<FormaDTO[]>([]);
+  categorias = signal<CategoriaDTO[]>([]);
+  categoriasFiltradas = signal<CategoriaDTO[]>([]);
+  centroCustos = signal<CentroCustoDTO[]>([]);
+  pessoas = signal<PessoaDTO[]>([]);
+
+  // ════════════════════════════════════════════════════
+  // SIGNALS — RELATÓRIO CC POR PERÍODO
+  // ════════════════════════════════════════════════════
+
+  dataInicioRelatorioPeriodo = signal<Date | null>(new Date());
+  dataFimRelatorioPeriodo = signal<Date | null>(new Date());
+  centrosCustoSelecionados = signal<number[]>([]);
+  contasSelecionadasPeriodo = signal<number[]>([]);
+  categoriasSelecionadasPeriodo = signal<number[]>([]);
+  carregandoRelatorioPeriodo = signal(false);
+  pdfUrlRelatorioPeriodo = signal<string | null>(null);
+
+  // ════════════════════════════════════════════════════
   // FILTRO UNIFICADO
   // ════════════════════════════════════════════════════
 
   filtro = new LancamentoFiltro();
 
   // ════════════════════════════════════════════════════
-  // PERÍODO
+  // PERÍODO PRINCIPAL
   // ════════════════════════════════════════════════════
 
   rangeDates!: string;
@@ -122,20 +163,6 @@ export class LancamentoListFormComponent implements OnInit {
   dtfim: string = '';
   dataDiaAnterior = '';
 
-  // ════════════════════════════════════════════════════
-  // LISTAS DE DADOS
-  // ════════════════════════════════════════════════════
-
-  lancamentos!: LancamentoDTO[];
-  selectedLancamentos!: LancamentoDTO[];
-  contas: ContaDTO[] = [];
-  contasTransferencia: ContaDTO[] = [];
-  formas: FormaDTO[] = [];
-  formasPermuta: FormaDTO[] = [];
-  categorias: CategoriaDTO[] = [];
-  categoriasFiltradas: CategoriaDTO[] = [];
-  centroCustos: CentroCustoDTO[] = [];
-  pessoas: PessoaDTO[] = [];
   // ════════════════════════════════════════════════════
   // TOTAIS
   // ════════════════════════════════════════════════════
@@ -166,7 +193,7 @@ export class LancamentoListFormComponent implements OnInit {
   centroCustoIds: string = '';
 
   // ════════════════════════════════════════════════════
-  // IDs INDIVIDUAIS — transferência / permuta / pessoa
+  // IDs INDIVIDUAIS
   // ════════════════════════════════════════════════════
 
   contaId: number = 0;
@@ -231,6 +258,11 @@ export class LancamentoListFormComponent implements OnInit {
     'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
   positionModalPermuta: 'left' | 'right' | 'top' | 'bottom' | 'center' |
     'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
+  positionModalCCperiodo: 'left' | 'right' | 'top' | 'bottom' | 'center' |
+    'topleft' | 'topright' | 'bottomleft' | 'bottomright' = 'top';
+
+
+
 
   // ════════════════════════════════════════════════════
   // VISIBILIDADE DE MODAIS
@@ -239,6 +271,7 @@ export class LancamentoListFormComponent implements OnInit {
   visibleLancamento: boolean = false;
   visibleModalTransferencia: boolean = false;
   visibleModalPermuta: boolean = false;
+  visibleModalRelatorioCCPeriodo = false;
 
   // ════════════════════════════════════════════════════
   // MENUS E OPÇÕES
@@ -248,7 +281,6 @@ export class LancamentoListFormComponent implements OnInit {
   selecaoItemsIndividual!: MenuItem[];
   selecaoItemsMultiplos!: MenuItem[];
 
-  // Dropdown do botão Analítico (PDF ou Excel)
   analiticoItems: MenuItem[] = [
     { label: 'Exportar PDF', icon: 'pi pi-file-pdf', command: () => this.gerarRelatorioAnalitico('pdf') },
     { label: 'Exportar Excel', icon: 'pi pi-file-excel', command: () => this.gerarRelatorioAnalitico('excel') }
@@ -288,7 +320,7 @@ export class LancamentoListFormComponent implements OnInit {
     private formaService: FormaService,
     public pessoaService: PessoaService,
     public translate: TranslateService,
-    public http: HttpClient
+    public http: HttpClient,
   ) { }
 
   // ════════════════════════════════════════════════════
@@ -301,7 +333,6 @@ export class LancamentoListFormComponent implements OnInit {
     this.inicializarDados();
     this.loadPessoas();
 
-    // ── Período inicial = mês atual ──
     this.dtinicio = this.sharedService.primeiroDiaMes();
     this.dtfim = this.sharedService.ultimoDiaMes();
     this.filtro.dtinicio = this.dtinicio;
@@ -311,7 +342,6 @@ export class LancamentoListFormComponent implements OnInit {
     this.dataDiaAnterior = this.sharedService.dataSubDay(dataUS, 1);
   }
 
-
   ngOnDestroy(): void { }
 
   // ════════════════════════════════════════════════════
@@ -319,7 +349,6 @@ export class LancamentoListFormComponent implements OnInit {
   // ════════════════════════════════════════════════════
 
   inicializarDados(): void {
-    // ── Salva a seleção atual dos multiselectes ──
     const selecaoAtual = {
       contas: this.contaForm?.get('selectedContas')?.value,
       formas: this.formaForm?.get('selectedFormas')?.value,
@@ -337,27 +366,26 @@ export class LancamentoListFormComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(res => {
 
-        // ── FORMAS ──────────────────────────────────────
-        this.formas = res.formas;
+        // ── FORMAS ──
+        this.formas.set(res.formas);
         this.formasIds = res.formas.map((f: any) => f.id).join(',');
         this.formaIdsAux = this.formasIds;
-
         this.loadFormasPermuta();
 
-        // ── CATEGORIAS ──────────────────────────────────
-        this.categorias = res.categorias;
+        // ── CATEGORIAS ──
+        this.categorias.set(res.categorias);
         this.categoriaIds = res.categorias.map((c: any) => c.id).join(',');
         this.categoriaIdsAux = this.categoriaIds;
 
-        // ── CENTRO CUSTOS ────────────────────────────────
-        this.centroCustos = res.centroCustos;
+        // ── CENTRO CUSTOS ──
+        this.centroCustos.set(res.centroCustos);
 
-        // ── CONTAS ───────────────────────────────────────
+        // ── CONTAS ──
         if (res.contas.length === 0) {
           Swal.fire('Atenção !!!', 'Nenhuma conta encontrada. Cadastre uma conta', 'warning');
           return;
         }
-        this.contas = res.contas;
+        this.contas.set(res.contas);
         this.saldoFinalContas = res.contas.reduce(
           (total: number, c: any) => total + (c.saldoCalculado || 0), 0
         );
@@ -365,7 +393,6 @@ export class LancamentoListFormComponent implements OnInit {
         this.contaIdsAux = this.contaIds;
         this.loadContasTransferencia();
 
-        // ── Restaura seleção ou usa todos ────────────────
         this.restaurarSelecao(selecaoAtual);
         this.refreshAll();
       });
@@ -377,7 +404,7 @@ export class LancamentoListFormComponent implements OnInit {
     const temCategorias = selecao.categorias?.length > 0;
     const temCentroCustos = selecao.centroCustos?.length > 0;
 
-    // ── Contas ──────────────────────────────────────────
+    // ── Contas ──
     if (temContas) {
       this.contaForm.get('selectedContas')?.setValue(selecao.contas);
       const ids = selecao.contas.map((c: any) => c.id || c);
@@ -388,7 +415,7 @@ export class LancamentoListFormComponent implements OnInit {
       this.filtro.contaId = null;
     }
 
-    // ── Formas ──────────────────────────────────────────
+    // ── Formas ──
     if (temFormas) {
       this.formaForm.get('selectedFormas')?.setValue(selecao.formas);
       const ids = selecao.formas.map((f: any) => f.id || f);
@@ -399,7 +426,7 @@ export class LancamentoListFormComponent implements OnInit {
       this.filtro.formasIds = [];
     }
 
-    // ── Categorias ──────────────────────────────────────
+    // ── Categorias ──
     if (temCategorias) {
       this.categoriaForm.get('selectedCategorias')?.setValue(selecao.categorias);
       const ids = selecao.categorias.map((c: any) => c.id || c);
@@ -410,7 +437,7 @@ export class LancamentoListFormComponent implements OnInit {
       this.filtro.categoriasIds = [];
     }
 
-    // ── Centro Custos ────────────────────────────────────
+    // ── Centro Custos ──
     if (temCentroCustos) {
       this.centroCustoForm.get('selectedCentroCustos')?.setValue(selecao.centroCustos);
       const ids = selecao.centroCustos.map((c: any) => c.id || c);
@@ -421,7 +448,6 @@ export class LancamentoListFormComponent implements OnInit {
       this.filtro.centroCustoIds = [];
     }
 
-    // ── Tipo Lançamento ──────────────────────────────────
     this.filtro.tipoLancamento = selecao.tipoLancamento || '';
   }
 
@@ -443,7 +469,9 @@ export class LancamentoListFormComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
-          this.lancamentos = response['content'].sort((a: { id: number }, b: { id: number }) => b.id - a.id);
+          this.lancamentos.set(
+            response['content'].sort((a: { id: number }, b: { id: number }) => b.id - a.id)
+          );
           this.totalRegistros = response.totalElements;
           this.pesquisa = true;
           this.getPrinters();
@@ -477,20 +505,21 @@ export class LancamentoListFormComponent implements OnInit {
   loadPessoas(): void {
     this.pessoaService.getPessoasAtivasFromIgreja(this.igrejaId, 'Ativo')
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({ next: (res) => { this.pessoas = res; } });
+      .subscribe({ next: (res) => this.pessoas.set(res) });
   }
 
   loadContasTransferencia(): void {
-    this.contasTransferencia = this.contas.map(c => ({
-      contaIdTransferencia: c.id,
-      nome: c.nome
-    }));
+    this.contasTransferencia.set(
+      this.contas().map(c => ({ contaIdTransferencia: c.id, nome: c.nome }))
+    );
   }
 
   loadFormasPermuta(): void {
-    this.formasPermuta = this.formas
-      .filter(fr => fr.id !== 1)
-      .map(f => ({ formaIdTransferencia: f.id, nome: f.nome }));
+    this.formasPermuta.set(
+      this.formas()
+        .filter(fr => fr.id !== 1)
+        .map(f => ({ formaIdTransferencia: f.id, nome: f.nome }))
+    );
   }
 
   loadLancamento(lancamento: LancamentoDTO): void {
@@ -542,7 +571,7 @@ export class LancamentoListFormComponent implements OnInit {
   }
 
   // ════════════════════════════════════════════════════
-  // RELATÓRIOS
+  // RELATÓRIO SINTETICO POR CONTAS
   // ════════════════════════════════════════════════════
 
   gerarRelatorioSintetico(): void {
@@ -558,6 +587,11 @@ export class LancamentoListFormComponent implements OnInit {
         error: () => this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao gerar relatório sintético.' })
       });
   }
+
+
+  // ════════════════════════════════════════════════════
+  // RELATÓRIO ANALITICO POR CONTAS
+  // ════════════════════════════════════════════════════
 
   gerarRelatorioAnalitico(formato: 'pdf' | 'excel'): void {
     if (!this.filtro.dtinicio || !this.filtro.dtfim) {
@@ -591,6 +625,62 @@ export class LancamentoListFormComponent implements OnInit {
       '_blank'
     );
   }
+
+  // ════════════════════════════════════════════════════
+  // RELATÓRIO CENTRO DE CUSTO POR CATEGORIA
+  // ════════════════════════════════════════════════════
+
+  buscarRelatorioPeriodo(): void {
+    const inicio = this.dataInicioRelatorioPeriodo();
+    const fim = this.dataFimRelatorioPeriodo();
+
+    if (!inicio || !fim) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção',
+        detail: 'Informe o período completo.'
+      });
+      return;
+    }
+
+    this.carregandoRelatorioPeriodo.set(true);
+
+    this.lancamentoService.gerarPdfPeriodo(
+      igrejaIdSignal(),
+      setorIdSignal(),
+      this.fmt(inicio),
+      this.fmt(fim),
+      this.centrosCustoSelecionados(),
+      this.contasSelecionadasPeriodo(),
+      this.categoriasSelecionadasPeriodo()
+    )
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.carregandoRelatorioPeriodo.set(false))
+      )
+      .subscribe({
+        next: (blob) => {
+          const urlAnterior = this.pdfUrlRelatorioPeriodo();
+          if (urlAnterior) URL.revokeObjectURL(urlAnterior);
+          this.pdfUrlRelatorioPeriodo.set(URL.createObjectURL(blob));
+        },
+        error: () => this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Erro ao gerar relatório por período.'
+        })
+      });
+  }
+
+
+  fecharModalCCPeriodo(): void {
+    const url = this.pdfUrlRelatorioPeriodo();
+    if (url) URL.revokeObjectURL(url);
+    this.pdfUrlRelatorioPeriodo.set(null);
+    this.visibleModalRelatorioCCPeriodo = false;
+  }
+
+
 
   getPrinters(): void {
     this.printItems = [
@@ -700,9 +790,7 @@ export class LancamentoListFormComponent implements OnInit {
     this.refreshAll();
   }
 
-
   onSelecionarData(): void {
-    // dtinicio e dtfim já são strings "dd/mm/yyyy" vindas do dataType="string"
     if (this.dtinicio) {
       this.filtro.dtinicio = this.dtinicio;
       const dataUS = this.sharedService.formataDataUS(this.dtinicio);
@@ -711,12 +799,10 @@ export class LancamentoListFormComponent implements OnInit {
     if (this.dtfim) {
       this.filtro.dtfim = this.dtfim;
     } else {
-      // Se não selecionou fim, usa o início
       this.dtfim = this.dtinicio;
       this.filtro.dtfim = this.dtinicio;
     }
   }
-
 
   atualizarFiltrosStrings(event: any, tipo: 'contas' | 'formas' | 'categorias' | 'centroCustos'): void {
     if (!Array.isArray(event.value)) return;
@@ -726,7 +812,6 @@ export class LancamentoListFormComponent implements OnInit {
 
     switch (tipo) {
       case 'contas':
-        // contaId único apenas quando exatamente 1 conta selecionada (para relatório sintético)
         this.filtro.contaId = ids.length === 1 ? ids[0] : null;
         break;
       case 'categorias':
@@ -747,7 +832,7 @@ export class LancamentoListFormComponent implements OnInit {
         : value === 'Receita LC' ? 4 : 3;
 
     if (value !== 'Todas') {
-      const ids = this.categorias.filter(cat => cat.tipo === value).map(c => c.id?.toString());
+      const ids = this.categorias().filter(cat => cat.tipo === value).map(c => c.id?.toString());
       this.categoriaFiltrada = value;
       this.filtro.tipoLancamento = value;
       this.tipoLancamento = value;
@@ -761,9 +846,11 @@ export class LancamentoListFormComponent implements OnInit {
   }
 
   filtraCategorias(tipo: string): void {
-    this.categoriasFiltradas = (!tipo || tipo === 'Todas')
-      ? this.categorias
-      : this.categorias.filter(cat => cat.tipo === tipo);
+    this.categoriasFiltradas.set(
+      (!tipo || tipo === 'Todas')
+        ? this.categorias()
+        : this.categorias().filter(cat => cat.tipo === tipo)
+    );
   }
 
   // ════════════════════════════════════════════════════
@@ -773,12 +860,11 @@ export class LancamentoListFormComponent implements OnInit {
   onChangeTipoLancamento(event: any): void {
     const tipo = event.value === 'Todas' ? '' : event.value;
     this.valorTpLancamento = event.value;
-    this.filtro.tipoLancamento = tipo;  // ← seta e mantém
+    this.filtro.tipoLancamento = tipo;
 
     this.filtraCategoriaIds(event.value);
     this.filtraCategorias(event.value);
 
-    // Limpa apenas os multiselectes, sem resetar o tipoLancamento
     this.categoriaForm.get('selectedCategorias')?.patchValue([]);
     this.formaForm.get('selectedFormas')?.patchValue([]);
     this.contaForm.get('selectedContas')?.patchValue([]);
@@ -788,7 +874,6 @@ export class LancamentoListFormComponent implements OnInit {
     this.filtro.nome = '';
     this.filtro.page = 0;
   }
-
 
   onChangeNomeHistorico(value: { value: any }): void { this.loadPessoa(value.value); }
   onChangeTPCategorias(tipo: { value: any }): void { this.getCategoria(tipo.value); }
@@ -886,7 +971,7 @@ export class LancamentoListFormComponent implements OnInit {
       });
   }
 
- updateLancamentoTransferencia(): void {
+  updateLancamentoTransferencia(): void {
     const lancamento: LancamentoDTO = Object.assign(new LancamentoDTO(), this.lancamentoForm.value);
     if (lancamento.tipoLancamento === 'Receita') {
       lancamento.contaId = 1;
@@ -914,95 +999,79 @@ export class LancamentoListFormComponent implements OnInit {
   submitFormTransferencia(): void {
     this.submittingForm = true;
     if (this.imodo() === 0) this.createLancamentoTransferencia();
-    else
-      this.updateLancamentoTransferencia();
+    else this.updateLancamentoTransferencia();
   }
 
-  //═══════════════════════════════════════════════════
-  // CRIA TRANFERENCIA
-  //═══════════════════════════════════════════════════
+  createLancamentoTransferencia(): void {
+    const valorOriginal: number = Math.abs(this.lancamentoForm.controls['valor'].value);
 
-createLancamentoTransferencia(): void {
-  const valorOriginal: number = Math.abs(this.lancamentoForm.controls['valor'].value);
+    const contaOrigem = this.contas().find(c => c.id === this.contaId);
+    const contaDestino = this.contas().find(c => c.id === this.contaIdTransferencia);
 
-  const contaOrigem = this.contas.find(c => c.id === this.contaId);
-  const contaDestino = this.contas.find(c => c.id === this.contaIdTransferencia);
+    const historicoDespesa = `Transferência do  ${contaOrigem?.nome ?? ''}`;
+    const historicoCredito = `Transferência para o ${contaDestino?.nome ?? ''}`;
 
-  const historicoDespesa = `Transferência do  ${contaOrigem?.nome ?? ''}`;
-  const historicoCredito = `Transferência para o ${contaDestino?.nome ?? ''}`;
+    const lancamentoDespesa: LancamentoDTO = {
+      ...this.lancamentoForm.value,
+      valor: String(-valorOriginal),
+      categoriaId: 29,
+      tipoLancamento: 'Despesa',
+      contaId: this.contaId,
+      contaIdTransferencia: this.contaIdTransferencia,
+      historico: historicoDespesa,
+    };
 
-  const lancamentoDespesa: LancamentoDTO = {
-    ...this.lancamentoForm.value,
-    valor: String(-valorOriginal),
-    categoriaId: 29,
-    tipoLancamento: 'Despesa',
-    contaId: this.contaId,
-    contaIdTransferencia: this.contaIdTransferencia,
-    historico: historicoDespesa, // 👈 perspectiva da Origem
-  };
+    const lancamentoCredito: LancamentoDTO = {
+      ...this.lancamentoForm.value,
+      valor: String(valorOriginal),
+      categoriaId: this.lancamentoForm.controls['categoriaId'].value,
+      tipoLancamento: 'Receita',
+      contaId: this.contaIdTransferencia,
+      contaIdTransferencia: this.contaId,
+      historico: historicoCredito,
+    };
 
-  const lancamentoCredito: LancamentoDTO = {
-    ...this.lancamentoForm.value,
-    valor: String(valorOriginal),
-    categoriaId: this.lancamentoForm.controls['categoriaId'].value,
-    tipoLancamento: 'Receita',
-    contaId: this.contaIdTransferencia,
-    contaIdTransferencia: this.contaId,
-    historico: historicoCredito, // 👈 perspectiva do Destino
-  };
-
-  // 1️⃣ Cria a Despesa
-  this.lancamentoService.create(lancamentoDespesa)
-    .pipe(
-      takeUntilDestroyed(this.destroyRef),
-      switchMap(responseDespesa => {
-        this.lancamentoIdOrigem = parseInt(
-          this.extractId((responseDespesa as any).headers.get('location'))
-        );
-
-        // 2️⃣ Cria o Crédito
-        return this.lancamentoService.create(lancamentoCredito);
-      }),
-      switchMap(responseCredito => {
-        this.lancamentoIdTransferencia = parseInt(
-          this.extractId((responseCredito as any).headers.get('location'))
-        );
-
-        // 3️⃣ Atualiza o Crédito com o vínculo da Despesa
-        const creditoAtualizado: LancamentoDTO = {
-          ...lancamentoCredito,
-          id: this.lancamentoIdTransferencia,
-          lancamentoIdTransferencia: this.lancamentoIdOrigem,
-        };
-
-        return this.lancamentoService.update(creditoAtualizado);
-      }),
-      switchMap(() => {
-        // 4️⃣ Atualiza a Despesa com o vínculo do Crédito
-        const despesaAtualizada: LancamentoDTO = {
-          ...lancamentoDespesa,
-          id: this.lancamentoIdOrigem,
-          lancamentoIdTransferencia: this.lancamentoIdTransferencia,
-        };
-
-        return this.lancamentoService.update(despesaAtualizada);
-      })
-    )
-    .subscribe({
-      next: () => {
-        this.toastr.success('Operação realizada com sucesso!', 'Transferência');
-        this.inicializarDados();
-        this.resetLancamento();
-      },
-      error: err => {
-        console.error('Erro ao criar transferência:', err);
-        this.toastr.error('Erro ao realizar a transferência. Tente novamente.', 'Transferência');
-      }
-    });
-}
-
-
-
+    this.lancamentoService.create(lancamentoDespesa)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        switchMap(responseDespesa => {
+          this.lancamentoIdOrigem = parseInt(
+            this.extractId((responseDespesa as any).headers.get('location'))
+          );
+          return this.lancamentoService.create(lancamentoCredito);
+        }),
+        switchMap(responseCredito => {
+          this.lancamentoIdTransferencia = parseInt(
+            this.extractId((responseCredito as any).headers.get('location'))
+          );
+          const creditoAtualizado: LancamentoDTO = {
+            ...lancamentoCredito,
+            id: this.lancamentoIdTransferencia,
+            lancamentoIdTransferencia: this.lancamentoIdOrigem,
+          };
+          return this.lancamentoService.update(creditoAtualizado);
+        }),
+        switchMap(() => {
+          const despesaAtualizada: LancamentoDTO = {
+            ...lancamentoDespesa,
+            id: this.lancamentoIdOrigem,
+            lancamentoIdTransferencia: this.lancamentoIdTransferencia,
+          };
+          return this.lancamentoService.update(despesaAtualizada);
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.toastr.success('Operação realizada com sucesso!', 'Transferência');
+          this.inicializarDados();
+          this.resetLancamento();
+        },
+        error: err => {
+          console.error('Erro ao criar transferência:', err);
+          this.toastr.error('Erro ao realizar a transferência. Tente novamente.', 'Transferência');
+        }
+      });
+  }
 
   // ════════════════════════════════════════════════════
   // PERMUTA
@@ -1012,10 +1081,6 @@ createLancamentoTransferencia(): void {
     this.submittingForm = true;
     if (this.imodo() === 0) this.createLancamentoPermuta();
   }
-
-  // ════════════════════════════════════════════════════
-  // CRIA LANÇAMENTO 
-  // ════════════════════════════════════════════════════
 
   createLancamentoPermuta(): void {
     const valorOriginal: number = Math.abs(this.lancamentoForm.controls['valor'].value);
@@ -1035,7 +1100,6 @@ createLancamentoTransferencia(): void {
       formaIdTransferencia: this.formaId,
     };
 
-    // 1️⃣ Cria a Despesa
     this.lancamentoService.create(lancamentoDespesa)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
@@ -1043,32 +1107,25 @@ createLancamentoTransferencia(): void {
           this.lancamentoIdOrigem = parseInt(
             this.extractId((responseDespesa as any).headers.get('location'))
           );
-
-          // 2️⃣ Cria o Crédito
           return this.lancamentoService.create(lancamentoCredito);
         }),
         switchMap(responseCredito => {
           this.lancamentoIdTransferencia = parseInt(
             this.extractId((responseCredito as any).headers.get('location'))
           );
-
-          // 3️⃣ Atualiza o Crédito com o vínculo da Despesa
           const creditoAtualizado: LancamentoDTO = {
             ...lancamentoCredito,
             id: this.lancamentoIdTransferencia,
             lancamentoIdTransferencia: this.lancamentoIdOrigem,
           };
-
           return this.lancamentoService.update(creditoAtualizado);
         }),
         switchMap(() => {
-          // 4️⃣ Atualiza a Despesa com o vínculo do Crédito
           const despesaAtualizada: LancamentoDTO = {
             ...lancamentoDespesa,
             id: this.lancamentoIdOrigem,
             lancamentoIdTransferencia: this.lancamentoIdTransferencia,
           };
-
           return this.lancamentoService.update(despesaAtualizada);
         })
       )
@@ -1084,7 +1141,6 @@ createLancamentoTransferencia(): void {
         }
       });
   }
-
 
   // ════════════════════════════════════════════════════
   // EXCLUSÃO
@@ -1104,25 +1160,25 @@ createLancamentoTransferencia(): void {
   deleteMultiplos(): void { this.exclusaoLancamento(this.indexId, this.indexIdTransferencia); }
 
   limpaCheckbox(): void {
-    this.selectedLancamentos = [];
+    this.selectedLancamentos.set([]);
     this.length.set(0);
   }
 
   exclusaoLancamento(indexId: number, indexIdTransferencia: number | undefined): void {
-    if (!this.selectedLancamentos || this.length() === 0) {
+    if (!this.selectedLancamentos() || this.length() === 0) {
       Swal.fire('Lançamento | Seleção', 'Nenhum registro selecionado', 'info');
       return;
     }
 
     Swal.fire({
       title: 'Exclusão',
-      text: `Tem certeza que deseja excluir ${this.length()} registro?`,
+      text: `Tem certeza que deseja excluir {this.length()} registro?`,
       showCloseButton: true,
       showCancelButton: true,
       position: 'top'
     }).then((result) => {
       if (result.dismiss) {
-        this.selectedLancamentos = [];
+        this.selectedLancamentos.set([]);
         this.length.set(0);
         return;
       }
@@ -1133,9 +1189,9 @@ createLancamentoTransferencia(): void {
         this.toastr.success('Registro excluído com sucesso!', 'Exclusão');
       } else {
         for (let i = 0; i < this.length(); i++) {
-          const idTransf = this.selectedLancamentos[i].lancamentoIdTransferencia;
+          const idTransf = this.selectedLancamentos()[i].lancamentoIdTransferencia;
           if (idTransf) this.excluirSelectedLancamento(idTransf);
-          this.excluirLancamento(this.selectedLancamentos[i].id);
+          this.excluirLancamento(this.selectedLancamentos()[i].id);
         }
         this.toastr.success('Registros excluídos com sucesso!', 'Exclusão');
       }
@@ -1152,7 +1208,7 @@ createLancamentoTransferencia(): void {
         next: () => {
           this.inicializarDados();
           this.grid.reset();
-          this.selectedLancamentos = null!;
+          this.selectedLancamentos.set([]);
         }
       });
   }
@@ -1244,10 +1300,7 @@ createLancamentoTransferencia(): void {
     }).then((result) => {
       if (!result.dismiss) {
         this.lancamentoService.deletarComprovante(lancamentoId).subscribe({
-          next: () => {
-            this.toastr.success('Comprovante removido com sucesso!');
-            this.refreshAll();
-          },
+          next: () => { this.toastr.success('Comprovante removido com sucesso!'); this.refreshAll(); },
           error: () => this.toastr.error('Erro ao remover o comprovante.')
         });
       }
@@ -1310,7 +1363,7 @@ createLancamentoTransferencia(): void {
 
   resetModal(): void {
     this.lancamentoForm.reset();
-    this.filtraCategorias('');
+    this.categoriasFiltradas.set([]);
     this.crtCategoria = 3;
   }
 
@@ -1330,7 +1383,7 @@ createLancamentoTransferencia(): void {
       igrejaId: this.igrejaId,
       data: this.sharedService.dataAtualFormatada(),
       competencia: this.sharedService.mesAno(),
-      contaId: this.contas[0]?.id,
+      contaId: this.contas()[0]?.id,
       centroCustoId: 1,
       formaId: 1,
       documento: this.sharedService.mesAno(),
@@ -1341,33 +1394,33 @@ createLancamentoTransferencia(): void {
 
     switch (value) {
       case 'Receita':
-        this.categoriasFiltradas = this.categorias.filter(c => c.tipo !== 'Despesa');
+        this.categoriasFiltradas.set(this.categorias().filter(c => c.tipo !== 'Despesa'));
         this.pageTitle = 'NOVA RECEITA';
         this.lancamentoForm.patchValue({ ...base, tipoLancamento: 'Receita', categoriaId: 1, historico: 'Dízimo' });
         break;
 
       case 'Oferta':
-        this.categoriasFiltradas = this.categorias.filter(c =>
-          c.tipo === 'Receita' || c.tipo === 'Receita LC' || c.tipo === 'Oferta'
+        this.categoriasFiltradas.set(
+          this.categorias().filter(c =>
+            c.tipo === 'Receita' || c.tipo === 'Receita LC' || c.tipo === 'Oferta'
+          )
         );
         this.pageTitle = 'NOVA OFERTA';
         this.lancamentoForm.patchValue({ ...base, tipoLancamento: 'Receita', categoriaId: 2, historico: 'Oferta' });
         break;
 
       case 'Despesa':
-        this.categoriasFiltradas = this.categorias.filter(c => c.tipo === 'Despesa');
+        this.categoriasFiltradas.set(this.categorias().filter(c => c.tipo === 'Despesa'));
         this.pageTitle = 'NOVA DESPESA';
         this.lancamentoForm.patchValue({ ...base, tipoLancamento: 'Despesa', categoriaId: 19, historico: 'Despesa' });
         break;
 
       case 'Transferencia':
-        this.categoriasFiltradas = this.categorias.filter(c => c.tipo === 'Receita');
-        const catTransf = this.categorias.find(c => c.id === 8);
+        this.categoriasFiltradas.set(this.categorias().filter(c => c.tipo === 'Receita'));
+        const catTransf = this.categorias().find(c => c.id === 8);
+        const contaDestino = this.contas()[0];
         this.pageTitle = 'TRANSFERÊNCIA';
-        this.contaId = this.contas[0]?.id ?? 0;
-
-        const contaDestino = this.contas[0]; // 👈 pega direto, igual ao base
-
+        this.contaId = this.contas()[0]?.id ?? 0;
         this.lancamentoForm.patchValue({
           ...base, cadastrado: 'nao', tipoLancamento: 'Receita',
           categoriaId: catTransf?.id ?? 8,
@@ -1376,10 +1429,9 @@ createLancamentoTransferencia(): void {
         });
         break;
 
-
       case 'Permuta':
         this.pageTitle = 'PERMUTA | TROCA';
-        this.formaId = this.formas[0]?.id ?? 0;
+        this.formaId = this.formas()[0]?.id ?? 0;
         this.lancamentoForm.patchValue({
           ...base, cadastrado: 'nao', tipoLancamento: 'Receita',
           formaIdTransferencia: null,
@@ -1407,6 +1459,18 @@ createLancamentoTransferencia(): void {
   // HELPERS PRIVADOS
   // ════════════════════════════════════════════════════
 
+  private fmt(d: any): string {
+    if (!d) return '';
+    if (typeof d === 'string') {
+      const [dia, mes, ano] = d.split('/');
+      return `${ano}-${mes}-${dia}`;
+    }
+    const dia = String(d.getDate()).padStart(2, '0');
+    const mes = String(d.getMonth() + 1).padStart(2, '0');
+    return `${d.getFullYear()}-${mes}-${dia}`;
+  }
+
+
   private loadPessoa(value: number): void {
     this.pessoaService.getById(value)
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -1433,7 +1497,7 @@ createLancamentoTransferencia(): void {
   }
 
   private getConta(value: number | undefined): void {
-    const conta = this.contas.find(c => c.id === value);
+    const conta = this.contas().find(c => c.id === value);
     const tipoConta = conta?.tipo?.toString() ?? null;
     this.lancamentoForm.controls['tipoConta'].setValue(tipoConta);
   }

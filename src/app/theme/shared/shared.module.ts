@@ -56,6 +56,7 @@ import localePt from '@angular/common/locales/pt';
 import { DialogModule } from 'primeng/dialog';
 import { TabsModule } from 'primeng/tabs';
 import { PaginasPipe } from './_helpers/paginas.pipe';
+import { SelectButtonModule } from 'primeng/selectbutton';
 
 registerLocaleData(localePt);
 
@@ -90,6 +91,7 @@ registerLocaleData(localePt);
     PaginasPipe,
     TabsModule,
     ToolbarModule,
+    SelectButtonModule,
     TableModule,
     AccordionModule,
     SplitButtonModule,
@@ -138,6 +140,7 @@ registerLocaleData(localePt);
     TabsModule,
     PaginasPipe,
     FileUploadModule,
+    SelectButtonModule
   ],
   providers: [
     UsuarioService,

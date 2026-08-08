@@ -7,6 +7,6 @@ export const nomeUsuarioSignal = signal('');
 export const perfilSignal = signal('');
 export const setorIdSignal = signal(0); 
 
-// export const lancamentoSignal = signal(0);
+
 
 

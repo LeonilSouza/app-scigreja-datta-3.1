@@ -35,7 +35,7 @@
                     <label class="f-13">Conta corrente</label>
                     <p-multiSelect
                         [style]="{'width':'100%','height':'30px','align-items':'center','border-radius':'6px','font-size':'13px'}"
-                        [options]="contas" formControlName="selectedContas" optionLabel="nome" optionValue="id"
+                        [options]="contas()" formControlName="selectedContas" optionLabel="nome" optionValue="id"
                         placeholder="Todas" (onChange)="atualizarFiltrosStrings($event, 'contas')" [showClear]="false"
                         appendTo="body">
                     </p-multiSelect>
@@ -62,7 +62,7 @@
                     }
                     <p-multiSelect [filter]="true"
                         [style]="{'width':'100%','height':'30px','align-items':'center','border-radius':'6px','font-size':'13px'}"
-                        [options]="categoriasFiltradas" formControlName="selectedCategorias" optionLabel="nome"
+                        [options]="categoriasFiltradas()" formControlName="selectedCategorias" optionLabel="nome"
                         optionValue="id" placeholder="Todas" [showClear]="false" display="chip"
                         (onChange)="atualizarFiltrosStrings($event, 'categorias')" appendTo="body">
                     </p-multiSelect>
@@ -76,97 +76,87 @@
                     <label class="f-13">Forma de contribuição</label>
                     <p-multiSelect
                         [style]="{'width':'100%','height':'30px','align-items':'center','border-radius':'6px','font-size':'13px'}"
-                        [options]="formas" formControlName="selectedFormas" optionLabel="nome" optionValue="id"
+                        [options]="formas()" formControlName="selectedFormas" optionLabel="nome" optionValue="id"
                         placeholder="Todas" (onChange)="atualizarFiltrosStrings($event, 'formas')" [showClear]="false"
                         appendTo="body">
                     </p-multiSelect>
                 </form>
             </div>
-
-            <!-- Centro de Custo -->
-            <!-- <span class="col-sm-2">
-                <form [formGroup]="centroCustoForm">
-                    <label class="f-13">Centro de Custo</label>
-                    <p-multiSelect
-                        [style]="{'width':'100%','height':'30px','align-items':'center','border-radius':'6px','font-size':'13px'}"
-                        [options]="centroCustos" formControlName="selectedCentroCustos" optionLabel="nome"
-                        optionValue="id" placeholder="Todas"
-                        (onChange)="atualizarFiltrosStrings($event, 'centroCustos')" [showClear]="false"
-                        appendTo="body">
-                    </p-multiSelect>
-                </form>
-            </span> -->
         </div>
-
-
 
         <div class="form-group row col-md-12 mt-2 mb-0">
 
-            <div class=" form-group col-sm-2 float-end mb-0 ">
+            <div class="form-group col-sm-2 float-end mb-0">
                 <label class="f-13">Receita Total</label>
                 <strong><button type="button" class="mb-0 ml-0" pButton pRipple
-                        style="width:100% ; height: 30px; background:black ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
+                        style="width:100%; height: 30px; background:black; border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
                         {{ totalCreditos | currency:'BRL' }}</button></strong>
             </div>
 
-            <div class=" form-group col-sm-2 float-end mb-0 ">
+            <div class="form-group col-sm-2 float-end mb-0">
                 <label class="f-13">Dízimo</label>
                 <strong><button type="button" class="mb-0 ml-0" pButton pRipple
-                        style="width:100% ; height: 30px; background:rgb(49, 170, 49) ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
+                        style="width:100%; height: 30px; background:rgb(49, 170, 49); border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
                         {{ totalReceitaDizimo | currency:'BRL' }}</button></strong>
             </div>
 
-            <div class=" form-group col-sm-2 mr-auto mb-0 ">
+            <div class="form-group col-sm-2 mr-auto mb-0">
                 <label class="f-13">Oferta</label>
                 <strong><button type="button" class="mb-0 ml-0" pButton pRipple
-                        style="width:100% ; height: 30px; background:#0D89EC ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
+                        style="width:100%; height: 30px; background:#0D89EC; border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
                         {{ totalOfertas | currency:'BRL' }}</button></strong>
             </div>
 
-            <div class=" form-group col-sm-2 float-end mb-0 ">
+            <div class="form-group col-sm-2 float-end mb-0">
                 <label class="f-13">Ofertas Alçadas e Eventos</label>
                 <strong><button type="button" class="mb-0 ml-0" pButton pRipple
-                        style="width:100% ; height: 30px; background:rgb(4, 143, 182) ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
+                        style="width:100%; height: 30px; background:rgb(4, 143, 182); border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
                         {{ (total_ofertas_alcadas + totalEventos) | currency:'BRL' }}</button></strong>
             </div>
 
-            <div class=" form-group col-sm-2 mr-auto mb-0 ">
+            <div class="form-group col-sm-2 mr-auto mb-0">
                 <label class="f-13">Missão</label>
                 <strong><button type="button" class="mb-0 ml-0" pButton pRipple
-                        style="width:100% ; height: 30px; background:#e57608 ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
+                        style="width:100%; height: 30px; background:#e57608; border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
                         {{ totalMissoes | currency:'BRL' }}</button></strong>
             </div>
 
-            <div class=" form-group col-sm-2 mr-auto mb-0 ">
+            <div class="form-group col-sm-2 mr-auto mb-0">
                 @if(tipoLancamento != 'Livro Caixa'){
                 <label class="f-13">Saldo anterior</label>
                 }
-                @if(tipoLancamento !='Livro Caixa'){
+                @if(tipoLancamento != 'Livro Caixa'){
                 <strong><button type="button" class="mb-0 ml-0" pButton pRipple
-                        style="width:100% ; height: 30px; background:purple ; border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
+                        style="width:100%; height: 30px; background:purple; border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
                         {{ saldoAnterior | currency:'BRL' }}</button></strong>
                 }
             </div>
 
-            <div class=" form-group col-sm-2 float-end mb-0 ">
+            <div class="form-group col-sm-2 float-end mb-0">
                 <label class="f-13 mt-1">Despesas Total</label>
                 <strong><button type="button" class="mb-0 ml-0" pButton pRipple
-                        style="width:100% ; height: 30px; background:red ;  border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
+                        style="width:100%; height: 30px; background:red; border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
                         {{ totalDebitos | currency:'BRL' }}</button></strong>
             </div>
 
-            <div class=" form-group col-sm-2 float-end mb-0 "></div>
+            <div class="form-group col-sm-2 float-end mb-0">
+                <label class="f-13 mt-1">Relatório CC por Periodo</label>
+                <button (click)="visibleModalRelatorioCCPeriodo = true" icon="pi pi-calendar" type="button"
+                    class="mb-0 ml-0" pButton pRipple
+                    style="width:100%; height: 30px; background:#6366f1; border: 0px; font-size: 14px; border-radius: 6px; cursor: default; align-items: center;">
+                </button>
+            </div>
 
-            <div class=" form-group col-sm-1 float-end ">
-                <label class="f-13  mt-1"> </label>
+            <div class="form-group col-sm-1 float-end">
+                <label class="f-13 mt-1"> </label>
                 <button (click)="visibleModalPermuta = true; limpaCheckbox(); setModalInclusao('Permuta'); imodo.set(0)"
                     class="btn btn-icon btn-outline-warning p-0 float-end" type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Permuta
                 </button>
             </div>
 
-            <div class=" form-group col-sm-1 float-end ">
-                <label class="f-13  mt-1"> </label>
+            <div class="form-group col-sm-1 float-end">
+                <label class="f-13 mt-1"> </label>
                 <button
                     (click)="visibleModalTransferencia = true; limpaCheckbox(); setModalInclusao('Transferencia'); imodo.set(0)"
                     class="btn btn-icon btn-outline-secondary p-0 float-end" type="button"
@@ -174,41 +164,41 @@
                 </button>
             </div>
 
-            <div class=" form-group col-sm-1 float-end ">
-                <label class="f-13  mt-1"> </label>
+            <div class="form-group col-sm-1 float-end">
+                <label class="f-13 mt-1"> </label>
                 <button routerLink="/cadastros" class="btn btn-icon btn-outline-dark p-0 float-end" type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Contas
                 </button>
             </div>
 
-            <div class=" form-group col-sm-1 float-end mb-0 "></div>
+            <div class="form-group col-sm-1 float-end mb-0"></div>
 
-            <div class=" form-group col-sm-1 float-end mb-0">
-                <label class="f-13  mt-1"> </label>
+            <div class="form-group col-sm-1 float-end mb-0">
+                <label class="f-13 mt-1"> </label>
                 <button (click)="visibleLancamento = true; limpaCheckbox(); setModalInclusao('Receita'); imodo.set(0)"
                     class="btn btn-icon btn-outline-success p-0 float-end mb-0" type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Dízimo
                 </button>
             </div>
 
-            <div class=" form-group col-sm-1 float-end mb-0">
-                <label class="f-13  mt-1"> </label>
+            <div class="form-group col-sm-1 float-end mb-0">
+                <label class="f-13 mt-1"> </label>
                 <button (click)="visibleLancamento = true; limpaCheckbox(); setModalInclusao('Oferta'); imodo.set(0)"
                     class="btn btn-icon btn-outline-primary p-0 float-end mb-0" type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Oferta
                 </button>
             </div>
 
-            <div class=" form-group col-sm-1 float-end mb-0">
-                <label class="f-13  mt-1"> </label>
+            <div class="form-group col-sm-1 float-end mb-0">
+                <label class="f-13 mt-1"> </label>
                 <button (click)="visibleLancamento = true; limpaCheckbox(); setModalInclusao('Receita'); imodo.set(0)"
                     class="btn btn-icon btn-outline-success p-0 float-end mb-0" type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Receita
                 </button>
             </div>
 
-            <div class=" form-group col-sm-1 float-end mb-0">
-                <label class="f-13  mt-1"> </label>
+            <div class="form-group col-sm-1 float-end mb-0">
+                <label class="f-13 mt-1"> </label>
                 <button (click)="visibleLancamento = true; limpaCheckbox(); setModalInclusao('Despesa'); imodo.set(0)"
                     class="btn btn-icon btn-outline-danger p-0 float-end mb-0" type="button"
                     [style]="{'height':'30px', 'width':'100%', 'font-size':'13px', 'border-radius':'6px'}">Despesa
@@ -216,26 +206,22 @@
             </div>
         </div>
 
-        <div class="form-group row col-md-12 mb-0" style="align-items: center;">
-            <div class=" form-group col-sm-9 mb-0 "></div>
-        </div>
-
         <!-- FILTROS ACCORDION -->
         <div class="flex justify-center">
             <p-accordion>
                 <p-accordion-panel value="0">
-                    <p-accordion-header class=" border-1 mb-3 py-2"
+                    <p-accordion-header class="border-1 mb-3 py-2"
                         [style.color]="saldoFinalContas >= 0 ? 'green' : 'red'"
                         style="background-color: rgb(242, 245, 247);">Saldo Final Contas:
                         {{ saldoFinalContas | currency:' ' }}
                     </p-accordion-header>
                     <p-accordion-content>
-                        <div class="row ">
+                        <div class="row">
                             <div class="col-sm-12">
                                 <div class="table-responsive">
-                                    <table class="table table-bordered table-striped borde ">
+                                    <table class="table table-bordered table-striped">
                                         <tbody>
-                                            @for (conta of contas; track conta.id) {
+                                            @for (conta of contas(); track conta.id) {
                                             <tr>
                                                 <td class="py-2" style="font-size: 13px; height: 27px;">{{ conta.nome }}
                                                 </td>
@@ -243,7 +229,7 @@
                                                     style="font-size: 13px; height: 27px;"
                                                     [style.color]="conta.saldoCalculado >= 0 ? 'green' : 'red'">
                                                     <span class="float-end">{{ conta.saldoCalculado | number: '1.2-2'
-                                                        }}</span><br>
+                                                        }}</span>
                                                 </td>
                                             </tr>
                                             }
@@ -277,7 +263,6 @@
         [style]="{'height':'32px', 'margin-right':'20px'}" severity="danger" [outlined]="true" />
 </div>
 }
-
 </ng-template>
 
 <ng-template #center>
@@ -290,44 +275,35 @@
 </ng-template>
 
 <ng-template #end>
-
-    <!-- Sintético → direto PDF -->
     <div class="flex justify-between">
         <p-button [style]="{'height':'32px','background':'#5a5f66','margin-right':'8px'}" icon="pi pi-print"
             label="Sintético" [loading]="gerandoRelatorio" (click)="gerarRelatorioSintetico()" />
     </div>
-
-    <!-- Analítico → dropdown PDF / Excel -->
     <div class="flex justify-between">
         <p-splitButton label="Analítico" icon="pi pi-print" [model]="analiticoItems"
             [style]="{'height':'32px','margin-right':'8px'}" severity="contrast" [outlined]="false" />
     </div>
-
-    <!-- Relatórios -->
     <p-splitButton class="float-end mx-3" label="   Relatórios " icon="pi pi-print" [model]="printItems"
         [style]="{'height':'32px'}" outlined severity="contrast" />
-
     <strong>
-        <button (click)="filtraLancamentos()" type="button" class="mb-0 " pButton pRipple label=" Buscar "
+        <button (click)="filtraLancamentos()" type="button" class="mb-0" pButton pRipple label=" Buscar "
             style="height:32px; background:green; font-size:small; border-radius:5px; color:aliceblue;">
         </button>
     </strong>
 </ng-template>
-
-
 </p-toolbar>
 
 <!-- GRID -->
 <div class="col-sm-12">
     <div class="mb-0">
-        <p-table #dtlancamento [value]="lancamentos" [(selection)]="selectedLancamentos" dataKey="id" [lazy]="true"
+        <p-table #dtlancamento [value]="lancamentos()" [(selection)]="selectedLancamentos" dataKey="id" [lazy]="true"
             [rows]="filtro.linesPerPage" responsiveLayout="stack" (onLazyLoad)="aoMudarPagina($event)"
             [showCurrentPageReport]="true" [totalRecords]="totalRegistros" showGridlines stripedRows
             [rowsPerPageOptions]="[6, 10, 20, 30, 50]" [tableStyle]="{ 'min-width': '30rem' }"
             currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros" [paginator]="true"
             emptyMessage="Nenhum registro encontrado" selectionMode="multiple"
-            (onRowSelect)="linhasSelecionada(selectedLancamentos)" (onRowUnselect)="aoDesmarcar($event)"
-            (onHeaderCheckboxToggle)="linhasSelecionada(selectedLancamentos)">
+            (onRowSelect)="linhasSelecionada(selectedLancamentos())" (onRowUnselect)="aoDesmarcar($event)"
+            (onHeaderCheckboxToggle)="linhasSelecionada(selectedLancamentos())">
 
             <ng-template #header>
                 <tr>
@@ -387,10 +363,10 @@
                         {{ lancamento.valor | currency:' ' }}
                     </td>
                     <td class="col-acoes-4-botao py-1">
-                        <button [disabled]= "lancamento.nome == 'Transferencia' || lancamento.nome == 'Permuta'" (click)="limpaCheckbox(); imodo.set(1);
-                                        lancamento.nome == 'Transferencia' ? visibleModalTransferencia = true :
-                                        lancamento.nome == 'Permuta' ? visibleModalPermuta = true : visibleLancamento = true;
-                                        loadLancamento(lancamento); setModalEdicao(lancamento.tipoLancamento)"
+                        <button [disabled]="lancamento.nome == 'Transferencia' || lancamento.nome == 'Permuta'" (click)="limpaCheckbox(); imodo.set(1);
+                                             lancamento.nome == 'Transferencia' ? visibleModalTransferencia = true :
+                                             lancamento.nome == 'Permuta' ? visibleModalPermuta = true : visibleLancamento = true;
+                                             loadLancamento(lancamento); setModalEdicao(lancamento.tipoLancamento)"
                             type="button" class="btn btn-icon btn-outline-success p-1 mb-0 mt-0"
                             [style]="{'margin-right': '10px','height': '26px', 'width': '26px'}" [placement]="'top'"
                             ngbTooltip="Editar">
@@ -413,12 +389,12 @@
 
                         @if(lancamento.comprovanteNome){
                         <button (click)="visualizarComprovante(lancamento.id)" type="button"
-                            class="btn btn-icon btn-outline-dark  p-1 mb-0 mt-0"
+                            class="btn btn-icon btn-outline-dark p-1 mb-0 mt-0"
                             [style]="{'margin-left': '7px', 'height': '26px', 'width': '26px'}" [placement]="'top'"
                             ngbTooltip="Visualizar Comprovante">
                             <i class="pi pi-file-pdf"></i>
                         </button>
-                        } @else{
+                        } @else {
                         <button type="button" class="btn btn-icon btn-outline-dark p-1 mb-0 mt-0"
                             [style]="{'margin-left': '7px', 'height': '26px', 'width': '26px'}" [placement]="'top'"
                             ngbTooltip="Sem anexo">
@@ -451,19 +427,19 @@
 <!-- Totalização -->
 <div class="col-md-4 float-end border border-top-0 mt-0 mb-2" style="background-color: #fafafa;">
     <span class="row mb-0 float-end">
-        <div class=" form-group col-sm-4 mt-0 mb-0 ">
+        <div class="form-group col-sm-4 mt-0 mb-0">
             <label class="f-13 mt-1" style="width:100%; text-align:left">Crédito</label>
             <strong><label class="mb-0 mt-0 ml-0 text-success"
                     style="width:100%; height: 30px; text-align:left; background:#fafafa; border: 0px; font-size: 13px; border-radius: 6px;">
                     {{ totalCreditos | currency:'BRL' }}</label></strong>
         </div>
-        <div class=" form-group col-sm-4 mb-0 ">
+        <div class="form-group col-sm-4 mb-0">
             <label class="f-13 mt-1 mb-0" style="width:100%; text-align:left">Débito</label>
             <strong><label class="mb-0 ml-0 mt-0 text-danger"
                     style="width:100%; height: 30px; text-align:left; background:#fafafa; border: 0px; font-size: 13px; border-radius: 6px;">
                     {{ totalDebitos | currency:'BRL' }}</label></strong>
         </div>
-        <div class=" form-group col-sm-4 mb-0 ">
+        <div class="form-group col-sm-4 mb-0">
             <label class="f-13 mt-1" style="width:100%; text-align:left">Saldo</label>
             <strong><label class="mb-0 ml-0 text-primary"
                     style="width:100%; height: 30px; text-align:left; background:#fafafa; border: 0px; font-size: 13px; border-radius: 6px;">
@@ -500,17 +476,17 @@
                     <div class="row form-group col-md-6 mb-2">
                         <div class="flex flex-wrap">
                             <div class="flex align-items-center mb-0">
-                                <label class="text-dark mr-5">Nome/Historico</label>  
+                                <label class="text-dark mr-5">Nome/Historico</label>
                                 <p-radioButton (click)="cadastradoNC()" value="nao" formControlName="cadastrado"
-                                    inputId="naocadastrado"></p-radioButton> 
-                                <label for="naocadastrado" class="ml-2 text-c-blue">Não Cadastrado</label>    
+                                    inputId="naocadastrado"></p-radioButton>
+                                <label for="naocadastrado" class="ml-2 text-c-blue">Não Cadastrado</label>
                                 <p-radioButton (click)="cadastradoC()" value="sim" formControlName="cadastrado"
-                                    inputId="cadastrado"></p-radioButton> 
+                                    inputId="cadastrado"></p-radioButton>
                                 <label for="cadastrado" class="ml-2 text-success">Cadastrado</label>
                             </div>
                             @if(lancamentoForm.controls['cadastrado'].value == 'sim'){
                             <p-select [style]="{'width':'100%','height':'30px'}" formControlName="pessoaId"
-                                (onChange)="onChangeNomeHistorico($event)" class="w-full md mb-3" [options]="pessoas"
+                                (onChange)="onChangeNomeHistorico($event)" class="w-full md mb-3" [options]="pessoas()"
                                 [editable]="false" [filter]="true" filterBy="nome" [showClear]="false"
                                 optionLabel="nome" resetFilterOnHide="true" dateFormat="dd/mm/yy"
                                 dropdownIcon="pi pi-users" [autofocus]="false" optionValue="id"
@@ -544,7 +520,7 @@
                     <div class="form-group col-md-4 mb-2">
                         <label class="m-b-9 mb-1">Forma de Contribuição</label>
                         <p-select [style]="{'width':'100%','height':'30px'}" formControlName="formaId" class="w-full md"
-                            [options]="formas" [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
+                            [options]="formas()" [editable]="false" [filter]="false" filterBy="nome" [showClear]="false"
                             optionLabel="nome" resetFilterOnHide="false" dateFormat="dd/mm/yy"
                             dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id" placeholder="Selecione..."
                             appendTo="body" />
@@ -563,7 +539,7 @@
                     <div class="form-group col-md-4 mb-3">
                         <label class="mb-1">Conta</label>
                         <p-select [style]="{'width':'100%','height':'30px'}" formControlName="contaId"
-                            (onChange)="onChangeTPConta($event)" class="w-full md mb-0" [options]="contas"
+                            (onChange)="onChangeTPConta($event)" class="w-full md mb-0" [options]="contas()"
                             [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
                             resetFilterOnHide="true" dateFormat="dd/mm/yy" dropdownIcon="pi pi-users"
                             [autofocus]="false" optionValue="id" placeholder="Selecione uma conta" appendTo="body" />
@@ -572,7 +548,7 @@
                     <div class="form-group col-md-4 mb-0">
                         <label class="mb-1">Categoria</label>
                         <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangeTPCategorias($event)"
-                            formControlName="categoriaId" class="w-full md mb-1" [options]="categoriasFiltradas"
+                            formControlName="categoriaId" class="w-full md mb-1" [options]="categoriasFiltradas()"
                             [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
                             resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
                             [autofocus]="false" optionValue="id" placeholder="Selecione uma categoria"
@@ -582,7 +558,7 @@
                     <div class="form-group col-md-4 m-b-09">
                         <label class="mb-1">Centro de Custo</label>
                         <p-select [style]="{'width':'100%','height':'30px'}" formControlName="centroCustoId"
-                            class="w-full md mb-1" [options]="centroCustos" [editable]="false" [filter]="true"
+                            class="w-full md mb-1" [options]="centroCustos()" [editable]="false" [filter]="true"
                             filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
                             dateFormat="dd/mm/yy" dropdownIcon="pi pi-check" [autofocus]="false" optionValue="id"
                             placeholder="Selecione um centro de custo" appendTo="body" />
@@ -594,14 +570,12 @@
                             style="width: 7em; height: 30px; font-size: small; border-radius: 6px; border: 0; background: #1a82ce;"
                             icon='pi pi-wallet'>
                         </button>
-
-                        <strong><button (click)=" visibleLancamento = false; submitFormLancamento()" 
+                        <strong><button (click)="visibleLancamento = false; submitFormLancamento()"
                                 [disabled]="lancamentoForm.invalid" type="button" class="mx-3 float-end mb-0" pButton
                                 pRipple label="Salvar"
                                 style="width: 7em; background:#388669; height: 30px; border-radius: 6px; font-size: small;"
                                 icon='pi pi-check'>
                             </button></strong>
-
                         @if(imodo() == 0 && lancamentoForm.controls['tipoLancamento'].value == 'Receita'){
                         <strong><button (click)="visibleLancamento = true; submitFormLancamento()"
                                 [disabled]="lancamentoForm.invalid" type="button" class="ml-4 float-end mb-0" pButton
@@ -623,7 +597,6 @@
             </p-dialog>
         </div>
     </div>
-
 
     <!-- MODAL TRANSFERENCIA -->
     <div class="col-md-12 col-xl-12" data-backdrop="static">
@@ -648,7 +621,7 @@
                         <label class="m-b-9 text-danger">Transferir da conta</label>
                         <p-select [style]="{'width':'100%','height':'30px'}"
                             (onChange)="onChangeTransferenciaOrigem($event)" formControlName="contaId"
-                            class="w-full md mb-2" [options]="contas" [editable]="false" [filter]="false"
+                            class="w-full md mb-2" [options]="contas()" [editable]="false" [filter]="false"
                             filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
                             dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar" [autofocus]="false" optionValue="id"
                             placeholder="Selecione..." appendTo="body" />
@@ -660,7 +633,7 @@
                         <label class="m-b-9 text-success">Para</label>
                         <p-select [style]="{'width':'100%','height':'30px'}"
                             (onChange)="onChangeTransferenciaDestino($event)" formControlName="contaIdTransferencia"
-                            class="w-full md mb-2" [options]="contasTransferencia" [editable]="false" [filter]="false"
+                            class="w-full md mb-2" [options]="contasTransferencia()" [editable]="false" [filter]="false"
                             filterBy="nome" [showClear]="false" optionLabel="nome" resetFilterOnHide="false"
                             dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar" [autofocus]="false"
                             optionValue="contaIdTransferencia" placeholder="Selecione..." appendTo="body" />
@@ -685,11 +658,11 @@
                     </div>
                     }
 
-                     @if(lancamentoForm.controls['id'].value !== null){
+                    @if(lancamentoForm.controls['id'].value !== null){
                     <div class="form-group col-md-4 mb-0">
                         <label class="mb-1">Categoria</label>
                         <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangeTPCategorias($event)"
-                            formControlName="categoriaId" class="w-full md mb-1" [options]="categoriasFiltradas"
+                            formControlName="categoriaId" class="w-full md mb-1" [options]="categoriasFiltradas()"
                             [editable]="false" [filter]="true" filterBy="nome" [showClear]="false" optionLabel="nome"
                             resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
                             [autofocus]="false" optionValue="id" placeholder="Selecione uma categoria"
@@ -716,14 +689,11 @@
                             class="ml-4 p-button-danger p-button-outlined mb-0">
                         </button>
                         }
-
                         <button data-dismiss="modal" type="button" class="mx-4 mb-0" pButton pRipple
                             (click)="visibleModalTransferencia = false; resetModal()" label="Fechar"
                             style="width: 7em; height: 30px; font-size: small; border-radius: 6px; border: 0; background: #1a82ce;"
                             icon='pi pi-wallet'>
                         </button>
-
-                        <!-- @if(lancamentoForm.controls['id'].value == null){ -->
                         <strong><button (click)="visibleModalTransferencia = false; submitFormTransferencia()"
                                 [disabled]="lancamentoForm.invalid
                                     || lancamentoForm.controls['contaIdTransferencia'].value == null
@@ -732,12 +702,8 @@
                                 style="width: 7em; background:#388669; height: 30px; border-radius: 6px; font-size: small;"
                                 icon='pi pi-check'>
                             </button></strong>
-                        <!-- } -->
                     </div>
                 </div>
-                <!-- <div class="form-group ">
-                    <pre> {{ lancamentoForm.value | json}} </pre>
-                </div> -->
             </p-dialog>
         </div>
     </div>
@@ -764,7 +730,7 @@
                     <div class="form-group col-md-4">
                         <label class="m-b-9 text-primary">Trocar</label>
                         <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangePermutaDestino($event)"
-                            formControlName="formaIdTransferencia" class="w-full md mb-2" [options]="formasPermuta"
+                            formControlName="formaIdTransferencia" class="w-full md mb-2" [options]="formasPermuta()"
                             [editable]="false" [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
                             resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
                             [autofocus]="false" optionValue="formaIdTransferencia" placeholder="Selecione..."
@@ -780,7 +746,7 @@
                     <div class="form-group col-md-4">
                         <label class="m-b-9 text-success">Por</label>
                         <p-select [style]="{'width':'100%','height':'30px'}" (onChange)="onChangePermutaOrigem($event)"
-                            formControlName="formaId" class="w-full md mb-2" [options]="formas" [editable]="false"
+                            formControlName="formaId" class="w-full md mb-2" [options]="formas()" [editable]="false"
                             [filter]="false" filterBy="nome" [showClear]="false" optionLabel="nome"
                             resetFilterOnHide="false" dateFormat="dd/mm/yy" dropdownIcon="pi pi-dollar"
                             [autofocus]="false" optionValue="id" placeholder="Selecione..." appendTo="body" />
@@ -831,5 +797,108 @@
             </p-dialog>
         </div>
     </div>
+
+    <!-- MODAL RELATÓRIO CENTRO DE CUSTO POR PERÍODO -->
+    <div class="col-md-12 col-xl-12" data-backdrop="static">
+        <div class="card flex justify-center">
+            <p-dialog header="RELATÓRIO POR CENTRO DE CUSTO — PERÍODO" [modal]="true"
+                [(visible)]="visibleModalRelatorioCCPeriodo" 
+                position="positionModalCCperiodo" [dismissableMask]="false"
+                [style]="{ width: '60vw', height: '90vh' }" [closeOnEscape]="false"
+                [breakpoints]="{ '1199px': '98vw', '575px': '100vw' }" [draggable]="false" [resizable]="false"
+                [contentStyle]="{ overflow: 'hidden', display: 'flex', 'flex-direction': 'column', height: '100%' }"
+                [transitionOptions]="'500ms ease-out'" (onHide)="fecharModalCCPeriodo()">
+                
+
+                <hr class="mt-1 mb-2">
+
+                <!-- Filtros -->
+                <div class="row col-12 mb-3">
+
+                    <div class="form-group col-md-3">
+                        <label class="m-b-09">Data Início</label>
+                        <p-datepicker [(ngModel)]="dataInicioRelatorioPeriodo" [ngModelOptions]="{ standalone: true }"
+                            dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true" placeholder="dd/mm/aaaa"
+                            [style]="{ width: '100%', height: '30px' }" appendTo="body" />
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label class="m-b-09">Data Fim</label>
+                        <p-datepicker [(ngModel)]="dataFimRelatorioPeriodo" [ngModelOptions]="{ standalone: true }"
+                            dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true" placeholder="dd/mm/aaaa"
+                            [style]="{ width: '100%', height: '30px' }" appendTo="body" />
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label class="m-b-09">Centros de Custo</label>
+                        <p-multiSelect [options]="centroCustos()" [(ngModel)]="centrosCustoSelecionados"
+                            [ngModelOptions]="{ standalone: true }" optionLabel="nome" optionValue="id"
+                            placeholder="Todos" display="chip" [filter]="true"
+                            [style]="{ width: '100%', height: '30px' }" appendTo="body" />
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label class="m-b-09">Contas</label>
+                        <p-multiSelect [options]="contas()" [(ngModel)]="contasSelecionadasPeriodo"
+                            [ngModelOptions]="{ standalone: true }" optionLabel="nome" optionValue="id"
+                            placeholder="Todas" display="chip" [filter]="true"
+                            [style]="{ width: '100%', height: '30px' }" appendTo="body" />
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label class="m-b-09">Categorias</label>
+                        <p-multiSelect [options]="categorias()" [(ngModel)]="categoriasSelecionadasPeriodo"
+                            [ngModelOptions]="{ standalone: true }" optionLabel="nome" optionValue="id"
+                            placeholder="Todas" [filter]="true" filterPlaceholder="Buscar" [showClear]="true"
+                            display="chip" [style]="{ width: '100%', height: '30px' }" appendTo="body" />
+                    </div>
+
+                    <div class="form-group col-md-2 d-flex align-items-end">
+                        <button pButton pRipple label="Gerar PDF" icon="pi pi-file-pdf"
+                            (click)="buscarRelatorioPeriodo()" [loading]="carregandoRelatorioPeriodo()" style="height: 30px; font-size: small; border-radius: 6px;
+                               width: 100%; background: #6366f1; border: 0;">
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Área do PDF -->
+                <div class="flex-grow-1" style="min-height: 0;">
+
+                    @if(carregandoRelatorioPeriodo()) {
+                    <div class="text-center mt-5">
+                        <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: #6366f1;"></i>
+                        <p class="mt-2 text-muted">Gerando relatório...</p>
+                    </div>
+                    }
+
+                    @if(!carregandoRelatorioPeriodo() && pdfUrlRelatorioPeriodo()) {
+                    <iframe [src]="pdfUrlRelatorioPeriodo() | safeUrl"
+                        style="width: 100%; height: 65vh; border: none; border-radius: 6px;">
+                    </iframe>
+                    }
+
+                    @if(!carregandoRelatorioPeriodo() && !pdfUrlRelatorioPeriodo()) {
+                    <div class="text-center text-muted mt-5">
+                        <i class="pi pi-file-pdf" style="font-size: 2.5rem;"></i>
+                        <p class="mt-2">Selecione os filtros e clique em <strong>Gerar PDF</strong>.</p>
+                    </div>
+                    }
+
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer mt-2" style="height: 38px;">
+                    <button type="button" pButton pRipple (click)="fecharModalCCPeriodo()" label="Fechar"
+                        icon="pi pi-times" style="width: 7em; height: 30px; font-size: small;
+                           border-radius: 6px; border: 0; background: #1a82ce;">
+                    </button>
+                </div>
+
+            </p-dialog>
+        </div>
+    </div>
+
+    <!-- FIM MODAL RELATÓRIO CENTRO DE CUSTO POR PERÍODO -->
 
 </form>
