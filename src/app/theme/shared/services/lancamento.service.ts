@@ -32,7 +32,6 @@ export class LancamentoService {
     if (filtro.contas && filtro.contas.length > 0) {
       filtro.contas.split(',').forEach(id => {
         params = params.append('contaId', id.trim());
-        console.log(filtro)
       });
     }
 
