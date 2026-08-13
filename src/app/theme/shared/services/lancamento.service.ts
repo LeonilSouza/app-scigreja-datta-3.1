@@ -21,7 +21,7 @@ export class LancamentoService {
   // RELATÓRIOS — SINTÉTICO
   // ════════════════════════════════════════════════════
 
-  gerarRelatorioSintetico(filtro: LancamentoFiltro): Observable<Blob> {
+  gerarRelatorioCampanhas(filtro: LancamentoFiltro): Observable<Blob> {
     let params = new HttpParams()
       .set('igreja', filtro.igrejaId.toString())
       .set('dtinicio', filtro.dtinicio)
@@ -32,24 +32,10 @@ export class LancamentoService {
     if (filtro.contas && filtro.contas.length > 0) {
       filtro.contas.split(',').forEach(id => {
         params = params.append('contaId', id.trim());
-      });
+      });       
     }
 
-    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-sintetico`,
-      { params, responseType: 'blob' });
-  }
-
-  gerarRelatorioSinteticoExcel(filtro: LancamentoFiltro): Observable<Blob> {
-    let params = new HttpParams()
-      .set('igreja', filtro.igrejaId.toString())
-      .set('dtinicio', filtro.dtinicio)
-      .set('dtfim', filtro.dtfim)
-      .set('setorId', filtro.setorId.toString());
-
-    if (filtro.tipoLancamento) params = params.set('tipo', filtro.tipoLancamento);
-    if (filtro.contaId) params = params.set('contaId', filtro.contas);
-
-    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-excel-sintetico`,
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-relatorio-campanhas`,
       { params, responseType: 'blob' });
   }
 

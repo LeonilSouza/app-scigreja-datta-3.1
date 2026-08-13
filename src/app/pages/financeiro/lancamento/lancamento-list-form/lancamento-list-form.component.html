@@ -276,10 +276,6 @@
 
 <ng-template #end>
     <div class="flex justify-between">
-        <p-button [style]="{'height':'32px','background':'#5a5f66','margin-right':'8px'}" icon="pi pi-print"
-            label="Sintético" [loading]="gerandoRelatorio" (click)="gerarRelatorioSintetico()" />
-    </div>
-    <div class="flex justify-between">
         <p-splitButton label="Analítico" icon="pi pi-print" [model]="analiticoItems"
             [style]="{'height':'32px','margin-right':'8px'}" severity="contrast" [outlined]="false" />
     </div>

@@ -571,20 +571,20 @@ export class LancamentoListFormComponent implements OnInit {
   }
 
   // ════════════════════════════════════════════════════
-  // RELATÓRIO SINTETICO POR CONTAS
+  // RELATÓRIO ANALITICO DE CAMPANHAS E OFERTAS ALÇADAS
   // ════════════════════════════════════════════════════
 
-  gerarRelatorioSintetico(): void {
+  gerarRelatorioCampanhas(): void {
     if (!this.filtro.dtinicio || !this.filtro.dtfim) {
       this.messageService.add({ severity: 'warn', summary: 'Atenção', detail: 'Informe o período antes de gerar o relatório.' });
       return;
     }
     this.gerandoRelatorio = true;
-    this.lancamentoService.gerarRelatorioSintetico(this.filtro)
+    this.lancamentoService.gerarRelatorioCampanhas(this.filtro)
       .pipe(finalize(() => this.gerandoRelatorio = false))
       .subscribe({
-        next: (blob) => this.abrirArquivo(blob, 'relatorio-sintetico.pdf'),
-        error: () => this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao gerar relatório sintético.' })
+        next: (blob) => this.abrirArquivo(blob, 'relatorio-campanhas-alcadas.pdf'),
+        error: () => this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao gerar relatório analitico e alçadas.' })
       });
   }
 
@@ -715,6 +715,11 @@ export class LancamentoListFormComponent implements OnInit {
             next: (blob) => this.abrirArquivo(blob, 'livro-caixa-detalhado.pdf'),
             error: () => this.toastr.error('Erro ao gerar Livro Caixa Mensal Detalhado.')
           })
+      },
+       { separator: true },
+      {
+        label: 'Campanhas e Ofertas Alçadas', icon: 'pi pi-calendar',
+        command: () => this.gerarRelatorioCampanhas()
       },
       { separator: true },
       {
