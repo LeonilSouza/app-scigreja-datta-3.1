@@ -961,7 +961,6 @@ export class LancamentoListFormComponent implements OnInit {
       this.lancamentoForm.controls['valor'].setValue(valor * -1);
 
     const lancamento: LancamentoDTO = this.lancamentoForm.value;
-     console.log(lancamento)
     this.lancamentoService.create(lancamento)
    
       .pipe(takeUntilDestroyed(this.destroyRef))
