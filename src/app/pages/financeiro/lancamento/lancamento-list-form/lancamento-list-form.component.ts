@@ -323,6 +323,25 @@ export class LancamentoListFormComponent implements OnInit {
     public http: HttpClient,
   ) { }
 
+  // 1. Crie a flag de controle da interface
+  exibirSelectPersonalizado: boolean = false;
+
+  // 2. Crie a lista com as duas categorias mapeadas
+  categoriasPersonalizadas = [
+    { id: 20, nome: 'Receitas Diversas' },
+    { id: 8, nome:  'Receita de Transferência (Padrão)' }
+  ]; 
+
+  // 3. Função disparada ao marcar/desmarcar o checkbox
+  onTogglePersonalizar(checked: boolean) {
+    this.exibirSelectPersonalizado = checked;
+
+    if (!checked) {
+      // Se o usuário desmarcar, volta a limpar ou definir o ID padrão (nulo/8 dependendo do seu backend)
+      this.lancamentoForm.controls['categoriaId'].setValue(null);
+    }
+  }
+
   // ════════════════════════════════════════════════════
   // LIFECYCLE
   // ════════════════════════════════════════════════════
@@ -716,7 +735,7 @@ export class LancamentoListFormComponent implements OnInit {
             error: () => this.toastr.error('Erro ao gerar Livro Caixa Mensal Detalhado.')
           })
       },
-       { separator: true },
+      { separator: true },
       {
         label: 'Campanhas e Ofertas Alçadas', icon: 'pi pi-calendar',
         command: () => this.gerarRelatorioCampanhas()
@@ -880,6 +899,10 @@ export class LancamentoListFormComponent implements OnInit {
     this.filtro.page = 0;
   }
 
+  onChangePersonalizarCategoria(event: { value: number }): void {
+   this.lancamentoForm.controls['categoriaId'].setValue(event.value)
+  }
+
   onChangeNomeHistorico(value: { value: any }): void { this.loadPessoa(value.value); }
   onChangeTPCategorias(tipo: { value: any }): void { this.getCategoria(tipo.value); }
   onChangeTPConta(event: { value: any }): void { this.getConta(event.value); }
@@ -938,7 +961,9 @@ export class LancamentoListFormComponent implements OnInit {
       this.lancamentoForm.controls['valor'].setValue(valor * -1);
 
     const lancamento: LancamentoDTO = this.lancamentoForm.value;
+     console.log(lancamento)
     this.lancamentoService.create(lancamento)
+   
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
@@ -1370,6 +1395,8 @@ export class LancamentoListFormComponent implements OnInit {
     this.lancamentoForm.reset();
     this.categoriasFiltradas.set([]);
     this.crtCategoria = 3;
+    this.exibirSelectPersonalizado = false;
+    this.lancamentoForm.reset();
   }
 
   setModalEdicao(value: string): void {

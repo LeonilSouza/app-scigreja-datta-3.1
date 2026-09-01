@@ -614,7 +614,7 @@
 
                     @if(lancamentoForm.controls['id'].value == null){
                     <div class="form-group col-md-4">
-                        <label class="m-b-9 text-danger">Transferir da conta</label>
+                        <label class="m-b-9 text-danger">Transferir da conta (Origem)</label>
                         <p-select [style]="{'width':'100%','height':'30px'}"
                             (onChange)="onChangeTransferenciaOrigem($event)" formControlName="contaId"
                             class="w-full md mb-2" [options]="contas()" [editable]="false" [filter]="false"
@@ -626,7 +626,7 @@
 
                     @if(lancamentoForm.controls['id'].value == null){
                     <div class="form-group col-md-4">
-                        <label class="m-b-9 text-success">Para</label>
+                        <label class="m-b-9 text-success">Para (Destino)</label>
                         <p-select [style]="{'width':'100%','height':'30px'}"
                             (onChange)="onChangeTransferenciaDestino($event)" formControlName="contaIdTransferencia"
                             class="w-full md mb-2" [options]="contasTransferencia()" [editable]="false" [filter]="false"
@@ -666,7 +666,7 @@
                     </div>
                     }
 
-                    <div class="form-group col-md-4 p-fluid">
+                    <div class="form-group col-md-4 p-fluid mb-0">
                         <label>Valor R$</label>
                         <p-inputNumber formControlName="valor" inputId="valor" mode="decimal" locale="pt-BR"
                             class="ml-auto" [minFractionDigits]="2"
@@ -676,6 +676,32 @@
                             class="danger" [style]="{'font-size':'12px'}">Informe um valor válido.</p>
                             }
                     </div>
+
+                    <!-- ================= NOVO BLOCO DE PERSONALIZAÇÃO ================= -->
+                    <!-- Só exibe se for um NOVO lançamento (ID nulo), pois na edição a Categoria já aparece acima -->
+                    @if(lancamentoForm.controls['id'].value == null) {
+                    <div class="form-group col-md-3 flex align-items-center mt-0">
+                        <div class="field-checkbox">
+                            <p-checkbox [binary]="true" inputId="personalizarId"
+                                (onChange)="onTogglePersonalizar($event.checked)">
+                            </p-checkbox>
+                            <label for="personalizarId" class="ml-2 mb-0" [style]="{'font-size':'14px'}">
+                                 Personalizar Categoria.
+                            </label>
+                        </div>
+                    </div>
+
+                    @if(exibirSelectPersonalizado){
+                    <div class="form-group col-md-5">
+                        <label class="text-primary ">Categoria de Destino</label>
+                        <p-select (onChange)="onChangePersonalizarCategoria($event)"[style]="{'width':'100%','height':'30px'}" formControlName="categoriaId"
+                            class="w-full md mb-1" [options]="categoriasPersonalizadas" [editable]="false"
+                            [filter]="false" optionLabel="nome" optionValue="id" placeholder="Selecione uma categoria"
+                            appendTo="body" />
+                    </div>
+                    }
+                    }
+                    <!-- ============================================================-->
 
                     <div class="modal-footer" style="height: 38px;">
                         @if(lancamentoForm.controls['id'].value > 0){
@@ -798,13 +824,12 @@
     <div class="col-md-12 col-xl-12" data-backdrop="static">
         <div class="card flex justify-center">
             <p-dialog header="RELATÓRIO POR CENTRO DE CUSTO — PERÍODO" [modal]="true"
-                [(visible)]="visibleModalRelatorioCCPeriodo" 
-                position="positionModalCCperiodo" [dismissableMask]="false"
+                [(visible)]="visibleModalRelatorioCCPeriodo" position="positionModalCCperiodo" [dismissableMask]="false"
                 [style]="{ width: '60vw', height: '90vh' }" [closeOnEscape]="false"
                 [breakpoints]="{ '1199px': '98vw', '575px': '100vw' }" [draggable]="false" [resizable]="false"
                 [contentStyle]="{ overflow: 'hidden', display: 'flex', 'flex-direction': 'column', height: '100%' }"
                 [transitionOptions]="'500ms ease-out'" (onHide)="fecharModalCCPeriodo()">
-                
+
 
                 <hr class="mt-1 mb-2">
 
