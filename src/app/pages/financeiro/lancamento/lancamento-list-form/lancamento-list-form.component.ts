@@ -755,7 +755,7 @@ export class LancamentoListFormComponent implements OnInit {
       },
       { separator: true },
       {
-        label: 'Relação de Entradas por FORMA - SETOR', icon: 'pi pi-dollar', target: '_blank',
+        label: 'Relação das Entradas Pix-GT e Cartão-GT - SETOR', icon: 'pi pi-dollar', target: '_blank',
         url: `${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=relacao-entradas-dizimo-transferencias-setor&setor=${this.setorId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`
       },
       { separator: true },
