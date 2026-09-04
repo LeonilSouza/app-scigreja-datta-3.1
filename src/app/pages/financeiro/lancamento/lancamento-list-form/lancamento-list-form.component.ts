@@ -328,7 +328,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   // 2. Crie a lista com as duas categorias mapeadas
   categoriasPersonalizadas = [
-    { id: 20, nome: 'Receitas Diversas' },
+    { id: 40, nome: 'Transferência Diversas (Livro Caixa)' },
     { id: 8, nome:  'Receita de Transferência (Padrão)' }
   ]; 
 
@@ -901,6 +901,7 @@ export class LancamentoListFormComponent implements OnInit {
 
   onChangePersonalizarCategoria(event: { value: number }): void {
    this.lancamentoForm.controls['categoriaId'].setValue(event.value)
+   console.log(event.value)
   }
 
   onChangeNomeHistorico(value: { value: any }): void { this.loadPessoa(value.value); }

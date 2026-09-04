@@ -472,13 +472,13 @@
                     <div class="row form-group col-md-6 mb-2">
                         <div class="flex flex-wrap">
                             <div class="flex align-items-center mb-0">
-                                <label class="text-dark mr-5">Nome/Historico</label>
+                                <label class="text-dark mr-5">Nome/Historico     </label>
                                 <p-radioButton (click)="cadastradoNC()" value="nao" formControlName="cadastrado"
                                     inputId="naocadastrado"></p-radioButton>
-                                <label for="naocadastrado" class="ml-2 text-c-blue">Não Cadastrado</label>
+                                <label for="naocadastrado" class="ml-2 text-c-blue"> Não Cadastrado     </label>
                                 <p-radioButton (click)="cadastradoC()" value="sim" formControlName="cadastrado"
                                     inputId="cadastrado"></p-radioButton>
-                                <label for="cadastrado" class="ml-2 text-success">Cadastrado</label>
+                                <label for="cadastrado" class="ml-2 text-success"> Cadastrado</label>
                             </div>
                             @if(lancamentoForm.controls['cadastrado'].value == 'sim'){
                             <p-select [style]="{'width':'100%','height':'30px'}" formControlName="pessoaId"
