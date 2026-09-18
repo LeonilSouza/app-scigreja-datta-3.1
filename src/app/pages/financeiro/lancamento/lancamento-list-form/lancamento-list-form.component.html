@@ -276,11 +276,12 @@
 
 <ng-template #end>
     <div class="flex justify-between">
-        <p-splitButton label="Analítico" icon="pi pi-print" [model]="analiticoItems"
+        <p-splitButton label="Exportar PDF/Excel" icon="pi pi-print" [model]="analiticoItems"
             [style]="{'height':'32px','margin-right':'8px'}" severity="contrast" [outlined]="false" />
     </div>
     <p-splitButton class="float-end mx-3" label="   Relatórios " icon="pi pi-print" [model]="printItems"
         [style]="{'height':'32px'}" outlined severity="contrast" />
+
     <strong>
         <button (click)="filtraLancamentos()" type="button" class="mb-0" pButton pRipple label=" Buscar "
             style="height:32px; background:green; font-size:small; border-radius:5px; color:aliceblue;">
@@ -694,7 +695,8 @@
                     @if(exibirSelectPersonalizado){
                     <div class="form-group col-md-5">
                         <label class="text-primary ">Categoria de Destino</label>
-                        <p-select (onChange)="onChangePersonalizarCategoria($event)"[style]="{'width':'100%','height':'30px'}" formControlName="categoriaId"
+                        <p-select (onChange)="onChangePersonalizarCategoria($event)"
+                            [style]="{'width':'100%','height':'30px'}" formControlName="categoriaId"
                             class="w-full md mb-1" [options]="categoriasPersonalizadas" [editable]="false"
                             [filter]="false" optionLabel="nome" optionValue="id" placeholder="Selecione uma categoria"
                             appendTo="body" />

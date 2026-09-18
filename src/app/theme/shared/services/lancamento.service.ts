@@ -32,7 +32,7 @@ export class LancamentoService {
     if (filtro.contas && filtro.contas.length > 0) {
       filtro.contas.split(',').forEach(id => {
         params = params.append('contaId', id.trim());
-      });       
+      });
     }
 
     return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-relatorio-campanhas`,
@@ -43,17 +43,32 @@ export class LancamentoService {
   // RELATÓRIOS — ANALÍTICO
   // ════════════════════════════════════════════════════
 
-  gerarRelatorioAnaliticoPdf(filtro: LancamentoFiltro): Observable<Blob> {
+  gerarRelatorioAnaliticoExcel(filtro: LancamentoFiltro): Observable<Blob> {
     const params = this.montarParamsAnalitico(filtro);
-    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-analitico`,
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-excel-analitico-contas`,
       { params, responseType: 'blob' });
   }
 
-  gerarRelatorioAnaliticoExcel(filtro: LancamentoFiltro): Observable<Blob> {
+  gerarRelatorioAnaliticoPdf(filtro: LancamentoFiltro): Observable<Blob> {
     const params = this.montarParamsAnalitico(filtro);
-    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-excel-analitico`,
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-analitico-contas`,
       { params, responseType: 'blob' });
   }
+
+  gerarRelatorioAnaliticoCategoriaPdf(filtro: LancamentoFiltro): Observable<Blob> {
+    const params = this.montarParamsAnalitico(filtro); // mesmo params, reutiliza
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-analitico-categorias`,
+      { params, responseType: 'blob' });
+  }
+
+  gerarRelatorioAnaliticoCategoriaExcel(filtro: LancamentoFiltro): Observable<Blob> {
+    const params = this.montarParamsAnalitico(filtro);
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-excel-analitico-categorias`,
+      { params, responseType: 'blob' });
+  }
+
+
+
 
   private montarParamsAnalitico(filtro: LancamentoFiltro): HttpParams {
     let params = new HttpParams()

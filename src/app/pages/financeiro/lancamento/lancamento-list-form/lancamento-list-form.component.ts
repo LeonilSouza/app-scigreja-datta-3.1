@@ -281,9 +281,21 @@ export class LancamentoListFormComponent implements OnInit {
   selecaoItemsIndividual!: MenuItem[];
   selecaoItemsMultiplos!: MenuItem[];
 
+  // POR CONTA
   analiticoItems: MenuItem[] = [
-    { label: 'Exportar PDF', icon: 'pi pi-file-pdf', command: () => this.gerarRelatorioAnalitico('pdf') },
-    { label: 'Exportar Excel', icon: 'pi pi-file-excel', command: () => this.gerarRelatorioAnalitico('excel') }
+    { label: 'Por Conta - PDF', icon: 'pi pi-file-pdf', command: () => this.gerarRelatorioAnalitico('pdf') },
+    { label: 'Por Conta - Excel', icon: 'pi pi-file-excel', command: () => this.gerarRelatorioAnalitico('excel') },
+   
+    { separator: true },
+
+    { label: 'Por Categoria - PDF', icon: 'pi pi-file-pdf', command: () => this.gerarRelatorioAnaliticoCategoria('pdf') },
+    { label: 'Por Categoria - Excel', icon: 'pi pi-file-excel', command: () => this.gerarRelatorioAnaliticoCategoria('excel') }
+  ];
+
+  // POR CATEGORIA
+  categoriaItems: MenuItem[] = [
+    { label: 'Exportar PDF - Por Categoria', icon: 'pi pi-file-pdf', command: () => this.gerarRelatorioAnaliticoCategoria('pdf') },
+    { label: 'Exportar Excel', icon: 'pi pi-file-excel', command: () => this.gerarRelatorioAnaliticoCategoria('excel') }
   ];
 
   tpLancamento = [
@@ -329,8 +341,8 @@ export class LancamentoListFormComponent implements OnInit {
   // 2. Crie a lista com as duas categorias mapeadas
   categoriasPersonalizadas = [
     { id: 40, nome: 'Transferência Diversas (Livro Caixa)' },
-    { id: 8, nome:  'Receita de Transferência (Padrão)' }
-  ]; 
+    { id: 8, nome: 'Receita de Transferência (Padrão)' }
+  ];
 
   // 3. Função disparada ao marcar/desmarcar o checkbox
   onTogglePersonalizar(checked: boolean) {
@@ -634,6 +646,32 @@ export class LancamentoListFormComponent implements OnInit {
       });
   }
 
+  // ════════════════════════════════════════════════════
+  // RELATÓRIO ANALITICO POR CATEGORIAS
+  // ════════════════════════════════════════════════════
+
+  gerarRelatorioAnaliticoCategoria(formato: 'pdf' | 'excel'): void {
+    if (!this.filtro.dtinicio || !this.filtro.dtfim) {
+      this.messageService.add({ severity: 'warn', summary: 'Atenção', detail: 'Informe o período antes de gerar o relatório.' });
+      return;
+    }
+    this.gerandoRelatorio = true;
+
+    const obs$ = formato === 'pdf'
+      ? this.lancamentoService.gerarRelatorioAnaliticoCategoriaPdf(this.filtro)
+      : this.lancamentoService.gerarRelatorioAnaliticoCategoriaExcel(this.filtro);
+
+    const nomeArquivo = formato === 'pdf'
+      ? 'relatorio-analitico-categoria.pdf'
+      : `relatorio-analitico-categoria-${this.filtro.dtinicio}-${this.filtro.dtfim}.xlsx`;
+
+    obs$.pipe(finalize(() => this.gerandoRelatorio = false))
+      .subscribe({
+        next: (blob) => this.abrirArquivo(blob, nomeArquivo),
+        error: () => this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao gerar relatório por categoria.' })
+      });
+  }
+
   imprimirRecibo(id: any): void {
     if (!id) {
       Swal.fire('Exclusão', 'Nenhum registro encontrado', 'info');
@@ -900,8 +938,8 @@ export class LancamentoListFormComponent implements OnInit {
   }
 
   onChangePersonalizarCategoria(event: { value: number }): void {
-   this.lancamentoForm.controls['categoriaId'].setValue(event.value)
-   console.log(event.value)
+    this.lancamentoForm.controls['categoriaId'].setValue(event.value)
+    console.log(event.value)
   }
 
   onChangeNomeHistorico(value: { value: any }): void { this.loadPessoa(value.value); }
@@ -963,7 +1001,7 @@ export class LancamentoListFormComponent implements OnInit {
 
     const lancamento: LancamentoDTO = this.lancamentoForm.value;
     this.lancamentoService.create(lancamento)
-   
+
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
