@@ -6,14 +6,12 @@ import { LancamentoDTO } from "../models/lancamento.dto";
 import { API_CONFIG } from "src/app/app-config";
 import { LancamentoFiltro } from "src/app/pages/financeiro/lancamento/lancamento-list-form/lancamento-list-form.component";
 import { TotaisDTO } from "../models/totais.dto";
-import { RelatorioCentroCusto } from "../models/relatorio-centro-custo.dto";
 
 @Injectable({
   providedIn: 'root'
 })
 export class LancamentoService {
   private apiPath: string = `${API_CONFIG.baseUrl}/lancamentos`;
-  private apiPath2: string = `${API_CONFIG.baseUrl}/relatorios/centro-custo`;
 
   constructor(public http: HttpClient) { }
 
@@ -219,6 +217,18 @@ export class LancamentoService {
     return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-consolidado`,
       { params, responseType: 'blob' });
   }
+
+  gerarLivroCaixaAuxiliar(filtro: LancamentoFiltro, nomeRelatorio: string): Observable<Blob> {
+  let params = new HttpParams()
+    .set('nomeRelatorio', nomeRelatorio)
+    .set('igreja', filtro.igrejaId.toString())
+    .set('dtinicio', filtro.dtinicio)
+    .set('dtfim', filtro.dtfim)
+    .set('nome', filtro.nome || '');
+
+  return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-caixa-auxiliar`,
+    { params, responseType: 'blob' });
+}
 
   getSaldoFinalContasFromIgreja(igrejaId: any) {
     return this.http.get(`${this.apiPath}/saldocontas/?igreja=${igrejaId}`)

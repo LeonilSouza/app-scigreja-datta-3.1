@@ -285,7 +285,7 @@ export class LancamentoListFormComponent implements OnInit {
   analiticoItems: MenuItem[] = [
     { label: 'Por Conta - PDF', icon: 'pi pi-file-pdf', command: () => this.gerarRelatorioAnalitico('pdf') },
     { label: 'Por Conta - Excel', icon: 'pi pi-file-excel', command: () => this.gerarRelatorioAnalitico('excel') },
-   
+
     { separator: true },
 
     { label: 'Por Categoria - PDF', icon: 'pi pi-file-pdf', command: () => this.gerarRelatorioAnaliticoCategoria('pdf') },
@@ -771,6 +771,15 @@ export class LancamentoListFormComponent implements OnInit {
           .subscribe({
             next: (blob) => this.abrirArquivo(blob, 'livro-caixa-detalhado.pdf'),
             error: () => this.toastr.error('Erro ao gerar Livro Caixa Mensal Detalhado.')
+          })
+      },
+      { separator: true },
+      {
+        label: 'Livro Caixa Auxiliar', icon: 'pi pi-calendar',
+        command: () => this.lancamentoService.gerarLivroCaixaAuxiliar(this.filtro, 'livro-caixa-auxiliar')
+          .subscribe({
+            next: (blob) => this.abrirArquivo(blob, 'livro-caixa-auxiliar.pdf'),
+            error: () => this.toastr.error('Erro ao gerar Livro Caixa Auxiliar.')
           })
       },
       { separator: true },
