@@ -445,11 +445,26 @@ export class PessoaListComponent implements OnInit {
               window.open(url, '_blank'); // Abre o PDF direto em uma nova aba
             },
             error: (err) => {
-              this.toastr.error('Erro ao gerar o relatório Livro Caixa Mensal.');
+              this.toastr.error('Erro ao gerar o Ficha de Membro.');
               console.error(err);
             }
           });
   }
+
+  imprimirFichaMembroBranco() {
+  this.pessoaService.gerarFichaMembroBranco(this.igrejaId)
+    .subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+      },
+      error: (err) => {
+        this.toastr.error('Erro ao gerar a Ficha de Membro em Branco.');
+        console.error(err);
+      }
+    });
+}
+
 
   countCongregadosAtivos() {
     const tipoMembro = 'Congregado';

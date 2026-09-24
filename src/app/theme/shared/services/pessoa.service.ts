@@ -165,6 +165,13 @@ export class PessoaService {
     });
   }
 
+  gerarFichaMembroBranco(igrejaId: number): Observable<Blob> {
+    return this.http.get(
+      `${API_CONFIG.baseUrl}/relatorios/pessoas/ficha-membro-branco/${igrejaId}`,
+      { responseType: 'blob' }
+    );
+  }
+
 
   // PRIVATE METHODS
 
