@@ -46,7 +46,7 @@ export class AssinarDocumentoComponent {
   posicaoInicial: { x: number; y: number } = { x: 50, y: 400 };
   coordenadaX: number = 0.05;  // 5% da largura
   coordenadaY: number = 0.80;  // 80% da altura (rodapé)
-  larguraAssinatura: number = 110;
+  larguraAssinatura: number = 285;
 
   // Armazena a imagem da própria assinatura do pastor para mostrar no quadradinho arrastável
   urlAssinaturaPastor: string = '';

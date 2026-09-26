@@ -401,6 +401,9 @@ export class PessoaListComponent implements OnInit {
 
     },
     {
+      separator: true,
+    },
+    {
       label: 'Lista de obreiros Ativos - Foto',
       icon: 'fas fa-users',
       target: '_blank',
@@ -422,6 +425,25 @@ export class PessoaListComponent implements OnInit {
     {
       separator: true,
     },
+    {
+      label: 'Declaração de Origem Denominacional',
+      icon: 'pi pi-print',
+      target: '_blank',
+      command: () => {
+        this.imprimirDeclaracaoOrigem();
+      }
+    },
+    {
+      separator: true,
+    },
+    {
+      label: 'Ficha Cadadastral - Branco',
+      icon: 'pi pi-file',
+      target: '_blank',
+      command: () => {
+        this.imprimirFichaMembroBranco();
+      }
+    },
 
   ];
 
@@ -437,33 +459,49 @@ export class PessoaListComponent implements OnInit {
   }
 
   imprimirFichaMembro(id: any) {
-      //Relatórios da Segunda Fabrica Estatica/Consolidada - Agora basta criar o relatorio no jasper e passar o nome junto com o filtro
-        this.pessoaService.gerarFichaMembro(id)
-          .subscribe({
-            next: (blob) => {
-              const url = window.URL.createObjectURL(blob);
-              window.open(url, '_blank'); // Abre o PDF direto em uma nova aba
-            },
-            error: (err) => {
-              this.toastr.error('Erro ao gerar o Ficha de Membro.');
-              console.error(err);
-            }
-          });
+    //Relatórios da Segunda Fabrica Estatica/Consolidada - Agora basta criar o relatorio no jasper e passar o nome junto com o filtro
+    this.pessoaService.gerarFichaMembro(id)
+      .subscribe({
+        next: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          window.open(url, '_blank'); // Abre o PDF direto em uma nova aba
+        },
+        error: (err) => {
+          this.toastr.error('Erro ao gerar o Ficha de Membro.');
+          console.error(err);
+        }
+      });
+  }
+
+  imprimirDeclaracaoOrigem() {
+    this.pessoaService.gerarFichaDeclaracaoOrigem(this.igrejaId)
+      .subscribe({
+        next: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          window.open(url, '_blank');
+        },
+        error: (err) => {
+          this.toastr.error('Erro ao gerar a Ficha Denominacional em Branco.');
+          console.error(err);
+        }
+      });
   }
 
   imprimirFichaMembroBranco() {
-  this.pessoaService.gerarFichaMembroBranco(this.igrejaId)
-    .subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        window.open(url, '_blank');
-      },
-      error: (err) => {
-        this.toastr.error('Erro ao gerar a Ficha de Membro em Branco.');
-        console.error(err);
-      }
-    });
-}
+    this.pessoaService.gerarFichaMembroBranco(this.igrejaId)
+      .subscribe({
+        next: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          window.open(url, '_blank');
+        },
+        error: (err) => {
+          this.toastr.error('Erro ao gerar a Ficha de Membro em Branco.');
+          console.error(err);
+        }
+      });
+  }
+
+
 
 
   countCongregadosAtivos() {

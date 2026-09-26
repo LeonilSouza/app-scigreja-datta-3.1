@@ -172,6 +172,15 @@ export class PessoaService {
     );
   }
 
+  gerarFichaDeclaracaoOrigem(igrejaId: number): Observable<Blob> {
+    return this.http.get(
+      `${API_CONFIG.baseUrl}/relatorios/pessoas/ficha-denominacional/${igrejaId}`,
+      { responseType: 'blob' }
+    );
+  }
+
+
+
 
   // PRIVATE METHODS
 
