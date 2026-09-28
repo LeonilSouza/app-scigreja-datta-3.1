@@ -50,15 +50,14 @@
           <label class="font-semibold text-muted small mb-2">
             <i class="pi pi-pen-to-square mr-1"></i> Escolher Assinatura:
           </label>
+
           <div class="d-flex flex-column gap-2">
-            <div *ngFor="let a of assinaturas"
-              class="d-flex align-items-center gap-2 p-2 rounded border"
+            <div *ngFor="let a of assinaturasPaginadas" class="d-flex align-items-center gap-2 p-2 rounded border"
               [class.border-primary]="assinaturaSelecionada?.id === a.id"
-              [class.bg-primary-subtle]="assinaturaSelecionada?.id === a.id"
-              (click)="selecionarAssinatura(a)" style="cursor: pointer;">
+              [class.bg-primary-subtle]="assinaturaSelecionada?.id === a.id" (click)="selecionarAssinatura(a)"
+              style="cursor: pointer;">
               <img [src]="a.imagemBase64"
-                style="height: 40px; object-fit: contain; background: #f0f0f0; border-radius: 4px;"
-                alt="assinatura">
+                style="height: 40px; object-fit: contain; background: #f0f0f0; border-radius: 4px;" alt="assinatura">
               <div>
                 <div class="small font-bold">{{ a.nome }}</div>
                 <div class="small text-muted">{{ a.cargo }}</div>
@@ -69,6 +68,24 @@
             </div>
           </div>
         </div>
+
+        <!-- Paginação de Assinaturas -->
+        @if(totalPaginasAssinaturas > 1){
+        <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+          <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtualAssinaturas === 1"
+            (click)="trocarPaginaAssinatura(paginaAtualAssinaturas - 1)">
+            <i class="pi pi-chevron-left"></i>
+          </button>
+          <span class="small text-muted">
+            {{ paginaAtualAssinaturas }} / {{ totalPaginasAssinaturas }}
+          </span>
+          <button class="btn btn-sm btn-outline-secondary"
+            [disabled]="paginaAtualAssinaturas === totalPaginasAssinaturas"
+            (click)="trocarPaginaAssinatura(paginaAtualAssinaturas + 1)">
+            <i class="pi pi-chevron-right"></i>
+          </button>
+        </div>
+        }
         }
 
         @if(assinaturas.length === 0){
@@ -80,8 +97,7 @@
 
         <!-- Botões -->
         <button pButton type="button" label="Aplicar Assinatura" icon="pi pi-check-circle"
-          class="p-button-primary w-100 py-2 mb-2" [loading]="carregando"
-          (click)="confirmarAssinaturaDigital()">
+          class="p-button-primary w-100 py-2 mb-2" [loading]="carregando" (click)="confirmarAssinaturaDigital()">
         </button>
 
         @if(documentoResultadoUrl){
@@ -113,25 +129,20 @@
           <!-- Carimbo arrastável -->
           <div class="position-absolute bg-info-subtle border border-info p-2 rounded text-center"
             style="z-index: 999; cursor: move; box-shadow: 0 4px 10px rgba(0,0,0,0.15);"
-            [style.width.px]="larguraAssinatura"
-            cdkDrag cdkDragBoundary="#boundary-documento"
+            [style.width.px]="larguraAssinatura" cdkDrag cdkDragBoundary="#boundary-documento"
             (cdkDragEnded)="onArrastarFinalizado($event)">
 
-            <!-- Nome do assinante -->
             <span class="small d-block text-info font-bold mb-1" style="font-size: 10px;">
               {{ assinaturaSelecionada?.nome || 'Assinatura' }}
             </span>
 
-            <!-- Imagem da assinatura selecionada -->
             @if(assinaturaSelecionada?.imagemBase64){
-            <img [src]="assinaturaSelecionada.imagemBase64"
-              style="width: 100%; max-height: 50px; object-fit: contain;"
+            <img [src]="assinaturaSelecionada.imagemBase64" style="width: 100%; max-height: 50px; object-fit: contain;"
               alt="assinatura">
             } @else {
             <div class="border-top border-info border-dashed pt-1">✒️ [Local]</div>
             }
 
-            <!-- Cargo do assinante -->
             @if(assinaturaSelecionada?.cargo){
             <div class="text-muted" style="font-size: 9px; margin-top: 2px;">
               {{ assinaturaSelecionada.cargo }}
@@ -159,7 +170,8 @@
         <div class="text-center text-muted p-5">
           <i class="pi pi-mouse mb-3 text-secondary" style="font-size: 3.5rem;"></i>
           <h6 class="font-medium">Painel do Assinador Digital Universal</h6>
-          <p class="small">Faça o upload de uma ata em PDF ou convite em Imagem para carregar a mesa de calibração por mouse.</p>
+          <p class="small">Faça o upload de uma ata em PDF ou convite em Imagem para carregar a mesa de calibração por
+            mouse.</p>
         </div>
         }
 

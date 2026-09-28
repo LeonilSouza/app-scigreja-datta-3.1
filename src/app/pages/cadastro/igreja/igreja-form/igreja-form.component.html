@@ -628,7 +628,7 @@
                 style="width: 7em; height: 30px; font-size: small; border-radius: 6px; border: 0; background: #1a82ce;"
                 icon="pi pi-times" (click)="fecharModalAssinatura()">
               </button>
-              <button type="button" pButton pRipple label="Salvar"
+              <button class="mx-2" type="button" pButton pRipple label="Salvar"
                 style="width: 7em; background:#388669; height: 30px; border-radius: 6px; font-size: small;"
                 icon="pi pi-check" [disabled]="!novaAssinatura.nome || !novaAssinatura.cargo || !arquivoAssinatura"
                 (click)="salvarNovaAssinatura()">

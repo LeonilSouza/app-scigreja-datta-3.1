@@ -45,6 +45,12 @@ export class AssinarDocumentoComponent implements OnInit {
   assinaturas: AssinaturaDigital[] = [];
   assinaturaSelecionada: AssinaturaDigital | null = null;
 
+  // Paginação de assinaturas
+  paginaAtualAssinaturas: number = 1;
+  itensPorPaginaAssinaturas: number = 4;
+  totalPaginasAssinaturas: number = 0;
+  assinaturasPaginadas: AssinaturaDigital[] = [];
+
   // Resultado
   documentoResultadoUrl: SafeUrl | null = null;
   carregando: boolean = false;
@@ -59,26 +65,36 @@ export class AssinarDocumentoComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private toastr: ToastrService,
     private assinaturaService: AssinaturaService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.carregarAssinaturas();
   }
 
-  // ✅ Só seleciona a primeira se ainda não houver nenhuma selecionada
   carregarAssinaturas() {
     this.assinaturaService.listarAssinaturas(this.igrejaId).subscribe({
       next: (lista) => {
         this.assinaturas = lista;
+        this.totalPaginasAssinaturas = Math.ceil(lista.length / 4); // ✅ fixo
+        this.atualizarPaginaAssinaturas();
         if (lista.length > 0 && !this.assinaturaSelecionada) {
           this.assinaturaSelecionada = lista[0];
-         
         }
       }
     });
   }
 
-  // ✅ Simples e direto — apenas atribui a selecionada
+  atualizarPaginaAssinaturas() {
+    const inicio = (this.paginaAtualAssinaturas - 1) * 4; // ✅ fixo
+    this.assinaturasPaginadas = this.assinaturas.slice(inicio, inicio + 4); // ✅ fixo
+  }
+
+  trocarPaginaAssinatura(pagina: number) {
+    if (pagina < 1 || pagina > this.totalPaginasAssinaturas) return;
+    this.paginaAtualAssinaturas = pagina;
+    this.atualizarPaginaAssinaturas();
+  }
+
   selecionarAssinatura(assinatura: AssinaturaDigital) {
     this.assinaturaSelecionada = assinatura;
   }
@@ -146,7 +162,6 @@ export class AssinarDocumentoComponent implements OnInit {
     this.coordenadaY = pixelY / (posicaoPai.height - 32);
   }
 
-  // ✅ Agora passa o ID da assinatura selecionada para o backend
   confirmarAssinaturaDigital() {
     if (!this.arquivoSelecionado) {
       this.toastr.warning('Selecione um documento (PDF ou Imagem) primeiro.');
@@ -161,7 +176,7 @@ export class AssinarDocumentoComponent implements OnInit {
     this.carregando = true;
 
     const params = new HttpParams()
-      .set('assinaturaId', this.assinaturaSelecionada.id.toString()) // ✅ envia o ID correto
+      .set('assinaturaId', this.assinaturaSelecionada.id.toString())
       .set('pagina', this.paginaSelecionada.toString())
       .set('coordenadaX', this.coordenadaX.toString())
       .set('coordenadaY', this.coordenadaY.toString())
