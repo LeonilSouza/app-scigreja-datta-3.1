@@ -45,7 +45,11 @@ import { nomeIgrejaSignal, perfilSignal } from "src/app/theme/shared/_helpers/sh
 import { DatePicker } from "primeng/datepicker";
 import { FileUploadModule } from 'primeng/fileupload';
 import { PessoaDTO } from "src/app/theme/shared/models/pessoa.dto";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { API_CONFIG } from "src/app/app-config";
+import { AssinaturaDigital } from "src/app/theme/shared/models/assinatura-digital.dto";
+import { AssinaturaService } from "src/app/theme/shared/services/assinatura.service";
+import { TableModule } from "primeng/table";
+import { DialogModule } from "primeng/dialog";
 
 //declare const $: any;
 
@@ -68,13 +72,16 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
     ImageCropperModule,
     SelectModule,
     DatePicker,
-    FileUploadModule
+    FileUploadModule,
+    TableModule,
+    DialogModule,
     // JsonPipe,
   ],
   providers: [
     PaisService,
     SetorService,
-    CidadeService
+    CidadeService,
+    AssinaturaService
   ],
 })
 export class IgrejaFormComponent
@@ -87,7 +94,7 @@ export class IgrejaFormComponent
   nomeIgreja = nomeIgrejaSignal();
   perfil = perfilSignal();
 
-   pessoas = signal<PessoaDTO[]>([]);
+  pessoas = signal<PessoaDTO[]>([]);
 
   // Consulta CEP ViaCep
   dataCep!: any[];
@@ -103,6 +110,16 @@ export class IgrejaFormComponent
   igrejaLogo!: IgrejaDTO;
 
   public activeTab: string;
+
+  apiUrl = API_CONFIG.baseUrl;
+
+  assinaturasIgreja: AssinaturaDigital[] = [];
+
+  visibleModalAssinatura: boolean = false;
+
+  novaAssinatura = { nome: '', cargo: '' };
+  arquivoAssinatura: File | null = null;
+  previewAssinatura: string | null = null;
 
   // Funciona muito bem para campos que não precisam de validação com membroDesde que usei primeNg
   public maskCelularArea = ["(", /\d/, /\d/, ")", " ", /\d/, /\d/, /\d/, /\d/, /\d/, "-", /\d/, /\d/, /\d/, /\d/,]; // Celular
@@ -166,7 +183,7 @@ export class IgrejaFormComponent
     private igrejaService: IgrejaService,
     public storage: StorageService,
     public setorService: SetorService,
-    // public cargoService: CargoService,
+    public assinaturaService: AssinaturaService,
     private messageService: MessageService,
     public translate: TranslateService,
     public pessoaService: PessoaService,
@@ -377,81 +394,81 @@ export class IgrejaFormComponent
   //cropper - cortar imagem
 
   uploadLogo(IgrejaDTO: IgrejaDTO) {
-  // Garante que existe uma imagem cortada para enviar
-  if (!this.croppedImage) return;
+    // Garante que existe uma imagem cortada para enviar
+    if (!this.croppedImage) return;
 
-  try {
-    // 1. O PULO DO GATO SEGURO: Divide a string no caractere ',' 
-    // Isola o cabeçalho ("data:image/png;base64") dos dados brutos em base64 de forma infalível
-    const partesBase64 = this.croppedImage.split(',');
-    const base64Dados = partesBase64[1];
-    
-    // Detecta o tipo real da imagem (png, jpeg, etc.) direto do cabeçalho
-    const tipoImagem = partesBase64[0].match(/:(.*?);/)?.[1] || 'image/png';
+    try {
+      // 1. O PULO DO GATO SEGURO: Divide a string no caractere ',' 
+      // Isola o cabeçalho ("data:image/png;base64") dos dados brutos em base64 de forma infalível
+      const partesBase64 = this.croppedImage.split(',');
+      const base64Dados = partesBase64[1];
 
-    // 2. Higienização do nome do arquivo utilizando Expressão Regular (Regex)
-    const nomeOriginal = this.igrejaLogo?.nome || 'logo_igreja';
-    const nomeLimpo = nomeOriginal.trim().replace(/\s+/g, "_"); // Substitui QUALQUER quantidade de espaços por um único "_"
-    const extensao = tipoImagem.split('/')[1]; // Captura 'png' ou 'jpeg' dinamicamente
-    const nomeArquivoFinal = `${nomeLimpo}.${extensao}`;
+      // Detecta o tipo real da imagem (png, jpeg, etc.) direto do cabeçalho
+      const tipoImagem = partesBase64[0].match(/:(.*?);/)?.[1] || 'image/png';
 
-    // 3. Converte a string Base64 em um arquivo físico aceito pelo Java MultipartFile
-    const imageBlob = this.dataURItoBlob(base64Dados);
-    const imageFile = new File([imageBlob], nomeArquivoFinal, { type: tipoImagem });
+      // 2. Higienização do nome do arquivo utilizando Expressão Regular (Regex)
+      const nomeOriginal = this.igrejaLogo?.nome || 'logo_igreja';
+      const nomeLimpo = nomeOriginal.trim().replace(/\s+/g, "_"); // Substitui QUALQUER quantidade de espaços por um único "_"
+      const extensao = tipoImagem.split('/')[1]; // Captura 'png' ou 'jpeg' dinamicamente
+      const nomeArquivoFinal = `${nomeLimpo}.${extensao}`;
 
-    // 4. VALIDAÇÃO DE TAMANHO REALISTA (Bloqueia apenas se passar de 1MB)
-    const limiteUmMegabyte = 1024 * 1024; // 1.048.576 bytes
-    if (imageFile.size > limiteUmMegabyte) {
-      this.messageService.add({
-        severity: "error",
-        summary: "Erro",
-        detail: "A imagem do logotipo é muito grande. O limite máximo permitido é 1MB.",
+      // 3. Converte a string Base64 em um arquivo físico aceito pelo Java MultipartFile
+      const imageBlob = this.dataURItoBlob(base64Dados);
+      const imageFile = new File([imageBlob], nomeArquivoFinal, { type: tipoImagem });
+
+      // 4. VALIDAÇÃO DE TAMANHO REALISTA (Bloqueia apenas se passar de 1MB)
+      const limiteUmMegabyte = 1024 * 1024; // 1.048.576 bytes
+      if (imageFile.size > limiteUmMegabyte) {
+        this.messageService.add({
+          severity: "error",
+          summary: "Erro",
+          detail: "A imagem do logotipo é muito grande. O limite máximo permitido é 1MB.",
+        });
+        return;
+      }
+
+      // 5. ENVIO ATÔMICO PARA O BACK-END
+      const formData: FormData = new FormData();
+      formData.append("logo", imageFile); // Certifique-se de que a chave coincide com o seu @RequestParam do Java
+
+      this.igrejaService.uploadLogo(IgrejaDTO, formData).subscribe({
+        next: () => {
+          // Reseta os estados visuais da tela após o sucesso
+          this.loadIgreja();
+          this.croppedImage = null;
+          this.imageChangedEvent = null;
+          this.toastr.success("Logotipo da congregação atualizado com sucesso!", "Cadastro");
+        },
+        error: (err) => {
+          this.toastr.error("Falha ao sincronizar o logotipo com o servidor.");
+          console.error(err);
+        }
       });
-      return;
+
+    } catch (error) {
+      this.toastr.error("Erro interno ao processar a imagem do logotipo.");
+      console.error('Erro no processamento do Base64:', error);
     }
-
-    // 5. ENVIO ATÔMICO PARA O BACK-END
-    const formData: FormData = new FormData();
-    formData.append("logo", imageFile); // Certifique-se de que a chave coincide com o seu @RequestParam do Java
-
-    this.igrejaService.uploadLogo(IgrejaDTO, formData).subscribe({
-      next: () => {
-        // Reseta os estados visuais da tela após o sucesso
-        this.loadIgreja();
-        this.croppedImage = null;
-        this.imageChangedEvent = null;
-        this.toastr.success("Logotipo da congregação atualizado com sucesso!", "Cadastro");
-      },
-      error: (err) => {
-        this.toastr.error("Falha ao sincronizar o logotipo com o servidor.");
-        console.error(err);
-      }
-    });
-
-  } catch (error) {
-    this.toastr.error("Erro interno ao processar a imagem do logotipo.");
-    console.error('Erro no processamento do Base64:', error);
   }
-}
 
-onUploadAssinatura(event: any) {
-  // 1. Captura o arquivo binário enviado pelo p-fileUpload do PrimeNG
-  const arquivo: File = event.files[0]; 
+  onUploadAssinatura(event: any) {
+    // 1. Captura o arquivo binário enviado pelo p-fileUpload do PrimeNG
+    const arquivo: File = event.files[0];
 
-  // 2. O seu service de igreja espera o ID e o Arquivo: uploadAssinatura(id, file)
-  // Nós passamos o 'this.igrejaId' que já está guardado na classe!
-  if (arquivo && this.igreja) {
-    this.igrejaService.uploadAssinatura(this.igreja.id, arquivo).subscribe({
-      next: () => {
-        this.toastr.success('Assinatura digital do pastor salva com sucesso!', 'Sucesso');
-      },
-      error: (err) => {
-        this.toastr.error('Erro ao fazer o upload da assinatura no servidor.');
-        console.error(err);
-      }
-    });
+    // 2. O seu service de igreja espera o ID e o Arquivo: uploadAssinatura(id, file)
+    // Nós passamos o 'this.igrejaId' que já está guardado na classe!
+    if (arquivo && this.igreja) {
+      this.igrejaService.uploadAssinatura(this.igreja.id, arquivo).subscribe({
+        next: () => {
+          this.toastr.success('Assinatura digital do pastor salva com sucesso!', 'Sucesso');
+        },
+        error: (err) => {
+          this.toastr.error('Erro ao fazer o upload da assinatura no servidor.');
+          console.error(err);
+        }
+      });
+    }
   }
-}
 
   dataURItoBlob(dataURI: string) {
     const byteString = window.atob(dataURI);
@@ -588,7 +605,7 @@ onUploadAssinatura(event: any) {
             this.igrejaForm.patchValue(this.igreja); // binds loaded category data to CategoryForm
             this.setor = response["setor"];
             this.igrejaForm.controls["setorId"].setValue(this.setor.id);
-
+            this.carregarAssinaturasIgreja();
             this.setorId = this.setor.id ?? 0;
             this.loadSetorIgreja();
           },
@@ -711,6 +728,76 @@ onUploadAssinatura(event: any) {
   }
 
   // METODOS PRIVADOS
+  carregarAssinaturasIgreja() {
+    this.assinaturaService.listarAssinaturas(this.id).subscribe({
+      next: (res) => this.assinaturasIgreja = res,
+      error: () => { }
+    });
+  }
+
+  abrirModalNovaAssinatura() {
+    this.novaAssinatura = { nome: '', cargo: '' };
+    this.arquivoAssinatura = null;
+    this.previewAssinatura = null;
+    this.visibleModalAssinatura = true;
+  }
+
+  fecharModalAssinatura() {
+    this.visibleModalAssinatura = false;
+  }
+
+ onSelecionarImagemAssinatura(event: any) {
+  const arquivo: File = event.currentFiles[0];
+  
+  if (!arquivo) return;
+  
+  this.arquivoAssinatura = arquivo;
+
+  const reader = new FileReader();
+  reader.onload = (e: any) => this.previewAssinatura = e.target.result;
+  reader.readAsDataURL(arquivo);
+}
+
+
+  salvarNovaAssinatura() {
+    if (!this.novaAssinatura.nome || !this.novaAssinatura.cargo || !this.arquivoAssinatura) return;
+
+    this.assinaturaService.cadastrarAssinatura(
+      this.id,
+      this.novaAssinatura.nome.toUpperCase(),
+      this.novaAssinatura.cargo.toUpperCase(),
+      this.arquivoAssinatura
+    ).subscribe({
+      next: () => {
+        this.toastr.success('Assinatura cadastrada com sucesso!', 'Sucesso');
+        this.fecharModalAssinatura();
+        this.carregarAssinaturasIgreja();
+      },
+      error: () => {
+        this.toastr.error('Erro ao cadastrar assinatura.');
+      }
+    });
+  }
+
+  excluirAssinatura(a: AssinaturaDigital) {
+    Swal.fire({
+      text: `Deseja excluir a assinatura de ${a.nome}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Excluir',
+      confirmButtonColor: '#d33'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.assinaturaService.excluir(a.id).subscribe({
+          next: () => {
+            this.toastr.success('Assinatura excluída!', 'Sucesso');
+            this.carregarAssinaturasIgreja();
+          },
+          error: () => this.toastr.error('Erro ao excluir assinatura.')
+        });
+      }
+    });
+  }
 
   exclusaoIgreja(igreja: IgrejaDTO) {
     Swal.fire({

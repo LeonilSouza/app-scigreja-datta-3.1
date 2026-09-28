@@ -73,7 +73,7 @@
   <!-- CABEÇALHO DAS ABAS  -->
 
   <ul class="nav nav-tabs profile-tabs nav-fills " id="myTab" role="tablist">
-    @if(currentAction == 'edit' && igreja.id > 0){
+    @if(currentAction == 'edit' && igreja?.id > 0){
     <li class="nav-item mt-2  shadow-none">
       <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab === 'dados' }"
         (click)="this.activeTab = 'dados'" id="dados-tab" data-toggle="tab" href="javascript:" role="tab"
@@ -83,7 +83,7 @@
       </a>
     </li>
     }
-    @if(currentAction == 'edit' && igreja.id > 0){
+    @if(currentAction == 'edit' && igreja?.id > 0){
     <li class="nav-item mt-2">
       <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab === 'personalizacao' }"
         (click)="this.activeTab = 'personalizacao'" id="personalizacao-tab" data-toggle="tab" href="javascript:"
@@ -94,17 +94,17 @@
     </li>
     }
 
-    @if(currentAction == 'edit' && igreja.id > 0){
+    @if(currentAction == 'edit' && igreja?.id > 0){
     <li class="nav-item mt-2">
-      <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab === 'documentos' }"
-        (click)="this.activeTab = 'documentos'" id="documentos-tab" data-toggle="tab" href="javascript:" role="tab"
-        aria-controls="documentos" aria-selected="false">
+      <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab === 'assinatura' }"
+        (click)="this.activeTab = 'assinatura'" id="documentos-tab" data-toggle="tab" href="javascript:" role="tab"
+        aria-controls="assinatura" aria-selected="false">
         <i class="fas fa-book mr-2 text-c-yellow"></i>
         Assinatura
       </a>
     </li>
     }
-    @if(currentAction == 'edit' && igreja.id > 0){
+    @if(currentAction == 'edit' && igreja?.id > 0){
     <li class="nav-item mt-2">
       <a class="nav-link text-reset" [ngClass]="{ active: this.activeTab === 'outros' }"
         (click)="this.activeTab = 'outros'" id="outros-tab" data-toggle="tab" href="javascript:" role="tab"
@@ -163,14 +163,14 @@
               (selectionChanges)="doSelectSetor($event)" />
           </div>
 
-           <!-- Pastor Dirigente -->
-        <div class="col-sm-4 mb-2">
+          <!-- Pastor Dirigente -->
+          <div class="col-sm-4 mb-2">
             <label class="f-13">Pastor Dirigente</label>
-            <p-select [style]="{'width':'100%','height':'30px'}" formControlName="pastorDirigente"
-                class="w-full md  " [options]="pessoas()" [editable]="false" [filter]="true" filterBy="nome"
-                [showClear]="false" optionLabel="nome" resetFilterOnHide="true" dateFormat="dd/mm/yy"
-                dropdownIcon="pi pi-users" [autofocus]="false" optionValue="nome" placeholder="Todos" appendTo="body" />
-        </div>
+            <p-select [style]="{'width':'100%','height':'30px'}" formControlName="pastorDirigente" class="w-full md  "
+              [options]="pessoas()" [editable]="false" [filter]="true" filterBy="nome" [showClear]="false"
+              optionLabel="nome" resetFilterOnHide="true" dateFormat="dd/mm/yy" dropdownIcon="pi pi-users"
+              [autofocus]="false" optionValue="nome" placeholder="Todos" appendTo="body" />
+          </div>
 
           <!-- dataFundacao -->
           <div class="form-group col-md-2">
@@ -178,13 +178,13 @@
             <p-datepicker [style]="{'width':'100%','height':'30px'}" [monthNavigator]="true" [yearNavigator]="true"
               yearRange="1900:2100" [showButtonBar]="true" [showIcon]="true" inputId="icondisplay" dataType="string"
               dateFormat="dd/mm/yy" formControlName="dataFundacao" placeholder="dd/mm/aaaa" />
-            @if(igrejaForm.get('dataFundacao').invalid && igrejaForm.get('dataFundacao').touched){
+            @if(igrejaForm.get('dataFundacao')?.invalid && igrejaForm.get('dataFundacao')?.touched){
             <div class="danger">
             </div>
             }
           </div>
 
-           <!-- cnpj -->
+          <!-- cnpj -->
           <div class="form-group col-md-2">
             <label for="cpfOuCnpj">Cnpj</label>
             <input type="text" class="form-control" id="cpfOuCnpj" formControlName="cpfOuCnpj" />
@@ -232,7 +232,7 @@
             <input class="form-control" formControlName="email" class="form-control" placeholder="email" />
           </div>
 
-           <!-- nomeSetor -->
+          <!-- nomeSetor -->
           <div class="form-group col-md-4">
             <label for="nomeSetor">Nome do Setor</label>
             <input readonly type="text" class="form-control" id="nomeSetor" formControlName="nomeSetor" />
@@ -440,7 +440,7 @@
                   <!-- Logo - Quando não tem logo-->
 
                   <ng-container>
-                    @if(!igreja.logo && igreja.id > 0){
+                    @if(!igreja.logo && igreja?.id > 0){
                     <div class="card shadow-none b-wid-1 user-profile ml-3 mr-3 user-card mb-0 col-sm-2 ml- mt-0 mr-0"
                       style="min-width: 270px; min-height: 300px">
                       <div class="card-body py-0" style="height: 100%">
@@ -519,28 +519,127 @@
         </div>
       </div>
 
-      <!-- ABA DOCUMENTOS  -->
-      <div class="tab-pane fade" [ngClass]="{ 'show active': this.activeTab === 'documentos' }" id="documentos"
-        role="tabpanel" aria-labelledby="documentos-tab">
+      <!-- ABA ASSINATURAS -->
+      <div class="tab-pane fade" [ngClass]="{ 'show active': this.activeTab === 'assinatura' }" id="assinatura"
+        role="tabpanel" aria-labelledby="assinatura-tab">
 
         <div class="card shadow-sm border-0 p-4 mt-4">
-          <h5 class="font-medium text-secondary mb-2"><i class="pi pi-pencil mr-2"></i> Assinatura Digital do Pastor
-            Presidente</h5>
-          <p class="text-muted small mb-4">Insira o arquivo da assinatura escaneada com fundo transparente no formato
-            .PNG.</p>
-
-          <div class="row">
-            <div class="col-12 col-md-8">
-              <!-- Componente do PrimeNG para seleção e envio de arquivos -->
-              <p-fileUpload mode="advanced" chooseLabel="Selecionar Assinatura" uploadLabel="Enviar para o Sistema"
-                cancelLabel="Cancelar" accept="image/png" maxFileSize="1000000" customUpload="true"
-                (uploadHandler)="onUploadAssinatura($event)">
-              </p-fileUpload>
-            </div>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="font-medium text-secondary mb-0">
+              <i class="pi pi-pen-to-square mr-2"></i> Assinaturas Digitais Cadastradas
+            </h5>
+            <button pButton type="button" label="Nova Assinatura" icon="pi pi-plus" class="p-button-primary p-button-sm"
+              (click)="abrirModalNovaAssinatura()">
+            </button>
           </div>
-        </div>
 
+          <!-- TABELA DE ASSINATURAS -->
+          <p-table [value]="assinaturasIgreja" [rows]="5" [paginator]="assinaturasIgreja.length > 5"
+            styleClass="p-datatable-sm p-datatable-striped" responsiveLayout="scroll">
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="width: 80px;">Imagem</th>
+                <th>Nome</th>
+                <th>Cargo</th>
+                <th style="width: 80px;">Ativo</th>
+                <th style="width: 100px;">Ações</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-a>
+              <tr>
+                <td>
+                  <img [src]="a.imagemBase64"
+                    style="height: 36px; object-fit: contain; background: #f5f5f5; border-radius: 4px; border: 1px solid #ddd;"
+                    alt="assinatura">
+                </td>
+
+                <td>{{ a.nome }}</td>
+                <td>{{ a.cargo }}</td>
+                <td>
+                  <span class="badge" [ngClass]="a.ativo ? 'bg-success' : 'bg-secondary'">
+                    {{ a.ativo ? 'Ativo' : 'Inativo' }}
+                  </span>
+                </td>
+                <td>
+                  <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-text p-button-sm"
+                    (click)="excluirAssinatura(a)">
+                  </button>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="5" class="text-center text-muted small py-3">
+                  <i class="pi pi-info-circle mr-1"></i> Nenhuma assinatura cadastrada ainda.
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
       </div>
+      <!-- FIM ABA ASSINATURAS -->
+
+
+      <!-- ===================== MODAL NOVA ASSINATURA ===================== -->
+      <div class="col-md-12 col-xl-12">
+        <div class="card flex justify-center">
+          <p-dialog header="CADASTRO DE ASSINATURA DIGITAL" [modal]="true" [(visible)]="visibleModalAssinatura"
+            [position]="'center'" [dismissableMask]="false"
+            [style]="{width: '45vw', 'min-height': '30vh', height: 'auto'}" [closeOnEscape]="false"
+            [breakpoints]="{'960px': '95vw', '640px': '100vw'}" [draggable]="false" [resizable]="false"
+            [contentStyle]="{ 'overflow': 'auto' }" [transitionOptions]="'500ms ease-out'">
+
+            <hr class="mt-1 mb-3">
+
+            <div class="row col-12">
+
+              <div class="form-group col-md-6 mb-3">
+                <label class="mb-1">Nome do Responsável</label>
+                <input type="text" class="form-control" style="text-transform: uppercase" [value]="novaAssinatura.nome"
+                  (input)="novaAssinatura.nome = $any($event.target).value" placeholder="Ex: Pastor João Silva">
+              </div>
+
+              <div class="form-group col-md-6 mb-3">
+                <label class="mb-1">Cargo</label>
+                <input type="text" class="form-control" style="text-transform: uppercase" [value]="novaAssinatura.cargo"
+                  (input)="novaAssinatura.cargo = $any($event.target).value" placeholder="Ex: Pastor Presidente">
+              </div>
+
+
+              <div class="form-group col-12 mb-3">
+                <label class="mb-2 d-block">Imagem da Assinatura (PNG com fundo transparente)</label>
+                <p-fileUpload mode="basic" chooseLabel="Selecionar PNG" accept="image/png" maxFileSize="1000000"
+                  [auto]="true" customUpload="true" (onSelect)="onSelecionarImagemAssinatura($event)">
+                </p-fileUpload>
+
+                <!-- Preview -->
+                @if(previewAssinatura){
+                <div class="mt-2 p-2 border rounded bg-light text-center">
+                  <img [src]="previewAssinatura" style="max-height: 60px; object-fit: contain;" alt="preview">
+                </div>
+                }
+              </div>
+
+            </div>
+
+            <!-- FOOTER DO MODAL -->
+            <div class="modal-footer" style="height: 38px;">
+              <button type="button" pButton pRipple label="Fechar"
+                style="width: 7em; height: 30px; font-size: small; border-radius: 6px; border: 0; background: #1a82ce;"
+                icon="pi pi-times" (click)="fecharModalAssinatura()">
+              </button>
+              <button type="button" pButton pRipple label="Salvar"
+                style="width: 7em; background:#388669; height: 30px; border-radius: 6px; font-size: small;"
+                icon="pi pi-check" [disabled]="!novaAssinatura.nome || !novaAssinatura.cargo || !arquivoAssinatura"
+                (click)="salvarNovaAssinatura()">
+              </button>
+            </div>
+
+          </p-dialog>
+        </div>
+      </div>
+      <!-- ===================== FIM MODAL ===================== -->
+
 
       <!-- ABA OUTROS  -->
       <div class="tab-pane fade" [ngClass]="{ 'show active': this.activeTab === 'outros' }" id="outros" role="tabpanel"

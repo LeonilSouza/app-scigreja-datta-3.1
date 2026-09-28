@@ -1,15 +1,17 @@
 <div class="container-fluid mt-4">
   <div class="row">
 
-    <!-- MENU LATERAL DE COORDENADAS E INFORMAÇÕES -->
+    <!-- MENU LATERAL -->
     <div class="col-12 col-lg-4 mb-4">
       <div class="card shadow-sm border-0 p-4">
-        <h5 class="font-bold text-dark mb-2"><i class="pi pi-shield text-primary mr-2"></i> Assinador Digital</h5>
-        <p class="text-muted small mb-4">Arraste a caixa da assinatura com o mouse diretamente para a posição desejada
-          sobre o documento.</p>
+        <h5 class="font-bold text-dark mb-2">
+          <i class="pi pi-shield text-primary mr-2"></i> Assinador Digital
+        </h5>
+        <p class="text-muted small mb-4">
+          Arraste a caixa da assinatura com o mouse diretamente para a posição desejada sobre o documento.
+        </p>
 
-
-        <!-- Componente Upload -->
+        <!-- Upload -->
         <div class="mb-4">
           <p-fileUpload mode="basic" chooseLabel="Selecionar Documento (PDF/JPEG)"
             accept="image/jpeg,image/png,application/pdf" maxFileSize="5000000" customUpload="true"
@@ -17,17 +19,17 @@
           </p-fileUpload>
         </div>
 
-        <!-- ÁREA PARA ESCOLHER PAGINA PARA ASSINAR) -->
-        <div *ngIf="totalPaginas > 1" class="d-flex align-items-center gap-4 mb-2">
+        <!-- Seletor de Página -->
+        @if(totalPaginas){
+        <div class="d-flex align-items-center gap-4 mb-3">
           <label class="mb-0">Página para assinar:</label>
           <select class="form-select w-auto" [(ngModel)]="paginaSelecionada">
-            <option *ngFor="let p of totalPaginas | paginas" [value]="p">
-              Página {{ p }}
-            </option>
+            <option *ngFor="let p of totalPaginas | paginas" [value]="p">Página {{ p }}</option>
           </select>
         </div>
+        }
 
-        <!-- Indicador de Coordenadas em Tempo Real -->
+        <!-- Coordenadas e Tamanho -->
         <div class="bg-light rounded p-3 mb-4 border">
           <div class="d-flex justify-content-between small text-muted mb-1">
             <span>Posição Horizontal (X):</span>
@@ -37,99 +39,163 @@
             <span>Posição Vertical (Y):</span>
             <span class="font-bold text-dark">{{ coordenadaY }} px</span>
           </div>
-          <label class="font-semibold text-muted small mb-1">Tamanho da Assinatura</label>   
+          <label class="font-semibold text-muted small mb-1">Tamanho da Assinatura</label>
           <p-inputNumber [(ngModel)]="larguraAssinatura" [showButtons]="true" suffix=" px" [min]="80"
             [max]="300"></p-inputNumber>
         </div>
 
+        <!-- Seletor de Assinatura -->
+        @if(assinaturas.length > 0){
+        <div class="mb-4">
+          <label class="font-semibold text-muted small mb-2">
+            <i class="pi pi-pen-to-square mr-1"></i> Escolher Assinatura:
+          </label>
+          <div class="d-flex flex-column gap-2">
+            <div *ngFor="let a of assinaturas"
+              class="d-flex align-items-center gap-2 p-2 rounded border"
+              [class.border-primary]="assinaturaSelecionada?.id === a.id"
+              [class.bg-primary-subtle]="assinaturaSelecionada?.id === a.id"
+              (click)="selecionarAssinatura(a)" style="cursor: pointer;">
+              <img [src]="a.imagemBase64"
+                style="height: 40px; object-fit: contain; background: #f0f0f0; border-radius: 4px;"
+                alt="assinatura">
+              <div>
+                <div class="small font-bold">{{ a.nome }}</div>
+                <div class="small text-muted">{{ a.cargo }}</div>
+              </div>
+              @if(assinaturaSelecionada?.id === a.id){
+              <i class="pi pi-check-circle text-primary ms-auto"></i>
+              }
+            </div>
+          </div>
+        </div>
+        }
+
+        @if(assinaturas.length === 0){
+        <div class="alert alert-warning small">
+          <i class="pi pi-exclamation-triangle mr-1"></i>
+          Nenhuma assinatura cadastrada. Cadastre em <strong>Configurações da Igreja</strong>.
+        </div>
+        }
+
+        <!-- Botões -->
         <button pButton type="button" label="Aplicar Assinatura" icon="pi pi-check-circle"
-          class="p-button-primary w-100 py-2 mb-2" [loading]="carregando" (click)="confirmarAssinaturaDigital()">
+          class="p-button-primary w-100 py-2 mb-2" [loading]="carregando"
+          (click)="confirmarAssinaturaDigital()">
         </button>
 
-        <button *ngIf="documentoResultadoUrl" pButton type="button" label="Baixar Arquivo Assinado"
-          icon="pi pi-download" class="p-button-success w-100 py-2" (click)="baixarDocumentoPronto()">
+        @if(documentoResultadoUrl){
+        <button pButton type="button" label="Baixar Arquivo Assinado" icon="pi pi-download"
+          class="p-button-success w-100 py-2" (click)="baixarDocumentoPronto()">
         </button>
+        }
+
       </div>
     </div>
+    <!-- FIM MENU LATERAL -->
 
-
-    <!-- ÁREA INTERATIVA DE ARRASTAR (MÁGICA DO GOV.BR) -->
+    <!-- ÁREA INTERATIVA -->
     <div class="col-12 col-lg-8 mb-4">
-      <div class="card shadow-sm border-0 p-3 bg-secondary-subtle d-flex align-items-center justify-content-center"
+
+      <!-- MESA DE CALIBRAÇÃO -->
+      <div class="card shadow-sm border-0 p-3 bg-secondary-subtle d-flex align-items-center justify-content-center mb-4"
         style="min-height: 500px;">
 
-        <!-- Depois — sempre mostra a mesa se tiver arquivo -->
-        <div *ngIf="arquivoSelecionado" #espacoDocumento
-          class="position-relative border shadow rounded bg-white overflow-hidden" style="width: 500px; height: 650px;"
-          id="boundary-documento">
+        @if(arquivoSelecionado){
+        <div #espacoDocumento class="position-relative border shadow rounded bg-white overflow-hidden"
+          style="width: 500px; height: 650px;" id="boundary-documento">
 
           <div class="text-center p-2 text-muted border-bottom bg-light small font-semibold"
             style="position: relative; z-index: 1000;">
             MESA DE CALIBRAÇÃO VISUAL DO DOCUMENTO
           </div>
 
-          <!-- CARIMBO FLUTUANTE QUE SE MOVE COM O MOUSE (z-index alto garante visibilidade) -->
-          <div class="position-absolute bg-info-subtle border border-info p-2 rounded cursor-move text-center"
+          <!-- Carimbo arrastável -->
+          <div class="position-absolute bg-info-subtle border border-info p-2 rounded text-center"
             style="z-index: 999; cursor: move; box-shadow: 0 4px 10px rgba(0,0,0,0.15);"
-            [style.width.px]="larguraAssinatura" cdkDrag cdkDragBoundary="#boundary-documento"
+            [style.width.px]="larguraAssinatura"
+            cdkDrag cdkDragBoundary="#boundary-documento"
             (cdkDragEnded)="onArrastarFinalizado($event)">
 
-            <span class="small d-block text-info font-bold mb-1" style="font-size: 10px;">Assinatura</span>
+            <!-- Nome do assinante -->
+            <span class="small d-block text-info font-bold mb-1" style="font-size: 10px;">
+              {{ assinaturaSelecionada?.nome || 'Assinatura' }}
+            </span>
+
+            <!-- Imagem da assinatura selecionada -->
+            @if(assinaturaSelecionada?.imagemBase64){
+            <img [src]="assinaturaSelecionada.imagemBase64"
+              style="width: 100%; max-height: 50px; object-fit: contain;"
+              alt="assinatura">
+            } @else {
             <div class="border-top border-info border-dashed pt-1">✒️ [Local]</div>
-          </div>
-          
+            }
 
-          <!-- CENÁRIO A: Se for imagem (JPEG/PNG), desenha o cartaz no fundo -->
-          <img *ngIf="!isPDF && urlFundoDocumento" [src]="urlFundoDocumento" class="position-absolute w-100 h-100"
-            style="top: 32px; left: 0; object-fit: contain; z-index: 1;" alt="Fundo Imagem">
-
-          <!-- CENÁRIO B: PDF renderizado página por página com PDF.js -->
-          <canvas *ngIf="isPDF" id="canvas-pdf" class="position-absolute" style="top: 32px; left: 0; z-index: 1;">
-          </canvas>
-
-          <!-- Botões de navegação entre páginas -->
-          <div *ngIf="isPDF" class="position-absolute d-flex gap-2 align-items-center"
-            style="bottom: 8px; left: 50%; transform: translateX(-50%); z-index: 1001;">
-            <button class="btn btn-sm btn-outline-secondary" (click)="trocarPagina(paginaSelecionada - 1)">‹</button>
-            <span class="small">{{ paginaSelecionada }} / {{ totalPaginas }}</span>
-            <button class="btn btn-sm btn-outline-secondary" (click)="trocarPagina(paginaSelecionada + 1)">›</button>
-          </div>
-
-
-        </div>
-
-        <!-- Bloco 2: Preview do Documento Pronto (Sucesso do Java) -->
-        <div *ngIf="documentoResultadoUrl"
-          class="text-center animate__animated animate__fadeIn w-100 d-flex flex-column align-items-center">
-          <h6 class="text-success font-medium mb-3"><i class="pi pi-verified mr-1"></i> Visualização do Documento
-            Pronto!</h6>
-
-          <!-- CENÁRIO A: Se o documento pronto for um PDF, abre o visualizador nativo para exibir o resultado assinado -->
-          <div *ngIf="isPDF" class="w-100 d-flex flex-column align-items-center" style="width: 500px; height: 600px;">
-            <div class="alert alert-success p-2 small text-start w-100 mb-2">
-              <i class="pi pi-file-pdf mr-1"></i> PDF chancelado com sucesso! Veja o resultado abaixo:
+            <!-- Cargo do assinante -->
+            @if(assinaturaSelecionada?.cargo){
+            <div class="text-muted" style="font-size: 9px; margin-top: 2px;">
+              {{ assinaturaSelecionada.cargo }}
             </div>
-            <object [data]="documentoResultadoUrl" type="application/pdf" class="border rounded shadow"
-              style="width: 100%; height: 100%; border: none;">
-            </object>
+            }
+
           </div>
 
-          <!-- CENÁRIO B: Se for imagem, exibe o resultado final na tag img tradicional -->
-          <img *ngIf="!isPDF" [src]="documentoResultadoUrl" class="img-fluid rounded shadow max-height-500"
-            alt="Resultado Final">
+          <!-- Fundo: Imagem -->
+          @if(!isPDF && urlFundoDocumento){
+          <img [src]="urlFundoDocumento" class="position-absolute w-100 h-100"
+            style="top: 32px; left: 0; object-fit: contain; z-index: 1;" alt="Fundo Imagem">
+          }
+
+          <!-- Fundo: PDF -->
+          @if(isPDF){
+          <canvas id="canvas-pdf" class="position-absolute" style="top: 32px; left: 0; z-index: 1;"></canvas>
+          }
+
         </div>
+        }
 
-
-        <!-- Bloco 3: Estado Vazio (Se nenhum arquivo foi selecionado ainda) -->
-        <div *ngIf="!arquivoSelecionado && !documentoResultadoUrl" class="text-center text-muted p-5">
+        <!-- Estado vazio -->
+        @if(!arquivoSelecionado){
+        <div class="text-center text-muted p-5">
           <i class="pi pi-mouse mb-3 text-secondary" style="font-size: 3.5rem;"></i>
           <h6 class="font-medium">Painel do Assinador Digital Universal</h6>
-          <p class="small">Faça o upload de uma ata em PDF ou convite em Imagem para carregar a mesa de calibração por
-            mouse.</p>
+          <p class="small">Faça o upload de uma ata em PDF ou convite em Imagem para carregar a mesa de calibração por mouse.</p>
         </div>
+        }
 
       </div>
+
+      <!-- PREVIEW DO DOCUMENTO ASSINADO -->
+      @if(documentoResultadoUrl){
+      <div class="card shadow-sm border-0 p-3">
+        <h6 class="text-success font-medium mb-3">
+          <i class="pi pi-verified mr-1"></i> Visualização do Documento Assinado:
+        </h6>
+
+        @if(isPDF){
+        <div class="alert alert-success p-2 small mb-2">
+          <i class="pi pi-file-pdf mr-1"></i> PDF chancelado com sucesso!
+        </div>
+        <div style="width: 100%; height: 700px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px;">
+          <object [data]="documentoResultadoUrl" type="application/pdf"
+            style="width: 100%; height: 100%; border: none;">
+            <p class="small text-muted p-3">Seu navegador não suporta preview de PDF.</p>
+          </object>
+        </div>
+        }
+
+        @if(!isPDF){
+        <div style="max-height: 700px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px;">
+          <img [src]="documentoResultadoUrl" class="img-fluid rounded" alt="Documento assinado"
+            style="width: 100%; display: block;">
+        </div>
+        }
+
+      </div>
+      }
+
     </div>
+    <!-- FIM ÁREA INTERATIVA -->
 
   </div>
 </div>
