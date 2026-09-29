@@ -121,7 +121,12 @@ const routes: Routes = [
       },
       {
         path: 'contas-pagar',
-        loadChildren: () => import('./pages/financeiro/contas-pagar/contas-pagar.routes').then((module) => module.CONTAS_PAGAR_ROUTES),
+        loadChildren: () => import('./pages/financeiro/contas-pagar/contas-pagar-list-form/contas-pagar.routes').then((module) => module.CONTAS_PAGAR_ROUTES),
+      },
+
+       {
+        path: 'previsao-cp',
+        loadChildren: () => import('./pages/financeiro/contas-pagar/previsao-contas-pagar/previsao-contas-pagar.routes').then((module) => module.PREVISAO_CP_ROUTES),
       },
 
       // {

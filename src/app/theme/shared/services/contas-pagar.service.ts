@@ -4,6 +4,7 @@ import { API_CONFIG } from "src/app/app-config";
 import { Observable, throwError } from "rxjs";
 import { catchError, map } from 'rxjs/operators';
 import { ContasPagarDTO, ContasPagarResumoDTO } from "../models/contas-pagar.dto";
+import { PrevisaoFinanceira } from "../models/previsao-financeira.dto";
 
 @Injectable()
 export class ContasPagarService {
@@ -78,7 +79,7 @@ export class ContasPagarService {
 
   baixarPagamento(id: number, data?: string, valor?: string): Observable<any> {
     const params: any = {};
-    if (data)  params['dataPagamento'] = data;
+    if (data) params['dataPagamento'] = data;
     if (valor) params['valorPago'] = valor;
 
     return this.http.put(
@@ -107,4 +108,31 @@ export class ContasPagarService {
     console.error("ERRO NA REQUISIÇÃO => ", error);
     return throwError(() => error);
   }
+
+  getPrevisaoFinanceira(
+    igrejaId: number,
+    dataInicio: string,
+    dataFim: string
+  ): Observable<PrevisaoFinanceira> {
+    const params = new HttpParams()
+      .set('igrejaId', igrejaId)
+      .set('dataInicio', dataInicio)
+      .set('dataFim', dataFim);
+
+    return this.http.get<PrevisaoFinanceira>(
+      `${this.apiPath}/previsao`, { params }
+    ).pipe(catchError(this.handleError));
+  }
+
+  gerarPdfPrevisaoFinanceira(igrejaId: number, dtinicio: string, dtfim: string): Observable<Blob> {
+  const params = new HttpParams()
+    .set('igreja', igrejaId.toString())
+    .set('dtinicio', dtinicio)
+    .set('dtfim', dtfim);
+
+  return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-previsao-financeira`,
+    { params, responseType: 'blob' });
+}
+
+
 }

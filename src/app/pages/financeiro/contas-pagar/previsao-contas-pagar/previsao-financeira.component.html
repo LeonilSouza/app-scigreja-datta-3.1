@@ -1,0 +1,191 @@
+<div class="container-fluid p-4">
+
+    <!-- Título -->
+    <div class="d-flex align-items-center mb-4">
+        <i class="bi bi-graph-up-arrow fs-3 text-primary me-2"></i>
+        <h2 class="mb-0">Previsão Financeira</h2>
+    </div>
+
+    <!-- Filtro de Período -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Data Início</label>
+                    <p-datepicker [(ngModel)]="dataInicioDate" [style]="{'width':'100%','height':'38px'}"
+                        [monthNavigator]="true" [yearNavigator]="true" yearRange="2020:2030" [showButtonBar]="true"
+                        [showIcon]="true" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa" appendTo="body" />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Data Fim</label>
+                    <p-datepicker [(ngModel)]="dataFimDate" [style]="{'width':'100%','height':'38px'}"
+                        [monthNavigator]="true" [yearNavigator]="true" yearRange="2020:2030" [showButtonBar]="true"
+                        [showIcon]="true" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa" appendTo="body" />
+                </div>
+
+                <div class="col-md-4">
+                    <button class="btn btn-primary w-100" (click)="buscar()" [disabled]="carregando">
+                        @if(carregando){
+                        <span class="spinner-border spinner-border-sm me-2"></span>
+                        }
+                        @if(!carregando){
+                        <i class="bi bi-search me-2"></i>
+                        }
+                        {{ carregando ? 'Carregando...' : 'Gerar Previsão' }}
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    @if(previsao){
+    <ng-container>
+
+        <!-- Alerta de Percentual -->
+        <div class="alert d-flex align-items-center gap-2 mb-4 fw-semibold fs-5" [ngClass]="{
+           'alert-danger': alertaPercentual === 'danger',
+           'alert-warning': alertaPercentual === 'warning',
+           'alert-success': alertaPercentual === 'success'
+         }">
+            {{ alertaMensagem }}
+        </div>
+
+        <!-- Cards de Resumo -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <div class="text-muted small mb-1">Total Previsto</div>
+                        <div class="fw-bold fs-5 text-primary">{{ formatarMoeda(previsao.totalPrevisto) }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <div class="text-muted small mb-1">Total Pago</div>
+                        <div class="fw-bold fs-5 text-success">{{ formatarMoeda(previsao.totalPago) }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <div class="text-muted small mb-1">A Vencer</div>
+                        <div class="fw-bold fs-5 text-warning">{{ formatarMoeda(previsao.totalPendente) }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <div class="text-muted small mb-1">Atrasado</div>
+                        <div class="fw-bold fs-5 text-danger">{{ formatarMoeda(previsao.totalAtrasado) }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra de Progresso -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="fw-semibold">Orçamento Comprometido</span>
+                    <span class="fw-bold">{{ previsao.percentualGasto }}%</span>
+                </div>
+                <div class="progress" style="height: 20px;">
+                    <div class="progress-bar" [style.width.%]="previsao.percentualGasto" [ngClass]="{
+                 'bg-success': alertaPercentual === 'success',
+                 'bg-warning': alertaPercentual === 'warning',
+                 'bg-danger': alertaPercentual === 'danger'
+               }">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico por Mês -->
+        @if(dadosGrafico){
+        <div class="card shadow-sm mb-4">
+            <div class="card-header fw-semibold">
+                <i class="bi bi-bar-chart-fill me-2 text-primary"></i>Evolução por Mês
+            </div>
+            <div class="card-body">
+                <p-chart type="bar" [data]="dadosGrafico" [options]="opcoesGrafico" height="300px" />
+            </div>
+        </div>
+        }
+
+
+        <!-- Tabela por Mês (Acordeão) -->
+        <div class="card shadow-sm">
+            <div class="card-header fw-semibold">
+                <i class="bi bi-calendar3 me-2 text-primary"></i>Detalhamento por Mês
+            </div>
+            <div class="card-body p-0">
+                <div *ngFor="let mes of previsao.porMes" class="border-bottom">
+
+                    <!-- Cabeçalho do Mês (clicável) -->
+                    <div class="d-flex justify-content-between align-items-center p-3 cursor-pointer"
+                        (click)="toggleMes(mes.mesAno)" style="cursor: pointer;">
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="bi"
+                                [ngClass]="mesExpandido === mes.mesAno ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                            <span class="fw-bold text-primary fs-6">{{ mes.mesAno }}</span>
+                            <span class="badge bg-secondary">{{ mes.contas.length }} conta(s)</span>
+                        </div>
+                        <div class="d-flex gap-3 text-end small">
+                            <span class="text-success">Pago: {{ formatarMoeda(mes.totalPago) }}</span>
+                            <span class="text-warning">Pendente: {{ formatarMoeda(mes.totalPendente) }}</span>
+                            <span class="text-danger">Atrasado: {{ formatarMoeda(mes.totalAtrasado) }}</span>
+                            <span class="fw-bold">Total: {{ formatarMoeda(mes.totalPrevisto) }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Tabela de Contas do Mês -->
+
+
+                    <div class="px-3 pb-3">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Descrição</th>
+                                    <th>Fornecedor</th>
+                                    <th>Vencimento</th>
+                                    <th class="text-end">Valor</th>
+                                    <th class="text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of mes.contas">
+                                    <td>{{ item.descricao }}</td>
+                                    <td>{{ item.pessoa }}</td>
+                                    <td>{{ item.dataVencimento }}</td>
+                                    <td class="text-end fw-semibold">{{ formatarMoeda(item.valor) }}</td>
+                                    <td class="text-center">
+                                        <span [ngClass]="getStatusClass(item.status)">
+                                            {{ getStatusLabel(item.status) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td colspan="3" class="fw-bold">Total do Mês</td>
+                                    <td class="text-end fw-bold">{{ formatarMoeda(mes.totalPrevisto) }}</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </ng-container>
+    }
+</div>

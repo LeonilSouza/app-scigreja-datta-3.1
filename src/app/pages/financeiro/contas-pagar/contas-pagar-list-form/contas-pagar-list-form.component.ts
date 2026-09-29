@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
-import { merge, Subscription } from 'rxjs';
+import { merge, Observable, Subscription } from 'rxjs';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import { ButtonModule } from 'primeng/button';
@@ -32,6 +32,7 @@ import { ContasPagarDTO, ContasPagarResumoDTO } from 'src/app/theme/shared/model
 import { ConfirmDialog } from "primeng/confirmdialog";
 import { LancamentoService } from 'src/app/theme/shared/services/lancamento.service';
 import { FileUploadModule } from 'primeng/fileupload';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Component({
   selector: 'app-contas-pagar-list-form',
@@ -175,6 +176,7 @@ export class ContasPagarListFormComponent implements OnInit {
     private contaService: ContaService,
     private centroCustoService: CentroCustoService,
     private formaService: FormaService,
+    public http: HttpClient,
     private lancamentoService: LancamentoService
 
   ) { }
@@ -215,17 +217,17 @@ export class ContasPagarListFormComponent implements OnInit {
 
 
   loadContasPagarLazy(event: any): void {
-  this.page = event!.first! / event!.rows!;
-  this.linesPerPage = event.rows;
-  this.loadContasPagar(
-    this.igrejaId,
-    this.busca.toLowerCase(),
-    this.dtInicio,
-    this.dtFim,
-    this.page,
-    this.linesPerPage
-  );
-}
+    this.page = event!.first! / event!.rows!;
+    this.linesPerPage = event.rows;
+    this.loadContasPagar(
+      this.igrejaId,
+      this.busca.toLowerCase(),
+      this.dtInicio,
+      this.dtFim,
+      this.page,
+      this.linesPerPage
+    );
+  }
 
 
 
@@ -424,6 +426,7 @@ export class ContasPagarListFormComponent implements OnInit {
           this.contasPagar = response['content']
           this.totalRegistros = response.totalElements;
           this.loadResumo();
+          this.getPrinters();
         },
         error: (error) => {
           this.error = error;
@@ -433,20 +436,20 @@ export class ContasPagarListFormComponent implements OnInit {
 
   }
 
-loadResumo(): void {
-  this.contasPagarService
-    .getResumoContasPagarFromIgreja(
-      this.igrejaId,
-      this.busca,
-      this.dtInicio,
-      this.dtFim
-    )
-    .pipe(takeUntilDestroyed(this.destroyRef))
-    .subscribe({
-      next: (response) => { this.resumo = response; },
-      error: (error) => { this.showError(error); }
-    });
-}
+  loadResumo(): void {
+    this.contasPagarService
+      .getResumoContasPagarFromIgreja(
+        this.igrejaId,
+        this.busca,
+        this.dtInicio,
+        this.dtFim
+      )
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => { this.resumo = response; },
+        error: (error) => { this.showError(error); }
+      });
+  }
 
 
 
@@ -488,76 +491,48 @@ loadResumo(): void {
   getPrinters() {
     this.printItems = [
       {
-        label: 'Entradas',
-        icon: 'pi pi-dollar',
-        target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/?nome=entrada-dizimo-oferta&igreja=${this.igrejaId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
-      },
-      { separator: true },
-      {
-        label: 'Dízimo de obreiros',
-        icon: 'pi pi-dollar',
-        target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/?nome=entrada-dizimo-obreiros&igreja=${this.igrejaId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
-      },
-      { separator: true },
-      {
-        label: 'Livro caixa - Diário',
-        icon: 'pi pi-dollar',
-        target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/?nome=livro-caixa-diario&igreja=${this.igrejaId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
-      },
-      { separator: true },
-      {
-        label: 'Livro caixa - Mensal Simplificado',
+        label: 'Previsão Financeira',
         icon: 'pi pi-calendar',
-        target: '_blank',
-        // url: (`${API_CONFIG.baseUrl}/relatorios/despesas/?nome=livro-caixa-mensal-simplificado&igreja=${this.igrejaId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}&saldo_anterior=${this.saldoAnterior || 0}&total_receita=${this.totalReceitaDizimOferta || 0}`)
+        command: () => this.imprimirPrevisao()
       },
       { separator: true },
-      {
-        label: 'Livro caixa - Mensal Detalhado',
-        icon: 'pi pi-calendar',
-        target: '_blank',
-        // url: (`${API_CONFIG.baseUrl}/relatorios/despesas/?nome=livro-caixa-mensal-detalhado&igreja=${this.igrejaId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}&saldo_anterior=${this.saldoAnterior || 0}&total_receita=${this.totalReceitaDizimOferta || 0}`)
-      },
-      { separator: true },
-      {
-        label: 'Demostrativo de Receitas e Permutas - CONGREGAÇÃO',
-        icon: 'pi pi-dollar',
-        target: '_blank',
-        // url: (`${API_CONFIG.baseUrl}/relatorios/entradas/?nome=relacao-entradas-dizimo-transferencias-congregacao&igreja=${this.igrejaId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
-      },
-      { separator: true },
-      {
-        label: 'Transferências - SETOR',
-        icon: 'pi pi-dollar',
-        target: '_blank',
-        // url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=relacao-entradas-dizimo-transferencias-setor&setor=${this.setorId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
-      },
-      { separator: true },
-      {
-        label: 'Resumo - SETOR', // O percentualMaior e o percentualMenor o jasper repassa de cada igreja do relatorio principal para o sub relatorio
-        icon: 'pi pi-dollar',
-        target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/resumo/?nome=resumo-entradas-setor&setor=${this.setorId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
-      },
-      { separator: true },
-      {
-        label: 'Relatório - SETOR',
-        icon: 'pi pi-dollar',
-        target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=relatorio-entradas-setor-quadro&setor=${this.setorId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
-      },
-      { separator: true },
-      {
-        label: 'Fechamento - SETOR',
-        icon: 'pi pi-dollar',
-        target: '_blank',
-        url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=fechamento-setor&setor=${this.setorId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
-      },
+      // {
+      //   label: 'Relatório - SETOR',
+      //   icon: 'pi pi-dollar',
+      //   target: '_blank',
+      //   url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=relatorio-entradas-setor-quadro&setor=${this.setorId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
+      // },
+      // { separator: true },
+      // {
+      //   label: 'Fechamento - SETOR',
+      //   icon: 'pi pi-dollar',
+      //   target: '_blank',
+      //   url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=fechamento-setor&setor=${this.setorId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
+      // },
     ];
   }
+
+  imprimirPrevisao(): void {
+    this.contasPagarService.gerarPdfPrevisaoFinanceira(
+      this.igrejaId,
+      this.dtInicio,
+      this.dtFim
+    ).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Não foi possível gerar o PDF.'
+        });
+      }
+    });
+  }
+
+
 
   periodo() {
     if (this.rangeDates == null) {
@@ -702,24 +677,8 @@ loadResumo(): void {
     this.arquivoSelecionado = null;
   }
 
- // Substitui o buscaContasPagar() existente
-buscaContasPagar(): void {
-  this.page = 0;
-  if (this.grid) this.grid.first = 0;
-  this.loadContasPagar(
-    this.igrejaId,
-    this.busca.toLowerCase(),
-    this.dtInicio,
-    this.dtFim,
-    this.page,
-    this.linesPerPage
-  );
-}
-
-// Novo método com debounce — igual ao financeiro
-onGlobalFilter(): void {
-  clearTimeout(this.searchTimer);
-  this.searchTimer = setTimeout(() => {
+  // Substitui o buscaContasPagar() existente
+  buscaContasPagar(): void {
     this.page = 0;
     if (this.grid) this.grid.first = 0;
     this.loadContasPagar(
@@ -730,8 +689,24 @@ onGlobalFilter(): void {
       this.page,
       this.linesPerPage
     );
-  }, 400);
-}
+  }
+
+  // Novo método com debounce — igual ao financeiro
+  onGlobalFilter(): void {
+    clearTimeout(this.searchTimer);
+    this.searchTimer = setTimeout(() => {
+      this.page = 0;
+      if (this.grid) this.grid.first = 0;
+      this.loadContasPagar(
+        this.igrejaId,
+        this.busca.toLowerCase(),
+        this.dtInicio,
+        this.dtFim,
+        this.page,
+        this.linesPerPage
+      );
+    }, 400);
+  }
 
 
 
