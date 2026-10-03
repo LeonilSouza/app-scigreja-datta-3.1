@@ -154,7 +154,8 @@ export class LancamentoService {
         formas: filtro.formas,
         categorias: filtro.categorias,
         centroCustos: filtro.centroCustos,
-        tipoLancamento: filtro.tipoLancamento
+        tipoLancamento: filtro.tipoLancamento,
+        saldoAnterior: filtro.saldoAnterior
       }
     });
   }
@@ -200,11 +201,14 @@ export class LancamentoService {
       .set('igreja', filtro.igrejaId.toString())
       .set('dtinicio', filtro.dtinicio)
       .set('dtfim', filtro.dtfim)
+      .set('saldoAnterior', filtro.saldoAnterior.toString()) // GARANTIR QUE É STRING
       .set('nome', filtro.nome || '');
 
-    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-consolidado`,
-      { params, responseType: 'blob' });
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-consolidado`, {
+      params, responseType: 'blob'
+    });
   }
+
 
   gerarLivroCaixaDetalhado(filtro: LancamentoFiltro, nomeRelatorio: string): Observable<Blob> {
     let params = new HttpParams()
@@ -212,6 +216,7 @@ export class LancamentoService {
       .set('igreja', filtro.igrejaId.toString())
       .set('dtinicio', filtro.dtinicio)
       .set('dtfim', filtro.dtfim)
+      .set('saldoAnterior', filtro.saldoAnterior.toString()) // GARANTIR QUE É STRING
       .set('nome', filtro.nome || '');
 
     return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-consolidado`,
@@ -219,16 +224,16 @@ export class LancamentoService {
   }
 
   gerarLivroCaixaAuxiliar(filtro: LancamentoFiltro, nomeRelatorio: string): Observable<Blob> {
-  let params = new HttpParams()
-    .set('nomeRelatorio', nomeRelatorio)
-    .set('igreja', filtro.igrejaId.toString())
-    .set('dtinicio', filtro.dtinicio)
-    .set('dtfim', filtro.dtfim)
-    .set('nome', filtro.nome || '');
+    let params = new HttpParams()
+      .set('nomeRelatorio', nomeRelatorio)
+      .set('igreja', filtro.igrejaId.toString())
+      .set('dtinicio', filtro.dtinicio)
+      .set('dtfim', filtro.dtfim)
+      .set('nome', filtro.nome || '');
 
-  return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-caixa-auxiliar`,
-    { params, responseType: 'blob' });
-}
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-caixa-auxiliar`,
+      { params, responseType: 'blob' });
+  }
 
   getSaldoFinalContasFromIgreja(igrejaId: any) {
     return this.http.get(`${this.apiPath}/saldocontas/?igreja=${igrejaId}`)

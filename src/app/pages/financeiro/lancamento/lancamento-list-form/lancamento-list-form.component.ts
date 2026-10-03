@@ -59,6 +59,7 @@ export class LancamentoFiltro {
   categoriasIds: number[] = [];
   formasIds: number[] = [];
   centroCustoIds: number[] = [];
+  saldoAnterior: number = 0
 }
 
 @Pipe({ name: 'safeUrl', standalone: true })
@@ -525,6 +526,8 @@ export class LancamentoListFormComponent implements OnInit {
           this.totalEventos = total.totalEventos || 0;
           this.totalMissoes = total.totalMissoes || 0;
           this.totalDiversos = total.totalDiversos || 0;
+          this.filtro.saldoAnterior = total.saldoAnterior || 0;
+          console.log(this.saldoAnterior)
         },
         error: err => {
           this.toastr.error('Erro ao obter totalizações.');
