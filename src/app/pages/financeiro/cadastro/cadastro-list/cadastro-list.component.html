@@ -310,13 +310,13 @@
                                                 }
                                             </td>
 
-                                            <td>
+                                            <!-- <td>
                                                 @if (categoria.ocultarNoTotalizador) {
                                                 <span class="p-badge p-badge-danger">Oculta no Faturamento</span>
                                                 } @else {
                                                 <span class="p-badge p-badge-success">Ativa</span>
                                                 }
-                                            </td>
+                                            </td> -->
                                         </tr>
                                         }
 
@@ -617,6 +617,17 @@
 
                         </div>
 
+                        <!-- Especificação -->
+                        <div class="form-group col-md-6">
+                            <label>Especificação</label>
+                            <p-select class="w-full md mb-2" formControlName="especificacao" [options]="especificacoes"
+                                [editable]="false" [filter]="false" [showClear]="false" optionLabel="descricao"
+                                optionValue="valor" dropdownIcon="pi pi-chevron-down" [autofocus]="false"
+                                placeholder="Selecione a especificação">
+                            </p-select>
+                        </div>
+
+
                         <!--  TipoPadrãoIgreja -->
                         @if(perfil == 'ADMIN'){
                         <div class="form-group col-md-6">
@@ -631,17 +642,6 @@
 
                         </div>
                         }
-
-                            <div class="p-field-checkbox form-group col-md-6 mt-3">
-                            <p-checkbox binary="true" inputId="ocultarNoTotalizador"
-                               formControlName="ocultarNoTotalizador" name="ocultarNoTotalizador">
-                            </p-checkbox>
-                            <label for="ocultarNoTotalizador" class="ml-2 font-medium">  
-                                Ocultar esta categoria nos cartões de faturamento geral
-                            </label>
-                            <!-- </div> -->
-
-                        </div>
 
                     </div>
 

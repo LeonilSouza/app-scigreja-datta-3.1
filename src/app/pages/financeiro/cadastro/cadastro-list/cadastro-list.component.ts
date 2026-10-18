@@ -52,7 +52,18 @@ import Swal from 'sweetalert2';
 })
 export class CadastroListComponent implements OnInit {
 
+  private nomesEspecificacao: Record<string, string> = {
+  PADRAO: 'Padrão',
+  DIVERSAS: 'Diversas',
+  PARTICULAR: 'Particular',
+  EVENTOS: 'Eventos',
+  TRANSFERENCIA: 'Transferência',
+  PERMUTA: 'Permuta'
+};
+
   private destroy$: Subject<void> = new Subject<void>();
+
+  especificacoes: { valor: string; descricao: string }[] = [];
 
   nomeIgrejaSignal = nomeIgrejaSignal; //Signal 
   igrejaIdSignal = igrejaIdSignal;
@@ -157,6 +168,7 @@ export class CadastroListComponent implements OnInit {
     this.buildCategoriaForm();
     this.buildCentroCustoForm();
     this.buildFormaForm();
+    this.carregarEspecificacoes()
 
   };
 
@@ -218,6 +230,20 @@ export class CadastroListComponent implements OnInit {
       this.updateForma();
   }
 
+  carregarEspecificacoes() {
+    this.categoriaService.listarEspecificacoes()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (lista: string[]) => {
+          this.especificacoes = lista.map(e => ({
+            valor: e,
+            descricao: e.charAt(0) + e.slice(1).toLowerCase().replace(/_/g, ' ')
+          }));
+        },
+        error: (error) => this.showError(error)
+      });
+  }
+
   private buildContaForm() {
     this.contaForm = this.formBuilder.group({
       id: [null],
@@ -238,6 +264,7 @@ export class CadastroListComponent implements OnInit {
       id: [null],
       nome: [null, [Validators.required]], // As vezes tem que deixar vazio "" ao invés de null p/ não dá BO
       tipo: [null, [Validators.required]],
+      especificacao: [null, [Validators.required]],
       tipoPadraoIgreja: [(this.perfil == 'ADMIN') ? 'Padrao' : 'Igreja', [Validators.required]],// Campo inexistente no banco. Utilizados apenas para Admin para setar null em igrejaId
       igrejaId: [null],
       ocultarNoTotalizador: [false]
@@ -511,6 +538,10 @@ export class CadastroListComponent implements OnInit {
   onChangeTipoConta(value: any) {
     this.contaForm.controls['igrejaId'].setValue(this.igrejaId)
   }
+
+  //  carregarEspecificacaoes() {
+  //   this.carregarEspecificacaoes();
+  // }
 
   onChangeTipoCategoria(value: { value: string; }) {
     if (value.value === 'Padrao') {

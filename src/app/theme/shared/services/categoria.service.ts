@@ -8,84 +8,89 @@ import { API_CONFIG } from "src/app/app-config";
 @Injectable()
 export class CategoriaService {
 
-    private apiPath: string = `${API_CONFIG.baseUrl}/categorias`;
+  private apiPath: string = `${API_CONFIG.baseUrl}/categorias`;
 
-    constructor(public http: HttpClient) {
-    }
+  constructor(public http: HttpClient) {
+  }
 
-    findAll(): Observable<CategoriaDTO> {
-        return this.http.get<CategoriaDTO>(this.apiPath)
-        .pipe(
-          catchError(this.handleError));
+  findAll(): Observable<CategoriaDTO> {
+    return this.http.get<CategoriaDTO>(this.apiPath)
+      .pipe(
+        catchError(this.handleError));
+  }
+
+  findById(id: number): Observable<CategoriaDTO> {
+
+    const url = `${this.apiPath}/${id}`;
+
+    return this.http.get(url).pipe(
+      catchError(this.handleError),
+      map(this.jsonDataToCategoria)
+    )
+  }
+
+  listarEspecificacoes(): Observable<string[]> {
+    return this.http.get<string[]>(`${API_CONFIG.baseUrl}/categorias/especificacoes`);
+  }
+
+
+  getByPageCategoriaFromIgreja(igrejaId: number, nome: string, page: number, linesPerPage: number) {
+
+    return this.http.get(`${API_CONFIG.baseUrl}/categorias/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  getListCategoriaFromIgreja(igrejaId: number) {
+    return this.http.get(`${API_CONFIG.baseUrl}/categorias/list/?igreja=${igrejaId}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+
+  create(disciplina: CategoriaDTO) {
+    return this.http.post(this.apiPath,
+      disciplina,
+      {
+        observe: 'response',
+        responseType: 'text'
       }
+    );
+  }
 
-    findById(id: number): Observable<CategoriaDTO> {
+  update(disciplina: CategoriaDTO): Observable<CategoriaDTO> {
+    const url = `${this.apiPath}/${disciplina.id}`;
 
-        const url = `${this.apiPath}/${id}`;
-
-        return this.http.get(url).pipe(
-          catchError(this.handleError),
-          map(this.jsonDataToCategoria)
-        )
-      }
-
-      getByPageCategoriaFromIgreja(igrejaId: number, nome: string, page: number, linesPerPage: number) {
-
-        return this.http.get(`${API_CONFIG.baseUrl}/categorias/page/?igreja=${igrejaId}&nome=${nome}&page=${page}&linesPerPage=${linesPerPage}`)
-          .pipe(
-            catchError(this.handleError)
-        );
-      }
-
-      getListCategoriaFromIgreja(igrejaId: number) {
-        return this.http.get(`${API_CONFIG.baseUrl}/categorias/list/?igreja=${igrejaId}`)
-          .pipe(
-            catchError(this.handleError)
-        );
-      }
+    return this.http.put(url, disciplina)
+      .pipe(
+        map(this.jsonDataToCategoria),
+        catchError(this.handleError),
+        //map(this.jsonDataToCategoriaFuncao)
+        map(() => disciplina)
+      )
+  }
 
 
-     create(disciplina : CategoriaDTO) {
-      return this.http.post(this.apiPath,
-        disciplina,
-          {
-              observe: 'response',
-              responseType: 'text'
-          }
-        );
-     }
+  delete(id: number): Observable<any> {
 
-      update(disciplina: CategoriaDTO): Observable<CategoriaDTO> {
-        const url = `${this.apiPath}/${disciplina.id}`;
+    const url = `${this.apiPath}/${id}`;
 
-        return this.http.put(url, disciplina)
-          .pipe(
-           map(this.jsonDataToCategoria),
-           catchError(this.handleError),
-           //map(this.jsonDataToCategoriaFuncao)
-           map(() => disciplina)
-        )
-      }
+    return this.http.delete(url).pipe(
+      catchError(this.handleError),
+      map(() => null)
+    )
+  }
 
 
-      delete(id: number): Observable<any> {
+  private jsonDataToCategoria(jsonData: any): CategoriaDTO {
+    return (new CategoriaDTO(), jsonData);
+  }
 
-        const url = `${this.apiPath}/${id}`;
-
-        return this.http.delete(url).pipe(
-          catchError(this.handleError),
-          map(() => null)
-        )
-      }
-
-
-      private jsonDataToCategoria(jsonData: any): CategoriaDTO {
-        return (new CategoriaDTO(), jsonData);
-      }
-
-      private handleError(error: any): Observable<any>{
-        console.log("ERRO NA REQUISIÇÃO => ", error);
-        return throwError(error);
-      }
+  private handleError(error: any): Observable<any> {
+    console.log("ERRO NA REQUISIÇÃO => ", error);
+    return throwError(error);
+  }
 
 }

@@ -154,8 +154,7 @@ export class LancamentoService {
         formas: filtro.formas,
         categorias: filtro.categorias,
         centroCustos: filtro.centroCustos,
-        tipoLancamento: filtro.tipoLancamento,
-        saldoAnterior: filtro.saldoAnterior
+        tipoLancamento: filtro.tipoLancamento
       }
     });
   }
@@ -201,7 +200,6 @@ export class LancamentoService {
       .set('igreja', filtro.igrejaId.toString())
       .set('dtinicio', filtro.dtinicio)
       .set('dtfim', filtro.dtfim)
-      .set('saldoAnterior', filtro.saldoAnterior.toString()) // GARANTIR QUE É STRING
       .set('nome', filtro.nome || '');
 
     return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-consolidado`, {
@@ -216,7 +214,6 @@ export class LancamentoService {
       .set('igreja', filtro.igrejaId.toString())
       .set('dtinicio', filtro.dtinicio)
       .set('dtfim', filtro.dtfim)
-      .set('saldoAnterior', filtro.saldoAnterior.toString()) // GARANTIR QUE É STRING
       .set('nome', filtro.nome || '');
 
     return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-consolidado`,
@@ -229,7 +226,11 @@ export class LancamentoService {
       .set('igreja', filtro.igrejaId.toString())
       .set('dtinicio', filtro.dtinicio)
       .set('dtfim', filtro.dtfim)
-      .set('nome', filtro.nome || '');
+      .set('nome', filtro.nome || '')
+
+    if (filtro.setorId != null) {
+      params = params.set('setorId', filtro.setorId.toString());
+    };
 
     return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-caixa-auxiliar`,
       { params, responseType: 'blob' });

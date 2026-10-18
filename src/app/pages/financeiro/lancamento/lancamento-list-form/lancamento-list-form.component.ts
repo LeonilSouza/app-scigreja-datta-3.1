@@ -59,7 +59,6 @@ export class LancamentoFiltro {
   categoriasIds: number[] = [];
   formasIds: number[] = [];
   centroCustoIds: number[] = [];
-  saldoAnterior: number = 0
 }
 
 @Pipe({ name: 'safeUrl', standalone: true })
@@ -418,9 +417,14 @@ export class LancamentoListFormComponent implements OnInit {
           return;
         }
         this.contas.set(res.contas);
-        this.saldoFinalContas = res.contas.reduce(
-          (total: number, c: any) => total + (c.saldoCalculado || 0), 0
-        );
+
+        this.saldoFinalContas = res.contas
+          // .filter((c: any) => !c.nome?.toLowerCase().includes('auxiliar')) Remove a conta que tenha no nome auxiliar Maiusculo ou Minisculo
+          .reduce(
+            (total: number, c: any) => total + (c.saldoCalculado || 0), 0
+          );
+
+
         this.contaIds = res.contas.map((c: any) => c.id).join(',');
         this.contaIdsAux = this.contaIds;
         this.loadContasTransferencia();
@@ -526,8 +530,6 @@ export class LancamentoListFormComponent implements OnInit {
           this.totalEventos = total.totalEventos || 0;
           this.totalMissoes = total.totalMissoes || 0;
           this.totalDiversos = total.totalDiversos || 0;
-          this.filtro.saldoAnterior = total.saldoAnterior || 0;
-          console.log(this.saldoAnterior)
         },
         error: err => {
           this.toastr.error('Erro ao obter totalizações.');
@@ -951,7 +953,6 @@ export class LancamentoListFormComponent implements OnInit {
 
   onChangePersonalizarCategoria(event: { value: number }): void {
     this.lancamentoForm.controls['categoriaId'].setValue(event.value)
-    console.log(event.value)
   }
 
   onChangeNomeHistorico(value: { value: any }): void { this.loadPessoa(value.value); }
