@@ -747,8 +747,13 @@ export class LancamentoListFormComponent implements OnInit {
   getPrinters(): void {
     this.printItems = [
       {
-        label: 'Entradas', icon: 'pi pi-dollar', target: '_blank',
+        label: 'Entradas | GT', icon: 'pi pi-dollar', target: '_blank',
         url: `${API_CONFIG.baseUrl}/relatorios/entradas/?nome=entrada-dizimo-oferta&igreja=${this.igrejaId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`
+      },
+      { separator: true },
+            {
+        label: 'Entradas | Local', icon: 'pi pi-book', target: '_blank',
+        url: `${API_CONFIG.baseUrl}/relatorios/entradas/?nome=entrada-dizimo-oferta-local&igreja=${this.igrejaId}&dt_inicio=${this.dtinicio}&dt_fim=${this.dtfim}`
       },
       { separator: true },
       {
