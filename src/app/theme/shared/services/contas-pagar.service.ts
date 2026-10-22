@@ -24,42 +24,50 @@ export class ContasPagarService {
   }
 
   // ── BUSCA PAGINADA — parâmetro renomeado para "busca" ──
-  getByPageContasPagarFromIgreja(
-    igrejaId: number,
-    busca: string,
-    dtInicio: string,
-    dtFim: string,
-    page: number,
-    linesPerPage: number
-  ): Observable<any> {
-    const params = new HttpParams()
-      .set('busca', busca)          // ← era 'nome', agora 'busca'
-      .set('dataInicio', dtInicio)
-      .set('dataFim', dtFim)
-      .set('page', page)
-      .set('linesPerPage', linesPerPage);
+ getByPageContasPagarFromIgreja(
+  igrejaId: number,
+  nome: string,
+  dtInicio: string,
+  dtFim: string,
+  page: number,
+  linesPerPage: number,
+  contaIds: number[] = []
+): Observable<any> {
+  let params = new HttpParams()
+    .set('nome', nome)
+    .set('dataInicio', dtInicio)
+    .set('dataFim', dtFim)
+    .set('page', page)
+    .set('linesPerPage', linesPerPage);
 
-    return this.http.get(
-      `${this.apiPath}/page/?igreja=${igrejaId}`, { params }
-    ).pipe(catchError(this.handleError));
-  }
+  contaIds.forEach(id => params = params.append('contaIds', id));
+
+  return this.http.get(
+    `${this.apiPath}/page/?igreja=${igrejaId}`, { params }
+  ).pipe(catchError(this.handleError));
+}
+
 
   // ── RESUMO — parâmetro renomeado para "busca" ──
-  getResumoContasPagarFromIgreja(
-    igrejaId: number,
-    busca: string,
-    dtInicio: string,
-    dtFim: string
-  ): Observable<ContasPagarResumoDTO> {
-    const params = new HttpParams()
-      .set('busca', busca)          // ← era 'nome', agora 'busca'
-      .set('dtInicio', dtInicio)
-      .set('dtFim', dtFim);
+ getResumoContasPagarFromIgreja(
+  igrejaId: number,
+  nome: string,
+  dtInicio: string,
+  dtFim: string,
+  contaIds: number[] = []
+): Observable<ContasPagarResumoDTO> {
+  let params = new HttpParams()
+    .set('nome', nome)   // o controller espera 'nome'
+    .set('dtInicio', dtInicio)
+    .set('dtFim', dtFim);
 
-    return this.http.get<ContasPagarResumoDTO>(
-      `${this.apiPath}/resumo/?igreja=${igrejaId}`, { params }
-    ).pipe(catchError(this.handleError));
-  }
+  contaIds.forEach(id => params = params.append('contaIds', id));
+
+  return this.http.get<ContasPagarResumoDTO>(
+    `${this.apiPath}/resumo/?igreja=${igrejaId}`, { params }
+  ).pipe(catchError(this.handleError));
+}
+
 
   create(contasPagar: any): Observable<any> {
     return this.http.post(
@@ -124,15 +132,20 @@ export class ContasPagarService {
     ).pipe(catchError(this.handleError));
   }
 
-  gerarPdfPrevisaoFinanceira(igrejaId: number, dtinicio: string, dtfim: string): Observable<Blob> {
-  const params = new HttpParams()
-    .set('igreja', igrejaId.toString())
-    .set('dtinicio', dtinicio)
-    .set('dtfim', dtfim);
+  gerarPdfPrevisaoFinanceira(igrejaId: number, dtinicio: string, dtfim: string,
+    contaIds: number[] = []): Observable<Blob> {
+    let params = new HttpParams()
+      .set('igreja', igrejaId.toString())
+      .set('dtinicio', dtinicio)
+      .set('dtfim', dtfim);
 
-  return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-previsao-financeira`,
-    { params, responseType: 'blob' });
-}
+    if (contaIds.length > 0) {
+      params = params.set('contaIds', contaIds.join(','));
+    }
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/gerar-pdf-previsao-financeira`,
+      { params, responseType: 'blob' });
+  }
+
 
 
 }

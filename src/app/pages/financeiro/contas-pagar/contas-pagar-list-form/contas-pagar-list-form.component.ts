@@ -88,11 +88,11 @@ export class ContasPagarListFormComponent implements OnInit {
   setorId = setorIdSignal();
 
   imodo = signal<number>(0);
-  nome?: string = ''.toLowerCase();
+  // nome?: string = ''.toLowerCase();
 
   // Adicione junto às outras propriedades
   private searchTimer: any;
-  busca: string = ''; // campo de busca unificado
+  nome: string = ''; // campo de busca unificado
 
   descricao!: string;
 
@@ -131,6 +131,8 @@ export class ContasPagarListFormComponent implements OnInit {
     { label: 'Mês Atual', value: 'Mês Atual' },
     { label: 'Personalizado', value: 'Personalizado' }
   ];
+
+  contasSelecionadas: number[] = [];
 
   filtroSelecionado = 'Todas';
 
@@ -221,7 +223,7 @@ export class ContasPagarListFormComponent implements OnInit {
     this.linesPerPage = event.rows;
     this.loadContasPagar(
       this.igrejaId,
-      this.busca.toLowerCase(),
+      this.nome.toLowerCase(),
       this.dtInicio,
       this.dtFim,
       this.page,
@@ -231,63 +233,40 @@ export class ContasPagarListFormComponent implements OnInit {
 
 
 
-  aplicarFiltroDatas() {
-    this.hoje = this.sharedService.dataAtualFormatada();
+ aplicarFiltroDatas() {
+  this.hoje = this.sharedService.dataAtualFormatada();
 
-    switch (this.filtroSelecionado) {
-      case 'Hoje':
-        this.dtInicio = this.sharedService.dataAtualFormatada();
-        this.dtFim = this.sharedService.dataAtualFormatada();
-        break;
+  switch (this.filtroSelecionado) {
+    case 'Hoje':
+      this.dtInicio = this.sharedService.dataAtualFormatada();
+      this.dtFim = this.dtInicio;
+      break;
 
-      case 'Vencidos':
-        const dataLimite = new Date();
-        dataLimite.setDate(dataLimite.getDate() - 1); // Define como ontem
-
-        // Formata para string dd/MM/yyyy para enviar ao Spring
-        const dtInicio = '01/01/2000'; // Uma data bem antiga de início
-        const dtFim = dataLimite.toLocaleDateString('pt-BR');
-        this.dtInicio = dtInicio;
-        this.dtFim = dtFim;
-        this.loadContasPagar(this.igrejaId, (this.nome as any), this.dtInicio, this.dtFim, this.page, this.linesPerPage);
-        break;
-
-      case 'Mês Atual':
-        this.dtInicio = this.sharedService.primeiroDiaMes();
-        this.dtFim = this.sharedService.ultimoDiaMes();
-        this.loadContasPagar(this.igrejaId, (this.nome as any), this.dtInicio, this.dtFim, this.page, this.linesPerPage);
-        break;
-
-      case 'Todas':
-        this.dtInicio = '01/01/2000';
-        this.dtFim = '01/01/2999';
-        this.loadContasPagar(this.igrejaId, (this.nome as any), this.dtInicio, this.dtFim, this.page, this.linesPerPage);
-        return;
-
-      case 'Personalizado':
-        this.filtroSelecionado = 'Personalizado';
-        this.dtInicio = this.sharedService.primeiroDiaMes();
-        this.dtFim = this.sharedService.ultimoDiaMes();
-        this.loadContasPagar(this.igrejaId, (this.nome as any), this.dtInicio, this.dtFim, this.page, this.linesPerPage);
-        return; // Abre os campos de data (Calendar) na tela
+    case 'Vencidos': {
+      const ontem = new Date();
+      ontem.setDate(ontem.getDate() - 1);
+      this.dtInicio = '01/01/2000';
+      this.dtFim = ontem.toLocaleDateString('pt-BR');
+      break;
     }
 
-    if (this.rangeDates == null) {
-      this.dtInicio = this.rangeDates[0];
-      if (this.dtInicio.length < 10) {
-        this.dtInicio = (this.rangeDates as any).substring(0, 10);
-      } else {
-        this.dtInicio = this.rangeDates[0];;
-      }
-    }
+    case 'Mês Atual':
+    case 'Personalizado':
+      this.dtInicio = this.sharedService.primeiroDiaMes();
+      this.dtFim = this.sharedService.ultimoDiaMes();
+      break;
 
-    if (this.dtFim == null) {
-      this.dtFim = this.dtInicio
-    }
-    this.rangeDates = this.dtInicio + " - " + this.dtFim;
-
-    this.loadContasPagar(this.igrejaId, (this.nome as any), this.dtInicio, this.dtFim, this.page, this.linesPerPage);
+    case 'Todas':
+      this.dtInicio = '01/01/2000';
+      this.dtFim = '01/01/2999';
+      this.buscaContasPagar();
+      return;
   }
+
+  this.rangeDates = this.dtInicio + ' - ' + this.dtFim;
+  this.buscaContasPagar();
+}
+
 
   //Upload de comprovantes 
   onUpload(event: any, lancamentoId: number) {
@@ -417,32 +396,59 @@ export class ContasPagarListFormComponent implements OnInit {
 
   }
 
-  loadContasPagar(igrejaId: number, busca: string, dtInicio: string, dtFim: string, page: number, linesPerPage: number) {
-    this.contasPagarService
-      .getByPageContasPagarFromIgreja(igrejaId, busca.toLowerCase(), dtInicio, dtFim, page, linesPerPage)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-      .subscribe({
-        next: (response) => {
-          this.contasPagar = response['content']
-          this.totalRegistros = response.totalElements;
-          this.loadResumo();
-          this.getPrinters();
-        },
-        error: (error) => {
-          this.error = error;
-          this.showError(error)
-        }
-      });
+  loadContasPagar(igrejaId: number, nome: string, dtInicio: string, dtFim: string, page: number, linesPerPage: number) {
+  this.contasPagarService
+    .getByPageContasPagarFromIgreja(
+      igrejaId,
+      nome.toLowerCase(),
+      dtInicio,
+      dtFim,
+      page,
+      linesPerPage,
+      this.contasSelecionadas ?? []   // troque pelo nome do seu campo
+    )
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
+      next: (response) => {
+        this.contasPagar = response['content'];
+        this.totalRegistros = response.totalElements;
+        this.loadResumo();
+        this.getPrinters();
+      },
+      error: (error) => {
+        this.error = error;
+        this.showError(error);
+      }
+    });
+}
 
-  }
+  // loadContasPagar(igrejaId: number, nome: string, dtInicio: string, dtFim: string, page: number, linesPerPage: number) {
+  //   this.contasPagarService
+  //     .getByPageContasPagarFromIgreja(igrejaId, nome.toLowerCase(), dtInicio, dtFim, page, linesPerPage)
+  //     .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+  //     .subscribe({
+  //       next: (response) => {
+  //         this.contasPagar = response['content']
+  //         this.totalRegistros = response.totalElements;
+  //         this.loadResumo();
+  //         this.getPrinters();
+  //       },
+  //       error: (error) => {
+  //         this.error = error;
+  //         this.showError(error)
+  //       }
+  //     });
+
+  // }
 
   loadResumo(): void {
     this.contasPagarService
       .getResumoContasPagarFromIgreja(
         this.igrejaId,
-        this.busca,
+        this.nome,
         this.dtInicio,
-        this.dtFim
+        this.dtFim,
+        this.contasSelecionadas
       )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -476,14 +482,14 @@ export class ContasPagarListFormComponent implements OnInit {
 
   loadContasBanco() {
     this.contaService.getListContaFromIgreja(this.igrejaId)
-      .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
           this.contasBanco = response;
         },
         error: (error) => {
           this.error = error;
-          this.showError(error)
+          this.showError(error);
         }
       });
   }
@@ -496,42 +502,22 @@ export class ContasPagarListFormComponent implements OnInit {
         command: () => this.imprimirPrevisao()
       },
       { separator: true },
-      // {
-      //   label: 'Relatório - SETOR',
-      //   icon: 'pi pi-dollar',
-      //   target: '_blank',
-      //   url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=relatorio-entradas-setor-quadro&setor=${this.setorId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
-      // },
-      // { separator: true },
-      // {
-      //   label: 'Fechamento - SETOR',
-      //   icon: 'pi pi-dollar',
-      //   target: '_blank',
-      //   url: (`${API_CONFIG.baseUrl}/relatorios/entradas/setor/?nome=fechamento-setor&setor=${this.setorId}&dt_inicio=${this.dtInicio}&dt_fim=${this.dtFim}`)
-      // },
     ];
   }
 
   imprimirPrevisao(): void {
+    const ids = this.contasSelecionadas.length > 0
+      ? this.contasSelecionadas
+      : this.contasBanco.map(c => c.id!);
     this.contasPagarService.gerarPdfPrevisaoFinanceira(
-      this.igrejaId,
-      this.dtInicio,
-      this.dtFim
-    ).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        window.open(url, '_blank');
-      },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro',
-          detail: 'Não foi possível gerar o PDF.'
-        });
-      }
-    });
+      this.igrejaId, this.dtInicio, this.dtFim, ids)
+      .subscribe({
+        next: (blob) => window.open(window.URL.createObjectURL(blob), '_blank'),
+        error: () => this.messageService.add({
+          severity: 'error', summary: 'Erro', detail: 'Não foi possível gerar o PDF.'
+        })
+      });
   }
-
 
 
   periodo() {
@@ -678,18 +664,19 @@ export class ContasPagarListFormComponent implements OnInit {
   }
 
   // Substitui o buscaContasPagar() existente
-  buscaContasPagar(): void {
-    this.page = 0;
-    if (this.grid) this.grid.first = 0;
-    this.loadContasPagar(
-      this.igrejaId,
-      this.busca.toLowerCase(),
-      this.dtInicio,
-      this.dtFim,
-      this.page,
-      this.linesPerPage
-    );
-  }
+ buscaContasPagar(): void {
+  this.page = 0;
+  if (this.grid) this.grid.first = 0;
+  this.loadContasPagar(
+    this.igrejaId,
+    (this.nome || '').toLowerCase(),
+    this.dtInicio,
+    this.dtFim,
+    this.page,
+    this.linesPerPage
+  );
+}
+
 
   // Novo método com debounce — igual ao financeiro
   onGlobalFilter(): void {
@@ -699,7 +686,7 @@ export class ContasPagarListFormComponent implements OnInit {
       if (this.grid) this.grid.first = 0;
       this.loadContasPagar(
         this.igrejaId,
-        this.busca.toLowerCase(),
+        this.nome.toLowerCase(),
         this.dtInicio,
         this.dtFim,
         this.page,
