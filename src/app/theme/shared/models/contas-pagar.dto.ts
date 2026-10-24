@@ -12,6 +12,7 @@ export class ContasPagarDTO {
         public status?: 'PENDENTE' | 'PAGO' | 'CANCELADO' | 'ATRASADO',
         public igrejaId?: number,
         public quantidadeParcelas?: number,
+        public prevista?: boolean,
         public pessoaId?: number,
         public pessoa?: {
             id: number;

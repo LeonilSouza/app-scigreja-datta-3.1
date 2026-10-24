@@ -422,25 +422,6 @@ export class ContasPagarListFormComponent implements OnInit {
     });
 }
 
-  // loadContasPagar(igrejaId: number, nome: string, dtInicio: string, dtFim: string, page: number, linesPerPage: number) {
-  //   this.contasPagarService
-  //     .getByPageContasPagarFromIgreja(igrejaId, nome.toLowerCase(), dtInicio, dtFim, page, linesPerPage)
-  //     .pipe(takeUntilDestroyed(this.destroyRef)) // Adicione o pipe ANTES do subscribe
-  //     .subscribe({
-  //       next: (response) => {
-  //         this.contasPagar = response['content']
-  //         this.totalRegistros = response.totalElements;
-  //         this.loadResumo();
-  //         this.getPrinters();
-  //       },
-  //       error: (error) => {
-  //         this.error = error;
-  //         this.showError(error)
-  //       }
-  //     });
-
-  // }
-
   loadResumo(): void {
     this.contasPagarService
       .getResumoContasPagarFromIgreja(

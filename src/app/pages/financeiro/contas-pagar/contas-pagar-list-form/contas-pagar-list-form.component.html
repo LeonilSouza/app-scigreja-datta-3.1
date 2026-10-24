@@ -31,10 +31,9 @@
                 <span class="flex justify-between mx-3">
                     <label class="mb-1">Contas</label>
                     <p-multiSelect [options]="contasBanco" [(ngModel)]="contasSelecionadas"
-                       [style]="{'width':'100%','height':'30px','align-items':'center','border-radius':'6px','font-size':'13px'}"
+                        [style]="{'width':'100%','height':'30px','align-items':'center','border-radius':'6px','font-size':'13px'}"
                         [ngModelOptions]="{standalone: true}" optionLabel="nome" optionValue="id"
-                        placeholder="Todas as contas" [filter]="true"  appendTo="body"
-                         (onChange)="buscaContasPagar()">
+                        placeholder="Todas as contas" [filter]="true" appendTo="body" (onChange)="buscaContasPagar()">
                     </p-multiSelect>
                 </span>
 
@@ -205,13 +204,14 @@
                             <td class="col-data-150 py-1" style=" font-size: 13px;">{{
                                 contaPagar.valor | currency:' ' }}<br>
                             </td>
-                            <td class="col-data-150 py-1" style=" font-size: 13px;" [style.color]="contaPagar.status === 'PAGO' ? 'green' : 
-                                (isAtrasado(contaPagar.dataVencimento) ? 'red' : 'orange')">
-                                {{ isAtrasado(contaPagar.dataVencimento) && contaPagar.status !== 'PAGO' ? 'Atrasado' :
+                            <td class="col-data-150 py-1" style="font-size: 13px;" [style.color]="contaPagar.prevista ? 'steelblue' : (contaPagar.status === 'PAGO' ? 'green' : 
+                                (isAtrasado(contaPagar.dataVencimento) ? 'red' : 'orange'))">
+                                {{ contaPagar.prevista ? 'Prevista' : (isAtrasado(contaPagar.dataVencimento) &&
+                                contaPagar.status !== 'PAGO' ? 'Atrasado' :
                                 contaPagar.status == 'PENDENTE' ? 'Pendente' : contaPagar.status == 'PAGO' ? 'Pago' :
-                                contaPagar.status }}
-
+                                contaPagar.status) }}
                             </td>
+
 
                             <!-- Editar -->
                             <td class="py-1 col-acoes-header">
@@ -220,14 +220,14 @@
                                     (click)="this.imodo.set(1); setModalEdicao(); loadContaPagar(contaPagar); visibleContasPagar = true"
                                     type="button" class="btn btn-icon  btn-outline-primary p-1 mb-0 mt-0  "
                                     [style]="{'height': '26px', 'width': '26px'} " [placement]="'top'"
-                                    ngbTooltip="Editar">
+                                    ngbTooltip="Editar" [disabled]="contaPagar.prevista">
                                     <i class="pi pi-pencil"></i>
                                 </button>
 
                                 <button (click)="exclusaoContasPagar(contaPagar)" type="button"
                                     class="btn btn-icon btn-outline-danger p-1 mt-0 mb-0"
                                     [style]="{'margin-left': '10px','height': '25px', 'width': '25px'} "
-                                    [placement]="'top'" ngbTooltip="Excluir">
+                                    [placement]="'top'" ngbTooltip="Excluir" [disabled]="contaPagar.prevista">
                                     <i class="pi pi-trash"></i>
                                 </button>
 
