@@ -68,6 +68,19 @@ export class LancamentoCargoDeptoService {
     });
   }
 
+    imprimirCorpoDocente(filtro: { igrejaId?: number }): Observable<Blob> {
+    let params = new HttpParams();
+
+    // Anexa os filtros dinâmicos se estiverem selecionados na tela
+    if (filtro.igrejaId) params = params.set('igrejaId', filtro.igrejaId);
+
+    // O pulo do gato: informamos 'blob' para o Angular aceitar o fluxo binário do PDFBox
+    return this.http.get(`${API_CONFIG.baseUrl}/relatorios/corpo-docente`, {
+      params,
+      responseType: 'blob'
+    });
+  }
+
 //    imprimirCargosDepto(filtro: LancamentoCargoFiltro): Observable<Blob> {
 //       let params = new HttpParams()
 //         .set('igrejaId', filtro.igrejaId.toString())

@@ -261,6 +261,24 @@ export class LancamentoCargoListFormComponent implements OnInit, OnDestroy {
     });
   }
 
+   imprimirCorpoDocente() {
+    this.lancamentoCargoService.imprimirCorpoDocente(this.filtro)
+    .subscribe({
+      next: (blob: Blob) => {
+        // Cria um link temporário seguro na memória do navegador para o arquivo PDF
+        const urlFile = window.URL.createObjectURL(blob);
+
+        // Abre o PDF diretamente em uma nova aba com o visualizador nativo
+        window.open(urlFile, '_blank');
+
+      },
+      error: (err) => {
+        this.toastr.error('Não foi possível gerar a impressão do relatório.');
+        console.error(err);
+      }
+    });
+  }
+
 
   loadLancamentosCargos() {
     this.lancamentoCargoService.getPageLancamentoCargoFromIgreja(this.filtro)
@@ -480,6 +498,13 @@ export class LancamentoCargoListFormComponent implements OnInit, OnDestroy {
       icon: 'fas fa-users',
       command: () => {
         this.imprimirCargoDepto();
+      }
+    },
+        {
+      label: 'Corpo docente EBD',
+      icon: 'fas fa-users',
+      command: () => {
+        this.imprimirCorpoDocente();
       }
     },
     {
