@@ -114,7 +114,6 @@ export class PessoaListComponent implements OnInit {
 
   constructor(
     private pessoaService: PessoaService,
-    private messageService: MessageService,
     private formBuilder: FormBuilder,
     private datasService: DatasService,
     private sharedService: SharedService,
@@ -135,13 +134,15 @@ export class PessoaListComponent implements OnInit {
     this.pessoaListForm.controls['nome'].setValue('Ativo');
   };
 
-  ngOnDestroy() {
-    // console.log('Limpando recursos do componente de Frequência...');
-    // Se você tiver alguma Subscription manual (this.subscription.unsubscribe())
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+ ngOnDestroy() {
+  this.visibleChamadaObreiro = false;
+  if (this.modalChamada) {
+    this.modalChamada.hide();
   }
+  if (this.subscription) {
+    this.subscription.unsubscribe();
+  }
+}
 
 
   private buildPessoaListForm() {
@@ -363,7 +364,6 @@ export class PessoaListComponent implements OnInit {
         },
         error: (error) => {
           this.error = error;
-          this.showError(error)
         }
       });
 
@@ -514,10 +514,6 @@ export class PessoaListComponent implements OnInit {
           response ? this.totalCongregados = response : 0;
         },
         () => { });
-  }
-
-  private showError(error: { message: any; }) {
-    this.messageService.add({ severity: 'error', summary: 'Erro', detail: error.message });
   }
 
 

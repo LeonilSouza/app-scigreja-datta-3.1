@@ -128,42 +128,6 @@ const routes: Routes = [
         path: 'previsao-cp',
         loadChildren: () => import('./pages/financeiro/contas-pagar/previsao-contas-pagar/previsao-contas-pagar.routes').then((module) => module.PREVISAO_CP_ROUTES),
       },
-
-      // {
-      //   path: 'casos',
-      //   loadChildren: () =>
-      //     import('./pages/caso/caso.module').then(
-      //       (module) => module.CasoModule
-      //     ),
-      // },
-      // {
-      //   path: 'cargodeptos',
-      //   loadChildren: () =>
-      //     import('./pages/cargo-departamento/cargo-departamento.module').then(
-      //       (module) => module.CargoDepartamentoModule
-      //     ),
-      // },
-      // {
-      //   path: 'variaveis',
-      //   loadChildren: () =>
-      //     import('./pages/cadastro/variavel/variavel.module').then(
-      //       (module) => module.VariavelModule
-      //     ),
-      // },
-      // {
-      //   path: 'cadastros',
-      //   loadChildren: () =>
-      //     import('./pages/financeiro/cadastro/cadastro.module').then(
-      //       (module) => module.CadastroModule
-      //     ),
-      // },
-      // {
-      //   path: 'lancamentos',
-      //   loadChildren: () =>
-      //     import('./pages/financeiro/lancamento/lancamento.module').then(
-      //       (module) => module.LancamentoModule
-      //     ),
-      // },
       {
         path: 'layout',
         loadChildren: () =>
@@ -237,6 +201,7 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
+  // imports: [RouterModule.forRoot(routes, { enableTracing: true })],
   exports: [RouterModule],
 })
 export class AppRoutingModule { }
